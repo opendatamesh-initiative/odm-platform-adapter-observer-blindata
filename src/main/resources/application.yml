@@ -1,0 +1,36 @@
+##########################
+# Spring profile
+##########################
+spring:
+  profiles:
+    active: dev
+
+
+##########################
+# Logging configuration
+##########################
+logging:
+  level:
+    org:
+      apache:
+        http: INFO
+    httpclient:
+      wire: INFO
+    opendatamesh.platform.up.metaservice.api.*: DEBUG
+
+##########################
+# Doc configuration
+##########################
+springdoc:
+  swagger-ui:
+    operationsSorter: alpha
+
+##########################
+# Other configuration
+##########################
+
+blindata:
+    url: https://demo.blindata.io
+    user: xxxxxx
+    password: xxxxxx
+    tenantUUID: xxxxxx
