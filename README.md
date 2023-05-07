@@ -17,7 +17,7 @@ Clone the repository and move to the project root folder
 
 ```bash
 git clone git@github.com:opendatamesh-initiative/odm-platform-up-services-meta-blindata.git
-cd odm-platform-pp-services
+cd odm-platform-up-services-meta-blindata
 ```
 ### Compile project
 Compile the project:
