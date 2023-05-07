@@ -1,1 +1,1 @@
-Meta service adapter for [blindata.io] (https://blindata.io/)
+Meta service adapter for [blindata.io](https://blindata.io/)
