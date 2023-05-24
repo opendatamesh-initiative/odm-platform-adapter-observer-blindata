@@ -1,16 +1,21 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client;
 
 public class BlindataCredentials {
+
+
     private String blindataURL;
     private String user;
     private String password;
     private String tenantUUID;
 
-    public BlindataCredentials(String blindataURL, String user, String password, String tenantUUID) {
+    private String roleUuid;
+
+    public BlindataCredentials(String blindataURL, String user, String password, String tenantUUID, String roleUuid) {
         this.blindataURL = blindataURL;
         this.user = user;
         this.password = password;
         this.tenantUUID = tenantUUID;
+        this.roleUuid = roleUuid;
     }
 
     public String getBlindataURL() {

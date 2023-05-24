@@ -1,35 +1,25 @@
 package org.opendatamesh.platform.up.metaservice.server.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-
-import org.opendatamesh.platform.pp.api.resources.v1.dataproduct.DataProductVersionResource;
-import org.opendatamesh.platform.pp.api.resources.v1.dataproduct.InfoResource;
 import org.opendatamesh.platform.up.metaservice.blindata.services.BlindataService;
 import org.opendatamesh.platform.up.metaservice.resources.v1.NotificationResource;
 import org.opendatamesh.platform.up.metaservice.resources.v1.NotificationStatus;
 import org.opendatamesh.platform.up.metaservice.server.database.entities.Notification;
 import org.opendatamesh.platform.up.metaservice.server.database.repositories.NotificationRepository;
 import org.opendatamesh.platform.up.metaservice.server.resources.v1.mappers.NotificationMapper;
-import org.opendatamesh.platform.up.metaservice.server.services.NotificationService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class NotificationService  {
+public class NotificationService {
 
     @Autowired
     private NotificationMapper notificationMapper;
-    
+
     @Autowired
     private BlindataService blindataService;
 
@@ -37,10 +27,10 @@ public class NotificationService  {
     private NotificationRepository notificationRepository;
 
 
-
     private static final Logger logger = LoggerFactory.getLogger(NotificationService.class);
 
     public NotificationResource createNotification(NotificationResource notificationRes) {
+
 
         Notification notification = notificationMapper.toEntity(notificationRes);
 
@@ -57,7 +47,6 @@ public class NotificationService  {
 
         return notificationMapper.toResource(notification);
     }
-
 
 
     public NotificationResource readOneNotification(Long notificationId) {

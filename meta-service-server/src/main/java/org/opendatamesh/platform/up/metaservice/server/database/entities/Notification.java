@@ -1,43 +1,86 @@
 package org.opendatamesh.platform.up.metaservice.server.database.entities;
 
 
-import javax.persistence.*;
-
 import org.opendatamesh.platform.up.metaservice.resources.v1.NotificationStatus;
 
-import lombok.Data;
-
+import javax.persistence.*;
 import java.util.Date;
 
-@Data
-@Entity(name = "Notification")
-@Table( name = "NOTIFICATION", schema="PUBLIC")
+@Entity
+@Table(name = "notification", schema = "PUBLIC")
 public class Notification {
 
-    
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "sequence_id")
     private Long id;
 
     @Embedded
-    Event event;
+    private Event event;
 
-    @Column(name="STATUS")
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private NotificationStatus status;
 
-    @Column(name="PROCESSING_OUTPUT")
+    @Column(name = "processing_output")
     private String processingOutput;
 
-    @Column(name="RECEIVED_AT")
+    @Column(name = "received_at")
     private Date receivedAt;
 
-    @Column(name="PROCESSED_AT")
+    @Column(name = "processed_at")
     private Date processedAt;
 
     @PrePersist
     protected void onCreate() {
         receivedAt = new Date();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    public NotificationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(NotificationStatus status) {
+        this.status = status;
+    }
+
+    public String getProcessingOutput() {
+        return processingOutput;
+    }
+
+    public void setProcessingOutput(String processingOutput) {
+        this.processingOutput = processingOutput;
+    }
+
+    public Date getReceivedAt() {
+        return receivedAt;
+    }
+
+    public void setReceivedAt(Date receivedAt) {
+        this.receivedAt = receivedAt;
+    }
+
+    public Date getProcessedAt() {
+        return processedAt;
+    }
+
+    public void setProcessedAt(Date processedAt) {
+        this.processedAt = processedAt;
     }
 }

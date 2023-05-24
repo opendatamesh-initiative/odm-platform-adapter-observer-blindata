@@ -4,9 +4,9 @@ import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opendatamesh.platform.pp.api.resources.v1.dataproduct.DataProductVersionResource;
-import org.opendatamesh.platform.pp.api.resources.v1.dataproduct.InfoResource;
-import org.opendatamesh.platform.pp.api.resources.v1.dataproduct.OwnerResource;
+import org.opendatamesh.platform.pp.registry.resources.v1.dataproduct.DataProductVersionResource;
+import org.opendatamesh.platform.pp.registry.resources.v1.dataproduct.InfoResource;
+import org.opendatamesh.platform.pp.registry.resources.v1.dataproduct.OwnerResource;
 import org.opendatamesh.platform.up.metaservice.blindata.client.BlindataClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.BlindataCredentials;
 import org.opendatamesh.platform.up.metaservice.server.database.entities.Notification;
@@ -59,7 +59,9 @@ public class BlindataAPITest extends UtilityForTests{
         credentials = new BlindataCredentials(environment.getProperty("blindata.url"),
                 environment.getProperty("blindata.user"),
                 environment.getProperty("blindata.password"),
-                environment.getProperty("blindata.tenantUUID"));
+                environment.getProperty("blindata.tenantUUID"),
+                "roleUuid"
+        );
     }
 
     @Test

@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client;
 
-import org.opendatamesh.platform.up.metaservice.blindata.resources.SystemResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
@@ -8,16 +8,75 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @Component
 
 public class BlindataClient {
 
     private final RestTemplate restTemplate;
     private final Logger logger = LoggerFactory.getLogger(getClass());
-   
+
 
     public BlindataClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
+
+
+    public StewardshipResponsibilityRes getResponsibility(String userUuid, String resourceIdentifier, String roleUuid, BlindataCredentials credentials) throws Exception {
+        try {
+            ResponseEntity<StewardshipResponsibilityRes> getResponsibility = restTemplate.exchange(
+                    String.format("%s/api/v1/stewardship/responsibilities/*/activeResponsibility?userUuid=%s&resourceIdentifier=%s&roleUuid=%s", credentials.getBlindataURL(), userUuid, resourceIdentifier, roleUuid),
+                    HttpMethod.GET,
+                    getHttpEntity(null, credentials),
+                    StewardshipResponsibilityRes.class);
+            return getResponsibility.getBody() != null ? extractBody(getResponsibility, "Unable to retrieve responsibility") : null;
+        } catch (HttpClientErrorException e) {
+            logger.error(e.getMessage());
+            throw new Exception("Unable to get responsibility: " + e.getResponseBodyAsString());
+        }
+    }
+
+    public StewardshipResponsibilityRes createResponsibility(StewardshipResponsibilityRes responsibilityRes, BlindataCredentials credentials) throws Exception {
+        try {
+            ResponseEntity<StewardshipResponsibilityRes> postResponsibility = restTemplate.exchange(
+                    String.format("%s/api/v1/stewardship/responsibilities", credentials.getBlindataURL()),
+                    HttpMethod.POST,
+                    getHttpEntity(responsibilityRes, credentials),
+                    StewardshipResponsibilityRes.class);
+            return extractBody(postResponsibility, "Unable to create responsibility");
+        } catch (HttpClientErrorException e) {
+            logger.error(e.getMessage());
+            throw new Exception("Unable to create responsibility: " + e.getResponseBodyAsString());
+        }
+    }
+
+    public ShortUserRes getBlindataUser(String username, BlindataCredentials credentials) throws Exception {
+        try {
+            ResponseEntity<ShortUserRes> getUser = restTemplate.exchange(
+                    String.format("%s/api/v1/users/*/shortUser?tenantUuid=" + credentials.getTenantUUID() + "&search=" + username, credentials.getBlindataURL()),
+                    HttpMethod.GET,
+                    getHttpEntity(null, credentials),
+                    ShortUserRes.class);
+            return extractBody(getUser, "Unable to retrieve user");
+        } catch (HttpClientErrorException e) {
+            logger.error(e.getMessage());
+            throw new Exception("Unable to retrieve user: " + e.getResponseBodyAsString());
+        }
+    }
+
+    public StewardshipRoleRes getRole(String roleUuid, BlindataCredentials credentials) throws Exception {
+        try {
+            ResponseEntity<StewardshipRoleRes> getStatementResponse = restTemplate.exchange(
+                    String.format("%s/api/v1/stewardship/roles/" + roleUuid, credentials.getBlindataURL()),
+                    HttpMethod.GET,
+                    getHttpEntity(null, credentials),
+                    StewardshipRoleRes.class);
+            return extractBody(getStatementResponse, "Unable to create system");
+        } catch (HttpClientErrorException e) {
+            logger.error(e.getMessage());
+            throw new Exception("Unable to get data product: " + e.getResponseBodyAsString());
+        }
     }
 
     public SystemResource createSystem(SystemResource systemRes, BlindataCredentials credentials) throws Exception {
@@ -39,10 +98,62 @@ public class BlindataClient {
         }
     }
 
+    public BlindataDataProductRes createDataProduct(BlindataDataProductRes blindataDataProductRes, BlindataCredentials credentials) throws Exception {
+        try {
+            ResponseEntity<BlindataDataProductRes> postStatementResponse = restTemplate.exchange(
+                    String.format("%s/api/v1/dataproducts", credentials.getBlindataURL()),
+                    HttpMethod.POST,
+                    getHttpEntity(blindataDataProductRes, credentials),
+                    BlindataDataProductRes.class);
+            return extractBody(postStatementResponse, "Unable to create system");
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                logger.warn(e.getMessage());
+                throw e;
+            } else {
+                logger.error(e.getMessage());
+                throw new Exception("Unable to create data product: " + e.getResponseBodyAsString());
+            }
+        }
+    }
+
+    public BlindataDataProductRes updateDataProduct(BlindataDataProductRes blindataDataProductRes, BlindataCredentials credentials) throws Exception {
+        try {
+            ResponseEntity<BlindataDataProductRes> postStatementResponse = restTemplate.exchange(
+                    String.format("%s/api/v1/dataproducts/" + blindataDataProductRes.getUuid(), credentials.getBlindataURL()),
+                    HttpMethod.PUT,
+                    getHttpEntity(blindataDataProductRes, credentials),
+                    BlindataDataProductRes.class);
+            return extractBody(postStatementResponse, "Unable to update system");
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                logger.warn(e.getMessage());
+                throw e;
+            } else {
+                logger.error(e.getMessage());
+                throw new Exception("Unable to update data product: " + e.getResponseBodyAsString());
+            }
+        }
+    }
+
+    public BlindataDataProductRes getDataProduct(String dataProductIdentifier, BlindataCredentials credentials) throws Exception {
+        try {
+            ResponseEntity<DataProductPage> getStatementResponse = restTemplate.exchange(
+                    String.format("%s/api/v1/dataproducts?page=0&size=1&identifier=" + dataProductIdentifier, credentials.getBlindataURL()),
+                    HttpMethod.GET,
+                    getHttpEntity(null, credentials),
+                    DataProductPage.class);
+            return getStatementResponse.getBody().content.get(0);
+        } catch (HttpClientErrorException e) {
+            logger.error(e.getMessage());
+            throw new Exception("Unable to get data product: " + e.getResponseBodyAsString());
+        }
+    }
+
     public void deleteSystem(SystemResource system, BlindataCredentials credentials) throws Exception {
         try {
             restTemplate.exchange(
-                    String.format("%s/api/v1/systems/"+system.getUuid(), credentials.getBlindataURL()),
+                    String.format("%s/api/v1/systems/" + system.getUuid(), credentials.getBlindataURL()),
                     HttpMethod.DELETE,
                     getHttpEntity(null, credentials),
                     SystemResource.class);
@@ -55,8 +166,8 @@ public class BlindataClient {
 
     public SystemResource getSystem(String uuid, BlindataCredentials credentials) throws Exception {
         try {
-            ResponseEntity<SystemResource> getStatementResponse =restTemplate.exchange(
-                    String.format("%s/api/v1/systems/"+uuid, credentials.getBlindataURL()),
+            ResponseEntity<SystemResource> getStatementResponse = restTemplate.exchange(
+                    String.format("%s/api/v1/systems/" + uuid, credentials.getBlindataURL()),
                     HttpMethod.GET,
                     getHttpEntity(null, credentials),
                     SystemResource.class);
@@ -67,14 +178,14 @@ public class BlindataClient {
         }
     }
 
-    
-    public SystemResource putSystem(SystemResource system, BlindataCredentials credentials) throws Exception{
+
+    public SystemResource putSystem(SystemResource system, BlindataCredentials credentials) throws Exception {
         //get modifico put
         try {
-        ResponseEntity<SystemResource> putResponse = restTemplate.exchange(String.format("%s/api/v1/systems/"+system.getUuid(), credentials.getBlindataURL()),
-                HttpMethod.PUT,
-                getHttpEntity(system, credentials),
-                SystemResource.class);
+            ResponseEntity<SystemResource> putResponse = restTemplate.exchange(String.format("%s/api/v1/systems/" + system.getUuid(), credentials.getBlindataURL()),
+                    HttpMethod.PUT,
+                    getHttpEntity(system, credentials),
+                    SystemResource.class);
             return extractBody(putResponse, "Unable to get system");
         } catch (HttpClientErrorException e) {
             logger.error(e.getMessage());
@@ -98,5 +209,15 @@ public class BlindataClient {
         return body;
     }
 
+    static class DataProductPage {
+        public List<BlindataDataProductRes> content;
+    }
 
+    static class UserPage {
+        public List<ShortUserRes> content;
+    }
+
+    static class ResponsibilityPage {
+        public List<StewardshipResponsibilityRes> content;
+    }
 }
