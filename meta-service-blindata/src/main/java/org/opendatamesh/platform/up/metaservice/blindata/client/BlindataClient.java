@@ -72,29 +72,10 @@ public class BlindataClient {
                     HttpMethod.GET,
                     getHttpEntity(null, credentials),
                     StewardshipRoleRes.class);
-            return extractBody(getStatementResponse, "Unable to create system");
+            return extractBody(getStatementResponse, "Unable to retriev role");
         } catch (HttpClientErrorException e) {
             logger.error(e.getMessage());
             throw new Exception("Unable to get data product: " + e.getResponseBodyAsString());
-        }
-    }
-
-    public SystemResource createSystem(SystemResource systemRes, BlindataCredentials credentials) throws Exception {
-        try {
-            ResponseEntity<SystemResource> postStatementResponse = restTemplate.exchange(
-                    String.format("%s/api/v1/systems", credentials.getBlindataURL()),
-                    HttpMethod.POST,
-                    getHttpEntity(systemRes, credentials),
-                    SystemResource.class);
-            return extractBody(postStatementResponse, "Unable to create system");
-        } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == HttpStatus.CONFLICT) {
-                logger.warn(e.getMessage());
-                throw e;
-            } else {
-                logger.error(e.getMessage());
-                throw new Exception("Unable to create system: " + e.getResponseBodyAsString());
-            }
         }
     }
 
@@ -105,7 +86,7 @@ public class BlindataClient {
                     HttpMethod.POST,
                     getHttpEntity(blindataDataProductRes, credentials),
                     BlindataDataProductRes.class);
-            return extractBody(postStatementResponse, "Unable to create system");
+            return extractBody(postStatementResponse, "Unable to create data product");
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.CONFLICT) {
                 logger.warn(e.getMessage());
@@ -124,7 +105,7 @@ public class BlindataClient {
                     HttpMethod.PUT,
                     getHttpEntity(blindataDataProductRes, credentials),
                     BlindataDataProductRes.class);
-            return extractBody(postStatementResponse, "Unable to update system");
+            return extractBody(postStatementResponse, "Unable to update data product");
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.CONFLICT) {
                 logger.warn(e.getMessage());
@@ -149,6 +130,27 @@ public class BlindataClient {
             throw new Exception("Unable to get data product: " + e.getResponseBodyAsString());
         }
     }
+
+    /*
+    public SystemResource createSystem(SystemResource systemRes, BlindataCredentials credentials) throws Exception {
+        try {
+            ResponseEntity<SystemResource> postStatementResponse = restTemplate.exchange(
+                    String.format("%s/api/v1/systems", credentials.getBlindataURL()),
+                    HttpMethod.POST,
+                    getHttpEntity(systemRes, credentials),
+                    SystemResource.class);
+            return extractBody(postStatementResponse, "Unable to create system");
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                logger.warn(e.getMessage());
+                throw e;
+            } else {
+                logger.error(e.getMessage());
+                throw new Exception("Unable to create system: " + e.getResponseBodyAsString());
+            }
+        }
+    }
+
 
     public void deleteSystem(SystemResource system, BlindataCredentials credentials) throws Exception {
         try {
@@ -193,6 +195,8 @@ public class BlindataClient {
         }
     }
 
+
+     */
     private <T> org.springframework.http.HttpEntity<T> getHttpEntity(T body, BlindataCredentials credential) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-BD-Tenant", credential.getTenantUUID());
@@ -211,13 +215,5 @@ public class BlindataClient {
 
     static class DataProductPage {
         public List<BlindataDataProductRes> content;
-    }
-
-    static class UserPage {
-        public List<ShortUserRes> content;
-    }
-
-    static class ResponsibilityPage {
-        public List<StewardshipResponsibilityRes> content;
     }
 }
