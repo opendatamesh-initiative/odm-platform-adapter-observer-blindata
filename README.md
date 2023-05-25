@@ -1,6 +1,8 @@
 # Open Data Mesh Meta Service Adapter for Blindata
 
 Meta service adapter for [blindata.io](https://blindata.io/)
+Blindata is a SAAS platform that leverages Data Governance and Compliance to empower your Data Management projects.
+The purpose of this adapter is to keep the business glossary within Blindata constantly updated. Upon the occurrence of a creation, deletion, or modification of a dataproduct, Blindata is immediately and automatically notified to ensure that its catalog remains aligned.
 
 # Run it
 
@@ -61,13 +63,13 @@ In all cases you can also use your favourite sql client providing the proper con
 ## Blindata configuration
 
 In order to connect with Blindata, you must specified some important values in file application.yml
-
-    *url: the url where Blindata application is reachable 
-    *user: the username used to log in Blindata
-    *password: the password to connect in Blindata
-    *tenantUUID: the tenant where you have to operate
-    *roleUuid: A possible role identifier. You need this identifier to create or update responsibilities in Blindata
-
+```yaml
+    url: the url where Blindata application is reachable 
+    user: the username used to log in Blindata
+    password: the password to connect in Blindata
+    tenantUUID: the tenant where you have to operate
+    roleUuid: A possible role identifier. You need this identifier to create or update responsibilities in Blindata
+```
 # Spring Profiles and configuration
 
 The application can be immediately run with the default profile.

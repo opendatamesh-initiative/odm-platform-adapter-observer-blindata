@@ -1,7 +1,5 @@
 package it.quantyca.odm.api.planes.utility.metaservices.metaservice.blindata;
 
-import java.util.UUID;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.opendatamesh.platform.pp.registry.resources.v1.dataproduct.DataProductVersionResource;
@@ -16,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.client.RestTemplate;
 
-public class BlindataAPITest extends UtilityForTests{
+import java.util.UUID;
+
+public class BlindataAPITest extends UtilityForTests {
 
     protected Logger logger = LoggerFactory.getLogger("t.quantyca.odm.api.planes.utility.metaservices.metaservice.blindata");
 
@@ -28,15 +28,15 @@ public class BlindataAPITest extends UtilityForTests{
     BlindataCredentials credentials;
 
     BlindataClient blindataClient;
-    
+
     @Autowired
     private RestTemplate restTemplate;
-    
+
     @Autowired
     private Environment environment;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         logger.debug("----- SETTING UP -----");
         init();
         InfoResource info = new InfoResource();
@@ -55,17 +55,10 @@ public class BlindataAPITest extends UtilityForTests{
         dataProductVersionRes = new DataProductVersionResource();
         dataProductVersionRes.setInfo(info);
         blindataClient = new BlindataClient(restTemplate);
-
-        credentials = new BlindataCredentials(environment.getProperty("blindata.url"),
-                environment.getProperty("blindata.user"),
-                environment.getProperty("blindata.password"),
-                environment.getProperty("blindata.tenantUUID"),
-                "roleUuid"
-        );
     }
 
     @Test
-    public void lifecycleTest(){
+    public void lifecycleTest() {
         Notification load = null;
         try {
             /* 
@@ -85,8 +78,8 @@ public class BlindataAPITest extends UtilityForTests{
             ResponseEntity<Notification[]> loadListResponse = testRestTemplate.getForEntity(apiUrlFromString(metaserviceBaseURL), Notification[].class);
             assertThat(loadListResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
             */
-        }finally {
-            testRestTemplate.delete(apiUrlFromString(metaserviceBaseURL+"?dataProductId="+dataProductId));
+        } finally {
+            testRestTemplate.delete(apiUrlFromString(metaserviceBaseURL + "?dataProductId=" + dataProductId));
         }
 
     }
@@ -119,8 +112,8 @@ public class BlindataAPITest extends UtilityForTests{
                     assertThat(additionalProperty.getValue()).isEqualTo("new description");
             }
             */
-        }finally {
-            testRestTemplate.delete(apiUrlFromString(metaserviceBaseURL+"?dataProductId="+dataProductId));
+        } finally {
+            testRestTemplate.delete(apiUrlFromString(metaserviceBaseURL + "?dataProductId=" + dataProductId));
         }
     }
 

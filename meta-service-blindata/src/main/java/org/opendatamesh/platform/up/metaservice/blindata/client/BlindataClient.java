@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+import java.util.Objects;
+
 @Component
 
 public class BlindataClient {
@@ -28,12 +31,12 @@ public class BlindataClient {
     //Responsibilities method
     public StewardshipResponsibilityRes getResponsibility(String userUuid, String resourceIdentifier, String roleUuid, BlindataCredentials credentials) throws MetaServiceException {
         try {
-            ResponseEntity<StewardshipResponsibilityRes> getResponsibility = restTemplate.exchange(
-                    String.format("%s/api/v1/stewardship/responsibilities/*/activeResponsibility?userUuid=%s&resourceIdentifier=%s&roleUuid=%s", credentials.getBlindataURL(), userUuid, resourceIdentifier, roleUuid),
+            ResponseEntity<ResponsibilitiesPage> getResponsibility = restTemplate.exchange(
+                    String.format("%s/api/v1/stewardship/responsibilities?userUuid=%s&resourceIdentifier=%s&roleUuid=%s", credentials.getBlindataUrl(), userUuid, resourceIdentifier, roleUuid),
                     HttpMethod.GET,
                     getHttpEntity(null, credentials),
-                    StewardshipResponsibilityRes.class);
-            return getResponsibility.getBody() != null ? extractBody(getResponsibility, "Unable to retrieve responsibility") : null;
+                    ResponsibilitiesPage.class);
+            return extractResponsibility(getResponsibility);
         } catch (HttpClientErrorException e) {
             throw new MetaServiceException("Unable to get responsibility: " + e.getResponseBodyAsString());
         }
@@ -42,7 +45,7 @@ public class BlindataClient {
     public StewardshipResponsibilityRes createResponsibility(StewardshipResponsibilityRes responsibilityRes, BlindataCredentials credentials) throws MetaServiceException {
         try {
             ResponseEntity<StewardshipResponsibilityRes> postResponsibility = restTemplate.exchange(
-                    String.format("%s/api/v1/stewardship/responsibilities", credentials.getBlindataURL()),
+                    String.format("%s/api/v1/stewardship/responsibilities", credentials.getBlindataUrl()),
                     HttpMethod.POST,
                     getHttpEntity(responsibilityRes, credentials),
                     StewardshipResponsibilityRes.class);
@@ -56,12 +59,12 @@ public class BlindataClient {
 
     public ShortUserRes getBlindataUser(String username, BlindataCredentials credentials) throws MetaServiceException {
         try {
-            ResponseEntity<ShortUserRes> getUser = restTemplate.exchange(
-                    String.format("%s/api/v1/users/*/shortUser?tenantUuid=%s&search=%s", credentials.getBlindataURL(), credentials.getTenantUUID(), username),
+            ResponseEntity<UserPage> getUser = restTemplate.exchange(
+                    String.format("%s/api/v1/users?tenantUuid=%s&search=%s", credentials.getBlindataUrl(), credentials.getBlindataTenantUuid(), username),
                     HttpMethod.GET,
                     getHttpEntity(null, credentials),
-                    ShortUserRes.class);
-            return extractBody(getUser, "Unable to retrieve user");
+                    UserPage.class);
+            return extractUser(getUser);
         } catch (HttpClientErrorException e) {
             throw new MetaServiceException("Unable to retrieve user: " + e.getResponseBodyAsString());
         }
@@ -71,7 +74,7 @@ public class BlindataClient {
     public StewardshipRoleRes getRole(String roleUuid, BlindataCredentials credentials) throws MetaServiceException {
         try {
             ResponseEntity<StewardshipRoleRes> getStatementResponse = restTemplate.exchange(
-                    String.format("%s/api/v1/stewardship/roles/%s", credentials.getBlindataURL(), roleUuid),
+                    String.format("%s/api/v1/stewardship/roles/%s", credentials.getBlindataUrl(), roleUuid),
                     HttpMethod.GET,
                     getHttpEntity(null, credentials),
                     StewardshipRoleRes.class);
@@ -86,7 +89,7 @@ public class BlindataClient {
     public BlindataDataProductRes createDataProduct(BlindataDataProductRes blindataDataProductRes, BlindataCredentials credentials) throws MetaServiceException {
         try {
             ResponseEntity<BlindataDataProductRes> postStatementResponse = restTemplate.exchange(
-                    String.format("%s/api/v1/dataproducts", credentials.getBlindataURL()),
+                    String.format("%s/api/v1/dataproducts", credentials.getBlindataUrl()),
                     HttpMethod.POST,
                     getHttpEntity(blindataDataProductRes, credentials),
                     BlindataDataProductRes.class);
@@ -104,12 +107,12 @@ public class BlindataClient {
 
     public BlindataDataProductRes updateDataProduct(BlindataDataProductRes blindataDataProductRes, BlindataCredentials credentials) throws MetaServiceException {
         try {
-            ResponseEntity<BlindataDataProductRes> postStatementResponse = restTemplate.exchange(
-                    String.format("%s/api/v1/dataproducts/%s", credentials.getBlindataURL(), blindataDataProductRes.getUuid()),
+            ResponseEntity<BlindataDataProductRes> updateDataProduct = restTemplate.exchange(
+                    String.format("%s/api/v1/dataproducts/%s", credentials.getBlindataUrl(), blindataDataProductRes.getUuid()),
                     HttpMethod.PUT,
                     getHttpEntity(blindataDataProductRes, credentials),
                     BlindataDataProductRes.class);
-            return extractBody(postStatementResponse, "Unable to update data product");
+            return extractBody(updateDataProduct, "Unable to update data product");
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.CONFLICT) {
                 logger.warn(e.getMessage());
@@ -123,12 +126,12 @@ public class BlindataClient {
 
     public BlindataDataProductRes getDataProduct(String dataProductIdentifier, BlindataCredentials credentials) throws MetaServiceException {
         try {
-            ResponseEntity<BlindataDataProductRes> getStatementResponse = restTemplate.exchange(
-                    String.format("%s/api/v1/dataproducts/*/odm-dataproduct/%s", credentials.getBlindataURL(), dataProductIdentifier),
+            ResponseEntity<BlindataDataProductPage> getStatementResponse = restTemplate.exchange(
+                    String.format("%s/api/v1/dataproducts?page=0&size=1&identifier=%s", credentials.getBlindataUrl(), dataProductIdentifier),
                     HttpMethod.GET,
                     getHttpEntity(null, credentials),
-                    BlindataDataProductRes.class);
-            return getStatementResponse.getBody() != null ? extractBody(getStatementResponse, "Unable to get data product"): null;
+                    BlindataDataProductPage.class);
+            return extractDataproduct(getStatementResponse);
         } catch (HttpClientErrorException e) {
             throw new MetaServiceException("Unable to get data product: " + e.getResponseBodyAsString());
         }
@@ -137,7 +140,7 @@ public class BlindataClient {
     public void deleteDataProduct(String dataProductIdentifier, BlindataCredentials credentials) throws MetaServiceException {
         try {
             restTemplate.exchange(
-                    String.format("%s/api/v1/dataproducts/*/odm-dataproduct/%s", credentials.getBlindataURL(), dataProductIdentifier),
+                    String.format("%s/api/v1/dataproducts/%s", credentials.getBlindataUrl(), dataProductIdentifier),
                     HttpMethod.DELETE,
                     getHttpEntity(null, credentials),
                     BlindataDataProductRes.class);
@@ -214,9 +217,9 @@ public class BlindataClient {
      */
     private <T> org.springframework.http.HttpEntity<T> getHttpEntity(T body, BlindataCredentials credential) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-BD-Tenant", credential.getTenantUUID());
-        headers.set("X-BD-User", credential.getUser());
-        headers.set("X-BD-ApiKey", credential.getPassword());
+        headers.set("X-BD-Tenant", credential.getBlindataTenantUuid());
+        headers.set("X-BD-User", credential.getBlindataUsername());
+        headers.set("X-BD-ApiKey", credential.getBlindataPass());
         return new HttpEntity<>(body, headers);
     }
 
@@ -226,5 +229,38 @@ public class BlindataClient {
             throw new MetaServiceException("Blindata returned empty response body: " + exceptionMessage);
         }
         return body;
+    }
+
+    static class UserPage {
+        public List<ShortUserRes> content;
+    }
+
+    static class BlindataDataProductPage {
+        public List<BlindataDataProductRes> content;
+    }
+
+    static class ResponsibilitiesPage {
+        public List<StewardshipResponsibilityRes> content;
+    }
+
+    private BlindataDataProductRes extractDataproduct(ResponseEntity<BlindataDataProductPage> getStatementResponse) {
+        if (getStatementResponse.getBody() != null && !getStatementResponse.getBody().content.isEmpty()) {
+            return getStatementResponse.getBody().content.get(0);
+        }
+        return null;
+    }
+
+    private StewardshipResponsibilityRes extractResponsibility(ResponseEntity<ResponsibilitiesPage> getStewardshipResponsibility) {
+        if (!Objects.requireNonNull(getStewardshipResponsibility.getBody()).content.isEmpty()) {
+            return getStewardshipResponsibility.getBody().content.get(0);
+        }
+        return null;
+    }
+
+    private ShortUserRes extractUser(ResponseEntity<UserPage> getUser) {
+        if (getUser.getBody() != null && !getUser.getBody().content.isEmpty()) {
+            return getUser.getBody().content.get(0);
+        }
+        return null;
     }
 }
