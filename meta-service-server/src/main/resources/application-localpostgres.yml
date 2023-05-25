@@ -1,0 +1,33 @@
+server:
+  port: 8595
+  error:
+    include-message: always
+  servlet:
+    context-path: /api/v1/up/metaservice/
+
+spring:
+  profile: localpostgres
+  jpa:
+    hibernate:
+      ddl-auto: none
+      show-sql: true
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  datasource:
+    url: jdbc:postgresql://localhost:49156/postgres
+    username: postgres
+    password: my-secret-password
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://localhost:49156/postgres
+    user: postgres
+    password: my-secret-password
+      #"flyway_schema_history" (i.e., default flyway table) on a different SCHEMA
+    schemas: public
+    locations: classpath:db/migrations/postgres
+    clean-on-validation-error: true

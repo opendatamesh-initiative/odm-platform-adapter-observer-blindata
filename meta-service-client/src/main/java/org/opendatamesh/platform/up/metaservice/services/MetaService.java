@@ -7,5 +7,7 @@ import org.springframework.stereotype.Service;
 public interface MetaService {
 
     public NotificationResource handleDataProductVersionCreatedEvent(NotificationResource notificationRes);
+
+    public NotificationResource deleteProductVersionCreatedEvent(NotificationResource notificationRes);
     
 }

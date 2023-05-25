@@ -54,6 +54,36 @@ public class BlindataService implements MetaService {
     private static final Logger logger = LoggerFactory.getLogger(BlindataService.class);
 
     @Override
+    public NotificationResource deleteProductVersionCreatedEvent(NotificationResource notificationRes) {
+        String fullyQualifiedName = null;
+        try {
+            fullyQualifiedName = objectMapper.readValue(notificationRes.getEvent().getAfterState(),
+                    DataProductVersionResource.class).getInfo().getFullyQualifiedName();
+        } catch (JsonProcessingException e) {
+            notificationRes.setStatus(NotificationStatus.PROCESS_ERROR);
+            notificationRes.setProcessingOutput(e.getMessage());
+            return notificationRes;
+        }
+        try {
+            BlindataClient blindataClient = new BlindataClient(restTemplate);
+            logger.debug("Requested delete for: {} ", fullyQualifiedName);
+            BlindataCredentials credentials = new BlindataCredentials(
+                    blindataUrl,
+                    blindataUsername,
+                    blindataPass,
+                    blindataTenantUuid,
+                    roleUuid);
+            blindataClient.deleteDataProduct(fullyQualifiedName, credentials);
+            logger.info("Delete Data Product: {} ", fullyQualifiedName);
+            notificationRes.setProcessingOutput("Deleted");
+            notificationRes.setStatus(NotificationStatus.PROCESSED);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return notificationRes;
+    }
+
+    @Override
     public NotificationResource handleDataProductVersionCreatedEvent(NotificationResource notificationRes) {
 
         DataProductVersionResource dataProductVersionRes = null;
@@ -65,11 +95,8 @@ public class BlindataService implements MetaService {
             notificationRes.setProcessingOutput(e.getMessage());
             return notificationRes;
         }
-
         BlindataClient blindataClient = new BlindataClient(restTemplate);
-        logger.debug("Requested load for " + dataProductVersionRes);
-
-
+        logger.debug("Requested load for: {} ", dataProductVersionRes);
         // Definition of: blindata endpoint, credentials and tenant.
         BlindataCredentials credentials = new BlindataCredentials(
                 blindataUrl,
@@ -77,22 +104,16 @@ public class BlindataService implements MetaService {
                 blindataPass,
                 blindataTenantUuid,
                 roleUuid);
-
         InfoResource dataProductInfoRes = dataProductVersionRes.getInfo();
-
-        SystemResource systemRes = new SystemResource(dataProductInfoRes.getDisplayName(), dataProductInfoRes.getDescription(),
-                SystemSubtype.SERVICE);
-        systemRes.setAdditionalProperties(infoToAdditionalPropertyList(dataProductInfoRes));
-        //Create dataproduct
         try {
             BlindataDataProductRes dataProduct = blindataClient.getDataProduct(dataProductInfoRes.getFullyQualifiedName(), credentials);
             if (dataProduct != null) {
                 //update data product
-                final BlindataDataProductRes dataProductResToUpdate = validateDataProduct(dataProductInfoRes, dataProductVersionRes);
+                final BlindataDataProductRes dataProductResToUpdate = createDataProductResource(dataProductInfoRes, dataProductVersionRes);
                 dataProductResToUpdate.setUuid(dataProduct.getUuid());
                 BlindataDataProductRes updatedDataProduct = blindataClient.updateDataProduct(dataProductResToUpdate, credentials);
                 if (updatedDataProduct != null) {
-                    logger.info("Update Data Product to Blindata: " + dataProduct);
+                    logger.info("Update Data Product to Blindata: {} ", dataProduct);
                     notificationRes.setProcessingOutput(updatedDataProduct.toString());
                     notificationRes.setStatus(NotificationStatus.PROCESSED);
                 } else {
@@ -100,9 +121,9 @@ public class BlindataService implements MetaService {
                 }
             } else {
                 //Create Data product
-                dataProduct = blindataClient.createDataProduct(validateDataProduct(dataProductInfoRes, dataProductVersionRes), credentials);
+                dataProduct = blindataClient.createDataProduct(createDataProductResource(dataProductInfoRes, dataProductVersionRes), credentials);
                 if (dataProduct != null) {
-                    logger.info("Created Data Product to Blindata: " + dataProduct);
+                    logger.info("Created Data Product to Blindata: {}", dataProduct);
                     notificationRes.setProcessingOutput(dataProduct.toString());
                     notificationRes.setStatus(NotificationStatus.PROCESSED);
                 } else {
@@ -114,7 +135,7 @@ public class BlindataService implements MetaService {
                 assignResponsibility(dataProduct, dataProductInfoRes.getOwner().getId(), blindataClient, credentials);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to create data product: " + e.getMessage());
         }
 
         return notificationRes;
@@ -155,7 +176,34 @@ public class BlindataService implements MetaService {
 
     }
 
-    private BlindataDataProductRes validateDataProduct(InfoResource dataProductInfoRes, DataProductVersionResource dataProductVersionRes) {
+
+    private void assignResponsibility(BlindataDataProductRes res, String username, BlindataClient client, BlindataCredentials credentials) throws MetaServiceException {
+        try {
+            if (StringUtils.hasText(roleUuid)) {
+                final StewardshipRoleRes role = client.getRole(roleUuid, credentials);
+                final ShortUserRes blindataUser = client.getBlindataUser(username, credentials);
+                if (role != null && blindataUser != null) {
+                    logger.info("Try to assign responsibility to: {} ", blindataUser);
+                    final StewardshipResponsibilityRes responsibilityOnBlindata = createResponsibilityOnBlindata(role, blindataUser, client, res, credentials);
+                    logger.info("Responsibility created: {}", responsibilityOnBlindata);
+                }
+            }
+        } catch (Exception e) {
+            throw new MetaServiceException("Impossible to assign responsibility" + e.getMessage());
+        }
+    }
+
+    private StewardshipResponsibilityRes createResponsibility(StewardshipRoleRes role, ShortUserRes blindataUser, BlindataDataProductRes res) {
+        StewardshipResponsibilityRes responsibilityRes = new StewardshipResponsibilityRes();
+        responsibilityRes.setStewardshipRole(role);
+        responsibilityRes.setUser(blindataUser);
+        responsibilityRes.setResourceIdentifier(res.getUuid());
+        responsibilityRes.setResourceName(res.getName());
+        responsibilityRes.setStartDate(new Date());
+        return responsibilityRes;
+    }
+
+    private BlindataDataProductRes createDataProductResource(InfoResource dataProductInfoRes, DataProductVersionResource dataProductVersionRes) {
         BlindataDataProductRes dataProductRes = new BlindataDataProductRes();
         dataProductRes.setUuid(dataProductInfoRes.getDataProductId());
         dataProductRes.setName(dataProductInfoRes.getName());
@@ -170,27 +218,12 @@ public class BlindataService implements MetaService {
         return dataProductRes;
     }
 
-    private void assignResponsibility(BlindataDataProductRes res, String username, BlindataClient client, BlindataCredentials credentials) {
-        try {
-            if (StringUtils.hasText(roleUuid)) {
-                final StewardshipRoleRes role = client.getRole(roleUuid, credentials);
-                final ShortUserRes blindataUser = client.getBlindataUser(username, credentials);
-                final StewardshipResponsibilityRes responsibility = client.getResponsibility(blindataUser.getUuid(), res.getUuid(), roleUuid, credentials);
-                //check if not are exisisting responsibility
-                if (role != null && blindataUser != null && responsibility == null) {
-                    {
-                        StewardshipResponsibilityRes responsibilityRes = new StewardshipResponsibilityRes();
-                        responsibilityRes.setStewardshipRole(role);
-                        responsibilityRes.setUser(blindataUser);
-                        responsibilityRes.setResourceIdentifier(res.getUuid());
-                        responsibilityRes.setResourceName(res.getName());
-                        responsibilityRes.setStartDate(new Date());
-                        client.createResponsibility(responsibilityRes, credentials);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    private StewardshipResponsibilityRes createResponsibilityOnBlindata(StewardshipRoleRes role, ShortUserRes blindataUser, BlindataClient client, BlindataDataProductRes res, BlindataCredentials credentials) throws Exception {
+        final StewardshipResponsibilityRes responsibility = client.getResponsibility(blindataUser.getUuid(), res.getUuid(), roleUuid, credentials);
+        //check if not are exisisting responsibility
+        if (responsibility != null) {
+            return client.createResponsibility(createResponsibility(role, blindataUser, res), credentials);
         }
+        return null;
     }
 }

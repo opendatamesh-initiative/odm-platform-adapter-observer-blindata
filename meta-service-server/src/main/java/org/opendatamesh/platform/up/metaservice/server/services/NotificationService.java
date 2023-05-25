@@ -6,8 +6,7 @@ import org.opendatamesh.platform.up.metaservice.resources.v1.NotificationStatus;
 import org.opendatamesh.platform.up.metaservice.server.database.entities.Notification;
 import org.opendatamesh.platform.up.metaservice.server.database.repositories.NotificationRepository;
 import org.opendatamesh.platform.up.metaservice.server.resources.v1.mappers.NotificationMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opendatamesh.platform.up.metaservice.services.MetaServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,25 +25,23 @@ public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
-
-    private static final Logger logger = LoggerFactory.getLogger(NotificationService.class);
-
     public NotificationResource createNotification(NotificationResource notificationRes) {
-
-
         Notification notification = notificationMapper.toEntity(notificationRes);
 
-        if (!notificationRes.getEvent().getType().equals("DATA_PRODUCT_VERSION_CREATED")) {
+        if (!notificationRes.getEvent().getType().equals("DATA_PRODUCT_VERSION_CREATED") && !notificationRes.getEvent().getType().equals("DATA_PRODUCT_VERSION_DELETED")) {
             notification.setStatus(NotificationStatus.UNPROCESSABLE);
+            notification = notificationRepository.save(notification);
+        } else if (notificationRes.getEvent().getType().equals("DATA_PRODUCT_VERSION_DELETED")) {
+            notification.setStatus(NotificationStatus.PROCESSING);
+            notification = notificationRepository.save(notification);
+            blindataService.deleteProductVersionCreatedEvent(notificationRes);
             notification = notificationRepository.save(notification);
         } else {
             notification.setStatus(NotificationStatus.PROCESSING);
             notification = notificationRepository.save(notification);
-
             blindataService.handleDataProductVersionCreatedEvent(notificationRes);
             notification = notificationRepository.save(notification);
         }
-
         return notificationMapper.toResource(notification);
     }
 
