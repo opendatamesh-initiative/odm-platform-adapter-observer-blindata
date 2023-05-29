@@ -157,10 +157,11 @@
         </dependency>
 
         <dependency>
-            <groupId>org.opendatamesh.platform.pp.registry.resources.v1</groupId>
+            <groupId>org.opendatamesh.platform.pp.services.registry.client</groupId>
             <artifactId>odm-platform-pp-registry-client</artifactId>
             <version>1.0.0</version>
-            <scope>compile</scope>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/odm-platform-pp-registry-client-1.0.0.jar</systemPath>
         </dependency>
 
         <dependency>
