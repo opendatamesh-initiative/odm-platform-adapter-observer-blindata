@@ -170,6 +170,7 @@
                     <wait>1000</wait>
                     <maxAttempts>180</maxAttempts>
                     <mainClass>${metaservice.mainclass}</mainClass>
+                    <includeSystemScope>true</includeSystemScope>
                 </configuration>
             </plugin>
 
