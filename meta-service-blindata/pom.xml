@@ -160,8 +160,7 @@
             <groupId>org.opendatamesh.platform.pp.services.registry.client</groupId>
             <artifactId>odm-platform-pp-registry-client</artifactId>
             <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/odm-platform-pp-registry-client-1.0.0.jar</systemPath>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
