@@ -157,11 +157,10 @@
         </dependency>
 
         <dependency>
-            <groupId>org.opendatamesh.platform.pp.services.registry.client</groupId>
+            <groupId>org.opendatamesh</groupId>
             <artifactId>odm-platform-pp-registry-client</artifactId>
             <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/odm-platform-pp-registry-client-1.0.0.jar</systemPath>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -218,7 +217,6 @@
                     <wait>1000</wait>
                     <maxAttempts>180</maxAttempts>
                     <mainClass>${metaservice.mainclass}</mainClass>
-                    <includeSystemScope>true</includeSystemScope>
                 </configuration>
             </plugin>
         </plugins>
