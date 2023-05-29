@@ -5,7 +5,6 @@ spring:
   profiles:
     active: dev
 
-
 ##########################
 # Logging configuration
 ##########################
@@ -28,7 +27,6 @@ springdoc:
 ##########################
 # Other configuration
 ##########################
-
 blindata:
     url: http://localhost:3000
     user: "owner"
