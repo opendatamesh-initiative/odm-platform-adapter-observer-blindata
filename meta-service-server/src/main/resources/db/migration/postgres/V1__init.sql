@@ -1,4 +1,7 @@
-CREATE TABLE notification(
+CREATE SCHEMA IF NOT EXISTS "PUBLIC";
+CREATE SEQUENCE "PUBLIC".HIBERNATE_SEQUENCE START WITH 1;
+
+CREATE TABLE "PUBLIC".notification(
     sequence_id serial primary key,
     status varchar(255),
     processing_output varchar(255),

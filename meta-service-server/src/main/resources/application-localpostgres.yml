@@ -29,5 +29,5 @@ spring:
     password: my-secret-password
       #"flyway_schema_history" (i.e., default flyway table) on a different SCHEMA
     schemas: public
-    locations: classpath:db/migrations/postgres
+    locations: classpath:db/migration/postgres
     clean-on-validation-error: true
