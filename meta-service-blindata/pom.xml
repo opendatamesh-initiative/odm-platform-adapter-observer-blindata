@@ -159,7 +159,7 @@
         <dependency>
             <groupId>org.opendatamesh</groupId>
             <artifactId>odm-platform-pp-registry-client</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.0-exec</version>
             <scope>compile</scope>
         </dependency>
 
