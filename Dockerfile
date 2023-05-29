@@ -6,7 +6,6 @@ WORKDIR /workspace/app
 RUN apt-get update
 RUN apt-get -y install git
 RUN git clone https://github.com/opendatamesh-initiative/odm-platform-up-services-meta-blindata.git
-RUN git checkout blindata-develop-docker
 
 WORKDIR /workspace/app/odm-platform-up-services-meta-blindata
 
