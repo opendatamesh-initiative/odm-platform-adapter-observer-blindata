@@ -157,7 +157,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.opendatamesh.platform.pp.registry.resources.v1</groupId>
+            <groupId>org.opendatamesh.platform.pp.services.registry.client</groupId>
             <artifactId>odm-platform-pp-registry-client</artifactId>
             <version>1.0.0</version>
             <scope>system</scope>
