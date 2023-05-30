@@ -6,7 +6,6 @@ import org.opendatamesh.platform.up.metaservice.resources.v1.NotificationStatus;
 import org.opendatamesh.platform.up.metaservice.server.database.entities.Notification;
 import org.opendatamesh.platform.up.metaservice.server.database.repositories.NotificationRepository;
 import org.opendatamesh.platform.up.metaservice.server.resources.v1.mappers.NotificationMapper;
-import org.opendatamesh.platform.up.metaservice.services.MetaServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,19 +27,28 @@ public class NotificationService {
     public NotificationResource createNotification(NotificationResource notificationRes) {
         Notification notification = notificationMapper.toEntity(notificationRes);
 
-        if (!notificationRes.getEvent().getType().equals("DATA_PRODUCT_VERSION_CREATED") && !notificationRes.getEvent().getType().equals("DATA_PRODUCT_VERSION_DELETED")) {
-            notification.setStatus(NotificationStatus.UNPROCESSABLE);
-            notification = notificationRepository.save(notification);
-        } else if (notificationRes.getEvent().getType().equals("DATA_PRODUCT_VERSION_DELETED")) {
-            notification.setStatus(NotificationStatus.PROCESSING);
-            notification = notificationRepository.save(notification);
-            blindataService.deleteProductVersionCreatedEvent(notificationRes);
-            notification = notificationRepository.save(notification);
-        } else {
-            notification.setStatus(NotificationStatus.PROCESSING);
-            notification = notificationRepository.save(notification);
-            blindataService.handleDataProductVersionCreatedEvent(notificationRes);
-            notification = notificationRepository.save(notification);
+        switch (notification.getEvent().getType()){
+            case "DATA_PRODUCT_DELETED":
+                notification.setStatus(NotificationStatus.PROCESSING);
+                notification = notificationRepository.save(notification);
+                blindataService.handleDataProductDelete(notificationRes);
+                notification = notificationRepository.save(notification);
+                break;
+            case "DATA_PRODUCT_UPDATED":
+                notification.setStatus(NotificationStatus.PROCESSING);
+                notification = notificationRepository.save(notification);
+                blindataService.handleDataProductUpdate(notificationRes);
+                notification = notificationRepository.save(notification);
+                break;
+            case "DATA_PRODUCT_CREATED":
+                notification.setStatus(NotificationStatus.PROCESSING);
+                notification = notificationRepository.save(notification);
+                blindataService.handleDataProductCreated(notificationRes);
+                notification = notificationRepository.save(notification);
+                break;
+            default:
+                notification.setStatus(NotificationStatus.UNPROCESSABLE);
+                notification = notificationRepository.save(notification);
         }
         return notificationMapper.toResource(notification);
     }
