@@ -21,7 +21,7 @@ spring:
   # JPA configuration
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
       show-sql: true
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
