@@ -53,3 +53,13 @@ spring:
     schemas: ${FLYWAY_SCHEMA}
     locations: classpath:db/migration/${FLYWAY_SCRIPTS_DIR}
     clean-on-validation-error: true
+
+##########################
+# Blindata configuration
+##########################
+blindata:
+  url: ${BLINDATA_URL}
+  user: ${BLINDATA_USER}
+  password: ${BLINDATA_PWD}
+  tenantUUID: ${BLINDATA_TENANT}
+  roleUuid: ${BLINDATA_ROLE}
