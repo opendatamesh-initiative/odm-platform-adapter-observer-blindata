@@ -1,16 +1,16 @@
 CREATE SCHEMA IF NOT EXISTS "PUBLIC";
 
-CREATE TABLE "PUBLIC".notification(
-    sequence_id serial primary key,
-    status varchar(255),
-    processing_output varchar(255),
-    event_id bigint,
-    notification_id bigint references notification(sequence_id),
-    event_type varchar(255),
-    event_entity_id varchar(255),
-    event_before_state text,
-    event_after_state text,
-    event_time timestamp,
-    received_at timestamp,
-    processed_at timestamp
+CREATE TABLE "PUBLIC"."NOTIFICATION"(
+    "SEQUENCE_ID" SERIAL PRIMARY KEY,
+    "STATUS" VARCHAR(255),
+    "PROCESSING_OUTPUT" VARCHAR(255),
+    "EVENT_ID" BIGINT,
+    "NOTIFICATION_ID" BIGINT REFERENCES NOTIFICATION(SEQUENCE_ID),
+    "EVENT_TYPE" VARCHAR(255),
+    "EVENT_ENTITY_ID" VARCHAR(255),
+    "EVENT_BEFORE_STATE" TEXT,
+    "EVENT_AFTER_STATE" TEXT,
+    "EVENT_TIME" TIMESTAMP,
+    "RECEIVED_AT" TIMESTAMP,
+    "PROCESSED_AT" TIMESTAMP
 );
