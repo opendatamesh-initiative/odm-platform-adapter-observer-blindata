@@ -22,15 +22,15 @@ spring:
         globally_quoted_identifiers: true
         default_schema: PUBLIC
   datasource:
-    url: jdbc:postgresql://localhost:5432/odmplatformandmetaservicedb #jdbc:postgresql://localhost:49156/postgres
-    username: usr #postgres
-    password: pwd #my-secret-password
+    url: jdbc:postgresql://localhost:49156/postgres
+    username: postgres
+    password: my-secret-password
   flyway:
     enabled: true
-    url: jdbc:postgresql://localhost:5432/odmplatformandmetaservicedb #jdbc:postgresql://localhost:49156/postgres
-    user: usr #postgres
-    password: pwd #my-secret-password
-      #"flyway_schema_history" (i.e., default flyway table) on a different SCHEMA
-    schemas: flyway_metaservice #public
+    url: jdbc:postgresql://localhost:49156/postgres
+    user: postgres
+    password: my-secret-password
+    #"flyway_schema_history" (i.e., default flyway table) on a different SCHEMA
+    schemas: public
     locations: classpath:db/migration/postgres
     clean-on-validation-error: true
