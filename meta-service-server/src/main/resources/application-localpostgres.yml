@@ -9,25 +9,28 @@ spring:
   profile: localpostgres
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
       show-sql: true
       naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:
       hibernate:
         jdbc:
           lob:
             non_contextual_creation: true
+        globally_quoted_identifiers: true
+        default_schema: PUBLIC
   datasource:
-    url: jdbc:postgresql://localhost:49156/postgres
-    username: postgres
-    password: my-secret-password
+    url: jdbc:postgresql://localhost:5432/odmplatformandmetaservicedb #jdbc:postgresql://localhost:49156/postgres
+    username: usr #postgres
+    password: pwd #my-secret-password
   flyway:
     enabled: true
-    url: jdbc:postgresql://localhost:49156/postgres
-    user: postgres
-    password: my-secret-password
+    url: jdbc:postgresql://localhost:5432/odmplatformandmetaservicedb #jdbc:postgresql://localhost:49156/postgres
+    user: usr #postgres
+    password: pwd #my-secret-password
       #"flyway_schema_history" (i.e., default flyway table) on a different SCHEMA
-    schemas: public
+    schemas: flyway_metaservice #public
     locations: classpath:db/migration/postgres
     clean-on-validation-error: true
