@@ -1,47 +1,64 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
 public class BlindataCredentials {
-    private String blindataURL;
-    private String user;
-    private String password;
-    private String tenantUUID;
 
-    public BlindataCredentials(String blindataURL, String user, String password, String tenantUUID) {
-        this.blindataURL = blindataURL;
-        this.user = user;
-        this.password = password;
-        this.tenantUUID = tenantUUID;
+
+    @Value("${blindata.url}")
+    private String blindataUrl;
+
+    @Value("${blindata.user}")
+    private String blindataUsername;
+
+    @Value("${blindata.password}")
+    private String blindataPass;
+
+    @Value("${blindata.tenantUUID}")
+    private String blindataTenantUuid;
+
+    @Value("${blindata.roleUuid}")
+    private String roleUuid;
+
+    public String getBlindataUrl() {
+        return blindataUrl;
     }
 
-    public String getBlindataURL() {
-        return blindataURL;
+    public void setBlindataUrl(String blindataUrl) {
+        this.blindataUrl = blindataUrl;
     }
 
-    public void setBlindataURL(String blindataURL) {
-        this.blindataURL = blindataURL;
+    public String getBlindataUsername() {
+        return blindataUsername;
     }
 
-    public String getUser() {
-        return user;
+    public void setBlindataUsername(String blindataUsername) {
+        this.blindataUsername = blindataUsername;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public String getBlindataPass() {
+        return blindataPass;
     }
 
-    public String getPassword() {
-        return password;
+    public void setBlindataPass(String blindataPass) {
+        this.blindataPass = blindataPass;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public String getBlindataTenantUuid() {
+        return blindataTenantUuid;
     }
 
-    public String getTenantUUID() {
-        return tenantUUID;
+    public void setBlindataTenantUuid(String blindataTenantUuid) {
+        this.blindataTenantUuid = blindataTenantUuid;
     }
 
-    public void setTenantUUID(String tenantUUID) {
-        this.tenantUUID = tenantUUID;
+    public String getRoleUuid() {
+        return roleUuid;
+    }
+
+    public void setRoleUuid(String roleUuid) {
+        this.roleUuid = roleUuid;
     }
 }

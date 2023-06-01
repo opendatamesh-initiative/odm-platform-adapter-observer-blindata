@@ -5,7 +5,6 @@ spring:
   profiles:
     active: dev
 
-
 ##########################
 # Logging configuration
 ##########################
@@ -24,13 +23,3 @@ logging:
 springdoc:
   swagger-ui:
     operationsSorter: alpha
-
-##########################
-# Other configuration
-##########################
-
-blindata:
-    url: https://demo.blindata.io
-    user: xxxxxx
-    password: xxxxxx
-    tenantUUID: xxxxxx
