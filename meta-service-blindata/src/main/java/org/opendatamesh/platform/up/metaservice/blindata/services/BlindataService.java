@@ -179,8 +179,6 @@ public class BlindataService implements MetaService {
         dataProductRes.setIdentifier(dataProductInfoRes.getFullyQualifiedName());
         dataProductRes.setVersion(dataProductInfoRes.getVersionNumber());
         dataProductRes.setDisplayName(dataProductInfoRes.getDisplayName());
-        dataProductRes.setVersion(dataProductInfoRes.getVersionNumber());
-        dataProductRes.setDomain(dataProductInfoRes.getDomain());
         dataProductRes.setDescription(dataProductInfoRes.getDescription());
         dataProductRes.setPorts(getDataProductsPorts(dataProductVersionRes));
         return dataProductRes;
