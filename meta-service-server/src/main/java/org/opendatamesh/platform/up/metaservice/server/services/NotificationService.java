@@ -28,22 +28,25 @@ public class NotificationService {
         Notification notification = notificationMapper.toEntity(notificationRes);
 
         switch (notification.getEvent().getType()){
-            case "DATA_PRODUCT_DELETED":
+            case "DATA_PRODUCT_VERSION_DELETED":
                 notification.setStatus(NotificationStatus.PROCESSING);
-                notification = notificationRepository.save(notification);
-                blindataService.handleDataProductDelete(notificationRes);
+                notificationRepository.save(notification);
+                notificationRes = blindataService.handleDataProductDelete(notificationRes);
+                notification = notificationMapper.toEntity(notificationRes);
                 notification = notificationRepository.save(notification);
                 break;
             case "DATA_PRODUCT_UPDATED":
                 notification.setStatus(NotificationStatus.PROCESSING);
-                notification = notificationRepository.save(notification);
-                blindataService.handleDataProductUpdate(notificationRes);
+                notificationRepository.save(notification);
+                notificationRes = blindataService.handleDataProductUpdate(notificationRes);
+                notification = notificationMapper.toEntity(notificationRes);
                 notification = notificationRepository.save(notification);
                 break;
-            case "DATA_PRODUCT_CREATED":
+            case "DATA_PRODUCT_VERSION_CREATED":
                 notification.setStatus(NotificationStatus.PROCESSING);
-                notification = notificationRepository.save(notification);
-                blindataService.handleDataProductCreated(notificationRes);
+                notificationRepository.save(notification);
+                notificationRes = blindataService.handleDataProductCreated(notificationRes);
+                notification = notificationMapper.toEntity(notificationRes);
                 notification = notificationRepository.save(notification);
                 break;
             default:
