@@ -57,8 +57,8 @@ spring:
 # Other configuration
 ##########################
 blindata:
-  url: https://demo.blindata.io/ #http://localhost:3000
-  user: mattia.pennati #"owner"
-  password: mattia123 #"owner123"
-  tenantUUID: ed82bda3-85dd-4023-96ad-0b66ae86f5ed #"fc8dbadb-83b9-4c4a-baec-fc5a5f91f98b"
-  roleUuid: 3080eb14-c688-4878-887b-1e7e400f64ff #"777f0307-bf30-4f70-92a4-f0cf3bc3f436"
+  url: http://localhost:3000
+  user: "owner"
+  password: "owner123"
+  tenantUUID: "fc8dbadb-83b9-4c4a-baec-fc5a5f91f98b"
+  roleUuid: "777f0307-bf30-4f70-92a4-f0cf3bc3f436"
