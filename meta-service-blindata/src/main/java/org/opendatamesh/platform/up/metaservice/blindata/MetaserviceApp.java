@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.server;
+package org.opendatamesh.platform.up.metaservice.blindata;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
