@@ -81,15 +81,16 @@ License.
         <java.version>11</java.version>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
-        <metaservice.mainclass>org.opendatamesh.platform.up.metaservice.server.MetaserviceApp</metaservice.mainclass>
+        <metaservice.mainclass>org.opendatamesh.platform.up.metaservice.blindata.MetaserviceApp</metaservice.mainclass>
     </properties>
 
     <modules>
-        <module>meta-service-client</module>
+     <module>meta-service-blindata</module>
+    <!--
+        <module>notification-api</module>
+        <module>notification-server</module>
         <module>meta-service-blindata</module>
-        <module>meta-service-server</module>
+         -->
     </modules>
-
-	
 
 </project>

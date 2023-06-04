@@ -8,10 +8,10 @@ import org.opendatamesh.platform.pp.registry.resources.v1.dataproduct.PortResour
 import org.opendatamesh.platform.up.metaservice.blindata.client.BlindataClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.BlindataCredentials;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.*;
-import org.opendatamesh.platform.up.metaservice.resources.v1.NotificationResource;
-import org.opendatamesh.platform.up.metaservice.resources.v1.NotificationStatus;
-import org.opendatamesh.platform.up.metaservice.services.MetaService;
-import org.opendatamesh.platform.up.metaservice.services.MetaServiceException;
+import org.opendatamesh.platform.up.metaservice.server.services.MetaService;
+import org.opendatamesh.platform.up.metaservice.server.services.MetaServiceException;
+import org.opendatamesh.platform.up.notification.api.v1.resources.NotificationResource;
+import org.opendatamesh.platform.up.notification.api.v1.resources.NotificationStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

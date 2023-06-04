@@ -2,7 +2,7 @@ package it.quantyca.odm.api.planes.utility.metaservices.metaservice.blindata;
 
 
 import org.junit.runner.RunWith;
-import org.opendatamesh.platform.up.metaservice.server.MetaserviceApp;
+import org.opendatamesh.platform.up.metaservice.blindata.MetaserviceApp;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;

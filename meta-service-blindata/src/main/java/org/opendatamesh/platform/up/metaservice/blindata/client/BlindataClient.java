@@ -4,7 +4,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.BlindataDataP
 import org.opendatamesh.platform.up.metaservice.blindata.resources.ShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.StewardshipResponsibilityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.StewardshipRoleRes;
-import org.opendatamesh.platform.up.metaservice.services.MetaServiceException;
+import org.opendatamesh.platform.up.metaservice.server.services.MetaServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
