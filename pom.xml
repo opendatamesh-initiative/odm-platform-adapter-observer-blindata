@@ -83,12 +83,28 @@ License.
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>2.3.3.RELEASE</version>
                     <configuration>
                         <mainClass>${start-class}</mainClass>
-                        <layout>JAR</layout>
+                        <!-- this is necessary as we're not using the Boot parent -->
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.qunix</groupId>
+                    <artifactId>structure-maven-plugin</artifactId>
+                    <version>0.0.2</version>
+                    <inherited>false</inherited>
+                    <executions>
+                        <execution>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>modules</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
+
         </pluginManagement>
     </build>
 	
@@ -101,11 +117,11 @@ License.
 
     <modules>
      <module>meta-service-blindata</module>
-    <!--
+        <!--
         <module>notification-api</module>
         <module>notification-server</module>
         <module>meta-service-blindata</module>
-         -->
+        -->
     </modules>
 
 </project>
