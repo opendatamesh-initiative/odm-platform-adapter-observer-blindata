@@ -76,6 +76,21 @@ License.
         </repository>
       </distributionManagement>
     -->
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <configuration>
+                        <mainClass>${start-class}</mainClass>
+                        <layout>JAR</layout>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 	
 	<properties>
         <java.version>11</java.version>
