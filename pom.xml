@@ -85,9 +85,17 @@ License.
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>2.3.3.RELEASE</version>
                     <configuration>
-                        <mainClass>${start-class}</mainClass>
                         <!-- this is necessary as we're not using the Boot parent -->
+                        <mainClass>org.opendatamesh.platform.up.metaservice.blindata.MetaserviceApp</mainClass>
+                        <layout>JAR</layout>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.qunix</groupId>
