@@ -85,9 +85,8 @@ License.
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>2.3.3.RELEASE</version>
                     <configuration>
-                        <!-- this is necessary as we're not using the Boot parent -->
                         <mainClass>org.opendatamesh.platform.up.metaservice.blindata.MetaserviceApp</mainClass>
-                        <layout>JAR</layout>
+                        <!--<layout>JAR</layout>-->
                     </configuration>
                     <executions>
                         <execution>
@@ -97,7 +96,7 @@ License.
                         </execution>
                     </executions>
                 </plugin>
-                <plugin>
+                <!--<plugin>
                     <groupId>org.qunix</groupId>
                     <artifactId>structure-maven-plugin</artifactId>
                     <version>0.0.2</version>
@@ -110,9 +109,8 @@ License.
                             </goals>
                         </execution>
                     </executions>
-                </plugin>
+                </plugin>-->
             </plugins>
-
         </pluginManagement>
     </build>
 	
