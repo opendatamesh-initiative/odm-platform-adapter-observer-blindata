@@ -19,7 +19,8 @@ RUN git clone https://github.com/opendatamesh-initiative/odm-platform-up-service
 WORKDIR /workspace/app/odm-platform-up-services-meta-blindata
 
 RUN mvn clean install -DskipTests
-
+RUN mvn package spring-boot:repackage
+RUN ls
 
 # Stage 2: App executable
 FROM openjdk:11-jre-slim
@@ -57,6 +58,8 @@ ENV BLINDATA_PWD ${BLINDATA_PWD}
 ENV BLINDATA_TENANT ${BLINDATA_TENANT}
 ENV BLINDATA_ROLE ${BLINDATA_ROLE}
 
+COPY --from=build  /workspace/app/odm-platform-up-services-meta-blindata/meta-service-blindata/target/ /app/
+RUN ls /app
 COPY --from=build  /workspace/app/odm-platform-up-services-meta-blindata/meta-service-blindata/target/odm-platform-up-meta-service-blindata-*.jar /app/
 
 RUN ln -s -f /usr/share/zoneinfo/Europe/Rome /etc/localtime
