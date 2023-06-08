@@ -18,8 +18,8 @@ RUN git clone https://github.com/opendatamesh-initiative/odm-platform-up-service
 
 WORKDIR /workspace/app/odm-platform-up-services-meta-blindata
 
-#RUN mvn clean install -DskipTests
-RUN mvn package spring-boot:repackage
+#RUN mvn package spring-boot:repackage
+RUN mvn clean package
 
 # Stage 2: App executable
 FROM openjdk:11-jre-slim
@@ -32,7 +32,7 @@ ARG JAVA_OPTS
 ARG DATABASE_URL
 ARG DATABASE_USERNAME
 ARG DATABASE_PASSWORD
-ARG FLYWAY_SCHEMA=flyway_metaservice
+ARG FLYWAY_SCHEMA=flyway
 ARG FLYWAY_SCRIPTS_DIR=postgres
 ARG H2_CONSOLE_ENABLED=false
 ARG H2_CONSOLE_PATH=h2-console
