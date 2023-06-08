@@ -53,7 +53,7 @@ Here you can find the following two Dockerfiles:
 If you decide to create the Docker image using the second Dockerfile (i.e. `Dokerfile.local`), you need to first execute the build locally by running the following command:
 
 ```bash
-mvn clean package
+mvn clean package spring-boot:repackage
 ```
 
 ### Run database
@@ -266,5 +266,4 @@ flyway:
     password: password of the postgres db
     schemas: schema where
     locations: classpath:db/migrations/directory with your migration
-
 ```

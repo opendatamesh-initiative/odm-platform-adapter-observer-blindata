@@ -18,8 +18,8 @@ RUN git clone https://github.com/opendatamesh-initiative/odm-platform-up-service
 
 WORKDIR /workspace/app/odm-platform-up-services-meta-blindata
 
-#RUN mvn package spring-boot:repackage
-RUN mvn clean package
+RUN mvn clean package spring-boot:repackage
+
 
 # Stage 2: App executable
 FROM openjdk:11-jre-slim
