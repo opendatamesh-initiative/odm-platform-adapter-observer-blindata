@@ -37,8 +37,6 @@ License.
 	<url>https://github.com/opendatamesh-initiative/odm-platform-up-services-meta-blindata</url>
     <packaging>pom</packaging>
 
-    
-
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
@@ -76,8 +74,8 @@ License.
         </repository>
       </distributionManagement>
     -->
-	
-	<properties>
+
+    <properties>
         <java.version>11</java.version>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
@@ -86,11 +84,6 @@ License.
 
     <modules>
      <module>meta-service-blindata</module>
-    <!--
-        <module>notification-api</module>
-        <module>notification-server</module>
-        <module>meta-service-blindata</module>
-         -->
     </modules>
 
 </project>
