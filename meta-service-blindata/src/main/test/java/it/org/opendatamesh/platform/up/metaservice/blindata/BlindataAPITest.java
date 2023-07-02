@@ -2,9 +2,6 @@ package it.quantyca.odm.api.planes.utility.metaservices.metaservice.blindata;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opendatamesh.platform.pp.registry.resources.v1.dataproduct.DataProductVersionResource;
-import org.opendatamesh.platform.pp.registry.resources.v1.dataproduct.InfoResource;
-import org.opendatamesh.platform.pp.registry.resources.v1.dataproduct.OwnerResource;
 import org.opendatamesh.platform.up.metaservice.blindata.client.BlindataClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.BlindataCredentials;
 import org.opendatamesh.platform.up.metaservice.server.database.entities.Notification;
