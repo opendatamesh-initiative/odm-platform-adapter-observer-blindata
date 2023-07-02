@@ -2,9 +2,10 @@ package org.opendatamesh.platform.up.metaservice.blindata.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.opendatamesh.platform.pp.registry.resources.v1.dataproduct.DataProductVersionResource;
-import org.opendatamesh.platform.pp.registry.resources.v1.dataproduct.InfoResource;
-import org.opendatamesh.platform.pp.registry.resources.v1.dataproduct.PortResource;
+
+import org.opendatamesh.platform.core.dpds.model.DataProductVersionDPDS;
+import org.opendatamesh.platform.core.dpds.model.InfoDPDS;
+import org.opendatamesh.platform.core.dpds.model.PortDPDS;
 import org.opendatamesh.platform.up.metaservice.blindata.client.BlindataClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.BlindataCredentials;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.*;
@@ -42,10 +43,10 @@ public class BlindataService implements MetaService {
 
     @Override
     public NotificationResource handleDataProductDelete(NotificationResource notificationRes) {
-        InfoResource infoProductToDelete;
+        InfoDPDS infoProductToDelete;
         try {
             infoProductToDelete = objectMapper.readValue(notificationRes.getEvent().getAfterState(),
-                    DataProductVersionResource.class).getInfo();
+                    DataProductVersionDPDS.class).getInfo();
         } catch (JsonProcessingException e) {
             notificationRes.setStatus(NotificationStatus.PROCESS_ERROR);
             notificationRes.setProcessingOutput(e.getMessage());
@@ -61,11 +62,11 @@ public class BlindataService implements MetaService {
 
     @Override
     public NotificationResource handleDataProductCreated(NotificationResource notificationRes) {
-        DataProductVersionResource dataProductFromNotification;
+        DataProductVersionDPDS dataProductFromNotification;
         BlindataClient blindataClient = new BlindataClient(restTemplate);
         try {
             dataProductFromNotification = objectMapper.readValue(notificationRes.getEvent().getAfterState(),
-                    DataProductVersionResource.class);
+                    DataProductVersionDPDS.class);
         } catch (JsonProcessingException e) {
             notificationRes.setStatus(NotificationStatus.PROCESS_ERROR);
             notificationRes.setProcessingOutput(e.getMessage());
@@ -86,10 +87,10 @@ public class BlindataService implements MetaService {
     @Override
     public NotificationResource handleDataProductUpdate(NotificationResource notificationRes) {
         BlindataClient blindataClient = new BlindataClient(restTemplate);
-        DataProductVersionResource dataProductFromNotification;
+        DataProductVersionDPDS dataProductFromNotification;
         try {
             dataProductFromNotification = objectMapper.readValue(notificationRes.getEvent().getAfterState(),
-                    DataProductVersionResource.class);
+                    DataProductVersionDPDS.class);
         } catch (JsonProcessingException e) {
             notificationRes.setStatus(NotificationStatus.PROCESS_ERROR);
             notificationRes.setProcessingOutput(e.getMessage());
@@ -107,7 +108,7 @@ public class BlindataService implements MetaService {
         return notificationRes;
     }
 
-    private BlindataDataProductRes updateDataProductOnBlindata(NotificationResource notificationRes, DataProductVersionResource dataProductVersionRes, BlindataClient blindataClient, InfoResource dataProductInfoRes, BlindataDataProductRes existingDataProductOnBlindata) throws MetaServiceException {
+    private BlindataDataProductRes updateDataProductOnBlindata(NotificationResource notificationRes, DataProductVersionDPDS dataProductVersionRes, BlindataClient blindataClient, InfoDPDS dataProductInfoRes, BlindataDataProductRes existingDataProductOnBlindata) throws MetaServiceException {
         final BlindataDataProductRes dataProductResToUpdate = createDataProductResource(dataProductInfoRes, dataProductVersionRes);
         dataProductResToUpdate.setUuid(existingDataProductOnBlindata.getUuid());
         BlindataDataProductRes updatedDataProduct = blindataClient.updateDataProduct(dataProductResToUpdate, credentials);
@@ -122,7 +123,7 @@ public class BlindataService implements MetaService {
     }
 
 
-    private List<BlindataDataProductPortRes> getDataProductsPorts(DataProductVersionResource dataProductVersionRes) {
+    private List<BlindataDataProductPortRes> getDataProductsPorts(DataProductVersionDPDS dataProductVersionRes) {
         List<BlindataDataProductPortRes> ports = new ArrayList<>();
         dataProductVersionRes.getInterfaceComponents().getInputPorts().forEach(portResource -> ports.add(validatePort(portResource, "inputPorts")));
         dataProductVersionRes.getInterfaceComponents().getOutputPorts().forEach(portResource -> ports.add(validatePort(portResource, "outputPorts")));
@@ -132,7 +133,7 @@ public class BlindataService implements MetaService {
         return ports;
     }
 
-    private BlindataDataProductPortRes validatePort(PortResource portResource, String entityType) {
+    private BlindataDataProductPortRes validatePort(PortDPDS portResource, String entityType) {
         BlindataDataProductPortRes port = new BlindataDataProductPortRes();
         port.setDisplayName(portResource.getDisplayName());
         port.setDescription(portResource.getDescription());
@@ -171,7 +172,7 @@ public class BlindataService implements MetaService {
         return responsibilityRes;
     }
 
-    private BlindataDataProductRes createDataProductResource(InfoResource dataProductInfoRes, DataProductVersionResource dataProductVersionRes) {
+    private BlindataDataProductRes createDataProductResource(InfoDPDS dataProductInfoRes, DataProductVersionDPDS dataProductVersionRes) {
         BlindataDataProductRes dataProductRes = new BlindataDataProductRes();
         dataProductRes.setUuid(dataProductInfoRes.getDataProductId());
         dataProductRes.setName(dataProductInfoRes.getName());
@@ -193,7 +194,7 @@ public class BlindataService implements MetaService {
     }
 
 
-    private BlindataDataProductRes createDataProductOnBlindata(NotificationResource notificationRes, DataProductVersionResource dataProductVersionRes, BlindataClient blindataClient, InfoResource dataProductInfoRes) throws MetaServiceException {
+    private BlindataDataProductRes createDataProductOnBlindata(NotificationResource notificationRes, DataProductVersionDPDS dataProductVersionRes, BlindataClient blindataClient, InfoDPDS dataProductInfoRes) throws MetaServiceException {
         BlindataDataProductRes dataProduct = blindataClient.createDataProduct(createDataProductResource(dataProductInfoRes, dataProductVersionRes), credentials);
         if (dataProduct != null) {
             logger.info("Created Data Product to Blindata: {}", dataProduct);
@@ -205,7 +206,7 @@ public class BlindataService implements MetaService {
         return dataProduct;
     }
 
-    private void deleteDataProductOnBlindata(NotificationResource notificationRes, InfoResource infoProductToDelete) throws MetaServiceException {
+    private void deleteDataProductOnBlindata(NotificationResource notificationRes, InfoDPDS infoProductToDelete) throws MetaServiceException {
         BlindataClient blindataClient = new BlindataClient(restTemplate);
         BlindataDataProductRes dataProduct = blindataClient.getDataProduct(infoProductToDelete.getFullyQualifiedName(), credentials);
         logger.debug("Requested delete for: {} ", dataProduct);
