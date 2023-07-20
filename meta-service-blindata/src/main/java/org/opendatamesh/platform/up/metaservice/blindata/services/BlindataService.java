@@ -11,8 +11,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.BlindataCredenti
 import org.opendatamesh.platform.up.metaservice.blindata.resources.*;
 import org.opendatamesh.platform.up.metaservice.server.services.MetaService;
 import org.opendatamesh.platform.up.metaservice.server.services.MetaServiceException;
-import org.opendatamesh.platform.up.notification.api.v1.resources.NotificationResource;
-import org.opendatamesh.platform.up.notification.api.v1.resources.NotificationStatus;
+import org.opendatamesh.platform.up.notification.api.resources.NotificationResource;
+import org.opendatamesh.platform.up.notification.api.resources.NotificationStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

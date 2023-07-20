@@ -1,7 +1,10 @@
-package it.quantyca.odm.api.planes.utility.metaservices.metaservice.blindata;
+package org.opendatamesh.platform.up.metaservice.blindata;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opendatamesh.platform.core.dpds.model.DataProductVersionDPDS;
+import org.opendatamesh.platform.core.dpds.model.InfoDPDS;
+import org.opendatamesh.platform.core.dpds.model.OwnerDPDS;
 import org.opendatamesh.platform.up.metaservice.blindata.client.BlindataClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.BlindataCredentials;
 import org.opendatamesh.platform.up.metaservice.server.database.entities.Notification;
@@ -17,10 +20,9 @@ public class BlindataAPITest extends UtilityForTests {
 
     protected Logger logger = LoggerFactory.getLogger("t.quantyca.odm.api.planes.utility.metaservices.metaservice.blindata");
 
-
     private static final String metaserviceBaseURL = "/api/v1/planes/utility/meta-services/loads/";
 
-    DataProductVersionResource dataProductVersionRes;
+    DataProductVersionDPDS dataProductVersionRes;
     String dataProductId;
     BlindataCredentials credentials;
 
@@ -36,10 +38,10 @@ public class BlindataAPITest extends UtilityForTests {
     public void setUp() {
         logger.debug("----- SETTING UP -----");
         init();
-        InfoResource info = new InfoResource();
+        InfoDPDS info = new InfoDPDS();
         info.setFullyQualifiedName("urn:qty:dataproduct:TransportExecution:TripExecution:1");
         info.setName("TripExecution");
-        OwnerResource owner = new OwnerResource();
+        OwnerDPDS owner = new OwnerDPDS();
         owner.setName("Mauro Luchetti");
         info.setOwner(owner);
         info.setDomain("TransportExecution");
@@ -49,7 +51,7 @@ public class BlindataAPITest extends UtilityForTests {
         info.setEntityType("dataproduct");
         dataProductId = UUID.nameUUIDFromBytes(info.getFullyQualifiedName().getBytes()).toString();
         info.setDataProductId(dataProductId);
-        dataProductVersionRes = new DataProductVersionResource();
+        dataProductVersionRes = new DataProductVersionDPDS();
         dataProductVersionRes.setInfo(info);
         blindataClient = new BlindataClient(restTemplate);
     }

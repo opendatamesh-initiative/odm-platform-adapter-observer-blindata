@@ -1,4 +1,4 @@
-package it.quantyca.odm.api.planes.utility.metaservices.metaservice.blindata;
+package org.opendatamesh.platform.up.metaservice.blindata;
 
 
 import org.junit.runner.RunWith;
