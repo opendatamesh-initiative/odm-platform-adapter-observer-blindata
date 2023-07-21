@@ -1,31 +1,8 @@
-# Stage 1: build Registry Client
-FROM maven:3-openjdk-11-slim as build
+FROM openjdk:17-alpine
 
-WORKDIR /workspace/app
+VOLUME /tmp
 
-# Clone Platform project and build it (the client module is a dependency for this project)
-RUN apt-get update
-RUN apt-get -y install git npm
-RUN npm i -g redoc-cli
-RUN git clone https://github.com/opendatamesh-initiative/odm-platform-pp-services.git
-
-WORKDIR /workspace/app/odm-platform-pp-services
-
-RUN mvn clean install -DskipTests
-
-WORKDIR /workspace/app
-
-RUN git clone https://github.com/opendatamesh-initiative/odm-platform-up-services-meta-blindata.git
-
-WORKDIR /workspace/app/odm-platform-up-services-meta-blindata
-
-RUN mvn clean package spring-boot:repackage
-
-
-# Stage 2: App executable
-FROM openjdk:11-jre-slim
-
-RUN apt-get update && apt-get install -y wget gpg lsb-release zip curl
+COPY meta-service-blindata/target/odm-platform-up-meta-service-blindata-*.jar ./application.jar
 
 ARG SPRING_PROFILES_ACTIVE=docker
 ARG SPRING_PORT=8595
@@ -33,8 +10,8 @@ ARG JAVA_OPTS
 ARG DATABASE_URL
 ARG DATABASE_USERNAME
 ARG DATABASE_PASSWORD
-ARG FLYWAY_SCHEMA=flyway
-ARG FLYWAY_SCRIPTS_DIR=postgres
+ARG DATABASE_SCHEMA=ODMNOTIFICATION
+ARG FLYWAY_SCRIPTS_DIR=postgresql
 ARG H2_CONSOLE_ENABLED=false
 ARG H2_CONSOLE_PATH=h2-console
 ARG BLINDATA_URL
@@ -42,13 +19,14 @@ ARG BLINDATA_USER
 ARG BLINDATA_PWD
 ARG BLINDATA_TENANT
 ARG BLINDATA_ROLE
+
 ENV SPRING_PROFILES_ACTIVE ${SPRING_PROFILES_ACTIVE}
 ENV SPRING_PORT ${SPRING_PORT}
 ENV JAVA_OPTS ${JAVA_OPTS}
 ENV DATABASE_URL ${DATABASE_URL}
 ENV DATABASE_USERNAME ${DATABASE_USERNAME}
 ENV DATABASE_PASSWORD ${DATABASE_PASSWORD}
-ENV FLYWAY_SCHEMA ${FLYWAY_SCHEMA}
+ENV DATABASE_SCHEMA ${DATABASE_SCHEMA}
 ENV FLYWAY_SCRIPTS_DIR ${FLYWAY_SCRIPTS_DIR}
 ENV H2_CONSOLE_ENABLED ${H2_CONSOLE_ENABLED}
 ENV H2_CONSOLE_PATH ${H2_CONSOLE_PATH}
@@ -58,10 +36,6 @@ ENV BLINDATA_PWD ${BLINDATA_PWD}
 ENV BLINDATA_TENANT ${BLINDATA_TENANT}
 ENV BLINDATA_ROLE ${BLINDATA_ROLE}
 
-COPY --from=build  /workspace/app/odm-platform-up-services-meta-blindata/meta-service-blindata/target/odm-platform-up-meta-service-blindata-*.jar /app/
-
-RUN ln -s -f /usr/share/zoneinfo/Europe/Rome /etc/localtime
-
-CMD java $JAVA_OPTS -jar /app/odm-platform-up-meta-service-blindata*.jar --spring.profiles.active=$SPRING_PROFILES_ACTIVE
-
 EXPOSE $SPRING_PORT
+
+ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS  -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE $SPRING_PROPS -jar ./application.jar" ]

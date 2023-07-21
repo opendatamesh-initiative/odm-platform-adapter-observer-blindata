@@ -4,6 +4,8 @@ Meta service adapter for [blindata.io](https://blindata.io/)
 Blindata is a SAAS platform that leverages Data Governance and Compliance to empower your Data Management projects.
 The purpose of this adapter is to keep the business glossary within Blindata constantly updated. Upon the occurrence of a creation, deletion, or modification of a dataproduct, Blindata is immediately and automatically notified to ensure that its catalog remains aligned.
 
+*_This project have dependencies from the project [odm-platform](https://github.com/opendatamesh-initiative/odm-platform)_
+
 # Run it
 
 ## Prerequisites
@@ -11,8 +13,28 @@ The project requires the following dependencies:
 
 * Java 11
 * Maven 3.8.6
+* Project  [odm-platform](https://github.com/opendatamesh-initiative/odm-platform)
+
+## Dependencies
+This project need some artifacts from the odm-platform project.
+
+### Clone dependencies repository
+Clone the repository and move to the project root folder
+
+```bash
+git git clone https://github.com/opendatamesh-initiative/odm-platform.git
+cd odm-platform-pp-services
+```
+
+### Compile dependencies
+Compile the project:
+
+```bash
+mvn clean install -DskipTests
+```
 
 ## Run locally
+*_Dependencies must have been compiled to run this project._
 
 ### Clone repository
 Clone the repository and move to the project root folder
@@ -25,17 +47,18 @@ cd odm-platform-up-services-meta-blindata
 Compile the project:
 
 ```bash
-mvn clean package
+mvn clean package spring-boot:repackage -DskipTests
 ```
 
 ### Run application
 Run the application:
 
 ```bash
-java -jar meta-service-server/target/odm-platform-up-meta-service-server-1.0.0.jar
+java -jar meta-service-blindata/target/odm-platform-up-meta-service-blindata-1.0.0.jar
 ```
 
 ## Run with Docker
+*_Dependencies must have been compiled to run this project._
 
 ### Clone repository
 Clone the repository and move it to the project root folder
@@ -45,24 +68,22 @@ git clone git@github.com:opendatamesh-initiative/odm-platform-up-services-meta-b
 cd odm-platform-up-services-meta-blindata
 ```
 
-Here you can find the following two Dockerfiles:
-* `Dockerfile`: This file creates a docker image containing the application built from the code present on the Git repository;
-* `Dockerfile.local`: This file creates an image containing the application by directly copying it from the build executed locally (i.e. from `target` folder).
+Here you can find the Dockerfile which creates an image containing the application by directly copying it from the build executed locally (i.e. from `target` folder).
 
 ### Compile project
-If you decide to create the Docker image using the second Dockerfile (i.e. `Dokerfile.local`), you need to first execute the build locally by running the following command:
+You need to first execute the build locally by running the following command:
 
 ```bash
-mvn clean package spring-boot:repackage
+mvn clean package spring-boot:repackage -DskipTests
 ```
 
 ### Run database
-The image generated from both Dockerfiles contains only the application. It requires a database to run properly. The supported databases are MySql and Postgres. If you do not already have a database available, you can create one by running the following commands:
+The image generated from Dockerfile contains only the application. It requires a database to run properly. The supported databases are MySql and Postgres. If you do not already have a database available, you can create one by running the following commands:
 
 **MySql**
 ```bash
 docker run --name odm-meta-service-mysql-db -d -p 3306:3306  \
-   -e MYSQL_DATABASE=odm-meta-service-db \
+   -e MYSQL_DATABASE=ODMNOTIFICATION \
    -e MYSQL_ROOT_PASSWORD=root \
    mysql:8
 ```
@@ -84,7 +105,7 @@ docker logs odm-meta-service-mysql-db
 
 *Postgres*
 ```bash
-docker logs odm-meta-service-mysql-db
+docker logs odm-meta-service-postgres-db
 ```
 ### Build image
 Build the Docker image of the application and run it.
@@ -92,12 +113,11 @@ Build the Docker image of the application and run it.
 *Before executing the following commands:
 * change properly the value of arguments `DATABASE_USERNAME`, `DATABASE_PASSWORD` and `DATABASE_URL`. Reported commands already contains right argument values if you have created the database using the commands above.
 * assign the value of arguments `BLINDATA_URL`, `BLINDATA_USER`, `BLINDATA_PWD`, `BLINDATA_TENANT` and `BLINDATA_ROLE`.
-* remove the option `-f Dockerfile.local` if you want to build the application from code taken from repository*
 
 **MySql**
 ```bash
-docker build -t odm-meta-service-mysql-app . -f Dockerfile.local \
-   --build-arg DATABASE_URL=jdbc:mysql://localhost:3306/odm-meta-service-db \
+docker build -t odm-meta-service-mysql-app . -f Dockerfile \
+   --build-arg DATABASE_URL=jdbc:mysql://localhost:3306/ODMNOTIFICATION \
    --build-arg DATABASE_USERNAME=root \
    --build-arg DATABASE_PASSWORD=root \
    --build-arg FLYWAY_SCRIPTS_DIR=mysql \
@@ -110,7 +130,7 @@ docker build -t odm-meta-service-mysql-app . -f Dockerfile.local \
 
 **Postgres**
 ```bash
-docker build -t odm-meta-service-postgres-app . -f Dockerfile.local \
+docker build -t odm-meta-service-postgres-app . -f Dockerfile \
    --build-arg DATABASE_URL=jdbc:postgresql://localhost:5432/odm-meta-service-db \
    --build-arg DATABASE_USERNAME=postgres \
    --build-arg DATABASE_PASSWORD=postgres \
@@ -139,7 +159,8 @@ docker run --name odm-meta-service-postgres-app -p 8585:8585 --net host odmp-pos
 ### Stop application
 
 *Before executing the following commands:
-* change the instance name to `odm-meta-service-postgres-app` if you are using postgres and not mysql *
+* change the DB name to `odm-meta-service-postgres-db` if you are using postgres and not mysql
+* change the instance name to `odm-meta-service-postgres-app` if you are using postgres and not mysql
 
 ```bash
 docker stop odm-meta-service-mysql-app
@@ -160,6 +181,7 @@ docker rm odm-meta-service-mysql-db
 ```
 
 ## Run with Docker Compose
+*_Dependencies must have been compiled to run this project._
 
 ### Clone repository
 Clone the repository and move it to the project root folder
@@ -185,6 +207,7 @@ BLINDATA_PWD=<blindata-pwd>
 BLINDATA_TENANT=<blindata-tenant-uuid>
 BLINDATA_ROLE=<blindata-role-uuid>
 ```
+*_Blindata parameters will be explained below_
 
 Then, build the docker-compose file:
 ```bash
@@ -232,7 +255,7 @@ In all cases you can also use your favourite sql client providing the proper con
 
 ## Blindata configuration
 
-In order to connect with Blindata, you must specified some important values in file application.yml
+In order to connect with Blindata, you must specified some important values in file `application.yml` (or in `.env` file if you're running the application with docker-compose, or as build arguments if you're running the application through Docker)
 ```yaml
 blindata:
     url: the url where Blindata application is reachable 
@@ -240,30 +263,4 @@ blindata:
     password: the password to connect in Blindata
     tenantUUID: the tenant where you have to operate
     roleUuid: A possible role identifier. You need this identifier to create or update responsibilities in Blindata
-```
-# Spring Profiles and configuration
-
-The application can be immediately run with the default profile.
-The default uses one profile: dev. 
-Custom configuration can be created by overriding these profiles.
-
-# Postgres Configuration
-If you want a postgres configuration insert the following code to your profile: 
-```yaml
-datasource:
-    url: url of your postgres db
-    username: username of the postgres db
-    password: password of the postgres db
-```
-
-# Flyway Configuration:
-If you want to manage your migration with flyway insert the following code to your active profile: 
-```yaml
-flyway:
-    enabled: true
-    url: url of the db
-    user: sername of the postgres db
-    password: password of the postgres db
-    schemas: schema where
-    locations: classpath:db/migrations/directory with your migration
 ```
