@@ -43,6 +43,7 @@ Clone the repository and move to the project root folder
 git clone git@github.com:opendatamesh-initiative/odm-platform-up-services-meta-blindata.git
 cd odm-platform-up-services-meta-blindata
 ```
+
 ### Compile project
 Compile the project:
 
@@ -189,6 +190,13 @@ Clone the repository and move it to the project root folder
 ```bash
 git clone git@github.com:opendatamesh-initiative/odm-platform-up-services-meta-blindata.git
 cd odm-platform-up-services-meta-blindata
+```
+
+### Compile project
+Compile the project:
+
+```bash
+mvn clean package spring-boot:repackage -DskipTests
 ```
 
 ### Build image
