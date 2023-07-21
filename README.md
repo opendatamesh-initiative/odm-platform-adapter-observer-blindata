@@ -125,7 +125,7 @@ docker build -t odm-meta-service-mysql-app . -f Dockerfile \
    --build-arg BLINDATA_URL=<blindata-url> \
    --build-arg BLINDATA_USER=<blindata-user> \
    --build-arg BLINDATA_PWD=<blindata-pwd> \
-   --build-arg BLINDATA_TENTANT=<blindata-tenant> \
+   --build-arg BLINDATA_TENANT=<blindata-tenant> \
    --build-arg BLINDATA_ROLE=<blindata-role>
 ```
 
@@ -138,7 +138,7 @@ docker build -t odm-meta-service-postgres-app . -f Dockerfile \
    --build-arg BLINDATA_URL=<blindata-url> \
    --build-arg BLINDATA_USER=<blindata-user> \
    --build-arg BLINDATA_PWD=<blindata-pwd> \
-   --build-arg BLINDATA_TENTANT=<blindata-tenant> \
+   --build-arg BLINDATA_TENANT=<blindata-tenant> \
    --build-arg BLINDATA_ROLE=<blindata-role>
 ```
 
@@ -149,12 +149,12 @@ Run the Docker image.
 
 **MySql**
 ```bash
-docker run --name odm-meta-service-mysql-app -p 8595:8595 --net host odmp-mysql-app
+docker run --name odm-meta-service-mysql-app -p 8595:8595 --net host odm-meta-service-mysql-app
 ```
 
 **Postgres**
 ```bash
-docker run --name odm-meta-service-postgres-app -p 8585:8585 --net host odmp-postgres-app
+docker run --name odm-meta-service-postgres-app -p 8585:8585 --net host odm-meta-service-postgres-app
 ```
 
 ### Stop application
