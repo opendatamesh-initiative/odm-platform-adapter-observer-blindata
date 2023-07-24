@@ -149,12 +149,12 @@ Run the Docker image.
 
 **MySql**
 ```bash
-docker run --name odm-meta-service-mysql-app -p 8595:8595 --net host odm-meta-service-mysql-app
+docker run --name odm-meta-service-mysql-app -p 9002:9002 --net host odm-meta-service-mysql-app
 ```
 
 **Postgres**
 ```bash
-docker run --name odm-meta-service-postgres-app -p 8585:8585 --net host odm-meta-service-postgres-app
+docker run --name odm-meta-service-postgres-app -p 9002:9002 --net host odm-meta-service-postgres-app
 ```
 
 ### Stop application
@@ -208,7 +208,7 @@ DATABASE_NAME=odm-metaservice-db
 DATABASE_PASSWORD=pwd
 DATABASE_USERNAME=usr
 DATABASE_PORT=5434
-SPRING_PORT=8595
+SPRING_PORT=9002
 BLINDATA_URL=<blindata-url>
 BLINDATA_USER=<blindata-user>
 BLINDATA_PWD=<blindata-pwd>
@@ -250,13 +250,13 @@ docker-compose build --no-cache
 
 You can invoke REST endpoints through *OpenAPI UI* available at the following url:
 
-* [http://localhost:8595/api/v1/up/metaservice/swagger-ui/index.html](http://localhost:8595/api/v1/up/metaservice/swagger-ui/index.html)
+* [http://localhost:9002/api/v1/up/metaservice/swagger-ui/index.html](http://localhost:9002/api/v1/up/metaservice/swagger-ui/index.html)
 
 ## Database 
 
 If the application is running using an in memory instance of H2 database you can check the database content through H2 Web Console available at the following url:
 
-* [http://localhost:8595/api/v1/up/metaservice/h2-console](http://localhost:8595/api/v1/up/metaservice/h2-console)
+* [http://localhost:9002/api/v1/up/metaservice/h2-console](http://localhost:9002/api/v1/up/metaservice/h2-console)
 
 In all cases you can also use your favourite sql client providing the proper connection parameters
 

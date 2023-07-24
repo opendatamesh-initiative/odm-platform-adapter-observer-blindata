@@ -5,7 +5,7 @@ VOLUME /tmp
 COPY meta-service-blindata/target/odm-platform-up-meta-service-blindata-*.jar ./application.jar
 
 ARG SPRING_PROFILES_ACTIVE=docker
-ARG SPRING_PORT=8595
+ARG SPRING_PORT=9002
 ARG JAVA_OPTS
 ARG DATABASE_URL
 ARG DATABASE_USERNAME
