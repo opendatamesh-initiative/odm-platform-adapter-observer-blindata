@@ -127,12 +127,16 @@ public class BlindataService implements MetaService {
         }
         try {
             BlindataDataProductRes existingDataProductOnBlindata = blindataClient.getDataProduct(dataProductFromNotification.getFullyQualifiedName(), credentials);
-            updateDataProductOnBlindata(
+            BlindataDataProductRes dataProductUpdated = updateDataProductOnBlindata(
                     notificationRes,
                     dataProductFromNotification,
                     blindataClient,
                     existingDataProductOnBlindata
             );
+            // CHECK with Blindata team
+            if (existingDataProductOnBlindata.getUuid() != null && StringUtils.hasText(credentials.getRoleUuid())) {
+                assignResponsibility(dataProductUpdated, existingDataProductOnBlindata.getUuid(), blindataClient, credentials);
+            }
         } catch (Exception e) {
             throw new RuntimeException("Unable to update data product: " + e.getMessage());
         }
