@@ -45,8 +45,10 @@ public class BlindataService implements MetaService {
     public NotificationResource handleDataProductDelete(NotificationResource notificationRes) {
         InfoDPDS infoProductToDelete;
         try {
-            infoProductToDelete = objectMapper.readValue(notificationRes.getEvent().getAfterState(),
-                    DataProductVersionDPDS.class).getInfo();
+            infoProductToDelete = objectMapper.readValue(
+                    notificationRes.getEvent().getBeforeState(),
+                    DataProductVersionDPDS.class
+            ).getInfo();
         } catch (JsonProcessingException e) {
             notificationRes.setStatus(NotificationStatus.PROCESS_ERROR);
             notificationRes.setProcessingOutput(e.getMessage());
