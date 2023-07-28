@@ -1,9 +1,11 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.opendatamesh.platform.core.dpds.model.DataProductVersionDPDS;
+import org.opendatamesh.platform.pp.registry.api.v1.resources.DataProductResource;
 import org.opendatamesh.platform.core.dpds.model.InfoDPDS;
 import org.opendatamesh.platform.core.dpds.model.PortDPDS;
 import org.opendatamesh.platform.up.metaservice.blindata.client.BlindataClient;
@@ -86,7 +88,7 @@ public class BlindataService implements MetaService {
         return notificationRes;
     }
 
-    @Override
+    /*@Override
     public NotificationResource handleDataProductUpdate(NotificationResource notificationRes) {
         BlindataClient blindataClient = new BlindataClient(restTemplate);
         DataProductVersionDPDS dataProductFromNotification;
@@ -108,9 +110,36 @@ public class BlindataService implements MetaService {
             throw new RuntimeException("Unable to create data product: " + e.getMessage());
         }
         return notificationRes;
+    }*/
+    @Override
+    public NotificationResource handleDataProductUpdate(NotificationResource notificationRes) {
+        BlindataClient blindataClient = new BlindataClient(restTemplate);
+        DataProductResource dataProductFromNotification;
+        try {
+            dataProductFromNotification = objectMapper.readValue(
+                    notificationRes.getEvent().getAfterState(),
+                    DataProductResource.class
+            );
+        } catch (JsonProcessingException e) {
+            notificationRes.setStatus(NotificationStatus.PROCESS_ERROR);
+            notificationRes.setProcessingOutput(e.getMessage());
+            return notificationRes;
+        }
+        try {
+            BlindataDataProductRes existingDataProductOnBlindata = blindataClient.getDataProduct(dataProductFromNotification.getFullyQualifiedName(), credentials);
+            updateDataProductOnBlindata(
+                    notificationRes,
+                    dataProductFromNotification,
+                    blindataClient,
+                    existingDataProductOnBlindata
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to update data product: " + e.getMessage());
+        }
+        return notificationRes;
     }
 
-    private BlindataDataProductRes updateDataProductOnBlindata(NotificationResource notificationRes, DataProductVersionDPDS dataProductVersionRes, BlindataClient blindataClient, InfoDPDS dataProductInfoRes, BlindataDataProductRes existingDataProductOnBlindata) throws MetaServiceException {
+    /*private BlindataDataProductRes updateDataProductOnBlindata(NotificationResource notificationRes, DataProductVersionDPDS dataProductVersionRes, BlindataClient blindataClient, InfoDPDS dataProductInfoRes, BlindataDataProductRes existingDataProductOnBlindata) throws MetaServiceException {
         final BlindataDataProductRes dataProductResToUpdate = createDataProductResource(dataProductInfoRes, dataProductVersionRes);
         dataProductResToUpdate.setUuid(existingDataProductOnBlindata.getUuid());
         BlindataDataProductRes updatedDataProduct = blindataClient.updateDataProduct(dataProductResToUpdate, credentials);
@@ -120,6 +149,21 @@ public class BlindataService implements MetaService {
             notificationRes.setStatus(NotificationStatus.PROCESSED);
         } else {
             throw new MetaServiceException("Can't register data product to Blindata");
+        }
+        return updatedDataProduct;
+    }*/
+    private BlindataDataProductRes updateDataProductOnBlindata(NotificationResource notificationRes, DataProductResource dataProductRes, BlindataClient blindataClient, BlindataDataProductRes existingDataProductOnBlindata) throws MetaServiceException {
+        existingDataProductOnBlindata.setDescription(dataProductRes.getDescription());
+        existingDataProductOnBlindata.setDomain(dataProductRes.getDomain());
+        final BlindataDataProductRes dataProductResToUpdate = existingDataProductOnBlindata;
+        dataProductResToUpdate.setUuid(existingDataProductOnBlindata.getUuid());
+        BlindataDataProductRes updatedDataProduct = blindataClient.updateDataProduct(dataProductResToUpdate, credentials);
+        if (updatedDataProduct != null) {
+            logger.info("Update Data Product to Blindata: {} ", existingDataProductOnBlindata);
+            notificationRes.setProcessingOutput(updatedDataProduct.toString());
+            notificationRes.setStatus(NotificationStatus.PROCESSED);
+        } else {
+            throw new MetaServiceException("Can't register updated data product to Blindata");
         }
         return updatedDataProduct;
     }
