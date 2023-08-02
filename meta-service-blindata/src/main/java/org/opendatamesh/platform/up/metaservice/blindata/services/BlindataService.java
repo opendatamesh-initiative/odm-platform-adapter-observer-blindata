@@ -81,7 +81,7 @@ public class BlindataService implements MetaService {
                 assignResponsibility(dataProductRes, dataProductFromNotification.getInfo().getOwner().getId(), blindataClient, credentials);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Unable to create data product: " + e.getMessage());
+            throw new RuntimeException(e);
         }
         return notificationRes;
     }
@@ -136,7 +136,7 @@ public class BlindataService implements MetaService {
                 assignResponsibility(dataProductUpdated, existingDataProductOnBlindata.getUuid(), blindataClient, credentials);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Unable to update data product: " + e.getMessage());
+            throw new RuntimeException(e);
         }
         return notificationRes;
     }
