@@ -57,7 +57,7 @@ public class BlindataService implements MetaService {
         try {
             deleteDataProductOnBlindata(notificationRes, infoProductToDelete);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
         return notificationRes;
     }
@@ -81,7 +81,7 @@ public class BlindataService implements MetaService {
                 assignResponsibility(dataProductRes, dataProductFromNotification.getInfo().getOwner().getId(), blindataClient, credentials);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
         return notificationRes;
     }
@@ -136,7 +136,7 @@ public class BlindataService implements MetaService {
                 assignResponsibility(dataProductUpdated, existingDataProductOnBlindata.getUuid(), blindataClient, credentials);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
         return notificationRes;
     }
