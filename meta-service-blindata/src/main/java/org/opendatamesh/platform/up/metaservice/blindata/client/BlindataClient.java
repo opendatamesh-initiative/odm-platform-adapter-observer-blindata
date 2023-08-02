@@ -1,9 +1,8 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client;
 
-import org.opendatamesh.platform.up.metaservice.blindata.resources.BlindataDataProductRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.ShortUserRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.StewardshipResponsibilityRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.StewardshipRoleRes;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.*;
 import org.opendatamesh.platform.up.metaservice.server.services.MetaServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +21,11 @@ public class BlindataClient {
     private final RestTemplate restTemplate;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    ObjectMapper objectMapper;
 
     public BlindataClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+        this.objectMapper = new ObjectMapper();
     }
 
 
@@ -86,26 +87,30 @@ public class BlindataClient {
 
     //Data product methods
 
-    public BlindataDataProductRes createDataProduct(BlindataDataProductRes blindataDataProductRes, BlindataCredentials credentials) throws MetaServiceException {
+    public BlindataDataProductRes createDataProduct(BlindataDataProductRes blindataDataProductRes, BlindataCredentials credentials) throws MetaServiceException, JsonProcessingException {
         try {
             ResponseEntity<BlindataDataProductRes> postStatementResponse = restTemplate.exchange(
                     String.format("%s/api/v1/dataproducts", credentials.getBlindataUrl()),
                     HttpMethod.POST,
                     getHttpEntity(blindataDataProductRes, credentials),
-                    BlindataDataProductRes.class);
+                    BlindataDataProductRes.class
+            );
             return extractBody(postStatementResponse, "Unable to create data product");
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.CONFLICT) {
                 logger.warn(e.getMessage());
-                throw e;
             } else {
                 logger.error(e.getMessage());
-                throw new MetaServiceException("Unable to create data product: " + e.getResponseBodyAsString());
             }
+            BlindataException exception = objectMapper.readValue(
+                    e.getResponseBodyAsString(),
+                    BlindataException.class
+            );
+            throw new MetaServiceException("Unable to create data product - " + exception.getMessage());
         }
     }
 
-    public BlindataDataProductRes updateDataProduct(BlindataDataProductRes blindataDataProductRes, BlindataCredentials credentials) throws MetaServiceException {
+    public BlindataDataProductRes updateDataProduct(BlindataDataProductRes blindataDataProductRes, BlindataCredentials credentials) throws MetaServiceException, JsonProcessingException {
         try {
             ResponseEntity<BlindataDataProductRes> updateDataProduct = restTemplate.exchange(
                     String.format("%s/api/v1/dataproducts/%s", credentials.getBlindataUrl(), blindataDataProductRes.getUuid()),
@@ -114,17 +119,19 @@ public class BlindataClient {
                     BlindataDataProductRes.class);
             return extractBody(updateDataProduct, "Unable to update data product");
         } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == HttpStatus.CONFLICT) {
+            if (e.getStatusCode() == HttpStatus.CONFLICT)
                 logger.warn(e.getMessage());
-                throw e;
-            } else {
+            else
                 logger.error(e.getMessage());
-                throw new MetaServiceException("Unable to update data product: " + e.getResponseBodyAsString());
-            }
+            BlindataException exception = objectMapper.readValue(
+                    e.getResponseBodyAsString(),
+                    BlindataException.class
+            );
+            throw new MetaServiceException("Unable to update data product - " + exception.getMessage());
         }
     }
 
-    public BlindataDataProductRes getDataProduct(String dataProductIdentifier, BlindataCredentials credentials) throws MetaServiceException {
+    public BlindataDataProductRes getDataProduct(String dataProductIdentifier, BlindataCredentials credentials) throws MetaServiceException, JsonProcessingException {
         try {
             ResponseEntity<BlindataDataProductPage> getStatementResponse = restTemplate.exchange(
                     String.format("%s/api/v1/dataproducts?page=0&size=1&identifier=%s", credentials.getBlindataUrl(), dataProductIdentifier),
@@ -133,11 +140,15 @@ public class BlindataClient {
                     BlindataDataProductPage.class);
             return extractDataproduct(getStatementResponse);
         } catch (HttpClientErrorException e) {
-            throw new MetaServiceException("Unable to get data product: " + e.getResponseBodyAsString());
+            BlindataException exception = objectMapper.readValue(
+                    e.getResponseBodyAsString(),
+                    BlindataException.class
+            );
+            throw new MetaServiceException("Unable to get data product - " + exception.getMessage());
         }
     }
 
-    public void deleteDataProduct(String dataProductIdentifier, BlindataCredentials credentials) throws MetaServiceException {
+    public void deleteDataProduct(String dataProductIdentifier, BlindataCredentials credentials) throws MetaServiceException, JsonProcessingException {
         try {
             restTemplate.exchange(
                     String.format("%s/api/v1/dataproducts/%s", credentials.getBlindataUrl(), dataProductIdentifier),
@@ -145,7 +156,11 @@ public class BlindataClient {
                     getHttpEntity(null, credentials),
                     BlindataDataProductRes.class);
         } catch (HttpClientErrorException e) {
-            throw new MetaServiceException("Unable to delete data product: " + e.getResponseBodyAsString());
+            BlindataException exception = objectMapper.readValue(
+                    e.getResponseBodyAsString(),
+                    BlindataException.class
+            );
+            throw new MetaServiceException("Unable to delete data product - " + exception.getMessage());
         }
     }
 
