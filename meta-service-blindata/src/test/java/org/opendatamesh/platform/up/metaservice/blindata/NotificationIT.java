@@ -56,6 +56,7 @@ public class NotificationIT extends MetaserviceAppIT {
         // TEST 2: Notification not present
         ResponseEntity<ErrorResource> readNotificationErrorResponse = notificationClient.readOneNotification(1000L);
         verifyResponseEntity(readNotificationResourceResponse, HttpStatus.OK, true);
+        assertThat(readNotificationErrorResponse.getBody()).isNull();
     }
 
     // ----------------------------------------
@@ -115,6 +116,7 @@ public class NotificationIT extends MetaserviceAppIT {
 
         // The HTTP status of the response must be OK (200) but the body is null. TODO It will be changed to expect a 404
         verifyResponseEntity(readNotificationsResourceResponse, HttpStatus.OK, false);
+        assertThat(readNotificationsResourceResponse.getBody()).isNull();
 
         // TEST 3: Trying to delete a Notification with an id that doesn't exist
         // The response is an internal server error for now because it doesn't find a Notification with that id. TODO It will be changed to expect a 404
