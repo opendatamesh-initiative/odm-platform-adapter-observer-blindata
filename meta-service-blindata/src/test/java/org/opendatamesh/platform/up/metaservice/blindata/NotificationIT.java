@@ -7,12 +7,14 @@ import org.opendatamesh.platform.up.notification.api.resources.NotificationStatu
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.annotation.DirtiesContext.MethodMode;
 
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 public class NotificationIT extends MetaserviceAppIT {
 
     // ----------------------------------------
@@ -20,7 +22,7 @@ public class NotificationIT extends MetaserviceAppIT {
     // ----------------------------------------
 
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
     public void testNotificationCreate_DataProductCreated() throws IOException {
         
         NotificationResource notificationResource = createNotification1();
@@ -29,7 +31,7 @@ public class NotificationIT extends MetaserviceAppIT {
     }
 
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
     public void testNotificationCreate_DataProductDeleted() throws IOException {
 
         NotificationResource notificationResource = createNotification2();
@@ -42,7 +44,7 @@ public class NotificationIT extends MetaserviceAppIT {
     // ----------------------------------------
 
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
     public void testReadOneNotification() throws IOException {
 
         NotificationResource notificationResource = createNotification1();
@@ -63,7 +65,7 @@ public class NotificationIT extends MetaserviceAppIT {
     // SEARCH Notifications
     // ----------------------------------------
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
     public void testSearchNotifications() throws IOException {
 
         NotificationResource notificationResource1 = createNotification1();
@@ -78,7 +80,7 @@ public class NotificationIT extends MetaserviceAppIT {
         ResponseEntity<NotificationResource[]> readNotificationsResourceResponse = notificationClient.searchNotifications(null, null);
 
         verifyResponseEntity(readNotificationsResourceResponse, HttpStatus.OK, true);
-        assertThat(readNotificationsResourceResponse.getBody().length).isGreaterThan(1); //TODO change to isEqualTo(2) once the DB is deleted after every test
+        assertThat(readNotificationsResourceResponse.getBody().length).isEqualTo(2);
 
         // TODO searchNotifications method with filters (not implemented yet in the notification service)
 
@@ -97,7 +99,7 @@ public class NotificationIT extends MetaserviceAppIT {
     // DELETE Notification TODO change method name
     // ----------------------------------------
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
     public void testDeleteNotification() throws IOException {
 
         NotificationResource notificationResource = createNotification1();
