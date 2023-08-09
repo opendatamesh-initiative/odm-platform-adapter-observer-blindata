@@ -2,7 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.opendatamesh.platform.up.notification.api.clients.MetaServiceClient;
+import org.opendatamesh.platform.up.notification.api.clients.NotificationClient;
 import org.opendatamesh.platform.up.notification.api.resources.NotificationResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,7 +11,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
@@ -34,7 +33,7 @@ public class MetaserviceAppIT {
     @LocalServerPort
     protected String port;
 
-    protected MetaServiceClient metaServiceClient;
+    protected NotificationClient notificationClient;
 
     protected ResourceBuilder resourceBuilder;
 
@@ -44,9 +43,11 @@ public class MetaserviceAppIT {
 
     protected final String NOTIFICATION_1 = "src/test/resources/notification1.json";
 
+    protected final String NOTIFICATION_2 = "src/test/resources/notification2.json";
+
     @PostConstruct
     public final void init() {
-        metaServiceClient = new MetaServiceClient("http://localhost:" + port);
+        notificationClient = new NotificationClient("http://localhost:" + port);
         resourceBuilder = new ResourceBuilder();
     }
 
@@ -82,7 +83,22 @@ public class MetaserviceAppIT {
                 NotificationResource.class
         );
 
-        ResponseEntity<NotificationResource> postResponse = metaServiceClient.createNotification(notificationResource);
+        ResponseEntity<NotificationResource> postResponse = notificationClient.createNotification(notificationResource);
+
+        verifyResponseEntity(postResponse, HttpStatus.CREATED, true);
+
+        return postResponse.getBody();
+
+    }
+
+    protected NotificationResource createNotification2() throws IOException {
+
+        NotificationResource notificationResource = resourceBuilder.readResourceFromFile(
+                NOTIFICATION_2,
+                NotificationResource.class
+        );
+
+        ResponseEntity<NotificationResource> postResponse = notificationClient.createNotification(notificationResource);
 
         verifyResponseEntity(postResponse, HttpStatus.CREATED, true);
 
