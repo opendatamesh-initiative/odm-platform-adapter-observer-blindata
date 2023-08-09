@@ -120,7 +120,7 @@ public class NotificationIT extends MetaserviceAppIT {
 
         // TEST 3: Trying to delete a Notification with an id that doesn't exist
         // The response is an internal server error for now because it doesn't find a Notification with that id. TODO It will be changed to expect a 404
-        ResponseEntity<ErrorResource[]> deleteErrorResponse = notificationClient.deleteNotification(notificationResource.getId());
+        ResponseEntity<ErrorResource> deleteErrorResponse = notificationClient.deleteNotification(notificationResource.getId());
         verifyResponseEntity(deleteErrorResponse, HttpStatus.INTERNAL_SERVER_ERROR, false);
     }
 
