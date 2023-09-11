@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opendatamesh.platform.core.dpds.model.DataProductVersionDPDS;
 import org.opendatamesh.platform.core.dpds.model.InfoDPDS;
 import org.opendatamesh.platform.core.dpds.model.PortDPDS;
-import org.opendatamesh.platform.pp.registry.api.v1.resources.DataProductResource;
+import org.opendatamesh.platform.pp.registry.api.resources.DataProductResource;
 import org.opendatamesh.platform.up.metaservice.blindata.client.BlindataClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.BlindataCredentials;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.*;
@@ -189,7 +189,7 @@ public class BlindataService implements MetaService {
         port.setIdentifier(portResource.getFullyQualifiedName());
         port.setUuid(portResource.getId());
         port.setDisplayName(portResource.getDisplayName());
-        port.setEntityType(portResource.getEntityType() != null ? portResource.getEntityType().name() : entityType);
+        port.setEntityType(portResource.getEntityType() != null ? portResource.getEntityType() : entityType);
         port.setVersion(portResource.getVersion());
         return port;
 
