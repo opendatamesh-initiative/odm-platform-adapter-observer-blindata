@@ -23,7 +23,7 @@ Clone the repository and move to the project root folder
 
 ```bash
 git git clone https://github.com/opendatamesh-initiative/odm-platform.git
-cd odm-platform-pp-services
+cd odm-platform
 ```
 
 ### Compile dependencies
