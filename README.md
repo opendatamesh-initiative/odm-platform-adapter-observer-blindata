@@ -23,7 +23,7 @@ Clone the repository and move to the project root folder
 
 ```bash
 git git clone https://github.com/opendatamesh-initiative/odm-platform.git
-cd odm-platform
+cd odm-platform-pp-services
 ```
 
 ### Compile dependencies
@@ -252,7 +252,7 @@ You can invoke REST endpoints through *OpenAPI UI* available at the following ur
 
 * [http://localhost:9002/api/v1/up/metaservice/swagger-ui/index.html](http://localhost:9002/api/v1/up/metaservice/swagger-ui/index.html)
 
-## Database 
+## Database
 
 If the application is running using an in memory instance of H2 database you can check the database content through H2 Web Console available at the following url:
 
@@ -270,5 +270,426 @@ blindata:
     user: the username used to log in Blindata
     password: the password to connect in Blindata
     tenantUUID: the tenant where you have to operate
-    roleUuid: A possible role identifier. You need this identifier to create or update responsibilities in Blindata
+    roleUuid: A possible role identifier. You need this identifier to create or update responsibilities in Blindata (value optional)
+    odmPlatformUrl: the url where ODM platform is reachable
+    systemNameRegex: optional regex to extract system name from schema (value optional)
+    systemTechnologyRegex : optional regex to extract system technology from schema (value optional)
 ```
+
+## Schema Definition
+To define data assets connected to data product's port in Blindata, users can define a field "schema" inside data product ports.
+There are two possible scenarios:
+- The first one involves multiple tables within the same schema. In this case, the tables must be placed inside the 'entities' array within the 'content' field of the schema.
+
+```json
+{
+   "outputPorts":[
+      {     
+         "entityType":"outputPorts",
+         "name":"flight_frequency_db",
+         "version":"1.0.0",
+         "displayName":"flight_frequency_db",
+         "description":"Target database for airlines data. MySQL database.",
+         "promises":{
+            "platform":"MySQL_demoBlindataMySql",
+            "serviceType":"datastore-services",
+            "api":{
+               "name":"flightFrequencyApi",
+               "version":"1.0.0",
+               "specification":"datastoreapi",
+               "specificationVersion":"1.0.0",
+               "definition":{
+                  "datastoreapi":"1.0.0",
+                  "info":{
+                     "databaseName":"airlinedemo",
+                     "nameSpace":"nome_schema",
+                     "title":"flight_frequency Data",
+                     "summary":"This API exposes the current flight_frequency data of each `Airline` entity",
+                     "version":"1.0.0",
+                     "datastoreName":"flight_frequency"
+                  },
+                  "services":{
+                     "development":{
+                        "serverInfo":{
+                           "$ref": ""
+                        },
+                        "serverVariables":{
+                           "host": ""
+                        }
+                     }
+                  },
+                  "schema":{
+                     "id":1,
+                     "name":"ab334d27-41e7-3622-88f7-6dd5a200ae30",
+                     "version":"1.0.0",
+                     "mediaType":"application/json",
+                     "content":{
+                       "entities": [
+                         {
+                           "name": "Customer",
+                           "type": "object",
+                           "properties": {
+                             "id": {
+                               "type": "string",
+                               "description": "The customer identifier.",
+                               "name": "ID",
+                               "kind": "ATTRIBUTE",
+                               "required": true,
+                               "displayName": "Identifier",
+                               "summary": "Inline description",
+                               "comments": "come sopra",
+                               "examples": [
+                                 "1234567",
+                                 "988654"
+                               ],
+                               "status": "come sopra",
+                               "tags": [
+                                 "tag1",
+                                 "tag2"
+                               ],
+                               "externalDocs": "https://",
+                               "default": null,
+                               "isClassified": true,
+                               "classificationLevel": "LIBERO",
+                               "isUnique": true,
+                               "isNullable": false,
+                               "pattern": "una regex",
+                               "format": "named pattern e.g. email",
+                               "enum": [
+                                 "VALORE1",
+                                 "VALORE2"
+                               ],
+                               "minLength": 2,
+                               "maxLength": 10,
+                               "contentEncoding": "UTF-8",
+                               "contentMediaType": "application/json",
+                               "precision": 0,
+                               "scale": 10,
+                               "minimum": 0,
+                               "exclusiveMinimum": true,
+                               "maximum": 10000,
+                               "exclusiveMaximum": false,
+                               "readOnly": true,
+                               "writeOnly": true,
+                               "physicalType": "VARCHAR",
+                               "partitionStatus": true,
+                               "partitionKeyPosition": 2,
+                               "clusterStatus": true,
+                               "clusterKeyPosition": 2,
+                               "ordinalPosition": 0
+
+                             },
+                             "customerName": {
+                               "name": "customerName",
+                               "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.id",
+                               "displayName": "Customer Name",
+                               "type": "VARCHAR",
+                               "dataLength": "50",
+                               "columnConstraint": "PRIMARY_KEY",
+                               "ordinalPosition": 1
+                             },
+                             "customerMail": {
+                               "name": "customerMail",
+                               "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.apt_org",
+                               "displayName": "Origin",
+                               "dataType": "VARCHAR",
+                               "dataLength": "50",
+                               "columnConstraint": "PRIMARY_KEY",
+                               "ordinalPosition": 2
+                             },
+                             "customerAddress": {
+                               "name": "customerAddress",
+                               "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.apt_dst",
+                               "displayName": "Destination",
+                               "dataType": "VARCHAR",
+                               "dataLength": "50",
+                               "columnConstraint": "FOREIGN_KEY",
+                               "ordinalPosition": 3
+                             }
+                           }
+
+                         },{
+                           "name": "Payment",
+                           "type": "object",
+                           "properties": {
+                             "id": {
+                               "type": "string",
+                               "description": "The payment identifier.",
+                               "name": "ID",
+                               "kind": "ATTRIBUTE",
+                               "required": true,
+                               "displayName": "Identifier",
+                               "summary": "Inline description",
+                               "comments": "come sopra",
+                               "examples": [
+                                 "1234567",
+                                 "988654"
+                               ],
+                               "status": "come sopra",
+                               "tags": [
+                                 "tag1",
+                                 "tag2"
+                               ],
+                               "externalDocs": "https://",
+                               "default": null,
+                               "isClassified": true,
+                               "classificationLevel": "LIBERO",
+                               "isUnique": true,
+                               "isNullable": false,
+                               "pattern": "una regex",
+                               "format": "named pattern e.g. email",
+                               "enum": [
+                                 "VALORE1",
+                                 "VALORE2"
+                               ],
+                               "minLength": 2,
+                               "maxLength": 10,
+                               "contentEncoding": "UTF-8",
+                               "contentMediaType": "application/json",
+                               "precision": 0,
+                               "scale": 10,
+                               "minimum": 0,
+                               "exclusiveMinimum": true,
+                               "maximum": 10000,
+                               "exclusiveMaximum": false,
+                               "readOnly": true,
+                               "writeOnly": true,
+                               "physicalType": "VARCHAR",
+                               "partitionStatus": true,
+                               "partitionKeyPosition": 2,
+                               "clusterStatus": true,
+                               "clusterKeyPosition": 2,
+                               "ordinalPosition": 0
+
+                             }
+                           }
+                         }
+                       ]
+                     }
+                  }
+               }
+            }
+         }
+      }
+      // ... outputPort's othe properties
+   ]
+   // ... data product's other properties
+}
+
+```
+The second scenario involves a single table, and its content can be directly passed within the 'content' property.
+```json
+{
+   "...other properties":{
+   },
+   "outputPorts":[
+      {
+         "fullyQualifiedName":"urn:org.opendatamesh:dataproducts:airlinedemo:outputports:flight_frequency_db",
+         "entityType":"outputPorts",
+         "name":"flight_frequency_db",
+         "version":"1.0.0",
+         "displayName":"flight_frequency_db",
+         "description":"Target database for airlines data. MySQL database.",
+         "promises":{
+            "platform":"MySQL_demoBlindataMySql",
+            "serviceType":"datastore-services",
+            "api":{
+               "name":"flightFrequencyApi",
+               "version":"1.0.0",
+               "specification":"datastoreapi",
+               "specificationVersion":"1.0.0",
+               "definition":{
+                  "datastoreapi":"1.0.0",
+                  "info":{
+                     "databaseName":"airlinedemo",
+                     "nameSpace":"nome_schema",
+                     "title":"flight_frequency Data",
+                     "summary":"This API exposes the current flight_frequency data of each `Airline` entity",
+                     "version":"1.0.0",
+                     "datastoreName":"flight_frequency"
+                  },
+                  "services":{
+                     "development":{
+                        "serverInfo":{
+                           "$ref": ""
+                        },
+                        "serverVariables":{
+                           "host": ""
+                        }
+                     }
+                  },
+                  "schema":{
+                     "name": "airline_freq",
+                             "kind": "TABULAR",
+                             "comments": "commento",
+                             "examples": [
+                               {"id": 1, "name": "name"}
+                             ],
+                             "status": "TESTING",
+                             "tags": "tag",
+                             "owner": "owner",
+                             "domain": "domain",
+                             "contactpoints": "contact",
+                             "scope": "private",
+                             "version": "1.0.0",
+                             "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq",
+                             "displayName": "Trips Status Table",
+                             "description": "The table that stores the updated status of each trip",
+                             "physicalType": "VIEW",
+                             "properties": {
+                               "id": {
+                                 "type": "string",
+                                 "description": "The flight identifier.",
+                                 "name": "ID",
+                                 "kind": "ATTRIBUTE",
+                                 "required": true,
+                                 "displayName": "Identifier",
+                                 "summary": "Inline description",
+                                 "comments": "comment",
+                                 "examples": ["1234567", "988654"],
+                                 "status": "statusa",
+                                 "tags": ["tag1", "tag2"],
+                                 "externalDocs": "https://",
+                                 "default": null,
+                                 "isClassified": true,
+                                 "classificationLevel": "",
+                                 "isUnique": true,
+                                 "isNullable": false,
+                                 "pattern": "a regex",
+                                 "format": "named pattern e.g. email",
+                                 "enum": ["VALORE1", "VALORE2"],
+                                 "minLength": 2,
+                                 "maxLength": 10,
+                                 "contentEncoding": "UTF-8",
+                                 "contentMediaType": "application/json",
+                                 "precision": 0,
+                                 "scale": 10,
+                                 "minimum": 0,
+                                 "exclusiveMinimum": true,
+                                 "maximum": 10000,
+                                 "exclusiveMaximum": false,
+                                 "readOnly": true,
+                                 "writeOnly": true,
+                                 "physicalType": "VARCHAR",
+                                 "partitionStatus": true,
+                                 "partitionKeyPosition": 2,
+                                 "clusterStatus": true,
+                                 "clusterKeyPosition": 2
+                               },
+                               "airline_code": {
+                                 "name": "airline_code",
+                                 "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.id",
+                                 "displayName": "Airline ID",
+                                 "type": "VARCHAR",
+                                 "dataLength": "50",
+                                 "columnConstraint": "PRIMARY_KEY",
+                                 "ordinalPosition": 1
+                               },
+                               "apt_org": {
+                                 "name": "apt_org",
+                                 "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.apt_org",
+                                 "displayName": "Origin",
+                                 "dataType": "VARCHAR",
+                                 "dataLength": "50",
+                                 "columnConstraint": "PRIMARY_KEY",
+                                 "ordinalPosition": 2
+                               },
+                               "apt_dst": {
+                                 "name": "apt_dst",
+                                 "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.apt_dst",
+                                 "displayName": "Destination",
+                                 "dataType": "VARCHAR",
+                                 "dataLength": "50",
+                                 "columnConstraint": "PRIMARY_KEY",
+                                 "ordinalPosition": 3
+                               },
+                               "flt_freq": {
+                                 "name": "flt_freq",
+                                 "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.trip_status.flt_freq",
+                                 "displayName": "Flight Frequency",
+                                 "dataType": "INTEGER",
+                                 "columnConstraint": "NOT_NULL",
+                                 "ordinalPosition": 4
+                               }
+                             }
+                           }
+                  }
+               }
+            },
+         }
+      },
+      // ... outputPort's othe properties
+   ],
+   // ... data product's other properties
+}
+
+```
+The *'platform'* field within the *'promises'* field of the port is used to extract the name and system technology of the system to be created in Blindata.
+
+To extract the name and technology for association, two regular expressions must be defined within the Blindata configurations, as shown in the previous section.
+
+### Schema Table Fields:
+The following fields describe an individual table within a schema.
+
+- `name`: Object name  -  STRING
+- `kind`: Object type (e.g., TABULAR) -  ENUM
+- `comments`: Additional comments about the object   -  STRING
+- `status`: Object status (e.g., TESTING)  -  STRING
+- `tags`: Tags associated with the object - ARRAY[STRING]
+- `owner`: Owner of the object -  STRING
+- `domain`: Domain to which the object belongs - STRING
+- `contactpoints`: Contact points related to the object - STRING
+- `scope`: Scope of the object (e.g., private) -STRING
+- `version`: Version of the object -STRING
+- `fullyQualifiedName`: Fully qualified name of the object -STRING
+- `displayName`: Display name of the object -STRING
+- `description`: Description of the object -STRING
+- `physicalType`: Physical type of the object -STRING
+- `properties`: Map containing properties where the key is the property name, and the value is a corresponding `SchemaColumn` object.
+
+### Schema Column Fields:
+
+The following fields describe an individual column within a schema.
+
+- `type`: Type of the field -STRING
+- `description`: Field description -STRING
+- `name`: Field name -STRING
+- `kind`: Field type (e.g., ATTRIBUTE) - ENUM
+- `required`: Indicates whether the field is required - BOOLEAN
+- `displayName`: Display name of the field - STRING
+- `summary`: Field summary - STRING
+- `comments`: Additional comments -STRING
+- `examples`: Field examples (list) - ARRAY[STRING]
+- `status`: Field status (e.g., TESTING) - STRING
+- `tags`: Tags associated with the field (list) - ARRAY[STRING]
+- `externalDocs`: External documentation - STRING
+- `defaultValue`: Default value of the field - STRING
+- `isClassified`: Indicates whether the field is classified - BOOLEAN
+- `classificationLevel`: Classification level - STRING
+- `isUnique`: Indicates whether the field is unique - BOOLEAN
+- `isNullable`: Indicates whether the field can be nullable - BOOLEAN
+- `pattern`: Field pattern - STRING
+- `format`: Field format - STRING
+- `enumValues`: Enumerated values of the field (list) - ENUM
+- `minLength`: Minimum length of the field - NUMBER
+- `maxLength`: Maximum length of the field - NUMBER
+- `contentEncoding`: Content encoding - STRING
+- `contentMediaType`: Content media type - STRING
+- `precision`: Field precision - NUMBER
+- `scale`: Field scale - NUMBER
+- `minimum`: Minimum value of the field - NUMBER
+- `exclusiveMinimum`: Indicates whether the minimum value is exclusive - BOOLEAN
+- `maximum`: Maximum value of the field - NUMBER
+- `exclusiveMaximum`: Indicates whether the maximum value is exclusive - BOOLEAN
+- `readOnly`: Indicates whether the field is read-only - BOOLEAN
+- `writeOnly`: Indicates whether the field is write-only - BOOLEAN
+- `physicalType`: Physical type of the field - STRING
+- `partitionStatus`: Indicates the partition status - STRING
+- `partitionKeyPosition`: Partition key position - NUMBER
+- `clusterStatus`: Indicates the cluster status - STRING
+- `clusterKeyPosition`: Cluster key position -  NUMBER
+- `ordinalPosition`: Position in table -  NUMBER
+
+
+
+
