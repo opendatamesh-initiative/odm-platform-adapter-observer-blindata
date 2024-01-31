@@ -1,8 +1,8 @@
-package org.opendatamesh.platform.up.metaservice.blindata.resources;
+package org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources;
 
 
 public class StewardshipRoleResourceRes {
-    private org.opendatamesh.platform.up.metaservice.blindata.resources.ResourceType resourceType;
+    private ResourceType resourceType;
 
     private boolean canWrite;
 
