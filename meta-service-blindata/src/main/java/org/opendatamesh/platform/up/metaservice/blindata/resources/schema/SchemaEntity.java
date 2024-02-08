@@ -16,18 +16,20 @@ public class SchemaEntity {
 
     private String name;
     private String kind;
+    private String type;
     private String comments;
     private String status;
-    private String tags;
+    private List<String> tags;
     private String owner;
     private String domain;
-    private String contactpoints;
+    private String contactPoints;
     private String scope;
     private String version;
     private String fullyQualifiedName;
     private String displayName;
     private String description;
     private String physicalType;
+    private String externalDocs;
 
 
     private Map<String, SchemaColumn> properties;
@@ -38,16 +40,18 @@ public class SchemaEntity {
             @JsonProperty("kind") String kind,
             @JsonProperty("comments") String comments,
             @JsonProperty("status") String status,
-            @JsonProperty("tags") String tags,
+            @JsonProperty("tags") List<String> tags,
             @JsonProperty("owner") String owner,
             @JsonProperty("domain") String domain,
-            @JsonProperty("contactpoints") String contactpoints,
+            @JsonProperty("contactPoints") String contactPoints,
             @JsonProperty("scope") String scope,
             @JsonProperty("version") String version,
             @JsonProperty("fullyQualifiedName") String fullyQualifiedName,
             @JsonProperty("displayName") String displayName,
             @JsonProperty("description") String description,
             @JsonProperty("physicalType") String physicalType,
+            @JsonProperty("externalDocs") String externalDocs,
+            @JsonProperty("type") String type,
             @JsonProperty("properties") Map<String, SchemaColumn> properties
     ) {
         this.name = name;
@@ -57,14 +61,16 @@ public class SchemaEntity {
         this.tags = tags;
         this.owner = owner;
         this.domain = domain;
-        this.contactpoints = contactpoints;
+        this.contactPoints = contactPoints;
         this.scope = scope;
         this.version = version;
         this.fullyQualifiedName = fullyQualifiedName;
         this.displayName = displayName;
         this.description = description;
         this.physicalType = physicalType;
+        this.type = type;
         this.properties = properties;
+        this.externalDocs = externalDocs;
     }
 }
 

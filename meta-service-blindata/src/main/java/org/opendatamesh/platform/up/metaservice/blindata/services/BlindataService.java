@@ -177,14 +177,26 @@ public class BlindataService implements MetaService {
         port.setDisplayName(portResource.getDisplayName());
         port.setDescription(portResource.getDescription());
         port.setName(portResource.getName());
+        port.setServicesType(portResource.getPromises().getServicesType());
         port.setIdentifier(portResource.getFullyQualifiedName());
         port.setDisplayName(portResource.getDisplayName());
         port.setEntityType(entityType);
         port.setVersion(portResource.getVersion());
+        port.setAdditionalProperties(extractCustomProperties(portResource));
         return port;
 
     }
 
+    private List<AdditionalPropertiesRes> extractCustomProperties(PortDPDS portDPDS) {
+        List<AdditionalPropertiesRes> additionalPropertiesRes = new ArrayList<>();
+        if (portDPDS.getPromises().getSlo() != null && StringUtils.hasText(portDPDS.getPromises().getSlo().getDescription())) {
+            additionalPropertiesRes.add(new AdditionalPropertiesRes("sloDescription", portDPDS.getPromises().getSlo().getDescription()));
+        }
+        if (portDPDS.getPromises().getDeprecationPolicy() != null && StringUtils.hasText(portDPDS.getPromises().getDeprecationPolicy().getDescription())) {
+            additionalPropertiesRes.add(new AdditionalPropertiesRes("deprecationPolicy", portDPDS.getPromises().getSlo().getDescription()));
+        }
+        return additionalPropertiesRes;
+    }
 
     private void assignResponsibility(BlindataDataProductRes res, String username, BlindataClient client, BlindataCredentials credentials) throws MetaServiceException {
         if (credentials.getRoleUuid().isPresent()) {
@@ -227,7 +239,7 @@ public class BlindataService implements MetaService {
 
     private StewardshipResponsibilityRes createResponsibilityOnBlindata(StewardshipRoleRes role, ShortUserRes blindataUser, BlindataClient client, BlindataDataProductRes res, BlindataCredentials credentials) throws MetaServiceException {
         final StewardshipResponsibilityRes responsibility = client.getResponsibility(blindataUser.getUuid(), res.getUuid(), credentials.getRoleUuid().get(), credentials);
-        if (responsibility != null) {
+        if (responsibility == null) {
             return client.createResponsibility(createResponsibility(role, blindataUser, res), credentials);
         }
         return null;

@@ -26,7 +26,7 @@ public class SchemaColumn {
     private String status;
     private List<String> tags;
     private String externalDocs;
-    private Object defaultValue;
+    private String defaultValue;
     private boolean isClassified;
     private String classificationLevel;
     private boolean isUnique;
@@ -66,7 +66,7 @@ public class SchemaColumn {
             @JsonProperty("status") String status,
             @JsonProperty("tags") List<String> tags,
             @JsonProperty("externalDocs") String externalDocs,
-            @JsonProperty("default") Object defaultValue,
+            @JsonProperty("default") String defaultValue,
             @JsonProperty("isClassified") boolean isClassified,
             @JsonProperty("classificationLevel") String classificationLevel,
             @JsonProperty("isUnique") boolean isUnique,

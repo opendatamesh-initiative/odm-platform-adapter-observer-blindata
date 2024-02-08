@@ -105,23 +105,23 @@ public class ODMPlatformService {
 
     private List<AdditionalPropertiesRes> getExtractAdditionalPropertiesForEntities(SchemaEntity schemaEntity) {
         List<AdditionalPropertiesRes> additionalPropertiesRes = new ArrayList<>();
-        if (StringUtils.hasText(schemaEntity.getKind())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("kind", schemaEntity.getKind()));
-        }
-        if (StringUtils.hasText(schemaEntity.getComments())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("comments", schemaEntity.getComments()));
-        }
         if (StringUtils.hasText(schemaEntity.getStatus())) {
             additionalPropertiesRes.add(new AdditionalPropertiesRes("status", schemaEntity.getStatus()));
         }
-        if (StringUtils.hasText(schemaEntity.getTags())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("tags", schemaEntity.getTags()));
+        if (!CollectionUtils.isEmpty(schemaEntity.getTags())) {
+            schemaEntity.getTags().forEach(tag -> additionalPropertiesRes.add(new AdditionalPropertiesRes("tags", tag)));
         }
         if (StringUtils.hasText(schemaEntity.getDomain())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("domain", schemaEntity.getTags()));
+            additionalPropertiesRes.add(new AdditionalPropertiesRes("domain", schemaEntity.getDomain()));
         }
-        if (StringUtils.hasText(schemaEntity.getContactpoints())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("contactpoints", schemaEntity.getContactpoints()));
+        if (StringUtils.hasText(schemaEntity.getContactPoints())) {
+            additionalPropertiesRes.add(new AdditionalPropertiesRes("contactPoints", schemaEntity.getContactPoints()));
+        }
+        if (StringUtils.hasText(schemaEntity.getScope())) {
+            additionalPropertiesRes.add(new AdditionalPropertiesRes("scope", schemaEntity.getScope()));
+        }
+        if (StringUtils.hasText(schemaEntity.getExternalDocs())) {
+            additionalPropertiesRes.add(new AdditionalPropertiesRes("externalDocs", schemaEntity.getExternalDocs()));
         }
         return additionalPropertiesRes;
     }
@@ -168,32 +168,35 @@ public class ODMPlatformService {
 
     private List<AdditionalPropertiesRes> extractAdditionalPropertiesForFields(SchemaColumn schemaColumn) {
         List<AdditionalPropertiesRes> additionalPropertiesRes = new ArrayList<>();
-        if (StringUtils.hasText(schemaColumn.getKind())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("kind", schemaColumn.getKind()));
+        if (StringUtils.hasText(schemaColumn.getDisplayName())) {
+            additionalPropertiesRes.add(new AdditionalPropertiesRes("displayName", schemaColumn.getDisplayName()));
         }
-        if (StringUtils.hasText(schemaColumn.getComments())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("comments", schemaColumn.getComments()));
+        if (StringUtils.hasText(schemaColumn.getSummary())) {
+            additionalPropertiesRes.add(new AdditionalPropertiesRes("summary", schemaColumn.getSummary()));
         }
         if (StringUtils.hasText(schemaColumn.getStatus())) {
             additionalPropertiesRes.add(new AdditionalPropertiesRes("status", schemaColumn.getStatus()));
         }
-        if (!CollectionUtils.isEmpty(schemaColumn.getExamples())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("examples", schemaColumn.getExamples().toString()));
-        }
         if (!CollectionUtils.isEmpty(schemaColumn.getTags())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("tags", schemaColumn.getTags().toString()));
+            schemaColumn.getTags().forEach(tag -> additionalPropertiesRes.add(new AdditionalPropertiesRes("tags", tag)));
+        }
+        if (!CollectionUtils.isEmpty(schemaColumn.getEnumValues())) {
+            schemaColumn.getEnumValues().forEach(tag -> additionalPropertiesRes.add(new AdditionalPropertiesRes("enum", tag)));
         }
         if (StringUtils.hasText(schemaColumn.getExternalDocs())) {
             additionalPropertiesRes.add(new AdditionalPropertiesRes("externalDocs", schemaColumn.getExternalDocs()));
         }
         if (StringUtils.hasText(schemaColumn.getClassificationLevel())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("isClassified", schemaColumn.getClassificationLevel()));
+            additionalPropertiesRes.add(new AdditionalPropertiesRes("classificationLevel", schemaColumn.getClassificationLevel()));
         }
         if (StringUtils.hasText(schemaColumn.getPattern())) {
             additionalPropertiesRes.add(new AdditionalPropertiesRes("pattern", schemaColumn.getPattern()));
         }
         if (StringUtils.hasText(schemaColumn.getFormat())) {
             additionalPropertiesRes.add(new AdditionalPropertiesRes("format", schemaColumn.getFormat()));
+        }
+        if (StringUtils.hasText(schemaColumn.getDefaultValue())) {
+            additionalPropertiesRes.add(new AdditionalPropertiesRes("default", schemaColumn.getDefaultValue()));
         }
         if (schemaColumn.getMinLength() >= 0) {
             additionalPropertiesRes.add(new AdditionalPropertiesRes("minLength", String.valueOf(schemaColumn.getMinLength())));
@@ -219,14 +222,29 @@ public class ODMPlatformService {
         if (schemaColumn.getMaximum() >= 0) {
             additionalPropertiesRes.add(new AdditionalPropertiesRes("maximum", String.valueOf(schemaColumn.getMaximum())));
         }
+        if (schemaColumn.getPartitionKeyPosition() >= 0) {
+            additionalPropertiesRes.add(new AdditionalPropertiesRes("partitionKeyPosition", String.valueOf(schemaColumn.getMaximum())));
+        }
 
+        if (schemaColumn.getClusterKeyPosition() >= 0) {
+            additionalPropertiesRes.add(new AdditionalPropertiesRes("clusterKeyPosition", String.valueOf(schemaColumn.getClusterKeyPosition())));
+        }
+
+        extractBooleanValuesFromSchemaColumn(schemaColumn, additionalPropertiesRes);
+
+        return additionalPropertiesRes;
+    }
+
+    private static void extractBooleanValuesFromSchemaColumn(SchemaColumn schemaColumn, List<AdditionalPropertiesRes> additionalPropertiesRes) {
         additionalPropertiesRes.add(new AdditionalPropertiesRes("isClassified", schemaColumn.isClassified() ? "true" : "false"));
         additionalPropertiesRes.add(new AdditionalPropertiesRes("isUnique", schemaColumn.isUnique() ? "true" : "false"));
         additionalPropertiesRes.add(new AdditionalPropertiesRes("exclusiveMinimum", schemaColumn.isExclusiveMinimum() ? "true" : "false"));
         additionalPropertiesRes.add(new AdditionalPropertiesRes("exclusiveMaximum", schemaColumn.isExclusiveMaximum() ? "true" : "false"));
         additionalPropertiesRes.add(new AdditionalPropertiesRes("readOnly", schemaColumn.isReadOnly() ? "true" : "false"));
         additionalPropertiesRes.add(new AdditionalPropertiesRes("writeOnly", schemaColumn.isWriteOnly() ? "true" : "false"));
-
-        return additionalPropertiesRes;
+        additionalPropertiesRes.add(new AdditionalPropertiesRes("isNullable", schemaColumn.isNullable() ? "true" : "false"));
+        additionalPropertiesRes.add(new AdditionalPropertiesRes("isPartitionStatus", schemaColumn.isPartitionStatus() ? "true" : "false"));
+        additionalPropertiesRes.add(new AdditionalPropertiesRes("isClusterStatus", schemaColumn.isClusterStatus() ? "true" : "false"));
+        additionalPropertiesRes.add(new AdditionalPropertiesRes("isRequired", schemaColumn.isRequired() ? "true" : "false"));
     }
 }
