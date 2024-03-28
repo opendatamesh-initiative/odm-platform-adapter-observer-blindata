@@ -1,0 +1,7 @@
+{
+  "event" : {
+    "type": "DATA_PRODUCT_DELETED",
+    "entityId": "abc123",
+    "beforeState": "{\"fullyQualifiedName\":\"urn:org.opendatamesh:dataproduct:tripExecution\",\"description\":\"Thisisprod-\",\"domain\":\"Disney\"}"
+  }
+}

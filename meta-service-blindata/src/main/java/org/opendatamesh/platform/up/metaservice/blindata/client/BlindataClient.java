@@ -1,9 +1,12 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client;
 
-import org.opendatamesh.platform.up.metaservice.blindata.resources.BlindataDataProductRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.ShortUserRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.StewardshipResponsibilityRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.StewardshipRoleRes;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.*;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.ShortUserRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.StewardshipResponsibilityRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.StewardshipRoleRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.DataProductPortAssetsRes;
 import org.opendatamesh.platform.up.metaservice.server.services.MetaServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,15 +19,16 @@ import java.util.List;
 import java.util.Objects;
 
 @Component
-
 public class BlindataClient {
 
     private final RestTemplate restTemplate;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    ObjectMapper objectMapper;
 
     public BlindataClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+        this.objectMapper = new ObjectMapper();
     }
 
 
@@ -86,26 +90,30 @@ public class BlindataClient {
 
     //Data product methods
 
-    public BlindataDataProductRes createDataProduct(BlindataDataProductRes blindataDataProductRes, BlindataCredentials credentials) throws MetaServiceException {
+    public BlindataDataProductRes createDataProduct(BlindataDataProductRes blindataDataProductRes, BlindataCredentials credentials) throws MetaServiceException, JsonProcessingException {
         try {
             ResponseEntity<BlindataDataProductRes> postStatementResponse = restTemplate.exchange(
                     String.format("%s/api/v1/dataproducts", credentials.getBlindataUrl()),
                     HttpMethod.POST,
                     getHttpEntity(blindataDataProductRes, credentials),
-                    BlindataDataProductRes.class);
+                    BlindataDataProductRes.class
+            );
             return extractBody(postStatementResponse, "Unable to create data product");
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.CONFLICT) {
                 logger.warn(e.getMessage());
-                throw e;
             } else {
                 logger.error(e.getMessage());
-                throw new MetaServiceException("Unable to create data product: " + e.getResponseBodyAsString());
             }
+            BlindataException exception = objectMapper.readValue(
+                    e.getResponseBodyAsString(),
+                    BlindataException.class
+            );
+            throw new MetaServiceException("Unable to create data product - " + exception.getMessage());
         }
     }
 
-    public BlindataDataProductRes updateDataProduct(BlindataDataProductRes blindataDataProductRes, BlindataCredentials credentials) throws MetaServiceException {
+    public BlindataDataProductRes updateDataProduct(BlindataDataProductRes blindataDataProductRes, BlindataCredentials credentials) throws MetaServiceException, JsonProcessingException {
         try {
             ResponseEntity<BlindataDataProductRes> updateDataProduct = restTemplate.exchange(
                     String.format("%s/api/v1/dataproducts/%s", credentials.getBlindataUrl(), blindataDataProductRes.getUuid()),
@@ -114,17 +122,19 @@ public class BlindataClient {
                     BlindataDataProductRes.class);
             return extractBody(updateDataProduct, "Unable to update data product");
         } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == HttpStatus.CONFLICT) {
+            if (e.getStatusCode() == HttpStatus.CONFLICT)
                 logger.warn(e.getMessage());
-                throw e;
-            } else {
+            else
                 logger.error(e.getMessage());
-                throw new MetaServiceException("Unable to update data product: " + e.getResponseBodyAsString());
-            }
+            BlindataException exception = objectMapper.readValue(
+                    e.getResponseBodyAsString(),
+                    BlindataException.class
+            );
+            throw new MetaServiceException("Unable to update data product - " + exception.getMessage());
         }
     }
 
-    public BlindataDataProductRes getDataProduct(String dataProductIdentifier, BlindataCredentials credentials) throws MetaServiceException {
+    public BlindataDataProductRes getDataProduct(String dataProductIdentifier, BlindataCredentials credentials) throws MetaServiceException, JsonProcessingException {
         try {
             ResponseEntity<BlindataDataProductPage> getStatementResponse = restTemplate.exchange(
                     String.format("%s/api/v1/dataproducts?page=0&size=1&identifier=%s", credentials.getBlindataUrl(), dataProductIdentifier),
@@ -133,11 +143,15 @@ public class BlindataClient {
                     BlindataDataProductPage.class);
             return extractDataproduct(getStatementResponse);
         } catch (HttpClientErrorException e) {
-            throw new MetaServiceException("Unable to get data product: " + e.getResponseBodyAsString());
+            BlindataException exception = objectMapper.readValue(
+                    e.getResponseBodyAsString(),
+                    BlindataException.class
+            );
+            throw new MetaServiceException("Unable to get data product - " + exception.getMessage());
         }
     }
 
-    public void deleteDataProduct(String dataProductIdentifier, BlindataCredentials credentials) throws MetaServiceException {
+    public void deleteDataProduct(String dataProductIdentifier, BlindataCredentials credentials) throws MetaServiceException, JsonProcessingException {
         try {
             restTemplate.exchange(
                     String.format("%s/api/v1/dataproducts/%s", credentials.getBlindataUrl(), dataProductIdentifier),
@@ -145,76 +159,37 @@ public class BlindataClient {
                     getHttpEntity(null, credentials),
                     BlindataDataProductRes.class);
         } catch (HttpClientErrorException e) {
-            throw new MetaServiceException("Unable to delete data product: " + e.getResponseBodyAsString());
+            BlindataException exception = objectMapper.readValue(
+                    e.getResponseBodyAsString(),
+                    BlindataException.class
+            );
+            throw new MetaServiceException("Unable to delete data product - " + exception.getMessage());
         }
     }
 
-    /*
-    public SystemResource createSystem(SystemResource systemRes, BlindataCredentials credentials) throws Exception {
+    public DataProductPortAssetsRes createDataProductAssets(DataProductPortAssetsRes assetsRes, BlindataCredentials credentials) throws MetaServiceException, JsonProcessingException {
         try {
-            ResponseEntity<SystemResource> postStatementResponse = restTemplate.exchange(
-                    String.format("%s/api/v1/systems", credentials.getBlindataURL()),
-                    HttpMethod.POST,
-                    getHttpEntity(systemRes, credentials),
-                    SystemResource.class);
-            return extractBody(postStatementResponse, "Unable to create system");
+            ResponseEntity<DataProductPortAssetsRes> patchStatementResponse = restTemplate.exchange(
+                    String.format("%s/api/v1/dataproducts/*/port-assets", credentials.getBlindataUrl()),
+                    HttpMethod.PATCH,
+                    getHttpEntity(assetsRes, credentials),
+                    DataProductPortAssetsRes.class
+            );
+            return extractBody(patchStatementResponse, "Unable to create data product assets");
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.CONFLICT) {
                 logger.warn(e.getMessage());
-                throw e;
             } else {
                 logger.error(e.getMessage());
-                throw new Exception("Unable to create system: " + e.getResponseBodyAsString());
             }
+            BlindataException exception = objectMapper.readValue(
+                    e.getResponseBodyAsString(),
+                    BlindataException.class
+            );
+            throw new MetaServiceException("Unable to create data product assets - " + exception.getMessage());
         }
     }
 
-
-    public void deleteSystem(SystemResource system, BlindataCredentials credentials) throws Exception {
-        try {
-            restTemplate.exchange(
-                    String.format("%s/api/v1/systems/" + system.getUuid(), credentials.getBlindataURL()),
-                    HttpMethod.DELETE,
-                    getHttpEntity(null, credentials),
-                    SystemResource.class);
-        } catch (HttpClientErrorException e) {
-            logger.error(e.getMessage());
-            throw new Exception("Unable to delete system: " + e.getResponseBodyAsString());
-        }
-
-    }
-
-    public SystemResource getSystem(String uuid, BlindataCredentials credentials) throws Exception {
-        try {
-            ResponseEntity<SystemResource> getStatementResponse = restTemplate.exchange(
-                    String.format("%s/api/v1/systems/" + uuid, credentials.getBlindataURL()),
-                    HttpMethod.GET,
-                    getHttpEntity(null, credentials),
-                    SystemResource.class);
-            return extractBody(getStatementResponse, "Unable to get system");
-        } catch (HttpClientErrorException e) {
-            logger.error(e.getMessage());
-            throw new Exception("Unable to get system: " + e.getResponseBodyAsString());
-        }
-    }
-
-
-    public SystemResource putSystem(SystemResource system, BlindataCredentials credentials) throws Exception {
-        //get modifico put
-        try {
-            ResponseEntity<SystemResource> putResponse = restTemplate.exchange(String.format("%s/api/v1/systems/" + system.getUuid(), credentials.getBlindataURL()),
-                    HttpMethod.PUT,
-                    getHttpEntity(system, credentials),
-                    SystemResource.class);
-            return extractBody(putResponse, "Unable to get system");
-        } catch (HttpClientErrorException e) {
-            logger.error(e.getMessage());
-            throw new Exception("Unable to get system: " + e.getResponseBodyAsString());
-        }
-    }
-
-
-     */
     private <T> org.springframework.http.HttpEntity<T> getHttpEntity(T body, BlindataCredentials credential) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-BD-Tenant", credential.getBlindataTenantUuid());

@@ -1,5 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.resources;
 
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.AdditionalPropertiesRes;
+
 import java.util.List;
 
 public class BlindataDataProductRes {
@@ -18,7 +20,7 @@ public class BlindataDataProductRes {
 
     private String domain;
 
-    private List<AdditionalPropertyResource> additionalProperties;
+    private List<AdditionalPropertiesRes> additionalProperties;
 
     private List<BlindataDataProductPortRes> ports;
 
@@ -78,11 +80,11 @@ public class BlindataDataProductRes {
         this.domain = domain;
     }
 
-    public List<AdditionalPropertyResource> getAdditionalProperties() {
+    public List<AdditionalPropertiesRes> getAdditionalProperties() {
         return additionalProperties;
     }
 
-    public void setAdditionalProperties(List<AdditionalPropertyResource> additionalProperties) {
+    public void setAdditionalProperties(List<AdditionalPropertiesRes> additionalProperties) {
         this.additionalProperties = additionalProperties;
     }
 

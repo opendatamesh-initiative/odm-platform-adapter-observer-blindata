@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.resources;
+package org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources;
 
 import java.util.Date;
 

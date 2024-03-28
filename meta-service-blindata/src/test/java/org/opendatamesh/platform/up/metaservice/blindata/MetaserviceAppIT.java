@@ -2,7 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.opendatamesh.platform.up.notification.api.clients.MetaServiceClient;
+import org.opendatamesh.platform.up.notification.api.clients.NotificationClient;
 import org.opendatamesh.platform.up.notification.api.resources.NotificationResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +16,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,29 +34,40 @@ public class MetaserviceAppIT {
     @LocalServerPort
     protected String port;
 
-    protected MetaServiceClient metaServiceClient;
+    protected NotificationClient notificationClient;
 
     protected ResourceBuilder resourceBuilder;
 
+    protected final String DB_TABLES_POSTGRESQL = "src/test/resources/db/tables_postgresql.txt";
+
+    protected final String DB_TABLES_MYSQL = "src/test/resources/db/tables_mysql.txt";
+
     protected final String NOTIFICATION_1 = "src/test/resources/notification1.json";
+
+    protected final String NOTIFICATION_2 = "src/test/resources/notification2.json";
 
     @PostConstruct
     public final void init() {
-        metaServiceClient = new MetaServiceClient("http://localhost:" + port);
+        notificationClient = new NotificationClient("http://localhost:" + port);
         resourceBuilder = new ResourceBuilder();
     }
 
     @BeforeEach
-    public void cleanDbState(@Autowired JdbcTemplate jdbcTemplate, @Autowired Environment environment) {
-        if(Arrays.stream(environment.getActiveProfiles()).findFirst().get().equals("testpostgresql")) {
+    public void cleanDbState(@Autowired JdbcTemplate jdbcTemplate, @Autowired Environment environment) throws IOException {
+        String activeProfile = Arrays.stream(environment.getActiveProfiles()).findFirst().get();
+        String[] tableSet;
+        if(activeProfile.equals("testpostgresql")) {
+            tableSet = Files.readAllLines(new File(DB_TABLES_POSTGRESQL).toPath(), Charset.defaultCharset()).toArray(new String[0]);
+            System.out.println(tableSet);
             JdbcTestUtils.deleteFromTables(
                     jdbcTemplate,
-                    "\"ODMNOTIFICATION\".\"NOTIFICATION\""
+                    tableSet
             );
-        } else if (Arrays.stream(environment.getActiveProfiles()).findFirst().get().equals("testmysql")) {
+        } else if (activeProfile.equals("testmysql")) {
+            tableSet = Files.readAllLines(new File(DB_TABLES_MYSQL).toPath(), Charset.defaultCharset()).toArray(new String[0]);
             JdbcTestUtils.deleteFromTables(
                     jdbcTemplate,
-                    "ODMNOTIFICATION.NOTIFICATION"
+                    tableSet
             );
         }
     }
@@ -70,7 +84,22 @@ public class MetaserviceAppIT {
                 NotificationResource.class
         );
 
-        ResponseEntity<NotificationResource> postResponse = metaServiceClient.createNotification(notificationResource);
+        ResponseEntity<NotificationResource> postResponse = notificationClient.createNotification(notificationResource);
+
+        verifyResponseEntity(postResponse, HttpStatus.CREATED, true);
+
+        return postResponse.getBody();
+
+    }
+
+    protected NotificationResource createNotification2() throws IOException {
+
+        NotificationResource notificationResource = resourceBuilder.readResourceFromFile(
+                NOTIFICATION_2,
+                NotificationResource.class
+        );
+
+        ResponseEntity<NotificationResource> postResponse = notificationClient.createNotification(notificationResource);
 
         verifyResponseEntity(postResponse, HttpStatus.CREATED, true);
 

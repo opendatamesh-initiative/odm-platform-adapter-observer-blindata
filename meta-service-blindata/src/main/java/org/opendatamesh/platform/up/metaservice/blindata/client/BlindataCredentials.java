@@ -3,9 +3,10 @@ package org.opendatamesh.platform.up.metaservice.blindata.client;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class BlindataCredentials {
-
 
     @Value("${blindata.url}")
     private String blindataUrl;
@@ -20,7 +21,32 @@ public class BlindataCredentials {
     private String blindataTenantUuid;
 
     @Value("${blindata.roleUuid}")
-    private String roleUuid;
+    private Optional<String> roleUuid;
+
+    @Value("${blindata.odmPlatformUrl}")
+    private String odmPlatformUrl;
+
+    @Value("${blindata.systemNameRegex}")
+    private Optional<String> systemNameRegex;
+
+    @Value("${blindata.systemTechnologyRegex}")
+    private Optional<String> systemTechnologyRegex;
+
+    public String getOdmPlatformUrl() {
+        return odmPlatformUrl;
+    }
+
+    public void setOdmPlatformUrl(String odmPlatformUrl) {
+        this.odmPlatformUrl = odmPlatformUrl;
+    }
+
+    public Optional<String> getSystemNameRegex() {
+        return systemNameRegex;
+    }
+
+    public void setSystemNameRegex(Optional<String> systemNameRegex) {
+        this.systemNameRegex = systemNameRegex;
+    }
 
     public String getBlindataUrl() {
         return blindataUrl;
@@ -54,11 +80,19 @@ public class BlindataCredentials {
         this.blindataTenantUuid = blindataTenantUuid;
     }
 
-    public String getRoleUuid() {
+    public Optional<String> getRoleUuid() {
         return roleUuid;
     }
 
-    public void setRoleUuid(String roleUuid) {
+    public void setRoleUuid(Optional<String> roleUuid) {
         this.roleUuid = roleUuid;
+    }
+
+    public Optional<String> getSystemTechnologyRegex() {
+        return systemTechnologyRegex;
+    }
+
+    public void setSystemTechnologyRegex(Optional<String> systemTechnologyRegex) {
+        this.systemTechnologyRegex = systemTechnologyRegex;
     }
 }
