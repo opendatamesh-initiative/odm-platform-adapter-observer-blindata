@@ -1,10 +1,11 @@
-package org.opendatamesh.platform.up.metaservice.blindata.resources;
+package org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources;
 
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.AdditionalPropertiesRes;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
-public class BlindataDataProductRes {
+@EqualsAndHashCode
+public class BDDataProductRes {
 
     private String uuid;
 
@@ -22,7 +23,7 @@ public class BlindataDataProductRes {
 
     private List<AdditionalPropertiesRes> additionalProperties;
 
-    private List<BlindataDataProductPortRes> ports;
+    private List<BDDataProductPortRes> ports;
 
     public String getUuid() {
         return uuid;
@@ -88,11 +89,11 @@ public class BlindataDataProductRes {
         this.additionalProperties = additionalProperties;
     }
 
-    public List<BlindataDataProductPortRes> getPorts() {
+    public List<BDDataProductPortRes> getPorts() {
         return ports;
     }
 
-    public void setPorts(List<BlindataDataProductPortRes> ports) {
+    public void setPorts(List<BDDataProductPortRes> ports) {
         this.ports = ports;
     }
 }

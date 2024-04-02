@@ -5,10 +5,8 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class DataProductPortAssetDetailRes {
+public class BDProductPortAssetsRes {
 
-    private String portIdentifier;
-    private List<DataProductPortAssetSystemRes> assets;
+    private List<BDDataProductPortAssetDetailRes> ports;
 
 }
-

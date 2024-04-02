@@ -271,9 +271,18 @@ blindata:
     password: the password to connect in Blindata
     tenantUUID: the tenant where you have to operate
     roleUuid: A possible role identifier. You need this identifier to create or update responsibilities in Blindata (value optional)
-    odmPlatformUrl: the url where ODM platform is reachable
     systemNameRegex: optional regex to extract system name from schema (value optional)
     systemTechnologyRegex : optional regex to extract system technology from schema (value optional)
+odm:
+  productPlane:
+    policyService:
+      active: If the ODM Policy Service is active or not
+      address: The address of ODM Policy Service
+    registryService:
+      active: If the ODM Registry Service is active or not
+      address: The address of ODM Registry Service
+
+
 ```
 
 ## Schema Definition

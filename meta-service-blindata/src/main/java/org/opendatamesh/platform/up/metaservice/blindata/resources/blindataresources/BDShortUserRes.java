@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources;
 
-public class ShortUserRes {
+public class BDShortUserRes {
     private String uuid;
     private String username;
     private String fullName;

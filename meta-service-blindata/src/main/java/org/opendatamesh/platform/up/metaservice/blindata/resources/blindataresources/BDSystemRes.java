@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class SystemRes {
+public class BDSystemRes {
 
     @Schema(description = "The name of the system")
     private String name;
