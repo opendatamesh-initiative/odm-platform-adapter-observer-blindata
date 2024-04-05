@@ -23,12 +23,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
 @TestPropertySource(properties = {"blindata.roleUuid=BlindataIT.role.uuid"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class BlindataServiceIT extends MetaserviceAppIT {
     @Autowired
     private BlindataService blindataService;
@@ -49,6 +51,7 @@ public class BlindataServiceIT extends MetaserviceAppIT {
     private OdmRegistryClient odmRegistryClient;
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     public void testDataProductCreation() throws JsonProcessingException, MetaServiceException {
         BDShortUserRes bdUser = new BDShortUserRes();
         BDStewardshipRoleRes bdRole = new BDStewardshipRoleRes();
