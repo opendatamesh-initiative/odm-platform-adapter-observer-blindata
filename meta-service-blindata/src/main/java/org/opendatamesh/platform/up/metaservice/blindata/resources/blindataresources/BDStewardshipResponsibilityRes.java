@@ -1,16 +1,19 @@
-package org.opendatamesh.platform.up.metaservice.blindata.resources;
+package org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources;
+
+import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
-public class StewardshipResponsibilityRes {
+@EqualsAndHashCode
+public class BDStewardshipResponsibilityRes {
 
     private Long sequenceId;
 
-    private ShortUserRes user;
+    private BDShortUserRes user;
 
-    private StewardshipRoleRes stewardshipRole;
+    private BDStewardshipRoleRes stewardshipRole;
 
-    private ResourceType resourceType = ResourceType.DATA_PRODUCT;
+    private BDResourceType resourceType = BDResourceType.DATA_PRODUCT;
 
     private String resourceIdentifier;
 
@@ -30,27 +33,27 @@ public class StewardshipResponsibilityRes {
         this.sequenceId = sequenceId;
     }
 
-    public ShortUserRes getUser() {
+    public BDShortUserRes getUser() {
         return user;
     }
 
-    public void setUser(ShortUserRes user) {
+    public void setUser(BDShortUserRes user) {
         this.user = user;
     }
 
-    public StewardshipRoleRes getStewardshipRole() {
+    public BDStewardshipRoleRes getStewardshipRole() {
         return stewardshipRole;
     }
 
-    public void setStewardshipRole(StewardshipRoleRes stewardshipRole) {
+    public void setStewardshipRole(BDStewardshipRoleRes stewardshipRole) {
         this.stewardshipRole = stewardshipRole;
     }
 
-    public ResourceType getResourceType() {
+    public BDResourceType getResourceType() {
         return resourceType;
     }
 
-    public void setResourceType(ResourceType resourceType) {
+    public void setResourceType(BDResourceType resourceType) {
         this.resourceType = resourceType;
     }
 

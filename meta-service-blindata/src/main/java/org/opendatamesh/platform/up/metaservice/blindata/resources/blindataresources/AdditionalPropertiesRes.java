@@ -1,15 +1,15 @@
-package org.opendatamesh.platform.up.metaservice.blindata.resources;
+package org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources;
 
 import java.util.Objects;
 
-public class AdditionalPropertyResource {
+public class AdditionalPropertiesRes {
     private String name;
     private String value;
 
-    public AdditionalPropertyResource() {
+    public AdditionalPropertiesRes() {
     }
 
-    public AdditionalPropertyResource(String name, String value) {
+    public AdditionalPropertiesRes(String name, String value) {
         this.name = name;
         this.value = value;
     }
@@ -38,8 +38,8 @@ public class AdditionalPropertyResource {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AdditionalPropertyResource)) return false;
-        AdditionalPropertyResource that = (AdditionalPropertyResource) o;
+        if (!(o instanceof AdditionalPropertiesRes)) return false;
+        AdditionalPropertiesRes that = (AdditionalPropertiesRes) o;
         return Objects.equals(getName(), that.getName()) && Objects.equals(getValue(), that.getValue());
     }
 
