@@ -1,17 +1,20 @@
 package org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources;
 
+import lombok.EqualsAndHashCode;
+
 import java.util.List;
 import java.util.Set;
 
-public class StewardshipRoleRes {
+@EqualsAndHashCode
+public class BDStewardshipRoleRes {
 
     private String uuid;
     private String name;
     private String description;
     private Integer order;
     private String roleCategory;
-    private List<PermissionRes> permissions;
-    private Set<StewardshipRoleResourceRes> resources;
+    private List<BDPermissionRes> permissions;
+    private Set<BDStewardshipRoleResourceRes> resources;
 
     public String getUuid() {
         return uuid;
@@ -53,19 +56,19 @@ public class StewardshipRoleRes {
         this.roleCategory = roleCategory;
     }
 
-    public List<PermissionRes> getPermissions() {
+    public List<BDPermissionRes> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(List<PermissionRes> permissions) {
+    public void setPermissions(List<BDPermissionRes> permissions) {
         this.permissions = permissions;
     }
 
-    public Set<StewardshipRoleResourceRes> getResources() {
+    public Set<BDStewardshipRoleResourceRes> getResources() {
         return resources;
     }
 
-    public void setResources(Set<StewardshipRoleResourceRes> resources) {
+    public void setResources(Set<BDStewardshipRoleResourceRes> resources) {
         this.resources = resources;
     }
 }

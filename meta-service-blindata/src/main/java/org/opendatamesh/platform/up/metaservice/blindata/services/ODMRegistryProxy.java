@@ -3,8 +3,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opendatamesh.platform.core.dpds.model.interfaces.PortDPDS;
-import org.opendatamesh.platform.up.metaservice.blindata.client.BlindataCredentials;
-import org.opendatamesh.platform.up.metaservice.blindata.client.PlatformClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.odm.OdmRegistryClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.schema.SchemaColumn;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.schema.SchemaEntity;
@@ -14,6 +13,7 @@ import org.opendatamesh.platform.up.metaservice.server.services.MetaServiceExcep
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -25,31 +25,32 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
-public class ODMPlatformService {
-
-    @Autowired
-    private BlindataCredentials credentials;
+public class ODMRegistryProxy {
 
     @Autowired
     ObjectMapper objectMapper;
-
     @Autowired
-    private PlatformClient platformClient;
+    private OdmRegistryClient registryClient;
+    
+    @Value("${blindata.systemNameRegex}")
+    private String systemNameRegex;
+    @Value("${blindata.systemTechnologyRegex}")
+    private String systemTechnologyRegex;
 
 
-    private static final Logger logger = LoggerFactory.getLogger(ODMPlatformService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ODMRegistryProxy.class);
 
 
-    public List<DataProductPortAssetDetailRes> extractPhysicalResourcesFromPorts(List<PortDPDS> portDPDS) throws MetaServiceException {
-        List<DataProductPortAssetDetailRes> dataProductPortAssetDetailRes = new ArrayList<>();
+    public List<BDDataProductPortAssetDetailRes> extractPhysicalResourcesFromPorts(List<PortDPDS> portDPDS) throws MetaServiceException {
+        List<BDDataProductPortAssetDetailRes> dataProductPortAssetDetailRes = new ArrayList<>();
         try {
 
             for (PortDPDS port : portDPDS) {
                 logger.info("Trying to get schema ids");
-                final List<Integer> schemasId = platformClient.getSchemasId(port.getPromises().getApi().getId(), credentials);
+                final List<Integer> schemasId = registryClient.getSchemasId(port.getPromises().getApi().getId());
                 for (Integer id : schemasId) {
                     logger.info("Trying to get Schema with id: " + id);
-                    String schemaContent = platformClient.getSchemaContent(id, credentials);
+                    String schemaContent = registryClient.getSchemaContent(id);
                     logger.info("Schema retrieved");
                     dataProductPortAssetDetailRes.add(extractSchemaPropertiesFromSchemaContent("schema_name", port.getFullyQualifiedName(), schemaContent, port.getPromises().getPlatform()));
                 }
@@ -60,16 +61,16 @@ public class ODMPlatformService {
         return dataProductPortAssetDetailRes;
     }
 
-    private DataProductPortAssetDetailRes extractSchemaPropertiesFromSchemaContent(String schemaName, String portId, String schemaContent, String platform) throws JsonProcessingException {
-        DataProductPortAssetDetailRes dataProductPortAssetDetailRes = new DataProductPortAssetDetailRes();
-        DataProductPortAssetSystemRes assetSystemRes = new DataProductPortAssetSystemRes();
-        List<PhysicalEntityRes> physicalEntityResList = new ArrayList<>();
-        List<DataProductPortAssetSystemRes> assets = new ArrayList<>();
+    private BDDataProductPortAssetDetailRes extractSchemaPropertiesFromSchemaContent(String schemaName, String portId, String schemaContent, String platform) throws JsonProcessingException {
+        BDDataProductPortAssetDetailRes dataProductPortAssetDetailRes = new BDDataProductPortAssetDetailRes();
+        BDProductPortAssetSystemRes assetSystemRes = new BDProductPortAssetSystemRes();
+        List<BDPhysicalEntityRes> physicalEntityResList = new ArrayList<>();
+        List<BDProductPortAssetSystemRes> assets = new ArrayList<>();
         final List<SchemaEntity> schemaEntities = objectMapper.readValue(schemaContent, SchemaResDeserializeEntitiesList.class).getContent().getEntities();
         if (schemaEntities == null) {
             SchemaResDeserializeSingleEntity schemaResDeserializeSingle = objectMapper.readValue(schemaContent, SchemaResDeserializeSingleEntity.class);
             assetSystemRes.setSystem(getSystem(platform));
-            PhysicalEntityRes extractedEntityFromSchema = fromSchemaEntityToPhysicalEntity(schemaName, schemaResDeserializeSingle.getContent(), assetSystemRes.getSystem());
+            BDPhysicalEntityRes extractedEntityFromSchema = fromSchemaEntityToPhysicalEntity(schemaName, schemaResDeserializeSingle.getContent(), assetSystemRes.getSystem());
             physicalEntityResList.add(extractedEntityFromSchema);
             assetSystemRes.setPhysicalEntities(physicalEntityResList);
             dataProductPortAssetDetailRes.setPortIdentifier(portId);
@@ -78,7 +79,7 @@ public class ODMPlatformService {
         } else {
             assetSystemRes.setSystem(getSystem(platform));
             for (SchemaEntity entity : schemaEntities) {
-                PhysicalEntityRes extractedEntityFromSchema = fromSchemaEntityToPhysicalEntity(schemaName, entity, assetSystemRes.getSystem());
+                BDPhysicalEntityRes extractedEntityFromSchema = fromSchemaEntityToPhysicalEntity(schemaName, entity, assetSystemRes.getSystem());
                 physicalEntityResList.add(extractedEntityFromSchema);
             }
             assetSystemRes.setPhysicalEntities(physicalEntityResList);
@@ -89,8 +90,8 @@ public class ODMPlatformService {
         return dataProductPortAssetDetailRes;
     }
 
-    private PhysicalEntityRes fromSchemaEntityToPhysicalEntity(String schema, SchemaEntity schemaEntity, SystemRes systemRes) {
-        PhysicalEntityRes physicalEntityRes = new PhysicalEntityRes();
+    private BDPhysicalEntityRes fromSchemaEntityToPhysicalEntity(String schema, SchemaEntity schemaEntity, BDSystemRes systemRes) {
+        BDPhysicalEntityRes physicalEntityRes = new BDPhysicalEntityRes();
         physicalEntityRes.setSchema(schema);
         physicalEntityRes.setName(schemaEntity.getName());
         physicalEntityRes.setDescription(schemaEntity.getDescription());
@@ -126,8 +127,8 @@ public class ODMPlatformService {
         return additionalPropertiesRes;
     }
 
-    private SystemRes getSystem(String platform) {
-        SystemRes systemRes = new SystemRes();
+    private BDSystemRes getSystem(String platform) {
+        BDSystemRes systemRes = new BDSystemRes();
         systemRes.setName(extractSystemName(platform));
         systemRes.setTechnology(extractSystemTechnology(platform));
         return systemRes;
@@ -135,8 +136,8 @@ public class ODMPlatformService {
 
 
     private String extractSystemTechnology(String platform) {
-        if (credentials.getSystemTechnologyRegex().isPresent()) {
-            Pattern pattern = Pattern.compile(credentials.getSystemTechnologyRegex().get());
+        if (StringUtils.hasText(systemTechnologyRegex)) {
+            Pattern pattern = Pattern.compile(systemNameRegex);
             Matcher matcher = pattern.matcher(platform);
             if (matcher.find()) {
                 return matcher.group(1);
@@ -146,8 +147,8 @@ public class ODMPlatformService {
     }
 
     private String extractSystemName(String platform) {
-        if (credentials.getSystemNameRegex().isPresent()) {
-            Pattern pattern = Pattern.compile(credentials.getSystemNameRegex().get());
+        if (StringUtils.hasText(systemNameRegex)) {
+            Pattern pattern = Pattern.compile(systemNameRegex);
             Matcher matcher = pattern.matcher(platform);
             if (matcher.find()) {
                 return matcher.group(1);
@@ -157,8 +158,8 @@ public class ODMPlatformService {
     }
 
 
-    private PhysicalFieldRes extractPhysicalFieldsFromColumn(SchemaColumn schema) {
-        PhysicalFieldRes fieldRes = new PhysicalFieldRes();
+    private BDPhysicalFieldRes extractPhysicalFieldsFromColumn(SchemaColumn schema) {
+        BDPhysicalFieldRes fieldRes = new BDPhysicalFieldRes();
         fieldRes.setName(schema.getName());
         fieldRes.setType(schema.getPhysicalType());
         fieldRes.setDescription(StringUtils.hasText(schema.getDescription()) ? schema.getDescription() : null);

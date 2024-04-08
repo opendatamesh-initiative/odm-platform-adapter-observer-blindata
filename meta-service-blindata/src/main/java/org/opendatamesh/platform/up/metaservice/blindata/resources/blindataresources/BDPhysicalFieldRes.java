@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-public class PhysicalFieldRes {
+public class BDPhysicalFieldRes {
 
     @Schema(description = "The PhysicalField resource identifier")
     private String uuid;

@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 @Data
-public class PhysicalEntityRes {
+public class BDPhysicalEntityRes {
 
     @Schema(description = "The PhysicalEntity resource identifier")
     private String uuid;
@@ -32,10 +32,10 @@ public class PhysicalEntityRes {
     private Date modificationDate;
 
     @Schema(description = "The set of PhysicalFields associated to this PhysicalEntity", hidden = true)
-    private Set<PhysicalFieldRes> physicalFields;
+    private Set<BDPhysicalFieldRes> physicalFields;
 
     @Schema(description = "The System this PhysicalEntity belongs to")
-    private SystemRes system;
+    private BDSystemRes system;
 
     @Schema(description = "Specifies whether a physical entity is a view")
     private Boolean isConsentView;

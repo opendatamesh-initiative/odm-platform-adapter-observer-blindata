@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources;
 
-public enum ResourceType {
+public enum BDResourceType {
 
     DATA_CATEGORY,
     LOGICAL_FIELD,

@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources;
 
-public enum PermissionRes {
+public enum BDPermissionRes {
 
     OPERATOR,
     NONE,

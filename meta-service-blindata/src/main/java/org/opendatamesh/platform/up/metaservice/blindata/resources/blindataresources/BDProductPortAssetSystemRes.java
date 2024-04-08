@@ -3,10 +3,11 @@ package org.opendatamesh.platform.up.metaservice.blindata.resources.blindatareso
 import lombok.Data;
 
 import java.util.List;
-
 @Data
-public class DataProductPortAssetsRes {
+public class BDProductPortAssetSystemRes {
 
-    private List<DataProductPortAssetDetailRes> ports;
+    private BDSystemRes system;
+    private List<BDPhysicalEntityRes> physicalEntities;
 
 }
+

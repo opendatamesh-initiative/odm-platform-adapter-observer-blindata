@@ -1,16 +1,16 @@
 package org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources;
 
 
-public class StewardshipRoleResourceRes {
-    private ResourceType resourceType;
+public class BDStewardshipRoleResourceRes {
+    private BDResourceType resourceType;
 
     private boolean canWrite;
 
-    public ResourceType getResourceType() {
+    public BDResourceType getResourceType() {
         return resourceType;
     }
 
-    public void setResourceType(ResourceType resourceType) {
+    public void setResourceType(BDResourceType resourceType) {
         this.resourceType = resourceType;
     }
 

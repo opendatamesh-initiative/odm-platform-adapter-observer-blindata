@@ -1,10 +1,11 @@
-package org.opendatamesh.platform.up.metaservice.blindata.resources;
+package org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources;
 
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.AdditionalPropertiesRes;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
-public class BlindataDataProductPortRes {
+@EqualsAndHashCode
+public class BDDataProductPortRes {
 
     private String uuid;
 
