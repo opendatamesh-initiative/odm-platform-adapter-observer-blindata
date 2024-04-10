@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendatamesh.platform.core.commons.servers.exceptions.InternalServerException;
-import org.opendatamesh.platform.pp.policy.api.clients.utils.PageUtility;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;

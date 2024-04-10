@@ -50,13 +50,13 @@ public class NotificationIT extends MetaserviceAppIT {
         NotificationResource notificationResource = createNotification1();
 
         // TEST 1: Notification present
-        ResponseEntity<NotificationResource> readNotificationResourceResponse = notificationClient.readOneNotification(notificationResource.getId());
+        ResponseEntity<NotificationResource> readNotificationResourceResponse = notificationClient.readOneNotificationResponseEntity(notificationResource.getId());
         verifyResponseEntity(readNotificationResourceResponse, HttpStatus.OK, true);
 
         assertThat(notificationResource).isEqualTo(readNotificationResourceResponse.getBody());
 
         // TEST 2: Notification not present
-        ResponseEntity<ErrorResource> readNotificationErrorResponse = notificationClient.readOneNotification(1000L);
+        ResponseEntity<ErrorResource> readNotificationErrorResponse = notificationClient.readOneNotificationResponseEntity(1000L);
         verifyResponseEntity(readNotificationResourceResponse, HttpStatus.OK, true);
         assertThat(readNotificationErrorResponse.getBody()).isNull();
     }
@@ -77,7 +77,7 @@ public class NotificationIT extends MetaserviceAppIT {
 
 
         // TEST 1: searchNotification without filters
-        ResponseEntity<NotificationResource[]> readNotificationsResourceResponse = notificationClient.searchNotifications(null, null);
+        ResponseEntity<NotificationResource[]> readNotificationsResourceResponse = notificationClient.searchNotificationsResponseEntity(null, null);
 
         verifyResponseEntity(readNotificationsResourceResponse, HttpStatus.OK, true);
         assertThat(readNotificationsResourceResponse.getBody().length).isEqualTo(2);
@@ -104,17 +104,17 @@ public class NotificationIT extends MetaserviceAppIT {
 
         NotificationResource notificationResource = createNotification1();
 
-        ResponseEntity<NotificationResource> readNotificationsResourceResponse = notificationClient.readOneNotification(notificationResource.getId());
+        ResponseEntity<NotificationResource> readNotificationsResourceResponse = notificationClient.readOneNotificationResponseEntity(notificationResource.getId());
 
         verifyResponseEntity(readNotificationsResourceResponse, HttpStatus.OK, true);
         assertThat(notificationResource).isEqualTo(readNotificationsResourceResponse.getBody());
 
         // TEST 1: Verify the DELETE API response
-        ResponseEntity<Void> deleteResponse = notificationClient.deleteNotification(notificationResource.getId());
+        ResponseEntity<Void> deleteResponse = notificationClient.deleteNotificationResponseEntity(notificationResource.getId());
         verifyResponseEntity(deleteResponse, HttpStatus.OK, false);
 
         // TEST 2: Verify that the Notification has been deleted
-        readNotificationsResourceResponse = notificationClient.readOneNotification(notificationResource.getId());
+        readNotificationsResourceResponse = notificationClient.readOneNotificationResponseEntity(notificationResource.getId());
 
         // The HTTP status of the response must be OK (200) but the body is null. TODO It will be changed to expect a 404
         verifyResponseEntity(readNotificationsResourceResponse, HttpStatus.OK, false);
@@ -122,7 +122,7 @@ public class NotificationIT extends MetaserviceAppIT {
 
         // TEST 3: Trying to delete a Notification with an id that doesn't exist
         // The response is an internal server error for now because it doesn't find a Notification with that id. TODO It will be changed to expect a 404
-        ResponseEntity<ErrorResource> deleteErrorResponse = notificationClient.deleteNotification(notificationResource.getId());
+        ResponseEntity<ErrorResource> deleteErrorResponse = notificationClient.deleteNotificationResponseEntity(notificationResource.getId());
         verifyResponseEntity(deleteErrorResponse, HttpStatus.INTERNAL_SERVER_ERROR, false);
     }
 
