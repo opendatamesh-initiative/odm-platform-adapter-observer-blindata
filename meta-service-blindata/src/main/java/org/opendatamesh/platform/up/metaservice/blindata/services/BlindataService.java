@@ -77,7 +77,7 @@ public class BlindataService implements MetaService {
             notificationRes.setProcessingOutput(e.getMessage());
             return notificationRes;
         } catch (Exception e) {
-            throw new MetaServiceException(e.getMessage());
+            throw new MetaServiceException(e.getMessage(), e);
         }
     }
 
@@ -118,7 +118,7 @@ public class BlindataService implements MetaService {
             notificationRes.setProcessingOutput(e.getMessage());
             return notificationRes;
         } catch (Exception e) {
-            throw new MetaServiceException(e.getMessage());
+            throw new MetaServiceException(e.getMessage(), e);
         }
     }
 
@@ -159,7 +159,7 @@ public class BlindataService implements MetaService {
             notificationRes.setProcessingOutput(e.getMessage());
             return notificationRes;
         } catch (Exception e) {
-            throw new MetaServiceException(e.getMessage());
+            throw new MetaServiceException(e.getMessage(), e);
         }
     }
 
@@ -305,7 +305,6 @@ public class BlindataService implements MetaService {
         BDPolicyEvaluationRecord bdPolicyEvaluationRecord = new BDPolicyEvaluationRecord();
         bdPolicyEvaluationRecord.setPolicyName(odmPolicyEvaluationResult.getPolicy().getName());
         bdPolicyEvaluationRecord.setImplementationName(odmPolicyEvaluationResult.getPolicy().getName());
-        bdPolicyEvaluationRecord.setSuiteName(odmPolicyEvaluationResult.getPolicy().getSuite());
         bdPolicyEvaluationRecord.setResolverKey("uuid");
         bdPolicyEvaluationRecord.setResolverValue(bdDataProductCreated.getUuid());
         bdPolicyEvaluationRecord.setResourceType(BDResourceType.DATA_PRODUCT);
