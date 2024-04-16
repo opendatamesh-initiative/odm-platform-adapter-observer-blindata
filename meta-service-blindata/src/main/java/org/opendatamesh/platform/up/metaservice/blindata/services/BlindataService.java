@@ -77,7 +77,7 @@ public class BlindataService implements MetaService {
             notificationRes.setProcessingOutput(e.getMessage());
             return notificationRes;
         } catch (Exception e) {
-            throw new MetaServiceException(e.getMessage());
+            throw new MetaServiceException(e.getMessage(), e);
         }
     }
 
@@ -118,7 +118,7 @@ public class BlindataService implements MetaService {
             notificationRes.setProcessingOutput(e.getMessage());
             return notificationRes;
         } catch (Exception e) {
-            throw new MetaServiceException(e.getMessage());
+            throw new MetaServiceException(e.getMessage(), e);
         }
     }
 
@@ -159,7 +159,7 @@ public class BlindataService implements MetaService {
             notificationRes.setProcessingOutput(e.getMessage());
             return notificationRes;
         } catch (Exception e) {
-            throw new MetaServiceException(e.getMessage());
+            throw new MetaServiceException(e.getMessage(), e);
         }
     }
 

@@ -120,6 +120,7 @@ public class BlindataServiceIT extends MetaserviceAppIT {
         policyEvaluationResultResource.setPolicy(policyResource);
         BDPolicyEvaluationRecord bdPolicyEvaluationRecord = new BDPolicyEvaluationRecord();
         bdPolicyEvaluationRecord.setEvaluationDate(policyEvaluationResultResource.getCreatedAt());
+        bdPolicyEvaluationRecord.setImplementationName("BlindataIT.policy.name");
         bdPolicyEvaluationRecord.setPolicyName(policyResource.getName());
         bdPolicyEvaluationRecord.setEvaluationResult(BDPolicyEvaluationRecord.BDPolicyEvaluationResult.VERIFIED);
         bdPolicyEvaluationRecord.setResolverKey("uuid");
