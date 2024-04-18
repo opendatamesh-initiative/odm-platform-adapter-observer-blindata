@@ -12,7 +12,7 @@ DOC_DIR="odm-site-platform/docs/assets/redoc/doc"
 SCRIPT_DIR="docs/assets/redoc/scripts"
 VERSION="$1"
 
-# Clone doc repository
+# Clone doc repositorygi
 git clone $DOC_REPO_URL
 cd $DOC_DIR
 
