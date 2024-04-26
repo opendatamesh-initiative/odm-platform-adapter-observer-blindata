@@ -54,6 +54,7 @@ spring:
     locations: classpath:db/migration/${FLYWAY_SCRIPTS_DIR}
     clean-on-validation-error: true
 
+
 ##########################
 # Blindata configuration
 ##########################
@@ -63,3 +64,21 @@ blindata:
   password: ${BLINDATA_PWD}
   tenantUUID: ${BLINDATA_TENANT}
   roleUuid: ${BLINDATA_ROLE}
+  systemNameRegex: "^([^:]+)"
+  systemTechnologyRegex: "(?!::)([^:]+)$"
+
+
+#############################
+# ODM projects configurations
+#############################
+odm:
+  productPlane:
+    registryService:
+      active: true
+      address: http://localhost:8001
+    policyService:
+      active: true
+      address: http://localhost:8005
+    notificationService:
+      active: true
+      address: http://localhost:8006
