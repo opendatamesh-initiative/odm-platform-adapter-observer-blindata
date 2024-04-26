@@ -17,7 +17,7 @@ fi
 mkdir "$DOC_DIR"
 
 # Find all redoc-static.html files
-REDOC_FILE="meta-service-blindata/target/redoc-static.html"
+REDOC_FILE="observer-blindata-server/target/redoc-static.html"
 
 # Check if any redoc-static.html files were found
 if [ -z "$REDOC_FILE" ]; then

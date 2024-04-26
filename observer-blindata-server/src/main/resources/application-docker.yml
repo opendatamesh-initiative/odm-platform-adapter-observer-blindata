@@ -75,10 +75,10 @@ odm:
   productPlane:
     registryService:
       active: true
-      address: http://localhost:8001
+      address: http://${REGISTRY_HOSTNAME}:${REGISTRY_PORT}
     policyService:
       active: true
-      address: http://localhost:8005
+      address: http://${POLICY_HOSTNAME}:${POLICY_PORT}
     notificationService:
       active: true
-      address: http://localhost:8006
+      address: http://${NOTIFICATION_HOSTNAME}:${NOTIFICATION_PORT}

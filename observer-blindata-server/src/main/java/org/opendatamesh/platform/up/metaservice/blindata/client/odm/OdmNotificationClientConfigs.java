@@ -23,7 +23,7 @@ public class OdmNotificationClientConfigs {
     private ObjectMapper objectMapper;
 
     @Bean
-    EventNotificationClient policyEvaluationResultClient(){
+    EventNotificationClient notificationClient(){
         if(active){
             return new NotificationClientImpl(
                     address,
