@@ -9,7 +9,7 @@ server:
   error:
     include-message: always
   servlet:
-    context-path: /api/v1/up/metaservice/
+    context-path: /api/v1/up/observer/
 
 ############################################
 # Spring configurations
@@ -18,41 +18,6 @@ server:
 spring:
   # Profile
   profile: dev
-  # JPA configuration
-  jpa:
-    hibernate:
-      ddl-auto: none
-      #show-sql: true
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    properties:
-      hibernate:
-        jdbc:
-          lob:
-            non_contextual_creation: true
-        schemas: ODMNOTIFICATION
-    database-platform: org.hibernate.dialect.H2Dialect
-  # DB
-  datasource:
-    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;
-    driverClassName: org.h2.Driver
-    username: sa
-    password:
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-  # FlyWay configuration
-  # More: https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.data-migration
-  flyway:
-    enabled: true
-    url: jdbc:h2:mem:testdb
-    user: sa
-    password:
-    #"flyway_schema_history" (i.e., default flyway table) on a different SCHEMA
-    schemas: ODMNOTIFICATION
-    locations: classpath:db/migration/h2
-    clean-on-validation-error: true
 
 ##########################
 # Other configuration

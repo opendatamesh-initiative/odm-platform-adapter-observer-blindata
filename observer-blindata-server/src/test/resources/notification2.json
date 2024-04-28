@@ -1,7 +1,9 @@
 {
+  "id": 1,
   "event" : {
-    "type": "DATA_PRODUCT_DELETED",
+    "id": 1,
+    "type": "DATA_PRODUCT_VERSION_CREATED",
     "entityId": "abc123",
-    "beforeState": "{\"fullyQualifiedName\":\"urn:org.opendatamesh:dataproduct:tripExecution\",\"description\":\"Thisisprod-\",\"domain\":\"Disney\"}"
+    "afterState": "{\"dataProductDescriptor\":\"1.0.0\",\"info\":{\"fullyQualifiedName\":\"urn:org.opendatamesh:dataproducts:tripExecution\",\"name\":\"tripExecution\",\"version\":\"1.0.3\",\"description\":\"Thisisprod-1\",\"domain\":\"sampleDomain\",\"owner\":{\"id\":\"john.doe@company-xyz.com\"}},\"interfaceComponents\":{\"outputPorts\":[]}}"
   }
 }

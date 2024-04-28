@@ -17,7 +17,7 @@ public class ConsumeService {
     @Autowired
     private EventNotificationClient notificationClient;
 
-    public void consumeEventNotification(EventNotificationResource eventNotificationResource) {
+    public EventNotificationResource consumeEventNotification(EventNotificationResource eventNotificationResource) {
         // Update reception time of notification on ODM Notification Service
         eventNotificationResource.setReceivedAt(new Date(System.currentTimeMillis()));
         eventNotificationResource = updateEventNotificationOnNotificationService(eventNotificationResource);
@@ -26,23 +26,24 @@ public class ConsumeService {
             case "DATA_PRODUCT_VERSION_DELETED":
                 eventNotificationResource = blindataService.handleDataProductDelete(eventNotificationResource);
                 eventNotificationResource.setProcessedAt(new Date(System.currentTimeMillis()));
-                updateEventNotificationOnNotificationService(eventNotificationResource);
+                eventNotificationResource = updateEventNotificationOnNotificationService(eventNotificationResource);
                 break;
             case "DATA_PRODUCT_UPDATED":
                 eventNotificationResource = blindataService.handleDataProductUpdate(eventNotificationResource);
                 eventNotificationResource.setProcessedAt(new Date(System.currentTimeMillis()));
-                updateEventNotificationOnNotificationService(eventNotificationResource);
+                eventNotificationResource = updateEventNotificationOnNotificationService(eventNotificationResource);
                 break;
             case "DATA_PRODUCT_VERSION_CREATED":
                 eventNotificationResource = blindataService.handleDataProductCreated(eventNotificationResource);
                 eventNotificationResource.setProcessedAt(new Date(System.currentTimeMillis()));
-                updateEventNotificationOnNotificationService(eventNotificationResource);
+                eventNotificationResource = updateEventNotificationOnNotificationService(eventNotificationResource);
                 break;
             default:
                 eventNotificationResource.setStatus(EventNotificationStatus.UNPROCESSABLE);
                 eventNotificationResource.setProcessedAt(new Date(System.currentTimeMillis()));
-                updateEventNotificationOnNotificationService(eventNotificationResource);
+                eventNotificationResource = updateEventNotificationOnNotificationService(eventNotificationResource);
         }
+        return eventNotificationResource;
     }
 
     private EventNotificationResource updateEventNotificationOnNotificationService(

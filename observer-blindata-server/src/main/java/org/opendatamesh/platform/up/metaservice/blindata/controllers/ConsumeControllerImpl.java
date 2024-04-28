@@ -13,8 +13,8 @@ public class ConsumeControllerImpl extends AbstractConsumeController {
     ConsumeService consumeService;
 
     @Override
-    public void consumeEventNotification(EventNotificationResource notification) {
-        consumeService.consumeEventNotification(notification);
+    public EventNotificationResource consumeEventNotification(EventNotificationResource notification) {
+        return consumeService.consumeEventNotification(notification);
     }
 
 }

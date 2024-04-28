@@ -31,7 +31,7 @@ import java.util.Optional;
 
 @TestPropertySource(properties = {"blindata.roleUuid=BlindataIT.role.uuid"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class BlindataServiceIT extends ObserverBlindataAppIT {
+public class BlindataServiceIT extends ODMObserverBlindataAppIT {
     @Autowired
     private BlindataService blindataService;
     @Autowired
