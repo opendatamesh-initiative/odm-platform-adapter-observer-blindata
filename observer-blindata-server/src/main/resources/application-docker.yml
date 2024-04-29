@@ -39,11 +39,11 @@ blindata:
 odm:
   productPlane:
     registryService:
-      active: true
+      active: ${REGISTRY_ACTIVE}
       address: http://${REGISTRY_HOSTNAME}:${REGISTRY_PORT}
     policyService:
-      active: true
+      active: ${POLICY_ACTIVE}
       address: http://${POLICY_HOSTNAME}:${POLICY_PORT}
     notificationService:
-      active: true
+      active: ${NOTIFICATION_ACTIVE}
       address: http://${NOTIFICATION_HOSTNAME}:${NOTIFICATION_PORT}
