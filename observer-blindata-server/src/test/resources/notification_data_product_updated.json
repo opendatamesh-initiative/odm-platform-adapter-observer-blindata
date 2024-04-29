@@ -4,7 +4,7 @@
     "id": 1,
     "type": "DATA_PRODUCT_CREATED",
     "entityId": "abc123",
-    "beforeState": "{\"fullyQualifiedName\":\"urn:org.opendatamesh:dataproduct:tripExecution\",\"description\":\"Thisisprod-1\",\"domain\":\"Disney\"}"
+    "beforeState": "{\"fullyQualifiedName\":\"urn:org.opendatamesh:dataproduct:tripExecution\",\"description\":\"Thisisprod-1\",\"domain\":\"Disney\"}",
     "afterState": "{\"fullyQualifiedName\":\"urn:org.opendatamesh:dataproduct:tripExecution\",\"description\":\"Thisisprod-1-updated\",\"domain\":\"Disney\"}"
   }
 }

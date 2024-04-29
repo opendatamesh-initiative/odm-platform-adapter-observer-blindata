@@ -19,7 +19,7 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.fail;
 
 @ExtendWith(SpringExtension.class)
-@ActiveProfiles("test")
+//@ActiveProfiles("test")
 //@ActiveProfiles("testpostgresql")
 //@ActiveProfiles("testmysql")
 @SpringBootTest(

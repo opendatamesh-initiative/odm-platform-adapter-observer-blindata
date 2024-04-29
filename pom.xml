@@ -30,7 +30,7 @@ License.
 	</parent>
 
     <groupId>org.opendatamesh</groupId>
-	<artifactId>odm-platform-up-observer-blindata</artifactId>
+	<artifactId>odm-platform-up-services-observer-blindata</artifactId>
 	<version>1.0.0</version>
 	<name>Blindata Observer Adapter</name>
 	<description>Blindata Observer Adapter of the Open Data Mesh Platform</description>

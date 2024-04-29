@@ -403,4 +403,46 @@ public class ConsumeIT extends ODMObserverBlindataAppIT {
 
     }
 
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void testNotificationCreate_DataProductVersionDeleted() throws IOException {
+
+        BDShortUserRes bdUser = new BDShortUserRes();
+        BDStewardshipRoleRes bdRole = new BDStewardshipRoleRes();
+        bdRole.setUuid("BlindataIT.role.uuid");
+
+        Mockito.when(bdUserClient.getBlindataUser(Mockito.any()))
+                .thenReturn(Optional.of(bdUser));
+        Mockito.when(bdStewardshipClient.getRole(Mockito.any()))
+                .thenReturn(bdRole);
+
+        EventNotificationResource notificationResource = createNotificationResource(
+                ODMObserverBlindataResources.NOTIFICATION_DATA_PRODUCT_VERSION_DELETED
+        );
+
+        DataProductVersionDPDS oldDataProduct = objectMapper.readValue(notificationResource.getEvent().getBeforeState(), DataProductVersionDPDS.class);
+
+        BDDataProductRes oldBDDataProduct = new BDDataProductRes();
+        oldBDDataProduct.setUuid("abc123");
+        oldBDDataProduct.setVersion(oldDataProduct.getInfo().getVersionNumber());
+        oldBDDataProduct.setDescription(oldDataProduct.getInfo().getDescription());
+        oldBDDataProduct.setDomain(oldDataProduct.getInfo().getDomain());
+        oldBDDataProduct.setName(oldDataProduct.getInfo().getName());
+        oldBDDataProduct.setDisplayName(oldDataProduct.getInfo().getDisplayName());
+
+        Mockito.when(bdDataProductClient.getDataProduct(Mockito.any()))
+                .thenReturn(Optional.of(oldBDDataProduct));
+        Mockito.doNothing().when(bdDataProductClient).deleteDataProduct(Mockito.any());
+
+        Mockito.when(notificationClient.updateEventNotification(Mockito.any(), Mockito.any()))
+                .thenAnswer(invocation -> invocation.getArgument(1));
+
+        ResponseEntity<ObjectNode> consumeResponse = consumeClient.consumeEventNotificationResponseEntity(notificationResource);
+        notificationResource = objectMapper.convertValue(consumeResponse.getBody(), EventNotificationResource.class);
+
+        Mockito.verify(notificationClient, Mockito.times(2)).updateEventNotification(Mockito.any(), Mockito.any());
+        assertThat(notificationResource.getStatus()).isEqualTo(EventNotificationStatus.PROCESSED);
+
+    }
+
 }
