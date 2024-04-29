@@ -13,8 +13,8 @@
 
     <groupId>org.opendatamesh</groupId>
     <artifactId>odm-platform-up-observer-blindata-server</artifactId>
-    <name>ODM Platform Meta Service Blindata Adapter</name>
-    <description>Open Data Mesh Platform Meta Service blindata.io adapter</description>
+    <name>ODM Platform Observer Blindata Adapter</name>
+    <description>Open Data Mesh Platform Observer blindata.io adapter</description>
     <version>1.0.0</version>
 
     <licenses>

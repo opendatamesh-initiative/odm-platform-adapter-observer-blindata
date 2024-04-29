@@ -1,6 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.opendatamesh.platform.core.commons.servers.exceptions.InternalServerException;
 import org.opendatamesh.platform.core.dpds.model.DataProductVersionDPDS;
 import org.opendatamesh.platform.core.dpds.model.info.InfoDPDS;
 import org.opendatamesh.platform.core.dpds.model.interfaces.PortDPDS;
@@ -17,6 +18,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.BlindataClientResourceMappingException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.proxies.ODMRegistryProxy;
+import org.opendatamesh.platform.up.observer.api.resources.errors.ObserverApiStandardErrors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,8 +78,11 @@ public class BlindataService {
             notificationRes.setProcessingOutput(e.getMessage());
             return notificationRes;
         } catch (Exception e) {
-            throw new RuntimeException(e);
-            //throw new MetaServiceException(e.getMessage(), e); // TODO: right errors
+            throw new InternalServerException(
+                    ObserverApiStandardErrors.SC500_01_GENERIC_OBSERVER_ERROR,
+                    e.getMessage(),
+                    e
+            );
         }
     }
 
@@ -117,8 +122,11 @@ public class BlindataService {
             notificationRes.setProcessingOutput(e.getMessage());
             return notificationRes;
         } catch (Exception e) {
-            throw new RuntimeException(e);
-            //throw new MetaServiceException(e.getMessage(), e); // TODO: right errors
+            throw new InternalServerException(
+                    ObserverApiStandardErrors.SC500_01_GENERIC_OBSERVER_ERROR,
+                    e.getMessage(),
+                    e
+            );
         }
     }
 
@@ -158,8 +166,11 @@ public class BlindataService {
             notificationRes.setProcessingOutput(e.getMessage());
             return notificationRes;
         } catch (Exception e) {
-            throw new RuntimeException(e);
-            //throw new MetaServiceException(e.getMessage(), e); // TODO: right errors
+            throw new InternalServerException(
+                    ObserverApiStandardErrors.SC500_01_GENERIC_OBSERVER_ERROR,
+                    e.getMessage(),
+                    e
+            );
         }
     }
 

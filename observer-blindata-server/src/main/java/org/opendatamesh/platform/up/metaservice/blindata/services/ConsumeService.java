@@ -28,11 +28,6 @@ public class ConsumeService {
                 eventNotificationResource.setProcessedAt(new Date(System.currentTimeMillis()));
                 eventNotificationResource = updateEventNotificationOnNotificationService(eventNotificationResource);
                 break;
-            case "DATA_PRODUCT_UPDATED":
-                eventNotificationResource = blindataService.handleDataProductUpdate(eventNotificationResource);
-                eventNotificationResource.setProcessedAt(new Date(System.currentTimeMillis()));
-                eventNotificationResource = updateEventNotificationOnNotificationService(eventNotificationResource);
-                break;
             case "DATA_PRODUCT_VERSION_CREATED":
                 eventNotificationResource = blindataService.handleDataProductCreated(eventNotificationResource);
                 eventNotificationResource.setProcessedAt(new Date(System.currentTimeMillis()));
