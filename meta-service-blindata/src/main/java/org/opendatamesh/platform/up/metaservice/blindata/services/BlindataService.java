@@ -304,7 +304,7 @@ public class BlindataService implements MetaService {
     private BDPolicyEvaluationRecord mapOdmEvaluationResultToBlindataEvaluationRecord(PolicyEvaluationResultResource odmPolicyEvaluationResult, BDDataProductRes bdDataProductCreated) {
         BDPolicyEvaluationRecord bdPolicyEvaluationRecord = new BDPolicyEvaluationRecord();
         bdPolicyEvaluationRecord.setPolicyName(odmPolicyEvaluationResult.getPolicy().getName());
-        bdPolicyEvaluationRecord.setSuiteName(odmPolicyEvaluationResult.getPolicy().getSuite());
+        bdPolicyEvaluationRecord.setImplementationName(odmPolicyEvaluationResult.getPolicy().getName());
         bdPolicyEvaluationRecord.setResolverKey("uuid");
         bdPolicyEvaluationRecord.setResolverValue(bdDataProductCreated.getUuid());
         bdPolicyEvaluationRecord.setResourceType(BDResourceType.DATA_PRODUCT);
