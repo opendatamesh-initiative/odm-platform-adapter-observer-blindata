@@ -52,7 +52,7 @@ public class ODMObserverBlindataAppIT extends ODMIntegrationTest {
     // Create test basic resources
     // ======================================================================================
 
-    protected EventNotificationResource createNotificationResource(String filePath) throws IOException {
+    protected EventNotificationResource createNotificationResource(String filePath) {
 
         try {
             return resourceBuilder.readResourceFromFile(filePath, EventNotificationResource.class);

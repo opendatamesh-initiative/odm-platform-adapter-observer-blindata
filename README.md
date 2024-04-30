@@ -2,7 +2,7 @@
 
 Observer adapter for [blindata.io](https://blindata.io/).
 
-Blindata is a SAAS platform that leverages Data Governance and Compliance to empower your Data Management projects.
+Blindata is a SaaS platform that leverages Data Governance and Compliance to empower your Data Management projects.
 The purpose of this adapter is to keep the business glossary within Blindata constantly updated. Upon the occurrence of a creation, deletion, or modification of a dataproduct, Blindata is immediately and automatically notified to ensure that its catalog remains aligned.
 
 *_This project have dependencies from the project [odm-platform](https://github.com/opendatamesh-initiative/odm-platform)_
