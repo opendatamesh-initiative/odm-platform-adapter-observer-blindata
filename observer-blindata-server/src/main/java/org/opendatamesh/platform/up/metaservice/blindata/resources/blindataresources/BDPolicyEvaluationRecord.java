@@ -9,7 +9,7 @@ public class BDPolicyEvaluationRecord {
 
     private String policyName;
 
-    private String suiteName;
+    private String implementationName;
 
     private String resolverKey;
 
@@ -34,14 +34,6 @@ public class BDPolicyEvaluationRecord {
 
     public void setPolicyName(String policyName) {
         this.policyName = policyName;
-    }
-
-    public String getSuiteName() {
-        return suiteName;
-    }
-
-    public void setSuiteName(String suiteName) {
-        this.suiteName = suiteName;
     }
 
     public String getResolverKey() {
@@ -90,6 +82,14 @@ public class BDPolicyEvaluationRecord {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImplementationName() {
+        return implementationName;
+    }
+
+    public void setImplementationName(String implementationName) {
+        this.implementationName = implementationName;
     }
 }
 
