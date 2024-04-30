@@ -21,4 +21,5 @@ public class RestClientConfig {
                 .setReadTimeout(Duration.ofSeconds(timeout))
                 .build();
     }
+
 }

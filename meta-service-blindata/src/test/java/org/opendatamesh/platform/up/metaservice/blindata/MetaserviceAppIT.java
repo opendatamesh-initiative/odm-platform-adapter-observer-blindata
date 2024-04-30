@@ -2,7 +2,10 @@ package org.opendatamesh.platform.up.metaservice.blindata;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.opendatamesh.platform.up.notification.api.clients.NotificationClient;
+import org.opendatamesh.platform.core.commons.test.ODMIntegrationTest;
+import org.opendatamesh.platform.core.commons.test.ODMResourceBuilder;
+import org.opendatamesh.platform.core.dpds.ObjectMapperFactory;
+import org.opendatamesh.platform.up.notification.api.clients.NotificationClientImpl;
 import org.opendatamesh.platform.up.notification.api.resources.NotificationResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,19 +15,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.jdbc.JdbcTestUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.util.Arrays;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @ExtendWith(SpringExtension.class)
-//@ActiveProfiles("dev")
+//@ActiveProfiles("test")
 //@ActiveProfiles("testpostgresql")
 //@ActiveProfiles("testmysql")
 @SpringBootTest(
@@ -32,14 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
         classes = {MetaserviceApp.class, BDClientTestConfigs.class},
         properties = "spring.main.allow-bean-definition-overriding=true"
 )
-public class MetaserviceAppIT {
+public class MetaserviceAppIT extends ODMIntegrationTest {
 
     @LocalServerPort
     protected String port;
 
-    protected NotificationClient notificationClient;
-
-    protected ResourceBuilder resourceBuilder;
+    protected NotificationClientImpl notificationClient;
 
     protected final String DB_TABLES_POSTGRESQL = "src/test/resources/db/tables_postgresql.txt";
 
@@ -51,27 +47,17 @@ public class MetaserviceAppIT {
 
     @PostConstruct
     public final void init() {
-        notificationClient = new NotificationClient("http://localhost:" + port);
-        resourceBuilder = new ResourceBuilder();
+        notificationClient = new NotificationClientImpl("http://localhost:" + port);
+        resourceBuilder = new ODMResourceBuilder(ObjectMapperFactory.JSON_MAPPER);
     }
 
     @BeforeEach
     public void cleanDbState(@Autowired JdbcTemplate jdbcTemplate, @Autowired Environment environment) throws IOException {
         String activeProfile = Arrays.stream(environment.getActiveProfiles()).findFirst().get();
-        String[] tableSet;
-        if (activeProfile.equals("testpostgresql")) {
-            tableSet = Files.readAllLines(new File(DB_TABLES_POSTGRESQL).toPath(), Charset.defaultCharset()).toArray(new String[0]);
-            System.out.println(tableSet);
-            JdbcTestUtils.deleteFromTables(
-                    jdbcTemplate,
-                    tableSet
-            );
-        } else if (activeProfile.equals("testmysql")) {
-            tableSet = Files.readAllLines(new File(DB_TABLES_MYSQL).toPath(), Charset.defaultCharset()).toArray(new String[0]);
-            JdbcTestUtils.deleteFromTables(
-                    jdbcTemplate,
-                    tableSet
-            );
+        if (activeProfile.equals("testpostgresql"))
+            truncateAllTablesFromDb(jdbcTemplate, new File(DB_TABLES_POSTGRESQL));
+        else if (activeProfile.equals("testmysql") || activeProfile.equals("localmysql")) {
+            truncateAllTablesFromDb(jdbcTemplate, new File(DB_TABLES_MYSQL));
         }
     }
 
@@ -87,7 +73,7 @@ public class MetaserviceAppIT {
                 NotificationResource.class
         );
 
-        ResponseEntity<NotificationResource> postResponse = notificationClient.createNotification(notificationResource);
+        ResponseEntity<NotificationResource> postResponse = notificationClient.createNotificationResponseEntity(notificationResource);
 
         verifyResponseEntity(postResponse, HttpStatus.CREATED, true);
 
@@ -102,7 +88,7 @@ public class MetaserviceAppIT {
                 NotificationResource.class
         );
 
-        ResponseEntity<NotificationResource> postResponse = notificationClient.createNotification(notificationResource);
+        ResponseEntity<NotificationResource> postResponse = notificationClient.createNotificationResponseEntity(notificationResource);
 
         verifyResponseEntity(postResponse, HttpStatus.CREATED, true);
 
@@ -110,23 +96,4 @@ public class MetaserviceAppIT {
 
     }
 
-
-    // ======================================================================================
-    // Verify test basic resources
-    // ======================================================================================
-
-    protected ResponseEntity verifyResponseEntity(
-            ResponseEntity responseEntity,
-            HttpStatus statusCode,
-            boolean checkBody
-    ) {
-        assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(statusCode);
-        if (checkBody)
-            assertThat(responseEntity.getBody()).isNotNull();
-        return responseEntity;
-    }
-
-    protected void verifyResponseError(ResponseEntity<Error> errorResponse, HttpStatus errorStatus) {
-        assertThat(errorResponse.getStatusCode()).isEqualByComparingTo(errorStatus);
-    }
 }
