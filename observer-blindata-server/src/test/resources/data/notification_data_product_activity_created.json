@@ -1,0 +1,8 @@
+{
+  "id": 1,
+  "event" : {
+    "id": 1,
+    "type": "DATA_PRODUCT_ACTIVITY_CREATED",
+    "entityId": "abc123"
+  }
+}

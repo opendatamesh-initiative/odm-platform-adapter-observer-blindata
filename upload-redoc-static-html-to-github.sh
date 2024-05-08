@@ -14,7 +14,7 @@ VERSION="$1"
 
 # Clone doc repositorygi
 git clone $DOC_REPO_URL
-cd $DOC_DIR
+cd $DOC_DIR || exit
 
 if [ -d "$VERSION" ]; then
 

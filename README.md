@@ -1,7 +1,8 @@
-# Open Data Mesh Meta Service Adapter for Blindata
+# Open Data Mesh Observer Blindata
 
-Meta service adapter for [blindata.io](https://blindata.io/)
-Blindata is a SAAS platform that leverages Data Governance and Compliance to empower your Data Management projects.
+Observer adapter for [blindata.io](https://blindata.io/).
+
+Blindata is a SaaS platform that leverages Data Governance and Compliance to empower your Data Management projects.
 The purpose of this adapter is to keep the business glossary within Blindata constantly updated. Upon the occurrence of a creation, deletion, or modification of a dataproduct, Blindata is immediately and automatically notified to ensure that its catalog remains aligned.
 
 *_This project have dependencies from the project [odm-platform](https://github.com/opendatamesh-initiative/odm-platform)_
@@ -23,7 +24,7 @@ Clone the repository and move to the project root folder
 
 ```bash
 git git clone https://github.com/opendatamesh-initiative/odm-platform.git
-cd odm-platform-pp-services
+cd odm-platform
 ```
 
 ### Compile dependencies
@@ -55,7 +56,7 @@ mvn clean package spring-boot:repackage -DskipTests
 Run the application:
 
 ```bash
-java -jar meta-service-blindata/target/odm-platform-up-meta-service-blindata-1.0.0.jar
+java -jar observer-blindata-server/target/odm-platform-up-services-observer-blindata-server-1.0.0.jar
 ```
 
 ## Run with Docker
@@ -78,63 +79,14 @@ You need to first execute the build locally by running the following command:
 mvn clean package spring-boot:repackage -DskipTests
 ```
 
-### Run database
-The image generated from Dockerfile contains only the application. It requires a database to run properly. The supported databases are MySql and Postgres. If you do not already have a database available, you can create one by running the following commands:
-
-**MySql**
-```bash
-docker run --name odm-meta-service-mysql-db -d -p 3306:3306  \
-   -e MYSQL_DATABASE=ODMNOTIFICATION \
-   -e MYSQL_ROOT_PASSWORD=root \
-   mysql:8
-```
-
-**Postgres**
-```bash
-docker run --name odm-meta-service-postgres-db -d -p 5432:5432  \
-   -e POSTGRES_DB=odm-meta-service-db \
-   -e POSTGRES_PASSWORD=postgres \
-   postgres:11-alpine
-```
-
-Check that the database has started correctly:
-
-**MySql**
-```bash
-docker logs odm-meta-service-mysql-db
-```
-
-*Postgres*
-```bash
-docker logs odm-meta-service-postgres-db
-```
 ### Build image
 Build the Docker image of the application and run it.
 
 *Before executing the following commands:
-* change properly the value of arguments `DATABASE_USERNAME`, `DATABASE_PASSWORD` and `DATABASE_URL`. Reported commands already contains right argument values if you have created the database using the commands above.
 * assign the value of arguments `BLINDATA_URL`, `BLINDATA_USER`, `BLINDATA_PWD`, `BLINDATA_TENANT` and `BLINDATA_ROLE`.
 
-**MySql**
 ```bash
-docker build -t odm-meta-service-mysql-app . -f Dockerfile \
-   --build-arg DATABASE_URL=jdbc:mysql://localhost:3306/ODMNOTIFICATION \
-   --build-arg DATABASE_USERNAME=root \
-   --build-arg DATABASE_PASSWORD=root \
-   --build-arg FLYWAY_SCRIPTS_DIR=mysql \
-   --build-arg BLINDATA_URL=<blindata-url> \
-   --build-arg BLINDATA_USER=<blindata-user> \
-   --build-arg BLINDATA_PWD=<blindata-pwd> \
-   --build-arg BLINDATA_TENANT=<blindata-tenant> \
-   --build-arg BLINDATA_ROLE=<blindata-role>
-```
-
-**Postgres**
-```bash
-docker build -t odm-meta-service-postgres-app . -f Dockerfile \
-   --build-arg DATABASE_URL=jdbc:postgresql://localhost:5432/odm-meta-service-db \
-   --build-arg DATABASE_USERNAME=postgres \
-   --build-arg DATABASE_PASSWORD=postgres \
+docker build -t odm-observer-blindata-app . -f Dockerfile \
    --build-arg BLINDATA_URL=<blindata-url> \
    --build-arg BLINDATA_USER=<blindata-user> \
    --build-arg BLINDATA_PWD=<blindata-pwd> \
@@ -145,40 +97,25 @@ docker build -t odm-meta-service-postgres-app . -f Dockerfile \
 ### Run application
 Run the Docker image.
 
-*Note: Before executing the following commands remove the argument `--net host` if the database is not running on `localhost`*
-
-**MySql**
 ```bash
-docker run --name odm-meta-service-mysql-app -p 9002:9002 --net host odm-meta-service-mysql-app
-```
-
-**Postgres**
-```bash
-docker run --name odm-meta-service-postgres-app -p 9002:9002 --net host odm-meta-service-postgres-app
+docker run --name odm-observer-blindata-app -p 9002:9002 odm-observer-blindata-app
 ```
 
 ### Stop application
 
-*Before executing the following commands:
-* change the DB name to `odm-meta-service-postgres-db` if you are using postgres and not mysql
-* change the instance name to `odm-meta-service-postgres-app` if you are using postgres and not mysql
-
 ```bash
-docker stop odm-meta-service-mysql-app
-docker stop odm-meta-service-mysql-db
+docker stop odm-observer-blindata-app
 ```
 To restart a stopped application execute the following commands:
 
 ```bash
-docker start odm-meta-service-mysql-db
-docker start odm-meta-service-mysql-app
+docker start odm-observer-blindata-app
 ```
 
 To remove a stopped application to rebuild it from scratch execute the following commands :
 
 ```bash
-docker rm odm-meta-service-mysql-app
-docker rm odm-meta-service-mysql-db
+docker rm odm-observer-blindata-app
 ```
 
 ## Run with Docker Compose
@@ -204,16 +141,21 @@ Build the docker-compose images of the application and a default PostgreSQL DB (
 
 Before building it, create a `.env` file in the root directory of the project similar to the following one:
 ```.dotenv
-DATABASE_NAME=odm-metaservice-db
-DATABASE_PASSWORD=pwd
-DATABASE_USERNAME=usr
-DATABASE_PORT=5434
 SPRING_PORT=9002
 BLINDATA_URL=<blindata-url>
 BLINDATA_USER=<blindata-user>
 BLINDATA_PWD=<blindata-pwd>
 BLINDATA_TENANT=<blindata-tenant-uuid>
 BLINDATA_ROLE=<blindata-role-uuid>
+REGISTRY_ACTIVE=true
+REGISTRY_HOSTNAME=localhost
+REGISTRY_PORT=8001
+POLICY_ACTIVE=true
+POLICY_HOSTNAME=localhost
+POLICY_PORT=8005
+NOTIFICATION_ACTIVE=true
+NOTIFICATION_HOSTNAME=localhost
+NOTIFICATION_PORT=8006
 ```
 *_Blindata parameters will be explained below_
 
@@ -250,20 +192,11 @@ docker-compose build --no-cache
 
 You can invoke REST endpoints through *OpenAPI UI* available at the following url:
 
-* [http://localhost:9002/api/v1/up/metaservice/swagger-ui/index.html](http://localhost:9002/api/v1/up/metaservice/swagger-ui/index.html)
-
-## Database
-
-If the application is running using an in memory instance of H2 database you can check the database content through H2 Web Console available at the following url:
-
-* [http://localhost:9002/api/v1/up/metaservice/h2-console](http://localhost:9002/api/v1/up/metaservice/h2-console)
-
-In all cases you can also use your favourite sql client providing the proper connection parameters
-
+* [http://localhost:9002/api/v1/up/observer/swagger-ui/index.html](http://localhost:9002/api/v1/up/observer/swagger-ui/index.html)
 
 ## Blindata configuration
 
-In order to connect with Blindata, you must specified some important values in file `application.yml` (or in `.env` file if you're running the application with docker-compose, or as build arguments if you're running the application through Docker)
+In order to connect with Blindata, you must specify some important values in file `application.yml` (or in `.env` file if you're running the application with docker-compose, or as build arguments if you're running the application through Docker)
 ```yaml
 blindata:
     url: the url where Blindata application is reachable 
@@ -273,16 +206,22 @@ blindata:
     roleUuid: A possible role identifier. You need this identifier to create or update responsibilities in Blindata (value optional)
     systemNameRegex: optional regex to extract system name from schema (value optional)
     systemTechnologyRegex : optional regex to extract system technology from schema (value optional)
+```
+
+## ODM configuration
+In order to connect with ODM microservices, you must specify some important values in file `application.yml` (or in `.env` file if you're running the application with docker-compose, or as build arguments if you're running the application through Docker)
+```yaml
 odm:
   productPlane:
     policyService:
-      active: If the ODM Policy Service is active or not
+      active: Whether the ODM Policy Service is active or not
       address: The address of ODM Policy Service
     registryService:
-      active: If the ODM Registry Service is active or not
+      active: Whether the ODM Registry Service is active or not
       address: The address of ODM Registry Service
-
-
+    notificationService:
+      active: Whether the ODM Notification Service is active or not
+      address: The address of ODM Notification Service
 ```
 
 ## Schema Definition
@@ -698,7 +637,4 @@ The following fields describe an individual column within a schema.
 - `clusterStatus`: Indicates the cluster status - STRING
 - `clusterKeyPosition`: Cluster key position -  NUMBER
 - `ordinalPosition`: Position in table -  NUMBER
-
-
-
 
