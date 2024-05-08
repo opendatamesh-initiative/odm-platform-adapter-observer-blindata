@@ -1,0 +1,49 @@
+##########################
+# Server configuration
+##########################
+app:
+  workdir:
+
+server:
+  port: ${SPRING_PORT}
+  error:
+    include-message: always
+  servlet:
+    context-path: /api/v1/up/observer/
+
+############################################
+# Spring configurations
+############################################
+
+spring:
+  # Profile
+  profile: docker
+
+
+##########################
+# Blindata configuration
+##########################
+blindata:
+  url: ${BLINDATA_URL}
+  user: ${BLINDATA_USER}
+  password: ${BLINDATA_PWD}
+  tenantUUID: ${BLINDATA_TENANT}
+  roleUuid: ${BLINDATA_ROLE}
+  systemNameRegex: "^([^:]+)"
+  systemTechnologyRegex: "(?!::)([^:]+)$"
+
+
+#############################
+# ODM projects configurations
+#############################
+odm:
+  productPlane:
+    registryService:
+      active: ${REGISTRY_ACTIVE}
+      address: http://${REGISTRY_HOSTNAME}:${REGISTRY_PORT}
+    policyService:
+      active: ${POLICY_ACTIVE}
+      address: http://${POLICY_HOSTNAME}:${POLICY_PORT}
+    notificationService:
+      active: ${NOTIFICATION_ACTIVE}
+      address: http://${NOTIFICATION_HOSTNAME}:${NOTIFICATION_PORT}

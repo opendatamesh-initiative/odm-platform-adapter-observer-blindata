@@ -2,27 +2,8 @@ version: '3.3'
 
 services:
 
-  # Postgresql 11 DB
-  PostgreSQL:
-    environment:
-      - POSTGRES_DB=${DATABASE_NAME}
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
-      - POSTGRES_USER=${DATABASE_USERNAME}
-      - PGPORT=${DATABASE_PORT}
-    image: postgres:11-alpine
-    env_file: .env
-    ports:
-      - "${DATABASE_PORT}:${DATABASE_PORT}"
-    volumes:
-      - postgres:/var/lib/postgresql/${DATABASE_NAME}/data:rw
-    healthcheck:
-      test: [ "CMD", "pg_isready -U postgres" ]
-      interval: 3s
-      timeout: 5s
-      retries: 5
-
   # Spring Boot app
-  meta-service:
+  observer-blindata:
     depends_on:
       - PostgreSQL
     build:
@@ -31,19 +12,20 @@ services:
       args:
         SPRING_PROFILES_ACTIVE: "docker"
         SPRING_PORT: "${SPRING_PORT}"
-        DATABASE_URL: "jdbc:postgresql://PostgreSQL:${DATABASE_PORT}/${DATABASE_NAME}"
-        DATABASE_USERNAME: "${DATABASE_USERNAME}"
-        DATABASE_PASSWORD: "${DATABASE_PASSWORD}"
-        DATABASE_SCHEMA: "ODMNOTIFICATION"
-        FLYWAY_SCRIPTS_DIR: "postgresql"
         BLINDATA_URL: "${BLINDATA_URL}"
         BLINDATA_USER: "${BLINDATA_USER}"
         BLINDATA_PWD: "${BLINDATA_PWD}"
         BLINDATA_TENANT: "${BLINDATA_TENANT}"
         BLINDATA_ROLE: "${BLINDATA_ROLE}"
+        REGISTRY_ACTIVE: "${REGISTRY_ACTIVE}"
+        REGISTRY_HOSTNAME: "${REGISTRY_HOSTNAME}"
+        REGISTRY_PORT: "${REGISTRY_PORT}"
+        POLICY_ACTIVE: "${POLICY_ACTIVE}"
+        POLICY_HOSTNAME: "${POLICY_HOSTNAME}"
+        POLICY_PORT: "${POLICY_PORT}"
+        NOTIFICATION_ACTIVE: "${NOTIFICATION_ACTIVE}"
+        NOTIFICATION_HOSTNAME: "${NOTIFICATION_HOSTNAME}"
+        NOTIFICATION_PORT: "${NOTIFICATION_PORT}"
     env_file: .env
     ports:
       - "${SPRING_PORT}:${SPRING_PORT}"
-
-volumes:
-  postgres:

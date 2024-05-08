@@ -30,10 +30,10 @@ License.
 	</parent>
 
     <groupId>org.opendatamesh</groupId>
-	<artifactId>odm-platform-up-blindata</artifactId>
+	<artifactId>odm-platform-up-services-observer-blindata</artifactId>
 	<version>1.0.0</version>
-	<name>Blindata Metaservice Adapter</name>
-	<description>Blindata metaservice adapter for Open Data Mesh Platform</description>
+	<name>Blindata Observer Adapter</name>
+	<description>Blindata Observer Adapter of the Open Data Mesh Platform</description>
 	<url>https://github.com/opendatamesh-initiative/odm-platform-up-services-meta-blindata</url>
     <packaging>pom</packaging>
 
@@ -79,11 +79,11 @@ License.
         <java.version>11</java.version>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
-        <metaservice.mainclass>org.opendatamesh.platform.up.metaservice.blindata.MetaserviceApp</metaservice.mainclass>
+        <metaservice.mainclass>org.opendatamesh.platform.up.metaservice.blindata.ObserverBlindataApp</metaservice.mainclass>
     </properties>
 
     <modules>
-     <module>meta-service-blindata</module>
+     <module>observer-blindata-server</module>
     </modules>
 
 </project>

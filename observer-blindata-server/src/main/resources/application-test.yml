@@ -1,0 +1,48 @@
+##########################
+# Server configuration
+##########################
+app:
+  workdir:
+
+server:
+  port: 9002
+  error:
+    include-message: always
+  servlet:
+    context-path: /api/v1/up/observer/
+
+############################################
+# Spring configurations
+############################################
+
+spring:
+  # Profile
+  profile: test
+
+##########################
+# Other configuration
+##########################
+blindata:
+  url: http://localhost:3000
+  user: "owner"
+  password: "owner123"
+  tenantUUID: "fc8dbadb-83b9-4c4a-baec-fc5a5f91f98b"
+  roleUuid: "777f0307-bf30-4f70-92a4-f0cf3bc3f436"
+  systemNameRegex: "^([^:]+)"
+  systemTechnologyRegex: "(?!::)([^:]+)$"
+
+
+#############################
+# ODM projects configurations
+#############################
+odm:
+  productPlane:
+    registryService:
+      active: true
+      address: http://localhost:8001
+    policyService:
+      active: true
+      address: http://localhost:8005
+    notificationService:
+      active: true
+      address: http://localhost:8006
