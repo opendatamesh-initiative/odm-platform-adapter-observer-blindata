@@ -74,6 +74,19 @@
             <version>1.6.11</version>
         </dependency>
 
+        <!-- Port schema analysis -->
+        <dependency>
+            <groupId>com.asyncapi</groupId>
+            <artifactId>asyncapi-core</artifactId>
+            <version>1.0.0-RC</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>1.11.3</version>
+        </dependency>
+
+
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -149,6 +162,7 @@
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
+
 
     </dependencies>
 

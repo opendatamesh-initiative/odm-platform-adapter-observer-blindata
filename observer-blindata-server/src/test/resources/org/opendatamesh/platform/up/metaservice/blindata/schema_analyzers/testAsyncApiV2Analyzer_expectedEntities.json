@@ -1,0 +1,126 @@
+{
+  "physicalEntities": [
+    {
+      "uuid": null,
+      "schema": null,
+      "name": "transportmng.tripexecution.devents.status",
+      "description": "This topic contains all the *domain events* related to `Trip` entity",
+      "dataSet": null,
+      "creationDate": null,
+      "modificationDate": null,
+      "physicalFields": [
+        {
+          "uuid": null,
+          "name": "tripStatusEvent.id",
+          "type": "string",
+          "ordinalPosition": 1,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripStatusEvent",
+          "type": "avro/binary",
+          "ordinalPosition": 0,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripStatusEvent.event_timestamp",
+          "type": "string",
+          "ordinalPosition": 3,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripStatusEvent.source_system",
+          "type": "string",
+          "ordinalPosition": 4,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripStatusEvent.event_type",
+          "type": "enum",
+          "ordinalPosition": 2,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        }
+      ],
+      "system": null,
+      "isConsentView": null,
+      "isHidden": null,
+      "tableType": "TOPIC",
+      "additionalProperties": []
+    },
+    {
+      "uuid": null,
+      "schema": null,
+      "name": "transportmng.tripexecution.devents.position",
+      "description": "This topic contains all the *domain events* related position tracking of `Trip` entity",
+      "dataSet": null,
+      "creationDate": null,
+      "modificationDate": null,
+      "physicalFields": [
+        {
+          "uuid": null,
+          "name": "tripPositionEvent.id",
+          "type": "string",
+          "ordinalPosition": 1,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripPositionEvent.position",
+          "type": "string",
+          "ordinalPosition": 2,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripPositionEvent.event_timestamp",
+          "type": "string",
+          "ordinalPosition": 3,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripPositionEvent",
+          "type": "avro/binary",
+          "ordinalPosition": 0,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        }
+      ],
+      "system": null,
+      "isConsentView": null,
+      "isHidden": null,
+      "tableType": "TOPIC",
+      "additionalProperties": []
+    }
+  ]
+}

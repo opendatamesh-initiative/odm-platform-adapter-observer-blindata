@@ -1,0 +1,520 @@
+{
+  "physicalEntities": [
+    {
+      "uuid": null,
+      "schema": "schema_name",
+      "name": "airline_freq",
+      "description": "The table that stores the updated status of each trip",
+      "dataSet": null,
+      "creationDate": null,
+      "modificationDate": null,
+      "physicalFields": [
+        {
+          "uuid": null,
+          "name": "apt_org",
+          "type": null,
+          "ordinalPosition": null,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "displayName",
+              "value": "Origin"
+            },
+            {
+              "name": "minLength",
+              "value": "0"
+            },
+            {
+              "name": "maxLength",
+              "value": "0"
+            },
+            {
+              "name": "precision",
+              "value": "0"
+            },
+            {
+              "name": "scale",
+              "value": "0"
+            },
+            {
+              "name": "minimum",
+              "value": "0"
+            },
+            {
+              "name": "maximum",
+              "value": "0"
+            },
+            {
+              "name": "partitionKeyPosition",
+              "value": "0"
+            },
+            {
+              "name": "clusterKeyPosition",
+              "value": "0"
+            },
+            {
+              "name": "isClassified",
+              "value": "false"
+            },
+            {
+              "name": "isUnique",
+              "value": "false"
+            },
+            {
+              "name": "exclusiveMinimum",
+              "value": "false"
+            },
+            {
+              "name": "exclusiveMaximum",
+              "value": "false"
+            },
+            {
+              "name": "readOnly",
+              "value": "false"
+            },
+            {
+              "name": "writeOnly",
+              "value": "false"
+            },
+            {
+              "name": "isNullable",
+              "value": "false"
+            },
+            {
+              "name": "isPartitionStatus",
+              "value": "false"
+            },
+            {
+              "name": "isClusterStatus",
+              "value": "false"
+            },
+            {
+              "name": "isRequired",
+              "value": "false"
+            }
+          ]
+        },
+        {
+          "uuid": null,
+          "name": "airline_code",
+          "type": null,
+          "ordinalPosition": null,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "displayName",
+              "value": "Airline ID"
+            },
+            {
+              "name": "minLength",
+              "value": "0"
+            },
+            {
+              "name": "maxLength",
+              "value": "0"
+            },
+            {
+              "name": "precision",
+              "value": "0"
+            },
+            {
+              "name": "scale",
+              "value": "0"
+            },
+            {
+              "name": "minimum",
+              "value": "0"
+            },
+            {
+              "name": "maximum",
+              "value": "0"
+            },
+            {
+              "name": "partitionKeyPosition",
+              "value": "0"
+            },
+            {
+              "name": "clusterKeyPosition",
+              "value": "0"
+            },
+            {
+              "name": "isClassified",
+              "value": "false"
+            },
+            {
+              "name": "isUnique",
+              "value": "false"
+            },
+            {
+              "name": "exclusiveMinimum",
+              "value": "false"
+            },
+            {
+              "name": "exclusiveMaximum",
+              "value": "false"
+            },
+            {
+              "name": "readOnly",
+              "value": "false"
+            },
+            {
+              "name": "writeOnly",
+              "value": "false"
+            },
+            {
+              "name": "isNullable",
+              "value": "false"
+            },
+            {
+              "name": "isPartitionStatus",
+              "value": "false"
+            },
+            {
+              "name": "isClusterStatus",
+              "value": "false"
+            },
+            {
+              "name": "isRequired",
+              "value": "false"
+            }
+          ]
+        },
+        {
+          "uuid": null,
+          "name": "ID",
+          "type": "VARCHAR",
+          "ordinalPosition": null,
+          "description": "The flight identifier.",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "displayName",
+              "value": "Identifier"
+            },
+            {
+              "name": "summary",
+              "value": "Inline description"
+            },
+            {
+              "name": "status",
+              "value": "statusa"
+            },
+            {
+              "name": "tags",
+              "value": "tag1"
+            },
+            {
+              "name": "tags",
+              "value": "tag2"
+            },
+            {
+              "name": "enum",
+              "value": "VALORE1"
+            },
+            {
+              "name": "enum",
+              "value": "VALORE2"
+            },
+            {
+              "name": "externalDocs",
+              "value": "https://"
+            },
+            {
+              "name": "pattern",
+              "value": "a regex"
+            },
+            {
+              "name": "format",
+              "value": "named pattern e.g. email"
+            },
+            {
+              "name": "minLength",
+              "value": "2"
+            },
+            {
+              "name": "maxLength",
+              "value": "10"
+            },
+            {
+              "name": "contentEncoding",
+              "value": "UTF-8"
+            },
+            {
+              "name": "contentMediaType",
+              "value": "application/json"
+            },
+            {
+              "name": "precision",
+              "value": "0"
+            },
+            {
+              "name": "scale",
+              "value": "10"
+            },
+            {
+              "name": "minimum",
+              "value": "0"
+            },
+            {
+              "name": "maximum",
+              "value": "10000"
+            },
+            {
+              "name": "partitionKeyPosition",
+              "value": "10000"
+            },
+            {
+              "name": "clusterKeyPosition",
+              "value": "2"
+            },
+            {
+              "name": "isClassified",
+              "value": "true"
+            },
+            {
+              "name": "isUnique",
+              "value": "true"
+            },
+            {
+              "name": "exclusiveMinimum",
+              "value": "true"
+            },
+            {
+              "name": "exclusiveMaximum",
+              "value": "false"
+            },
+            {
+              "name": "readOnly",
+              "value": "true"
+            },
+            {
+              "name": "writeOnly",
+              "value": "true"
+            },
+            {
+              "name": "isNullable",
+              "value": "false"
+            },
+            {
+              "name": "isPartitionStatus",
+              "value": "true"
+            },
+            {
+              "name": "isClusterStatus",
+              "value": "true"
+            },
+            {
+              "name": "isRequired",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "uuid": null,
+          "name": "apt_dst",
+          "type": null,
+          "ordinalPosition": null,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "displayName",
+              "value": "Destination"
+            },
+            {
+              "name": "minLength",
+              "value": "0"
+            },
+            {
+              "name": "maxLength",
+              "value": "0"
+            },
+            {
+              "name": "precision",
+              "value": "0"
+            },
+            {
+              "name": "scale",
+              "value": "0"
+            },
+            {
+              "name": "minimum",
+              "value": "0"
+            },
+            {
+              "name": "maximum",
+              "value": "0"
+            },
+            {
+              "name": "partitionKeyPosition",
+              "value": "0"
+            },
+            {
+              "name": "clusterKeyPosition",
+              "value": "0"
+            },
+            {
+              "name": "isClassified",
+              "value": "false"
+            },
+            {
+              "name": "isUnique",
+              "value": "false"
+            },
+            {
+              "name": "exclusiveMinimum",
+              "value": "false"
+            },
+            {
+              "name": "exclusiveMaximum",
+              "value": "false"
+            },
+            {
+              "name": "readOnly",
+              "value": "false"
+            },
+            {
+              "name": "writeOnly",
+              "value": "false"
+            },
+            {
+              "name": "isNullable",
+              "value": "false"
+            },
+            {
+              "name": "isPartitionStatus",
+              "value": "false"
+            },
+            {
+              "name": "isClusterStatus",
+              "value": "false"
+            },
+            {
+              "name": "isRequired",
+              "value": "false"
+            }
+          ]
+        },
+        {
+          "uuid": null,
+          "name": "flt_freq",
+          "type": null,
+          "ordinalPosition": null,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "displayName",
+              "value": "Flight Frequency"
+            },
+            {
+              "name": "minLength",
+              "value": "0"
+            },
+            {
+              "name": "maxLength",
+              "value": "0"
+            },
+            {
+              "name": "precision",
+              "value": "0"
+            },
+            {
+              "name": "scale",
+              "value": "0"
+            },
+            {
+              "name": "minimum",
+              "value": "0"
+            },
+            {
+              "name": "maximum",
+              "value": "0"
+            },
+            {
+              "name": "partitionKeyPosition",
+              "value": "0"
+            },
+            {
+              "name": "clusterKeyPosition",
+              "value": "0"
+            },
+            {
+              "name": "isClassified",
+              "value": "false"
+            },
+            {
+              "name": "isUnique",
+              "value": "false"
+            },
+            {
+              "name": "exclusiveMinimum",
+              "value": "false"
+            },
+            {
+              "name": "exclusiveMaximum",
+              "value": "false"
+            },
+            {
+              "name": "readOnly",
+              "value": "false"
+            },
+            {
+              "name": "writeOnly",
+              "value": "false"
+            },
+            {
+              "name": "isNullable",
+              "value": "false"
+            },
+            {
+              "name": "isPartitionStatus",
+              "value": "false"
+            },
+            {
+              "name": "isClusterStatus",
+              "value": "false"
+            },
+            {
+              "name": "isRequired",
+              "value": "false"
+            }
+          ]
+        }
+      ],
+      "system": null,
+      "isConsentView": null,
+      "isHidden": null,
+      "tableType": "VIEW",
+      "additionalProperties": [
+        {
+          "name": "status",
+          "value": "TESTING"
+        },
+        {
+          "name": "tags",
+          "value": "tag"
+        },
+        {
+          "name": "domain",
+          "value": "domain"
+        },
+        {
+          "name": "contactPoints",
+          "value": "contact"
+        },
+        {
+          "name": "scope",
+          "value": "private"
+        }
+      ]
+    }
+  ]
+}

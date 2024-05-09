@@ -1,10 +1,11 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
+import org.opendatamesh.platform.pp.registry.api.resources.ExternalComponentResource;
+
 import java.util.List;
 
 public interface OdmRegistryClient {
 
-    List<Integer> getSchemasId(String portID);
+    List<ExternalComponentResource> getApi(String apiName, String apiVersion);
 
-    String getSchemaContent(Integer schemaID);
 }

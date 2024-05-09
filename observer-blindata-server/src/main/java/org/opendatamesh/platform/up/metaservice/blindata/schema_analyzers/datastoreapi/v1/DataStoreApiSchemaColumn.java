@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.resources.schema;
+package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
-public class SchemaColumn {
+class DataStoreApiSchemaColumn {
 
 
     private String type;
@@ -53,7 +53,7 @@ public class SchemaColumn {
     private int clusterKeyPosition;
 
     @JsonCreator
-    public SchemaColumn(
+    public DataStoreApiSchemaColumn(
             @JsonProperty("type") String type,
             @JsonProperty("description") String description,
             @JsonProperty("name") String name,

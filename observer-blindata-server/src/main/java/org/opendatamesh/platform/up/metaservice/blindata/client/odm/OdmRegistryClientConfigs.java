@@ -1,6 +1,5 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,15 +18,12 @@ public class OdmRegistryClientConfigs {
 
     @Autowired
     private RestTemplate restTemplate;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Bean
     OdmRegistryClient odmRegistryClient() {
         if (active) {
             return new OdmRegistryClientImpl(
                     restTemplate,
-                    objectMapper,
                     address
             );
         } else {

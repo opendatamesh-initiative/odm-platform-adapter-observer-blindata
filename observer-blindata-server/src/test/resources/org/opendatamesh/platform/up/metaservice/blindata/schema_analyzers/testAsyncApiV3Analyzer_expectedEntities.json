@@ -1,0 +1,70 @@
+{
+  "physicalEntities": [
+    {
+      "uuid": null,
+      "schema": null,
+      "name": "transportmng.tripexecution.devents.status",
+      "description": null,
+      "dataSet": null,
+      "creationDate": null,
+      "modificationDate": null,
+      "physicalFields": [
+        {
+          "uuid": null,
+          "name": "tripStatusEvent.id",
+          "type": "string",
+          "ordinalPosition": 1,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripStatusEvent.event_timestamp",
+          "type": "string",
+          "ordinalPosition": 3,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripStatusEvent",
+          "type": null,
+          "ordinalPosition": 0,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripStatusEvent.source_system",
+          "type": "string",
+          "ordinalPosition": 4,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripStatusEvent.event_type",
+          "type": "enum",
+          "ordinalPosition": 2,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        }
+      ],
+      "system": null,
+      "isConsentView": null,
+      "isHidden": null,
+      "tableType": "TOPIC",
+      "additionalProperties": []
+    }
+  ]
+}

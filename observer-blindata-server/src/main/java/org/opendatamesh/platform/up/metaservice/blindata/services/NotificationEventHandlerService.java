@@ -1,7 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.opendatamesh.platform.core.commons.servers.exceptions.InternalServerException;
 import org.opendatamesh.platform.core.dpds.model.DataProductVersionDPDS;
 import org.opendatamesh.platform.core.dpds.model.info.InfoDPDS;
 import org.opendatamesh.platform.core.dpds.model.interfaces.PortDPDS;
@@ -15,10 +14,6 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDPolic
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDStewardshipClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDUserClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.*;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.BlindataClientException;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.BlindataClientResourceMappingException;
-import org.opendatamesh.platform.up.metaservice.blindata.services.proxies.ODMRegistryProxy;
-import org.opendatamesh.platform.up.observer.api.resources.errors.ObserverApiStandardErrors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +30,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class BlindataService {
-    
+public class NotificationEventHandlerService {
+
     @Autowired
     private BDPolicyEvaluationResultClient bdPolicyEvaluationResultClient;
     @Autowired
@@ -46,16 +41,16 @@ public class BlindataService {
     @Autowired
     private BDStewardshipClient bdStewardshipClient;
     @Autowired
-    private PolicyEvaluationResultClient odmPolicyEvaluationResultsClient;
+    private PolicyEvaluationResultClient policyEvaluationResultClient;
     @Autowired
     ObjectMapper objectMapper;
     @Autowired
-    private ODMRegistryProxy odmPlatformService;
+    private DataProductPortAssetAnalyzer odmPlatformService;
 
-    private static final Logger logger = LoggerFactory.getLogger(BlindataService.class);
+    private static final Logger logger = LoggerFactory.getLogger(NotificationEventHandlerService.class);
     @Value("${blindata.roleUuid}")
     private String roleUuid;
-    
+
     public EventNotificationResource handleDataProductDelete(EventNotificationResource notificationRes) {
         try {
             InfoDPDS infoProductToDelete = objectMapper.readValue(
@@ -72,17 +67,11 @@ public class BlindataService {
             }
             notificationRes.setStatus(EventNotificationStatus.PROCESSED);
             return notificationRes;
-        } catch (BlindataClientException | BlindataClientResourceMappingException e) {
+        } catch (Exception e) {
             logger.warn(e.getMessage(), e);
             notificationRes.setStatus(EventNotificationStatus.PROCESS_ERROR);
             notificationRes.setProcessingOutput(e.getMessage());
             return notificationRes;
-        } catch (Exception e) {
-            throw new InternalServerException(
-                    ObserverApiStandardErrors.SC500_01_GENERIC_OBSERVER_ERROR,
-                    e.getMessage(),
-                    e
-            );
         }
     }
 
@@ -116,17 +105,11 @@ public class BlindataService {
                 handleDataProductUpdate(notificationRes);
             }
             return notificationRes;
-        } catch (BlindataClientException | BlindataClientResourceMappingException e) {
+        } catch (Exception e) {
             logger.warn(e.getMessage(), e);
             notificationRes.setStatus(EventNotificationStatus.PROCESS_ERROR);
             notificationRes.setProcessingOutput(e.getMessage());
             return notificationRes;
-        } catch (Exception e) {
-            throw new InternalServerException(
-                    ObserverApiStandardErrors.SC500_01_GENERIC_OBSERVER_ERROR,
-                    e.getMessage(),
-                    e
-            );
         }
     }
 
@@ -139,15 +122,14 @@ public class BlindataService {
             Optional<BDDataProductRes> oldBdDataProduct = bdDataProductClient.getDataProduct(odmDataProductInfo.getFullyQualifiedName());
 
             if (oldBdDataProduct.isPresent()) {
-                BDDataProductRes dataProductResourceForUpdate = buildBDDataProductRes(odmDataProductInfo, getDataProductsPorts(odmDataProduct));
+                BDDataProductRes dataProductResourceForUpdate = buildBDDataProductRes(odmDataProductInfo, generateBDPortsFromODMProductVersion(odmDataProduct));
                 dataProductResourceForUpdate.setUuid(oldBdDataProduct.get().getUuid());
 
                 BDDataProductRes updatedDataProduct = bdDataProductClient.updateDataProduct(dataProductResourceForUpdate);
                 if (updatedDataProduct != null) {
                     logger.info("Updated Data Product to Blindata: {}", updatedDataProduct.getDisplayName());
 
-                    BDProductPortAssetsRes odmDataProductAssets = getAssetsFromPorts(odmDataProduct);
-                    bdDataProductClient.createDataProductAssets(odmDataProductAssets);
+                    createDataProductAssetsOnBlindata(odmDataProduct, updatedDataProduct);
 
                     if (odmDataProductInfo.getOwner() != null && StringUtils.hasText(roleUuid)) {
                         assignResponsibility(updatedDataProduct, odmDataProductInfo.getOwner().getId());
@@ -160,31 +142,25 @@ public class BlindataService {
                 }
             }
             return notificationRes;
-        } catch (BlindataClientResourceMappingException | BlindataClientException e) {
+        } catch (Exception e) {
             logger.warn(e.getMessage(), e);
             notificationRes.setStatus(EventNotificationStatus.PROCESS_ERROR);
             notificationRes.setProcessingOutput(e.getMessage());
             return notificationRes;
-        } catch (Exception e) {
-            throw new InternalServerException(
-                    ObserverApiStandardErrors.SC500_01_GENERIC_OBSERVER_ERROR,
-                    e.getMessage(),
-                    e
-            );
         }
     }
 
-    private List<BDDataProductPortRes> getDataProductsPorts(DataProductVersionDPDS dataProductVersionRes) {
+    private List<BDDataProductPortRes> generateBDPortsFromODMProductVersion(DataProductVersionDPDS dataProductVersionRes) {
         List<BDDataProductPortRes> ports = new ArrayList<>();
-        dataProductVersionRes.getInterfaceComponents().getInputPorts().forEach(portResource -> ports.add(validatePort(portResource, "inputPorts")));
-        dataProductVersionRes.getInterfaceComponents().getOutputPorts().forEach(portResource -> ports.add(validatePort(portResource, "outputPorts")));
-        dataProductVersionRes.getInterfaceComponents().getObservabilityPorts().forEach(portResource -> ports.add(validatePort(portResource, "observabilityPorts")));
-        dataProductVersionRes.getInterfaceComponents().getDiscoveryPorts().forEach(portResource -> ports.add(validatePort(portResource, "discoveryPorts")));
-        dataProductVersionRes.getInterfaceComponents().getControlPorts().forEach(portResource -> ports.add(validatePort(portResource, "controlPorts")));
+        dataProductVersionRes.getInterfaceComponents().getInputPorts().forEach(portResource -> ports.add(ODMPortToBDPort(portResource, "inputPorts")));
+        dataProductVersionRes.getInterfaceComponents().getOutputPorts().forEach(portResource -> ports.add(ODMPortToBDPort(portResource, "outputPorts")));
+        dataProductVersionRes.getInterfaceComponents().getObservabilityPorts().forEach(portResource -> ports.add(ODMPortToBDPort(portResource, "observabilityPorts")));
+        dataProductVersionRes.getInterfaceComponents().getDiscoveryPorts().forEach(portResource -> ports.add(ODMPortToBDPort(portResource, "discoveryPorts")));
+        dataProductVersionRes.getInterfaceComponents().getControlPorts().forEach(portResource -> ports.add(ODMPortToBDPort(portResource, "controlPorts")));
         return ports;
     }
 
-    private BDDataProductPortRes validatePort(PortDPDS portResource, String entityType) {
+    private BDDataProductPortRes ODMPortToBDPort(PortDPDS portResource, String entityType) {
         BDDataProductPortRes port = new BDDataProductPortRes();
         port.setDisplayName(portResource.getDisplayName());
         port.setDescription(portResource.getDescription());
@@ -282,21 +258,22 @@ public class BlindataService {
         notificationRes.setProcessingOutput("Deleted");
     }
 
-    private void createDataProductAssetsOnBlindata(DataProductVersionDPDS odmDataProduct, BDDataProductRes bdDataProductCreated) { //TODO change this to the client
+    private void createDataProductAssetsOnBlindata(DataProductVersionDPDS odmDataProduct, BDDataProductRes bdDataProduct) {
         BDProductPortAssetsRes odmDataProductAssets = getAssetsFromPorts(odmDataProduct);
         if (!CollectionUtils.isEmpty(odmDataProductAssets.getPorts())) {
             bdDataProductClient.createDataProductAssets(odmDataProductAssets);
-            logger.info("Assets created for Data Product: {}", bdDataProductCreated.getName());
+            logger.info("Assets created for Data Product: {}", bdDataProduct.getName());
         }
     }
 
     private BDDataProductRes createDataProductOnBlindata(InfoDPDS odmDataProductInfo, DataProductVersionDPDS odmDataProduct) {
-        BDDataProductRes bdDataProductToCreate = buildBDDataProductRes(odmDataProductInfo, getDataProductsPorts(odmDataProduct));
+        BDDataProductRes bdDataProductToCreate = buildBDDataProductRes(odmDataProductInfo, generateBDPortsFromODMProductVersion(odmDataProduct));
         return bdDataProductClient.createDataProduct(bdDataProductToCreate);
     }
 
     private void uploadPolicyEvaluationResultsOnBlindata(InfoDPDS odmDataProductInfo, BDDataProductRes bdDataProductCreated) {
         Page<PolicyEvaluationResultResource> odmPolicyEvaluationResults = findOdmPolicyEvaluationResults(odmDataProductInfo);
+        if (odmPolicyEvaluationResults.isEmpty()) return;
         BDPolicyEvaluationRecords bdPolicyEvaluationRecords = mapOdmPolicyEvaluationResultsToBlindataPolicyEvaluationRecords(odmPolicyEvaluationResults, bdDataProductCreated);
         logger.info("Starting uploading policy evaluation results to Blindata");
         BDUploadResultsMessage uploadResultsMessage = bdPolicyEvaluationResultClient.createPolicyEvaluationRecords(bdPolicyEvaluationRecords);
@@ -328,6 +305,6 @@ public class BlindataService {
     private Page<PolicyEvaluationResultResource> findOdmPolicyEvaluationResults(InfoDPDS odmDataProductInfo) {
         PolicyEvaluationResultSearchOptions policyEvaluationResultFilters = new PolicyEvaluationResultSearchOptions();
         policyEvaluationResultFilters.setDataProductId(odmDataProductInfo.getDataProductId());
-        return odmPolicyEvaluationResultsClient.getPolicyEvaluationResults(PageRequest.ofSize(Integer.MAX_VALUE), policyEvaluationResultFilters);
+        return policyEvaluationResultClient.getPolicyEvaluationResults(PageRequest.ofSize(Integer.MAX_VALUE), policyEvaluationResultFilters);
     }
 }

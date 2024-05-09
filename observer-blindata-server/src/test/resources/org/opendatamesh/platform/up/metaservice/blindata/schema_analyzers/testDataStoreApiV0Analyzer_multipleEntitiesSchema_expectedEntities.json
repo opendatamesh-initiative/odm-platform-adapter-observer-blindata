@@ -1,0 +1,306 @@
+{
+  "physicalEntities": [
+    {
+      "uuid": null,
+      "schema": "schema_name",
+      "name": "Customer",
+      "description": null,
+      "dataSet": null,
+      "creationDate": null,
+      "modificationDate": null,
+      "physicalFields": [
+        {
+          "uuid": null,
+          "name": "ID",
+          "type": "VARCHAR",
+          "ordinalPosition": null,
+          "description": "The customer identifier.",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "displayName",
+              "value": "Identifier"
+            },
+            {
+              "name": "summary",
+              "value": "Inline description"
+            },
+            {
+              "name": "status",
+              "value": "come sopra"
+            },
+            {
+              "name": "tags",
+              "value": "tag1"
+            },
+            {
+              "name": "tags",
+              "value": "tag2"
+            },
+            {
+              "name": "enum",
+              "value": "VAL1"
+            },
+            {
+              "name": "enum",
+              "value": "VAL2"
+            },
+            {
+              "name": "externalDocs",
+              "value": "https://www.google.it/"
+            },
+            {
+              "name": "classificationLevel",
+              "value": "INTERNAL"
+            },
+            {
+              "name": "pattern",
+              "value": "^[0-9]+$"
+            },
+            {
+              "name": "format",
+              "value": "named pattern e.g. email"
+            },
+            {
+              "name": "minLength",
+              "value": "2"
+            },
+            {
+              "name": "maxLength",
+              "value": "10"
+            },
+            {
+              "name": "contentEncoding",
+              "value": "UTF-8"
+            },
+            {
+              "name": "contentMediaType",
+              "value": "application/json"
+            },
+            {
+              "name": "precision",
+              "value": "0"
+            },
+            {
+              "name": "scale",
+              "value": "10"
+            },
+            {
+              "name": "minimum",
+              "value": "0"
+            },
+            {
+              "name": "maximum",
+              "value": "10000"
+            },
+            {
+              "name": "partitionKeyPosition",
+              "value": "10000"
+            },
+            {
+              "name": "clusterKeyPosition",
+              "value": "2"
+            },
+            {
+              "name": "isClassified",
+              "value": "true"
+            },
+            {
+              "name": "isUnique",
+              "value": "true"
+            },
+            {
+              "name": "exclusiveMinimum",
+              "value": "true"
+            },
+            {
+              "name": "exclusiveMaximum",
+              "value": "false"
+            },
+            {
+              "name": "readOnly",
+              "value": "true"
+            },
+            {
+              "name": "writeOnly",
+              "value": "true"
+            },
+            {
+              "name": "isNullable",
+              "value": "false"
+            },
+            {
+              "name": "isPartitionStatus",
+              "value": "true"
+            },
+            {
+              "name": "isClusterStatus",
+              "value": "true"
+            },
+            {
+              "name": "isRequired",
+              "value": "true"
+            }
+          ]
+        }
+      ],
+      "system": null,
+      "isConsentView": null,
+      "isHidden": null,
+      "tableType": null,
+      "additionalProperties": []
+    },
+    {
+      "uuid": null,
+      "schema": "schema_name",
+      "name": "Payment",
+      "description": null,
+      "dataSet": null,
+      "creationDate": null,
+      "modificationDate": null,
+      "physicalFields": [
+        {
+          "uuid": null,
+          "name": "ID",
+          "type": "VARCHAR",
+          "ordinalPosition": null,
+          "description": "The customer identifier.",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "displayName",
+              "value": "Identifier"
+            },
+            {
+              "name": "summary",
+              "value": "Inline description"
+            },
+            {
+              "name": "status",
+              "value": "come sopra"
+            },
+            {
+              "name": "tags",
+              "value": "tag1"
+            },
+            {
+              "name": "tags",
+              "value": "tag2"
+            },
+            {
+              "name": "enum",
+              "value": "VAL1"
+            },
+            {
+              "name": "enum",
+              "value": "VAL2"
+            },
+            {
+              "name": "externalDocs",
+              "value": "https://www.google.it/"
+            },
+            {
+              "name": "classificationLevel",
+              "value": "INTERNAL"
+            },
+            {
+              "name": "pattern",
+              "value": "^[0-9]+$"
+            },
+            {
+              "name": "format",
+              "value": "named pattern e.g. email"
+            },
+            {
+              "name": "minLength",
+              "value": "2"
+            },
+            {
+              "name": "maxLength",
+              "value": "10"
+            },
+            {
+              "name": "contentEncoding",
+              "value": "UTF-8"
+            },
+            {
+              "name": "contentMediaType",
+              "value": "application/json"
+            },
+            {
+              "name": "precision",
+              "value": "0"
+            },
+            {
+              "name": "scale",
+              "value": "10"
+            },
+            {
+              "name": "minimum",
+              "value": "0"
+            },
+            {
+              "name": "maximum",
+              "value": "10000"
+            },
+            {
+              "name": "partitionKeyPosition",
+              "value": "10000"
+            },
+            {
+              "name": "clusterKeyPosition",
+              "value": "2"
+            },
+            {
+              "name": "isClassified",
+              "value": "true"
+            },
+            {
+              "name": "isUnique",
+              "value": "true"
+            },
+            {
+              "name": "exclusiveMinimum",
+              "value": "true"
+            },
+            {
+              "name": "exclusiveMaximum",
+              "value": "false"
+            },
+            {
+              "name": "readOnly",
+              "value": "true"
+            },
+            {
+              "name": "writeOnly",
+              "value": "true"
+            },
+            {
+              "name": "isNullable",
+              "value": "false"
+            },
+            {
+              "name": "isPartitionStatus",
+              "value": "true"
+            },
+            {
+              "name": "isClusterStatus",
+              "value": "true"
+            },
+            {
+              "name": "isRequired",
+              "value": "true"
+            }
+          ]
+        }
+      ],
+      "system": null,
+      "isConsentView": null,
+      "isHidden": null,
+      "tableType": null,
+      "additionalProperties": []
+    }
+  ]
+}

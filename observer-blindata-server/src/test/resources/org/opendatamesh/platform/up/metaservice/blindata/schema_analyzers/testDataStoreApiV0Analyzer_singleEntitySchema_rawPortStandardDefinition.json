@@ -1,0 +1,116 @@
+{
+  "datastoreapi":"1.0.0",
+  "info":{
+    "databaseName":"airlinedemo",
+    "nameSpace":"nome_schema",
+    "title":"flight_frequency Data",
+    "summary":"This API exposes the current flight_frequency data of each `Airline` entity",
+    "version":"1.0.0",
+    "datastoreName":"flight_frequency"
+  },
+  "services":{
+    "development":{
+      "serverInfo":{
+        "$ref": ""
+      },
+      "serverVariables":{
+        "host": ""
+      }
+    }
+  },
+  "schema":{
+    "name": "airline_freq",
+    "kind": "TABULAR",
+    "comments": "commento",
+    "examples": [
+      {"id": 1, "name": "name"}
+    ],
+    "status": "TESTING",
+    "tags": "tag",
+    "owner": "owner",
+    "domain": "domain",
+    "contactpoints": "contact",
+    "scope": "private",
+    "version": "1.0.0",
+    "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq",
+    "displayName": "Trips Status Table",
+    "description": "The table that stores the updated status of each trip",
+    "physicalType": "VIEW",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "The flight identifier.",
+        "name": "ID",
+        "kind": "ATTRIBUTE",
+        "required": true,
+        "displayName": "Identifier",
+        "summary": "Inline description",
+        "comments": "comment",
+        "examples": ["1234567", "988654"],
+        "status": "statusa",
+        "tags": ["tag1", "tag2"],
+        "externalDocs": "https://",
+        "default": null,
+        "isClassified": true,
+        "classificationLevel": "",
+        "isUnique": true,
+        "isNullable": false,
+        "pattern": "a regex",
+        "format": "named pattern e.g. email",
+        "enum": ["VALORE1", "VALORE2"],
+        "minLength": 2,
+        "maxLength": 10,
+        "contentEncoding": "UTF-8",
+        "contentMediaType": "application/json",
+        "precision": 0,
+        "scale": 10,
+        "minimum": 0,
+        "exclusiveMinimum": true,
+        "maximum": 10000,
+        "exclusiveMaximum": false,
+        "readOnly": true,
+        "writeOnly": true,
+        "physicalType": "VARCHAR",
+        "partitionStatus": true,
+        "partitionKeyPosition": 2,
+        "clusterStatus": true,
+        "clusterKeyPosition": 2
+      },
+      "airline_code": {
+        "name": "airline_code",
+        "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.id",
+        "displayName": "Airline ID",
+        "type": "VARCHAR",
+        "dataLength": "50",
+        "columnConstraint": "PRIMARY_KEY",
+        "ordinalPosition": 1
+      },
+      "apt_org": {
+        "name": "apt_org",
+        "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.apt_org",
+        "displayName": "Origin",
+        "dataType": "VARCHAR",
+        "dataLength": "50",
+        "columnConstraint": "PRIMARY_KEY",
+        "ordinalPosition": 2
+      },
+      "apt_dst": {
+        "name": "apt_dst",
+        "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.apt_dst",
+        "displayName": "Destination",
+        "dataType": "VARCHAR",
+        "dataLength": "50",
+        "columnConstraint": "PRIMARY_KEY",
+        "ordinalPosition": 3
+      },
+      "flt_freq": {
+        "name": "flt_freq",
+        "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.trip_status.flt_freq",
+        "displayName": "Flight Frequency",
+        "dataType": "INTEGER",
+        "columnConstraint": "NOT_NULL",
+        "ordinalPosition": 4
+      }
+    }
+  }
+}

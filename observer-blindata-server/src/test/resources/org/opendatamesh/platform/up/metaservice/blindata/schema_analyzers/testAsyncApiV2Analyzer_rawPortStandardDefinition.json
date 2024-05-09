@@ -1,0 +1,195 @@
+{
+  "mediaType": "text/json",
+  "asyncapi": "2.5.0",
+  "info": {
+    "title": "Trip Status Streaming API",
+    "version": "1.0.0",
+    "description": "This API exposes all events related to `Trip` entity"
+  },
+  "servers": {
+    "development": {
+      "url": "https://company-xyz.com/platform/dev/confluent-cloud",
+      "description": "Confluent Cloud DEV bootstrap server",
+      "protocol": "kafka",
+      "protocolVersion": "latest",
+      "bindings": {
+        "kafka": {
+          "schemaRegistryUrl": "https://company-xyz.com/platform/dev/confluent-schema-registry",
+          "schemaRegistryVendor": "confluent"
+        }
+      }
+    },
+    "production": {
+      "url": "https://company-xyz.com/platform/prod/confluent-cloud",
+      "description": "Confluent Cloud PRODUCTION bootstrap server",
+      "protocol": "kafka",
+      "protocolVersion": "latest",
+      "bindings": {
+        "kafka": {
+          "schemaRegistryUrl": "https://company-xyz.com/platform/prod/confluent-schema-registry",
+          "schemaRegistryVendor": "confluent"
+        }
+      }
+    }
+  },
+  "defaultContentType": "avro/binary",
+  "channels": {
+    "transportmng.tripexecution.devents.status": {
+      "description": "This topic contains all the *domain events* related to `Trip` entity",
+      "subscribe": {
+        "operationId": "readTripStatusEvents",
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "message": {
+          "messageId": "tripStatusEvent",
+          "contentType": "avro/binary",
+          "schemaFormat": "application/vnd.apache.avro",
+          "payload": {
+            "type": "record",
+            "name": "TripStatusChange",
+            "namespace": "com.company-xyz.transportmng.tripexecution",
+            "fields": [
+              {
+                "name": "id",
+                "type": {
+                  "avro.java.string": "String",
+                  "type": "string"
+                }
+              },
+              {
+                "name": "event_type",
+                "type": {
+                  "name": "tripEvent",
+                  "symbols": [
+                    "planned",
+                    "booking_started",
+                    "booking_ended",
+                    "loading_started",
+                    "loading_ended",
+                    "departed_from_origin",
+                    "unloading_at_stop_started",
+                    "unloading_at_stop_ended",
+                    "loading_at_stop_started",
+                    "loading_at_stop_ended",
+                    "departed_from_stop",
+                    "arrived_at_destination",
+                    "unloading_started",
+                    "unloading_ended",
+                    "completed"
+                  ],
+                  "type": "enum"
+                }
+              },
+              {
+                "name": "event_timestamp",
+                "type": {
+                  "avro.java.string": "String",
+                  "type": "string"
+                }
+              },
+              {
+                "name": "source_system",
+                "default": "TMS",
+                "type": {
+                  "avro.java.string": "String",
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "bindings": {
+            "kafka": {
+              "schemaIdPayloadEncoding": "confluent",
+              "schemaLookupStrategy": "TopicIdStrategy",
+              "key": {
+                "type": "string",
+                "enum": [
+                  "id"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "bindings": {
+        "kafka": {
+          "partitions": 20,
+          "replicas": 3
+        }
+      }
+    },
+    "transportmng.tripexecution.devents.position": {
+      "description": "This topic contains all the *domain events* related position tracking of `Trip` entity",
+      "subscribe": {
+        "operationId": "readTripPositionEvents",
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "message": {
+          "messageId": "tripPositionEvent",
+          "contentType": "avro/binary",
+          "schemaFormat": "application/vnd.apache.avro",
+          "payload": {
+            "type": "record",
+            "name": "TripPositionNotification",
+            "namespace": "com.company-xyz.transportmng.tripexecution",
+            "fields": [
+              {
+                "name": "id",
+                "type": {
+                  "avro.java.string": "String",
+                  "type": "string"
+                }
+              },
+              {
+                "name": "position",
+                "type": {
+                  "avro.java.string": "String",
+                  "type": "string"
+                }
+              },
+              {
+                "name": "event_timestamp",
+                "type": {
+                  "avro.java.string": "String",
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "bindings": {
+            "kafka": {
+              "schemaIdPayloadEncoding": "confluent",
+              "schemaLookupStrategy": "TopicIdStrategy",
+              "key": {
+                "type": "string",
+                "enum": [
+                  "id"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "bindings": {
+        "kafka": {
+          "partitions": 20,
+          "replicas": 3
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKey": {
+        "type": "apiKey",
+        "in": "user"
+      }
+    }
+  }
+}

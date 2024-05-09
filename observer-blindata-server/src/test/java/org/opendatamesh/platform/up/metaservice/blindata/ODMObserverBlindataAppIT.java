@@ -19,9 +19,7 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.fail;
 
 @ExtendWith(SpringExtension.class)
-//@ActiveProfiles("test")
-//@ActiveProfiles("testpostgresql")
-//@ActiveProfiles("testmysql")
+@ActiveProfiles("test")
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = {ObserverBlindataApp.class, BDClientTestConfigs.class},
