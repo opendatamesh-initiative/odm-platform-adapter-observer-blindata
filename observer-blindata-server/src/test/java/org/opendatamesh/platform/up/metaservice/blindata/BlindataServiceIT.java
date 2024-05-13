@@ -9,6 +9,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.opendatamesh.platform.pp.notification.api.resources.EventNotificationResource;
 import org.opendatamesh.platform.pp.policy.api.clients.PolicyEvaluationResultClient;
+import org.opendatamesh.platform.pp.policy.api.resources.PolicyEngineResource;
 import org.opendatamesh.platform.pp.policy.api.resources.PolicyEvaluationResultResource;
 import org.opendatamesh.platform.pp.policy.api.resources.PolicyResource;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
@@ -104,7 +105,9 @@ public class BlindataServiceIT extends ODMObserverBlindataAppIT {
         policyResource.setLastVersion(true);
         policyResource.setRootId(1L);
         policyResource.setName("BlindataIT.policy.name");
-        policyResource.setPolicyEngineId(1L);
+        PolicyEngineResource policyEngineResource = new PolicyEngineResource();
+        policyEngineResource.setId(1L);
+        policyResource.setPolicyEngine(policyEngineResource);
         PolicyEvaluationResultResource policyEvaluationResultResource = new PolicyEvaluationResultResource();
         policyEvaluationResultResource.setDataProductId(bdDataProductRes.getIdentifier());
         policyEvaluationResultResource.setDataProductVersion(bdDataProductRes.getVersion());
