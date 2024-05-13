@@ -17,14 +17,14 @@ public class ObserverBlindataOpenApiConfiguration {
         return new OpenAPI()
                 .components(new Components())
                 .info(new Info()
-                        .title("ODM Platform Utility Plane Observer Blindata")
+                        .title("ODM Platform Adapter Observer Blindata")
                         .summary(
                                 "This page describe tha API exposed by the Observer Adapter for Blindata.io Service Server " +
-                                "of the Product Plane of the Open Data Mesh Platform."
+                                "of the Utility Plane of the Open Data Mesh Platform."
                         )
                         .description(
                                 "This page describe tha API exposed by the Observer Adapter for Blindata.io Service Server" +
-                                "of the Product Plane of the Open Data Mesh Platform." +
+                                "of the Utility Plane of the Open Data Mesh Platform." +
 
                                 "\r\n# Overview" +
                                 "\r\nThe Observer Adapter for Blindata.io of the Open Data Mesh platform manages the " +
