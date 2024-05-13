@@ -30,11 +30,11 @@ License.
 	</parent>
 
     <groupId>org.opendatamesh</groupId>
-	<artifactId>odm-platform-up-services-observer-blindata</artifactId>
+	<artifactId>odm-platform-adapter-observer-blindata</artifactId>
 	<version>1.0.0</version>
 	<name>Blindata Observer Adapter</name>
 	<description>Blindata Observer Adapter of the Open Data Mesh Platform</description>
-	<url>https://github.com/opendatamesh-initiative/odm-platform-up-services-meta-blindata</url>
+	<url>https://github.com/opendatamesh-initiative/odm-platform-adapter-observer-blindata</url>
     <packaging>pom</packaging>
 
     <licenses>
@@ -45,9 +45,9 @@ License.
     </licenses>
 
     <scm>
-        <connection>scm:git:git@github.com:opendatamesh-initiative/odm-platform-up-services-meta-blindata</connection>
-        <developerConnection>scm:git:git@github.com:opendatamesh-initiative/odm-platform-up-services-meta-blindata</developerConnection>
-        <url>scm:git:git@github.com:opendatamesh-initiative/odm-platform-up-services-meta-blindata</url>
+        <connection>scm:git:git@github.com:opendatamesh-initiative/odm-platform-adapter-observer-blindata</connection>
+        <developerConnection>scm:git:git@github.com:opendatamesh-initiative/odm-platform-adapter-observer-blindata</developerConnection>
+        <url>scm:git:git@github.com:opendatamesh-initiative/odm-platform-adapter-observer-blindata</url>
     </scm>
 
     <developers>

@@ -1,4 +1,4 @@
-name: odm-platform-up-services-observer-blindata CI
+name: odm-platform-adapter-observer-blindata CI
 on:
   push:
     branches:

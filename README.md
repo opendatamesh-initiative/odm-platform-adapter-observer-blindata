@@ -41,8 +41,8 @@ mvn clean install -DskipTests
 Clone the repository and move to the project root folder
 
 ```bash
-git clone git@github.com:opendatamesh-initiative/odm-platform-up-services-meta-blindata.git
-cd odm-platform-up-services-meta-blindata
+git clone git@github.com:opendatamesh-initiative/odm-platform-adapter-observer-blindata.git
+cd odm-platform-adapter-observer-blindata
 ```
 
 ### Compile project
@@ -56,7 +56,7 @@ mvn clean package spring-boot:repackage -DskipTests
 Run the application:
 
 ```bash
-java -jar observer-blindata-server/target/odm-platform-up-services-observer-blindata-server-1.0.0.jar
+java -jar observer-blindata-server/target/odm-platform-adapter-observer-blindata-server-1.0.0.jar
 ```
 
 ## Run with Docker
@@ -66,8 +66,8 @@ java -jar observer-blindata-server/target/odm-platform-up-services-observer-blin
 Clone the repository and move it to the project root folder
 
 ```bash
-git clone git@github.com:opendatamesh-initiative/odm-platform-up-services-meta-blindata.git
-cd odm-platform-up-services-meta-blindata
+git clone git@github.com:opendatamesh-initiative/odm-platform-adapter-observer-blindata.git
+cd odm-platform-adapter-observer-blindata
 ```
 
 Here you can find the Dockerfile which creates an image containing the application by directly copying it from the build executed locally (i.e. from `target` folder).
@@ -125,8 +125,8 @@ docker rm odm-observer-blindata-app
 Clone the repository and move it to the project root folder
 
 ```bash
-git clone git@github.com:opendatamesh-initiative/odm-platform-up-services-meta-blindata.git
-cd odm-platform-up-services-meta-blindata
+git clone git@github.com:opendatamesh-initiative/odm-platform-adapter-observer-blindata.git
+cd odm-platform-adapter-observer-blindata
 ```
 
 ### Compile project

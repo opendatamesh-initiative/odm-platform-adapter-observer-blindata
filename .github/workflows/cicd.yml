@@ -1,10 +1,10 @@
-name: odm-platform-up-services-observer-blindata CI/CD
+name: odm-platform-adapter-observer-blindata CI/CD
 on:
   push:
     tags:
       - '*'
 #env:
-  #IMAGE_NAME: odm-platform-up-services-observer-blindata
+  #IMAGE_NAME: odm-platform-adapter-observer-blindata
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -56,7 +56,7 @@ jobs:
       #  run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
       #- name: Push image to Container Registry
       #  run: |
-      #    IMAGE_ID=ghcr.io/${{ github.repository_owner }}/odm-platform-up-services-observer-blindata
+      #    IMAGE_ID=ghcr.io/${{ github.repository_owner }}/odm-platform-adapter-observer-blindata
       #    IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
       #    echo IMAGE_ID=$IMAGE_ID
       #    docker tag $IMAGE_NAME $IMAGE_ID:${{ env.TAG_VERSION }}
