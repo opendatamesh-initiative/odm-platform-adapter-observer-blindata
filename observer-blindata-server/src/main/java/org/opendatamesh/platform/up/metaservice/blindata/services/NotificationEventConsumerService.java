@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 
 @Service
-public class ConsumeService {
+public class NotificationEventConsumerService {
 
     @Autowired
-    private BlindataService blindataService;
+    private NotificationEventHandlerService notificationEventHandlerService;
 
     @Autowired
     private EventNotificationClient notificationClient;
@@ -24,12 +24,12 @@ public class ConsumeService {
         // Handle notification by Event Type and update it on ODM Notification Service after processing
         switch (eventNotificationResource.getEvent().getType()){
             case "DATA_PRODUCT_VERSION_DELETED":
-                eventNotificationResource = blindataService.handleDataProductDelete(eventNotificationResource);
+                eventNotificationResource = notificationEventHandlerService.handleDataProductDelete(eventNotificationResource);
                 eventNotificationResource.setProcessedAt(new Date(System.currentTimeMillis()));
                 eventNotificationResource = updateEventNotificationOnNotificationService(eventNotificationResource);
                 break;
             case "DATA_PRODUCT_VERSION_CREATED":
-                eventNotificationResource = blindataService.handleDataProductCreated(eventNotificationResource);
+                eventNotificationResource = notificationEventHandlerService.handleDataProductCreated(eventNotificationResource);
                 eventNotificationResource.setProcessedAt(new Date(System.currentTimeMillis()));
                 eventNotificationResource = updateEventNotificationOnNotificationService(eventNotificationResource);
                 break;

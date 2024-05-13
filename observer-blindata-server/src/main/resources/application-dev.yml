@@ -5,6 +5,7 @@ app:
   workdir:
 
 server:
+  baseUrl: http://localhost:9002
   port: 9002
   error:
     include-message: always
@@ -28,7 +29,7 @@ blindata:
   password: "owner123"
   tenantUUID: "83471577-3921-48ed-bd8f-fde278aa0449"
   roleUuid: ""
-  systemNameRegex: "^([^:]+)"
+  systemNameRegex: ".*"
   systemTechnologyRegex: "(?!::)([^:]+)$"
 
 #############################

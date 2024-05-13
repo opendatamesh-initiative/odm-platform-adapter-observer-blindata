@@ -283,10 +283,8 @@ public class ConsumeIT extends ODMObserverBlindataAppIT {
         Mockito.when(bdPolicyEvaluationResultClient.createPolicyEvaluationRecords(Mockito.any()))
                 .thenReturn(uploadResultsMessage);
 
-        Mockito.when(odmRegistryClient.getSchemasId(Mockito.any()))
+        Mockito.when(odmRegistryClient.getApi(Mockito.any(), Mockito.any()))
                 .thenReturn(new ArrayList<>());
-        Mockito.when(odmRegistryClient.getSchemaContent(Mockito.any()))
-                .thenReturn(null);
 
         Page<PolicyEvaluationResultResource> emptyPolicyEvaluationResults = new PageImpl<>(new ArrayList<>());
         Mockito.when(odmPolicyEvaluationResultsClient.getPolicyEvaluationResults(Mockito.any(), Mockito.any()))
@@ -383,10 +381,8 @@ public class ConsumeIT extends ODMObserverBlindataAppIT {
         Mockito.when(bdPolicyEvaluationResultClient.createPolicyEvaluationRecords(Mockito.any()))
                 .thenReturn(uploadResultsMessage);
 
-        Mockito.when(odmRegistryClient.getSchemasId(Mockito.any()))
+        Mockito.when(odmRegistryClient.getApi(Mockito.any(), Mockito.any()))
                 .thenReturn(new ArrayList<>());
-        Mockito.when(odmRegistryClient.getSchemaContent(Mockito.any()))
-                .thenReturn(null);
 
         Page<PolicyEvaluationResultResource> emptyPolicyEvaluationResults = new PageImpl<>(new ArrayList<>());
         Mockito.when(odmPolicyEvaluationResultsClient.getPolicyEvaluationResults(Mockito.any(), Mockito.any()))

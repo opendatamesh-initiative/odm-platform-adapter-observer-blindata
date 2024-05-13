@@ -1,0 +1,170 @@
+{
+  "datastoreapi": "1.0.0",
+  "info": {
+    "databaseName": "airlinedemo",
+    "nameSpace": "nome_schema",
+    "title": "flight_frequency Data",
+    "summary": "This API exposes the current flight_frequency data of each `Airline` entity",
+    "version": "1.0.0",
+    "datastoreName": "flight_frequency"
+  },
+  "services": {
+    "development": {
+      "serverInfo": {
+        "$ref": "#components.serverInfo.flightFrequencyStoreServerInfo"
+      },
+      "serverVariables": {
+        "host": "35.52.55.12"
+      }
+    }
+  },
+  "schema": {
+    "id": 1,
+    "name": "ab334d27-41e7-3622-88f7-6dd5a200ae30",
+    "version": "1.0.0",
+    "mediaType": "application/json",
+    "content": {
+      "entities": [
+        {
+          "name": "Customer",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The customer identifier.",
+              "name": "ID",
+              "kind": "ATTRIBUTE",
+              "required": true,
+              "displayName": "Identifier",
+              "summary": "Inline description",
+              "comments": "come sopra",
+              "examples": [
+                "1234567",
+                "988654"
+              ],
+              "status": "come sopra",
+              "tags": [
+                "tag1",
+                "tag2"
+              ],
+              "externalDocs": "https://www.google.it/",
+              "default": null,
+              "isClassified": true,
+              "classificationLevel": "INTERNAL",
+              "isUnique": true,
+              "isNullable": false,
+              "pattern": "^[0-9]+$",
+              "format": "named pattern e.g. email",
+              "enum": [
+                "VAL1",
+                "VAL2"
+              ],
+              "minLength": 2,
+              "maxLength": 10,
+              "contentEncoding": "UTF-8",
+              "contentMediaType": "application/json",
+              "precision": 0,
+              "scale": 10,
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "maximum": 10000,
+              "exclusiveMaximum": false,
+              "readOnly": true,
+              "writeOnly": true,
+              "physicalType": "VARCHAR",
+              "partitionStatus": true,
+              "partitionKeyPosition": 2,
+              "clusterStatus": true,
+              "clusterKeyPosition": 2,
+              "ordinalPosition": 0
+            }
+          }
+        },
+        {
+          "name": "Payment",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The customer identifier.",
+              "name": "ID",
+              "kind": "ATTRIBUTE",
+              "required": true,
+              "displayName": "Identifier",
+              "summary": "Inline description",
+              "comments": "come sopra",
+              "examples": [
+                "1234567",
+                "988654"
+              ],
+              "status": "come sopra",
+              "tags": [
+                "tag1",
+                "tag2"
+              ],
+              "externalDocs": "https://www.google.it/",
+              "default": null,
+              "isClassified": true,
+              "classificationLevel": "INTERNAL",
+              "isUnique": true,
+              "isNullable": false,
+              "pattern": "^[0-9]+$",
+              "format": "named pattern e.g. email",
+              "enum": [
+                "VAL1",
+                "VAL2"
+              ],
+              "minLength": 2,
+              "maxLength": 10,
+              "contentEncoding": "UTF-8",
+              "contentMediaType": "application/json",
+              "precision": 0,
+              "scale": 10,
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "maximum": 10000,
+              "exclusiveMaximum": false,
+              "readOnly": true,
+              "writeOnly": true,
+              "physicalType": "VARCHAR",
+              "partitionStatus": true,
+              "partitionKeyPosition": 2,
+              "clusterStatus": true,
+              "clusterKeyPosition": 2,
+              "ordinalPosition": 0
+            }
+          }
+        }
+      ]
+    }
+  },
+  "components": {
+    "serverInfo": {
+      "flightFrequencyStoreServerInfo": {
+        "host:": "{host}",
+        "port:": "3306",
+        "dbmsType:": "MySQL",
+        "dbmsVersion:": "8",
+        "connectionProtocols": {
+          "jdbc": {
+            "version": "1.0",
+            "url": "jdbc:mysql://{hosts}:3306/foodmart",
+            "driverName": "MySQL JDBC Driver",
+            "driverClass": "org.mysql.Driver",
+            "driverVersion": "latest",
+            "driverLibrary": {
+              "description": "MySQL JDBC Driver Library",
+              "dataType": "application/java-archive",
+              "$href": "https://jdbc.mysql.org/"
+            },
+            "driverDocs": {
+              "description": "MySQL JDBC Driver HomePage",
+              "dataType": "text/html",
+              "$href": "https://jdbc.mysql.org/mysql-8.jar"
+            }
+          }
+        }
+      }
+    }
+  }
+}

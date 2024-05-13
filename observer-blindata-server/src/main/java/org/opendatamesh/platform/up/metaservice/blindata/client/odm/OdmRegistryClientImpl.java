@@ -1,61 +1,59 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.schema.SchemaRes;
-import org.springframework.core.ParameterizedTypeReference;
+import org.opendatamesh.platform.pp.registry.api.resources.ExternalComponentResource;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.ClientException;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.ClientResourceMappingException;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
 public class OdmRegistryClientImpl implements OdmRegistryClient {
-    private final String odmPlatformUrl;
+    private String baseUrl;
+    private final RestUtils restUtils;
     private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
 
-    public OdmRegistryClientImpl(RestTemplate restTemplate, ObjectMapper objectMapper, String registryUrl) {
+    public OdmRegistryClientImpl(RestTemplate restTemplate, String baseUrl) {
+        this.restUtils = new RestUtils(restTemplate);
+        this.baseUrl = baseUrl;
         this.restTemplate = restTemplate;
-        this.objectMapper = objectMapper;
-        this.odmPlatformUrl = registryUrl;
     }
 
-    //Get array schemas ID
-    public List<Integer> getSchemasId(String portID) {
+    @Override
+    public List<ExternalComponentResource> getApi(String apiName, String apiVersion) {
         try {
-            return restTemplate.exchange(
-                    String.format("%s/api/v1/pp/registry/apis/%s/endpoints", odmPlatformUrl, portID),
+            String url = UriComponentsBuilder.fromHttpUrl(String.format("%s/api/v1/pp/registry/apis", baseUrl))
+                    .queryParam("name", apiName)
+                    .queryParam("version", apiVersion)
+                    .build()
+                    .toUriString();
+            //This probably will change when refactored from List to Page
+            ResponseEntity<String> responseEntity = restTemplate.exchange(
+                    url,
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<List<Integer>>() {
-                    }).getBody();
-        } catch (HttpClientErrorException e) {
-            throw new RuntimeException(e); // TODO: right errors
-            //throw new MetaServiceException("Unable to get array of schemas ID: " + e.getResponseBodyAsString());
-        }
-    }
+                    String.class
+            );
+            //Esoteric method to handle bad api signature
+            return new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                    .readValue(responseEntity.getBody(), new TypeReference<>() {
+                    });
 
-    //Get Schema from given ID
-    public String getSchemaContent(Integer schemaID) {
-        try {
-            String responseEntity = restTemplate.exchange(
-                    String.format("%s/api/v1/pp/registry/schemas/%d", odmPlatformUrl, schemaID),
-                    HttpMethod.GET,
-                    HttpEntity.EMPTY,
-                    String.class).getBody();
-            return objectMapper.readValue(responseEntity, SchemaRes.class).getContent();
-        } catch (HttpClientErrorException e) {
-            throw new RuntimeException(e); // TODO: right errors
-            //throw new MetaServiceException("Unable to get array of schemas ID: " + e.getResponseBodyAsString());
+        } catch (ClientException | ClientResourceMappingException e) {
+            throw new RuntimeException(e); //TODO
         } catch (JsonMappingException e) {
-            throw new RuntimeException(e); // TODO: right errors
-            //throw new MetaServiceException("Unable to map schema resource: " + e.getMessage());
+            throw new RuntimeException(e);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e); // TODO: right errors
-            //throw new MetaServiceException("Unable to process schema resource:" + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 }

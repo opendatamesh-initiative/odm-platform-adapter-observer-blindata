@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.resources.schema;
+package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -11,13 +11,13 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SchemaContent {
+class DataStoreApiSchemaContent {
 
     @JsonProperty("entities")
-    private List<SchemaEntity> entities;
+    private List<DataStoreApiSchemaEntity> entities;
 
     @JsonCreator
-    public SchemaContent(@JsonProperty("entities") List<SchemaEntity> entities) {
+    public DataStoreApiSchemaContent(@JsonProperty("entities") List<DataStoreApiSchemaEntity> entities) {
         this.entities = entities;
     }
 

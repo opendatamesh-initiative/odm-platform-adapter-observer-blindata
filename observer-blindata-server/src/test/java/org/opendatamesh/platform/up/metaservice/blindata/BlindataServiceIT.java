@@ -9,7 +9,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.opendatamesh.platform.pp.notification.api.resources.EventNotificationResource;
 import org.opendatamesh.platform.pp.policy.api.clients.PolicyEvaluationResultClient;
-import org.opendatamesh.platform.pp.policy.api.resources.PolicyEngineResource;
 import org.opendatamesh.platform.pp.policy.api.resources.PolicyEvaluationResultResource;
 import org.opendatamesh.platform.pp.policy.api.resources.PolicyResource;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
@@ -18,7 +17,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDStewa
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDUserClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.odm.OdmRegistryClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.*;
-import org.opendatamesh.platform.up.metaservice.blindata.services.BlindataService;
+import org.opendatamesh.platform.up.metaservice.blindata.services.NotificationEventHandlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -33,7 +32,7 @@ import java.util.Optional;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class BlindataServiceIT extends ODMObserverBlindataAppIT {
     @Autowired
-    private BlindataService blindataService;
+    private NotificationEventHandlerService blindataService;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -98,17 +97,14 @@ public class BlindataServiceIT extends ODMObserverBlindataAppIT {
         Mockito.when(bdPolicyEvaluationResultClient.createPolicyEvaluationRecords(Mockito.any()))
                 .thenReturn(uploadResultsMessage);
 
-        Mockito.when(odmRegistryClient.getSchemasId(Mockito.any())).thenReturn(new ArrayList<>());
-        Mockito.when(odmRegistryClient.getSchemaContent(Mockito.any())).thenReturn(null);
+        Mockito.when(odmRegistryClient.getApi(Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>());
 
         PolicyResource policyResource = new PolicyResource();
         policyResource.setId(1L);
         policyResource.setLastVersion(true);
         policyResource.setRootId(1L);
         policyResource.setName("BlindataIT.policy.name");
-        PolicyEngineResource policyEngineResource = new PolicyEngineResource();
-        policyEngineResource.setId(1L);
-        policyResource.setPolicyEngine(policyEngineResource);
+        policyResource.setPolicyEngineId(1L);
         PolicyEvaluationResultResource policyEvaluationResultResource = new PolicyEvaluationResultResource();
         policyEvaluationResultResource.setDataProductId(bdDataProductRes.getIdentifier());
         policyEvaluationResultResource.setDataProductVersion(bdDataProductRes.getVersion());
@@ -141,8 +137,7 @@ public class BlindataServiceIT extends ODMObserverBlindataAppIT {
         Mockito.verify(bdDataProductClient, Mockito.times(1)).createDataProduct(bdDataProductRes);
 
         //Input ports, no assets created on Blindata
-        Mockito.verify(odmRegistryClient, Mockito.times(3)).getSchemasId(Mockito.any());
-        Mockito.verify(odmRegistryClient, Mockito.times(0)).getSchemaContent(Mockito.any());
+        Mockito.verify(odmRegistryClient, Mockito.times(3)).getApi(Mockito.any(), Mockito.any());
         Mockito.verify(bdDataProductClient, Mockito.times(0)).createDataProductAssets(Mockito.any());
 
         ArgumentCaptor<BDStewardshipResponsibilityRes> argument = ArgumentCaptor.forClass(BDStewardshipResponsibilityRes.class);
