@@ -38,12 +38,12 @@ blindata:
 odm:
   productPlane:
     registryService:
-      active: false
+      active: true
       address: http://localhost:8001
     policyService:
-      active: false
+      active: true
       address: http://localhost:8005
     notificationService:
-      active: false
+      active: true
       address: http://localhost:8006
 
