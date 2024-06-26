@@ -96,6 +96,49 @@ The project requires the following dependencies:
 | `identifier`    | No       | An array of the entity's fields that compose its identifier (PK).                                                                        | ✔️                   | -              |
 | `unique`        | No       | Indicates if the entity's identifier is unique.                                                                                          | ✔️                   | -              |
 
+### Fields
+
+| Property               | Required | Description                                                                                                                              | JSONSchema Supported | Avro Supported |
+|------------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------|----------------------|----------------|
+| `id`                   | No       | The identifier of the schema item.                                                                                                       | -                    | -              |
+| `name`                 | No       | The name of the item.                                                                                                                    | ✔️                   | -              |
+| `kind`                 | No       | The field structure archetype (e.g., attribute, measure, etc.).                                                                          | ✔️                   | -              |
+| `required`             | No       | Specifies if a field is required.                                                                                                        | ✔️                   | -              |
+| `displayName`          | No       | The human-readable name of the item. It should be used by frontend tools to visualize the data item's name instead of the name property. | ✔️                   | -              |
+| `summary`              | No       | A brief summary of the item.                                                                                                             | ✔️                   | -              |
+| `description`          | No       | The item description. CommonMark syntax may be used for rich text representation.                                                        | ✔️                   | -              |
+| `physicalType`         | No       | The physical type of the field (e.g., VARCHAR, TINYINT, etc.).                                                                           | ✔️                   | -              |
+| `comments`             | No       | The comment annotation for adding comments to a schema. Its value must always be a string.                                               | ✔️                   | -              |
+| `examples`             | No       | An array of examples for the item.                                                                                                       | ✔️                   | -              |
+| `status`               | No       | The status of the item. Possible values include `testing`, `production`, or `staging`.                                                   | ✔️                   | -              |
+| `tags`                 | No       | A set of tags for categorizing the field.                                                                                                | ✔️                   | -              |
+| `externalDocs`         | No       | An array of links to reference external documentation.                                                                                   | ✔️                   | -              |
+| `default`              | No       | The default value of the field, if any.                                                                                                  | ✔️                   | -              |
+| `partitionStatus`      | No       | Indicates if the column is partitioned; possible values are true and false.                                                              | ✔️                   | -              |
+| `partitionKeyPosition` | No       | The position of the partition column if the column is used for partitioning. Starts from 1.                                              | ✔️                   | -              |
+| `clusterStatus`        | No       | Indicates if the column is clustered; possible values are true and false.                                                                | ✔️                   | -              |
+| `clusterKeyPosition`   | No       | The position of the cluster column if the column is used for clustering.                                                                 | ✔️                   | -              |
+| `readOnly`             | No       | Indicates that a value should not be modified.                                                                                           | ✔️                   | -              |
+| `writeOnly`            | No       | Indicates that a value may be set, but will remain hidden.                                                                               | ✔️                   | -              |
+| `isClassified`         | No       | Indicates if the field is classified.                                                                                                    | ✔️                   | -              |
+| `classificationLevel`  | No       | The classification level of the field.                                                                                                   | ✔️                   | -              |
+| `isUnique`             | No       | Indicates if the field value is unique.                                                                                                  | ✔️                   | -              |
+| `isNullable`           | No       | Indicates if the field can be null.                                                                                                      | ✔️                   | -              |
+| `pattern`              | No       | A regular expression to restrict a string field.                                                                                         | ✔️                   | -              |
+| `format`               | No       | Allows for basic syntactic identification of certain kinds of string values (e.g., email, hostname, uuid, etc.).                         | ✔️                   | -              |
+| `enum`                 | No       | Restricts the value of a field to a fixed set of values. It must be an array with at least one element, where each element is unique.    | ✔️                   | -              |
+| `minLength`            | No       | Constrains the minimum length of a string field.                                                                                         | ✔️                   | -              |
+| `maxLength`            | No       | Constrains the maximum length of a string field.                                                                                         | ✔️                   | -              |
+| `contentEncoding`      | No       | The content encoding of the field.                                                                                                       | ✔️                   | -              |
+| `contentMediaType`     | No       | The content media type of the field.                                                                                                     | ✔️                   | -              |
+| `precision`            | No       | The precision of a numeric field.                                                                                                        | ✔️                   | -              |
+| `scale`                | No       | The scale of a numeric field.                                                                                                            | ✔️                   | -              |
+| `encoding`             | No       | The encoding type of the field.                                                                                                          | ✔️                   | -              |
+| `minimum`              | No       | The minimum value of a numeric field.                                                                                                    | ✔️                   | -              |
+| `exclusiveMinimum`     | No       | Specifies if the minimum value is exclusive.                                                                                             | ✔️                   | -              |
+| `maximum`              | No       | The maximum value of a numeric field.                                                                                                    | ✔️                   | -              |
+| `exclusiveMaximum`     | No       | Specifies if the maximum value is exclusive.                                                                                             | ✔️                   | -              |
+
 
 ## Mapping in Blindata
 The observer supports the use of two specifications: Datastore API and Async API. For Datastore API the schema format supported is JSON, while for Async API is AVRO.
@@ -124,6 +167,8 @@ In Blindata's Data Store API Mapping, additional properties are structured with 
 
 ##### Physical Entity
 
+Physical entities can be find in "schema.content" in case of single entity "schema.content.entities" in case of multiple entities.
+
 | Schema Annotation      | Physical Entity Property | Description                                                         | Mandatory |
 |------------------------|--------------------------|---------------------------------------------------------------------|-----------|
 | `schema.name`          | name                     | The name of the physical entity.                                    | ✔️        |
@@ -138,23 +183,23 @@ In Blindata's Data Store API Mapping, additional properties are structured with 
 
 #### Physical Field
 
-Physical fields can be find in "schema.properties"
+Physical fields can be find in "schema.content.properties"
 
 | Schema Annotation                 | Physical Field Property | Description                          | Mandatory |
 |-----------------------------------|-------------------------|--------------------------------------|-----------|
-| `schema.properties.name`          | name                    | Object name                          | Yes       |
-| `schema.properties.physicalType`  | type                    | Physical type of the object          | No        |
-| `schema.properties.comments`      | description             | Additional comments about the object | No        |
-| `schema.properties.kind`          | add.prop                | Object type (e.g., TABULAR)          | No        |
-| `schema.properties.status`        | add.prop                | Object status (e.g., TESTING)        | No        |
-| `schema.properties.tags`          | add.prop                | Tags associated with the object      | No        |
-| `schema.properties.owner`         | add.prop                | Owner of the object                  | No        |
-| `schema.properties.domain`        | add.prop                | Domain to which the object belongs   | No        |
-| `schema.properties.contactpoints` | add.prop                | Contact points related to the object | No        |
-| `schema.properties.scope`         | add.prop                | Scope of the object (e.g., private)  | No        |
-| `schema.properties.version`       | add.prop                | Version of the object                | No        |
-| `schema.properties.displayName`   | add.prop                | Display name of the object           | Yes       |
-| `schema.properties.description`   | add.prop                | Description of the object            | No        |
+| `schema.properties.name`          | name                    | Object name                          | ✔️        |
+| `schema.properties.physicalType`  | type                    | Physical type of the object          | -         |
+| `schema.properties.comments`      | description             | Additional comments about the object | -         |
+| `schema.properties.kind`          | add.prop                | Object type (e.g., TABULAR)          | -         |
+| `schema.properties.status`        | add.prop                | Object status (e.g., TESTING)        | -         |
+| `schema.properties.tags`          | add.prop                | Tags associated with the object      | -         |
+| `schema.properties.owner`         | add.prop                | Owner of the object                  | -         |
+| `schema.properties.domain`        | add.prop                | Domain to which the object belongs   | -         |
+| `schema.properties.contactpoints` | add.prop                | Contact points related to the object | -         |
+| `schema.properties.scope`         | add.prop                | Scope of the object (e.g., private)  | -         |
+| `schema.properties.version`       | add.prop                | Version of the object                | -         |
+| `schema.properties.displayName`   | add.prop                | Display name of the object           | -         |
+| `schema.properties.description`   | add.prop                | Description of the object            | -         |
 
 ### AsyncApi
 
@@ -165,28 +210,28 @@ Physical fields can be find in "schema.properties"
 | Schema Annotation      | Physical Entity Property | Mandatory | Default Value |
 |------------------------|--------------------------|-----------|---------------|
 | `channel.name`         | name                     | ✔️        | -             |
-| `channel`              | tableType                | no        | TOPIC         |
-| `channel.description`  | description              | no        | -             |
-| `channel.servers`      | add.prop                 | no        | -             |
-| `channel.parameters`   | add.prop                 | no        | -             |
-| `channel.tags`         | add.prop                 | no        | -             |
-| `channel.externalDocs` | add.prop                 | no        | -             |
-| `channel.summary`      | add.prop                 | no        | -             |
-| `channel.address`      | add.prop                 | no        | -             |
+| `channel`              | tableType                | -         | TOPIC         |
+| `channel.description`  | description              | -         | -             |
+| `channel.servers`      | add.prop                 | -         | -             |
+| `channel.parameters`   | add.prop                 | -         | -             |
+| `channel.tags`         | add.prop                 | -         | -             |
+| `channel.externalDocs` | add.prop                 | -         | -             |
+| `channel.summary`      | add.prop                 | -         | -             |
+| `channel.address`      | add.prop                 | -         | -             |
 
 ##### Physical Field
 
 | Schema Annotation      | Physical Field Property | Mandatory | Default Value |
 |------------------------|-------------------------|-----------|---------------|
-| `message.id`           | name                    | ✔️        | -             |
-| `message.contentType`  | type                    | no        | TOPIC         |
-| `message.description`  | description             | no        | -             |
-| `message.name`         | add.prop                | no        | -             |
-| `message.title`        | add.prop                | no        | -             |
-| `message.tags`         | add.prop                | no        | -             |
-| `message.externalDocs` | add.prop                | no        | -             |
-| `message.summary`      | add.prop                | no        | -             |
-| `message.address`      | add.prop                | no        | -             |
+| `channel.message.id`   | name                    | ✔️        | -             |
+| `channel.message.contentType`  | type                    | -         | TOPIC         |
+| `channel.message.description`  | description             | -         | -             |
+| `channel.message.name`         | add.prop                | -         | -             |
+| `channel.message.title`        | add.prop                | -         | -             |
+| `channel.message.tags`         | add.prop                | -         | -             |
+| `channel.message.externalDocs` | add.prop                | -         | -             |
+| `channel.message.summary`      | add.prop                | -         | -             |
+| `channel.message.address`      | add.prop                | -         | -             |
 
 ## Examples
 
