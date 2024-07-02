@@ -1,11 +1,9 @@
-
-
 # Open Data Mesh Observer Blindata
 
 Observer adapter for [blindata.io](https://blindata.io/).
 
 Blindata is a SaaS platform that leverages Data Governance and Compliance to empower your Data Management projects. The
-purpose of this adapter is to keep the business glossary within Blindata constantly updated. Upon the occurrence of a
+purpose of this adapter is to keep the data catalog within Blindata constantly updated. Upon the occurrence of a
 creation, deletion, or modification of a dataproduct, Blindata is immediately and automatically notified to ensure that
 its catalog remains aligned.
 
@@ -16,65 +14,63 @@ project [odm-platform](https://github.com/opendatamesh-initiative/odm-platform)_
 
 ## Contents
 
-
-1. [Prerequisites](#prerequisites)
-2. [General Schema Annotations](#general-schema-annotations)
-   - [Entity](#entity)
-   - [Fields](#fields)
-3. [Metadata Mapping in Blindata](#metadata-mapping-in-blindata)
-   - [Systems](#systems)
-   - [DatastoreAPI](#datastoreapi)
-      - [JSON Schema](#json-schema)
-         - [Physical Entity](#physical-entity)
-         - [Physical Field](#physical-field)
-   - [AsyncAPI](#asyncapi)
-      - [Avro](#avro)
-         - [Physical Entity](#physical-entity)
-         - [Physical Field](#physical-field)
-4. [Examples](#examples)
-   - [DatastoreAPI](#datastore-api-example)
-      - [Multiple Entities](#multiple-entities)
-      - [Single Entity](#single-entity)
-   - [AsyncAPI](#async-api)
-      - [Raw Port Async Api V3](#raw-port-async-api-v3)
-      - [Raw Port Async Api V2](#raw-port-async-api-v2)
-      - [Entities Async Api V3](#entities-async-api-v3)
-      - [Entities Async Api V2](#entities-async-api-v2)
+1. [General Schema Annotations](#general-schema-annotations)
+    - [Entity](#entity)
+    - [Fields](#fields)
+2. [Metadata Mapping in Blindata](#metadata-mapping-in-blindata)
+    - [Systems](#systems)
+    - [DatastoreAPI](#datastoreapi)
+        - [JSON Schema](#json-schema)
+            - [Physical Entity](#physical-entity)
+            - [Physical Field](#physical-field)
+    - [AsyncAPI](#asyncapi)
+        - [Avro](#avro)
+            - [Physical Entity](#avro-physical-entity)
+            - [Physical Field](#avro-physical-field)
+3. [Examples](#examples)
+    - [DatastoreAPI](#datastore-api-example)
+        - [Multiple Entities](#multiple-entities)
+        - [Single Entity](#single-entity)
+    - [AsyncAPI](#async-api)
+        - [Raw Port Async Api V3](#raw-port-async-api-v3)
+        - [Raw Port Async Api V2](#raw-port-async-api-v2)
+        - [Entities Async Api V3](#entities-async-api-v3)
+        - [Entities Async Api V2](#entities-async-api-v2)
+4. [Prerequisites](#prerequisites)
 5. [Dependencies](#dependencies)
-   - [Clone Dependencies Repository](#clone-dependencies-repository)
-   - [Compile Dependencies](#compile-dependencies)
+    - [Clone Dependencies Repository](#clone-dependencies-repository)
+    - [Compile Dependencies](#compile-dependencies)
 6. [Run Locally](#run-locally)
-   - [Clone Repository](#clone-repository)
-   - [Compile Project](#compile-project)
-   - [Run Application](#run-application)
+    - [Clone Repository](#clone-repository)
+    - [Compile Project](#compile-project)
+    - [Run Application](#run-application)
 7. [Run with Docker](#run-with-docker)
-   - [Clone Repository](#clone-repository-1)
-   - [Compile Project](#compile-project-1)
-   - [Build Image](#build-image)
-   - [Run Application](#run-application-1)
-   - [Stop Application](#stop-application)
+    - [Clone Repository](#clone-repository-1)
+    - [Compile Project](#compile-project-1)
+    - [Build Image](#build-image)
+    - [Run Application](#run-application-1)
+    - [Stop Application](#stop-application)
 8. [Run with Docker Compose](#run-with-docker-compose)
-   - [Clone Repository](#clone-repository-2)
-   - [Compile Project](#compile-project-2)
-   - [Build Image](#build-image-1)
-   - [Run Application](#run-application-2)
-   - [Stop Application](#stop-application-1)
+    - [Clone Repository](#clone-repository-2)
+    - [Compile Project](#compile-project-2)
+    - [Build Image](#build-image-1)
+    - [Run Application](#run-application-2)
+    - [Stop Application](#stop-application-1)
 9. [Test It](#test-it)
-   - [REST Services](#rest-services)
-   - [Blindata Configuration](#blindata-configuration)
-   - [ODM Configuration](#odm-configuration)
-
-## Prerequisites
-
-The project requires the following dependencies:
-
-* Java 11
-* Maven 3.8.6
-* Project [odm-platform](https://github.com/opendatamesh-initiative/odm-platform)
+    - [REST Services](#rest-services)
+    - [Blindata Configuration](#blindata-configuration)
+    - [ODM Configuration](#odm-configuration)
 
 ## General Schema Annotations
 
+General descriptions for schema annotations explain the properties and metadata associated with entity and field
+schemas. These annotations help to better define and document data schemas, improving the understanding and usability of
+data structures.
+
 ### Entity
+
+Entity properties describe the general characteristics and metadata of a data structure. Each property has a detailed
+description, its requirement status, and support for JSONSchema and Avro.
 
 | Property        | Required | Description                                                                                                                              | JSONSchema Supported | Avro Supported |
 |-----------------|----------|------------------------------------------------------------------------------------------------------------------------------------------|----------------------|----------------|
@@ -139,9 +135,11 @@ The project requires the following dependencies:
 | `maximum`              | No       | The maximum value of a numeric field.                                                                                                    | ✔️                   | -              |
 | `exclusiveMaximum`     | No       | Specifies if the maximum value is exclusive.                                                                                             | ✔️                   | -              |
 
-
 ## Mapping in Blindata
-The observer supports the use of two specifications: Datastore API and Async API. For Datastore API the schema format supported is JSON, while for Async API is AVRO.
+
+The observer supports the use of two specifications: Datastore API and Async API. For Datastore API the schema format
+supported is JSON, while for Async API is AVRO.
+
 ### Systems
 
 The 'platform' field within the 'promises' field of the port in the descriptor is used to extract the name and system
@@ -159,15 +157,20 @@ blindata:
   systemNameRegex: optional regex to extract system name from schema (value optional)
   systemTechnologyRegex: optional regex to extract system technology from schema (value optional)
 ```
+
 ### DatastoreApi
 
 #### JSON Schema
 
-In Blindata's Data Store API Mapping, additional properties are structured with the field name as the key and its corresponding value as the stored data. This approach ensures that each property in the mapping table accurately represents the association between schema annotations and physical entity fields within the system.
+In Blindata's Data Store API Mapping, additional properties are structured with the field name as the key and its
+corresponding value as the stored data. This approach ensures that each property in the mapping table accurately
+represents the association between schema annotations and physical entity fields within the system.
 
 ##### Physical Entity
 
-Physical entities can be find in "schema.content" in case of single entity "schema.content.entities" in case of multiple entities.
+This section describes the mapping of schema annotations to physical entity properties within the system. Physical entities represent the main data structures, such as tables or views, in the data store.
+Physical entities can be find in "schema.content" in case of single entity "schema.content.entities" in case of multiple
+entities.
 
 | Schema Annotation      | Physical Entity Property | Description                                                         | Mandatory |
 |------------------------|--------------------------|---------------------------------------------------------------------|-----------|
@@ -183,6 +186,7 @@ Physical entities can be find in "schema.content" in case of single entity "sche
 
 #### Physical Field
 
+This section details the mapping of schema annotations to physical field properties. Physical fields represent the individual attributes or columns within a physical entity, providing specific data points within the entity.
 Physical fields can be find in "schema.content.properties"
 
 | Schema Annotation                 | Physical Field Property | Description                          | Mandatory |
@@ -205,7 +209,9 @@ Physical fields can be find in "schema.content.properties"
 
 #### Avro
 
-##### Physical Entity
+##### Avro Physical Entity
+
+Physical entities can be find in "channel" section of the JSON descriptor.
 
 | Schema Annotation      | Physical Entity Property | Mandatory | Default Value |
 |------------------------|--------------------------|-----------|---------------|
@@ -219,11 +225,12 @@ Physical fields can be find in "schema.content.properties"
 | `channel.summary`      | add.prop                 | -         | -             |
 | `channel.address`      | add.prop                 | -         | -             |
 
-##### Physical Field
+##### Avro Physical Field
+Physical entities can be find in "channel.message" section of the JSON descriptor.
 
-| Schema Annotation      | Physical Field Property | Mandatory | Default Value |
-|------------------------|-------------------------|-----------|---------------|
-| `channel.message.id`   | name                    | ✔️        | -             |
+| Schema Annotation              | Physical Field Property | Mandatory | Default Value |
+|--------------------------------|-------------------------|-----------|---------------|
+| `channel.message.id`           | name                    | ✔️        | -             |
 | `channel.message.contentType`  | type                    | -         | TOPIC         |
 | `channel.message.description`  | description             | -         | -             |
 | `channel.message.name`         | add.prop                | -         | -             |
@@ -238,6 +245,8 @@ Physical fields can be find in "schema.content.properties"
 ### Datastore Api Example
 
 #### Multiple Entities
+This section provides examples of how to represent multiple entities using the Data Store API. It demonstrates the application of schema annotations to define multiple physical entities and their fields, illustrating how the mappings are structured and implemented in practice.
+
 ```json
 {
   "datastoreapi": "1.0.0",
@@ -410,638 +419,668 @@ Physical fields can be find in "schema.content.properties"
   }
 }
 ```
+The example create two physical entities called "Customer" and "Payments" each one with just a physical field "id".
+
 #### Single Entity
+This section provides examples of how to represent a single entity using the Data Store API. It demonstrates the application of schema annotations to define multiple physical entities and their fields, illustrating how the mappings are structured and implemented in practice.
 
 ```json
 {
-"...other properties":{
-},
-"outputPorts":[
-{
-"fullyQualifiedName":"urn:org.opendatamesh:dataproducts:airlinedemo:outputports:flight_frequency_db",
-"entityType":"outputPorts",
-"name":"flight_frequency_db",
-"version":"1.0.0",
-"displayName":"flight_frequency_db",
-"description":"Target database for airlines data. MySQL database.",
-"promises":{
-"platform":"MySQL_demoBlindataMySql",
-"serviceType":"datastore-services",
-"api":{
-"name":"flightFrequencyApi",
-"version":"1.0.0",
-"specification":"datastoreapi",
-"specificationVersion":"1.0.0",
-"definition":{
-"datastoreapi":"1.0.0",
-"info":{
-"databaseName":"airlinedemo",
-"nameSpace":"nome_schema",
-"title":"flight_frequency Data",
-"summary":"This API exposes the current flight_frequency data of each `Airline` entity",
-"version":"1.0.0",
-"datastoreName":"flight_frequency"
-},
-"services":{
-"development":{
-"serverInfo":{
-"$ref": ""
-},
-"serverVariables":{
-"host": ""
-}
-}
-},
-"schema":{
-"name": "airline_freq",
-"kind": "TABULAR",
-"comments": "commento",
-"examples": [
-{"id": 1, "name": "name"}
-],
-"status": "TESTING",
-"tags": "tag",
-"owner": "owner",
-"domain": "domain",
-"contactpoints": "contact",
-"scope": "private",
-"version": "1.0.0",
-"fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq",
-"displayName": "Trips Status Table",
-"description": "The table that stores the updated status of each trip",
-"physicalType": "VIEW",
-"properties": {
-"id": {
-"type": "string",
-"description": "The flight identifier.",
-"name": "ID",
-"kind": "ATTRIBUTE",
-"required": true,
-"displayName": "Identifier",
-"summary": "Inline description",
-"comments": "comment",
-"examples": ["1234567", "988654"],
-"status": "statusa",
-"tags": ["tag1", "tag2"],
-"externalDocs": "https://",
-"default": null,
-"isClassified": true,
-"classificationLevel": "",
-"isUnique": true,
-"isNullable": false,
-"pattern": "a regex",
-"format": "named pattern e.g. email",
-"enum": ["VALORE1", "VALORE2"],
-"minLength": 2,
-"maxLength": 10,
-"contentEncoding": "UTF-8",
-"contentMediaType": "application/json",
-"precision": 0,
-"scale": 10,
-"minimum": 0,
-"exclusiveMinimum": true,
-"maximum": 10000,
-"exclusiveMaximum": false,
-"readOnly": true,
-"writeOnly": true,
-"physicalType": "VARCHAR",
-"partitionStatus": true,
-"partitionKeyPosition": 2,
-"clusterStatus": true,
-"clusterKeyPosition": 2
-},
-"airline_code": {
-"name": "airline_code",
-"fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.id",
-"displayName": "Airline ID",
-"type": "VARCHAR",
-"dataLength": "50",
-"columnConstraint": "PRIMARY_KEY",
-"ordinalPosition": 1
-},
-"apt_org": {
-"name": "apt_org",
-"fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.apt_org",
-"displayName": "Origin",
-"dataType": "VARCHAR",
-"dataLength": "50",
-"columnConstraint": "PRIMARY_KEY",
-"ordinalPosition": 2
-},
-"apt_dst": {
-"name": "apt_dst",
-"fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.apt_dst",
-"displayName": "Destination",
-"dataType": "VARCHAR",
-"dataLength": "50",
-"columnConstraint": "PRIMARY_KEY",
-"ordinalPosition": 3
-},
-"flt_freq": {
-"name": "flt_freq",
-"fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.trip_status.flt_freq",
-"displayName": "Flight Frequency",
-"dataType": "INTEGER",
-"columnConstraint": "NOT_NULL",
-"ordinalPosition": 4
-}
-}
-}
-}
-}
-},
-}
-},
-// ... outputPort's othe properties
-],
-// ... data product's other properties
+  "...other properties": {
+  },
+  "outputPorts": [
+    {
+      "fullyQualifiedName": "urn:org.opendatamesh:dataproducts:airlinedemo:outputports:flight_frequency_db",
+      "entityType": "outputPorts",
+      "name": "flight_frequency_db",
+      "version": "1.0.0",
+      "displayName": "flight_frequency_db",
+      "description": "Target database for airlines data. MySQL database.",
+      "promises": {
+        "platform": "MySQL_demoBlindataMySql",
+        "serviceType": "datastore-services",
+        "api": {
+          "name": "flightFrequencyApi",
+          "version": "1.0.0",
+          "specification": "datastoreapi",
+          "specificationVersion": "1.0.0",
+          "definition": {
+            "datastoreapi": "1.0.0",
+            "info": {
+              "databaseName": "airlinedemo",
+              "nameSpace": "nome_schema",
+              "title": "flight_frequency Data",
+              "summary": "This API exposes the current flight_frequency data of each `Airline` entity",
+              "version": "1.0.0",
+              "datastoreName": "flight_frequency"
+            },
+            "services": {
+              "development": {
+                "serverInfo": {
+                  "$ref": ""
+                },
+                "serverVariables": {
+                  "host": ""
+                }
+              }
+            },
+            "schema": {
+              "name": "airline_freq",
+              "kind": "TABULAR",
+              "comments": "commento",
+              "examples": [
+                {
+                  "id": 1,
+                  "name": "name"
+                }
+              ],
+              "status": "TESTING",
+              "tags": "tag",
+              "owner": "owner",
+              "domain": "domain",
+              "contactpoints": "contact",
+              "scope": "private",
+              "version": "1.0.0",
+              "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq",
+              "displayName": "Trips Status Table",
+              "description": "The table that stores the updated status of each trip",
+              "physicalType": "VIEW",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The flight identifier.",
+                  "name": "ID",
+                  "kind": "ATTRIBUTE",
+                  "required": true,
+                  "displayName": "Identifier",
+                  "summary": "Inline description",
+                  "comments": "comment",
+                  "examples": [
+                    "1234567",
+                    "988654"
+                  ],
+                  "status": "statusa",
+                  "tags": [
+                    "tag1",
+                    "tag2"
+                  ],
+                  "externalDocs": "https://",
+                  "default": null,
+                  "isClassified": true,
+                  "classificationLevel": "",
+                  "isUnique": true,
+                  "isNullable": false,
+                  "pattern": "a regex",
+                  "format": "named pattern e.g. email",
+                  "enum": [
+                    "VALORE1",
+                    "VALORE2"
+                  ],
+                  "minLength": 2,
+                  "maxLength": 10,
+                  "contentEncoding": "UTF-8",
+                  "contentMediaType": "application/json",
+                  "precision": 0,
+                  "scale": 10,
+                  "minimum": 0,
+                  "exclusiveMinimum": true,
+                  "maximum": 10000,
+                  "exclusiveMaximum": false,
+                  "readOnly": true,
+                  "writeOnly": true,
+                  "physicalType": "VARCHAR",
+                  "partitionStatus": true,
+                  "partitionKeyPosition": 2,
+                  "clusterStatus": true,
+                  "clusterKeyPosition": 2
+                },
+                "airline_code": {
+                  "name": "airline_code",
+                  "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.id",
+                  "displayName": "Airline ID",
+                  "type": "VARCHAR",
+                  "dataLength": "50",
+                  "columnConstraint": "PRIMARY_KEY",
+                  "ordinalPosition": 1
+                },
+                "apt_org": {
+                  "name": "apt_org",
+                  "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.apt_org",
+                  "displayName": "Origin",
+                  "dataType": "VARCHAR",
+                  "dataLength": "50",
+                  "columnConstraint": "PRIMARY_KEY",
+                  "ordinalPosition": 2
+                },
+                "apt_dst": {
+                  "name": "apt_dst",
+                  "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.apt_dst",
+                  "displayName": "Destination",
+                  "dataType": "VARCHAR",
+                  "dataLength": "50",
+                  "columnConstraint": "PRIMARY_KEY",
+                  "ordinalPosition": 3
+                },
+                "flt_freq": {
+                  "name": "flt_freq",
+                  "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.trip_status.flt_freq",
+                  "displayName": "Flight Frequency",
+                  "dataType": "INTEGER",
+                  "columnConstraint": "NOT_NULL",
+                  "ordinalPosition": 4
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    },
+    // ... outputPort's othe properties
+  ]
+  // ... data product's other properties
 }
 ```
 
+This example create a physical entity called "airline_freq" with physical fields :"id", "apt_dst", "flt_freq", "apt_org", "airline_code" 
 
 ### Async Api
+
 #### Raw Port Async Api V3
+This section illustrates an example of an Async API version 3 configuration for a Trip Status Streaming API. The API is used to stream events related to the Trip entity. It describes the schema for the messages, including the fields and their types.
 ```json
 {
-   "mediaType": "text/json",
-   "asyncapi": "3.0.0",
-   "info": {
-      "title": "Trip Status Streaming API",
-      "version": "1.0.0",
-      "description": "This API exposes all events related to `Trip` entity"
-   },
-   "channels": {
-      "transportmng.tripexecution.devents.status": {
-         "messages": {
-            "tripStatusEvent": {
-               "payload": {
-                  "schemaFormat": "application/vnd.apache.avro;version=1.9.0",
-                  "schema": {
-                     "type": "record",
-                     "name": "TripStatusChange",
-                     "namespace": "com.company-xyz.transportmng.tripexecution",
-                     "fields": [
-                        {
-                           "name": "id",
-                           "type": {
-                              "avro.java.string": "String",
-                              "type": "string"
-                           }
-                        },
-                        {
-                           "name": "event_type",
-                           "type": {
-                              "name": "tripEvent",
-                              "symbols": [
-                                 "planned",
-                                 "booking_started",
-                                 "booking_ended",
-                                 "loading_started",
-                                 "loading_ended",
-                                 "departed_from_origin",
-                                 "unloading_at_stop_started",
-                                 "unloading_at_stop_ended",
-                                 "loading_at_stop_started",
-                                 "loading_at_stop_ended",
-                                 "departed_from_stop",
-                                 "arrived_at_destination",
-                                 "unloading_started",
-                                 "unloading_ended",
-                                 "completed"
-                              ],
-                              "type": "enum"
-                           }
-                        },
-                        {
-                           "name": "event_timestamp",
-                           "type": {
-                              "avro.java.string": "String",
-                              "type": "string"
-                           }
-                        },
-                        {
-                           "name": "source_system",
-                           "default": "TMS",
-                           "type": {
-                              "avro.java.string": "String",
-                              "type": "string"
-                           }
-                        }
-                     ]
+  "mediaType": "text/json",
+  "asyncapi": "3.0.0",
+  "info": {
+    "title": "Trip Status Streaming API",
+    "version": "1.0.0",
+    "description": "This API exposes all events related to `Trip` entity"
+  },
+  "channels": {
+    "transportmng.tripexecution.devents.status": {
+      "messages": {
+        "tripStatusEvent": {
+          "payload": {
+            "schemaFormat": "application/vnd.apache.avro;version=1.9.0",
+            "schema": {
+              "type": "record",
+              "name": "TripStatusChange",
+              "namespace": "com.company-xyz.transportmng.tripexecution",
+              "fields": [
+                {
+                  "name": "id",
+                  "type": {
+                    "avro.java.string": "String",
+                    "type": "string"
                   }
-               }
+                },
+                {
+                  "name": "event_type",
+                  "type": {
+                    "name": "tripEvent",
+                    "symbols": [
+                      "planned",
+                      "booking_started",
+                      "booking_ended",
+                      "loading_started",
+                      "loading_ended",
+                      "departed_from_origin",
+                      "unloading_at_stop_started",
+                      "unloading_at_stop_ended",
+                      "loading_at_stop_started",
+                      "loading_at_stop_ended",
+                      "departed_from_stop",
+                      "arrived_at_destination",
+                      "unloading_started",
+                      "unloading_ended",
+                      "completed"
+                    ],
+                    "type": "enum"
+                  }
+                },
+                {
+                  "name": "event_timestamp",
+                  "type": {
+                    "avro.java.string": "String",
+                    "type": "string"
+                  }
+                },
+                {
+                  "name": "source_system",
+                  "default": "TMS",
+                  "type": {
+                    "avro.java.string": "String",
+                    "type": "string"
+                  }
+                }
+              ]
             }
-         }
+          }
+        }
       }
-   }
+    }
+  }
 }
 
 ```
 
 #### Raw Port Async Api V2
+This section provides an example of an Async API version 2 configuration for a Trip Status Streaming API. It includes details on the servers, channels, and message schemas used for streaming events related to the Trip entity.
 ```json
 {
-   "mediaType": "text/json",
-   "asyncapi": "2.5.0",
-   "info": {
-      "title": "Trip Status Streaming API",
-      "version": "1.0.0",
-      "description": "This API exposes all events related to `Trip` entity"
-   },
-   "servers": {
-      "development": {
-         "url": "https://company-xyz.com/platform/dev/confluent-cloud",
-         "description": "Confluent Cloud DEV bootstrap server",
-         "protocol": "kafka",
-         "protocolVersion": "latest",
-         "bindings": {
+  "mediaType": "text/json",
+  "asyncapi": "2.5.0",
+  "info": {
+    "title": "Trip Status Streaming API",
+    "version": "1.0.0",
+    "description": "This API exposes all events related to `Trip` entity"
+  },
+  "servers": {
+    "development": {
+      "url": "https://company-xyz.com/platform/dev/confluent-cloud",
+      "description": "Confluent Cloud DEV bootstrap server",
+      "protocol": "kafka",
+      "protocolVersion": "latest",
+      "bindings": {
+        "kafka": {
+          "schemaRegistryUrl": "https://company-xyz.com/platform/dev/confluent-schema-registry",
+          "schemaRegistryVendor": "confluent"
+        }
+      }
+    },
+    "production": {
+      "url": "https://company-xyz.com/platform/prod/confluent-cloud",
+      "description": "Confluent Cloud PRODUCTION bootstrap server",
+      "protocol": "kafka",
+      "protocolVersion": "latest",
+      "bindings": {
+        "kafka": {
+          "schemaRegistryUrl": "https://company-xyz.com/platform/prod/confluent-schema-registry",
+          "schemaRegistryVendor": "confluent"
+        }
+      }
+    }
+  },
+  "defaultContentType": "avro/binary",
+  "channels": {
+    "transportmng.tripexecution.devents.status": {
+      "description": "This topic contains all the *domain events* related to `Trip` entity",
+      "subscribe": {
+        "operationId": "readTripStatusEvents",
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "message": {
+          "messageId": "tripStatusEvent",
+          "contentType": "avro/binary",
+          "schemaFormat": "application/vnd.apache.avro",
+          "payload": {
+            "type": "record",
+            "name": "TripStatusChange",
+            "namespace": "com.company-xyz.transportmng.tripexecution",
+            "fields": [
+              {
+                "name": "id",
+                "type": {
+                  "avro.java.string": "String",
+                  "type": "string"
+                }
+              },
+              {
+                "name": "event_type",
+                "type": {
+                  "name": "tripEvent",
+                  "symbols": [
+                    "planned",
+                    "booking_started",
+                    "booking_ended",
+                    "loading_started",
+                    "loading_ended",
+                    "departed_from_origin",
+                    "unloading_at_stop_started",
+                    "unloading_at_stop_ended",
+                    "loading_at_stop_started",
+                    "loading_at_stop_ended",
+                    "departed_from_stop",
+                    "arrived_at_destination",
+                    "unloading_started",
+                    "unloading_ended",
+                    "completed"
+                  ],
+                  "type": "enum"
+                }
+              },
+              {
+                "name": "event_timestamp",
+                "type": {
+                  "avro.java.string": "String",
+                  "type": "string"
+                }
+              },
+              {
+                "name": "source_system",
+                "default": "TMS",
+                "type": {
+                  "avro.java.string": "String",
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "bindings": {
             "kafka": {
-               "schemaRegistryUrl": "https://company-xyz.com/platform/dev/confluent-schema-registry",
-               "schemaRegistryVendor": "confluent"
+              "schemaIdPayloadEncoding": "confluent",
+              "schemaLookupStrategy": "TopicIdStrategy",
+              "key": {
+                "type": "string",
+                "enum": [
+                  "id"
+                ]
+              }
             }
-         }
+          }
+        }
       },
-      "production": {
-         "url": "https://company-xyz.com/platform/prod/confluent-cloud",
-         "description": "Confluent Cloud PRODUCTION bootstrap server",
-         "protocol": "kafka",
-         "protocolVersion": "latest",
-         "bindings": {
-            "kafka": {
-               "schemaRegistryUrl": "https://company-xyz.com/platform/prod/confluent-schema-registry",
-               "schemaRegistryVendor": "confluent"
-            }
-         }
+      "bindings": {
+        "kafka": {
+          "partitions": 20,
+          "replicas": 3
+        }
       }
-   },
-   "defaultContentType": "avro/binary",
-   "channels": {
-      "transportmng.tripexecution.devents.status": {
-         "description": "This topic contains all the *domain events* related to `Trip` entity",
-         "subscribe": {
-            "operationId": "readTripStatusEvents",
-            "security": [
-               {
-                  "apiKey": []
-               }
-            ],
-            "message": {
-               "messageId": "tripStatusEvent",
-               "contentType": "avro/binary",
-               "schemaFormat": "application/vnd.apache.avro",
-               "payload": {
-                  "type": "record",
-                  "name": "TripStatusChange",
-                  "namespace": "com.company-xyz.transportmng.tripexecution",
-                  "fields": [
-                     {
-                        "name": "id",
-                        "type": {
-                           "avro.java.string": "String",
-                           "type": "string"
-                        }
-                     },
-                     {
-                        "name": "event_type",
-                        "type": {
-                           "name": "tripEvent",
-                           "symbols": [
-                              "planned",
-                              "booking_started",
-                              "booking_ended",
-                              "loading_started",
-                              "loading_ended",
-                              "departed_from_origin",
-                              "unloading_at_stop_started",
-                              "unloading_at_stop_ended",
-                              "loading_at_stop_started",
-                              "loading_at_stop_ended",
-                              "departed_from_stop",
-                              "arrived_at_destination",
-                              "unloading_started",
-                              "unloading_ended",
-                              "completed"
-                           ],
-                           "type": "enum"
-                        }
-                     },
-                     {
-                        "name": "event_timestamp",
-                        "type": {
-                           "avro.java.string": "String",
-                           "type": "string"
-                        }
-                     },
-                     {
-                        "name": "source_system",
-                        "default": "TMS",
-                        "type": {
-                           "avro.java.string": "String",
-                           "type": "string"
-                        }
-                     }
-                  ]
-               },
-               "bindings": {
-                  "kafka": {
-                     "schemaIdPayloadEncoding": "confluent",
-                     "schemaLookupStrategy": "TopicIdStrategy",
-                     "key": {
-                        "type": "string",
-                        "enum": [
-                           "id"
-                        ]
-                     }
-                  }
-               }
-            }
-         },
-         "bindings": {
+    },
+    "transportmng.tripexecution.devents.position": {
+      "description": "This topic contains all the *domain events* related position tracking of `Trip` entity",
+      "subscribe": {
+        "operationId": "readTripPositionEvents",
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "message": {
+          "messageId": "tripPositionEvent",
+          "contentType": "avro/binary",
+          "schemaFormat": "application/vnd.apache.avro",
+          "payload": {
+            "type": "record",
+            "name": "TripPositionNotification",
+            "namespace": "com.company-xyz.transportmng.tripexecution",
+            "fields": [
+              {
+                "name": "id",
+                "type": {
+                  "avro.java.string": "String",
+                  "type": "string"
+                }
+              },
+              {
+                "name": "position",
+                "type": {
+                  "avro.java.string": "String",
+                  "type": "string"
+                }
+              },
+              {
+                "name": "event_timestamp",
+                "type": {
+                  "avro.java.string": "String",
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "bindings": {
             "kafka": {
-               "partitions": 20,
-               "replicas": 3
+              "schemaIdPayloadEncoding": "confluent",
+              "schemaLookupStrategy": "TopicIdStrategy",
+              "key": {
+                "type": "string",
+                "enum": [
+                  "id"
+                ]
+              }
             }
-         }
+          }
+        }
       },
-      "transportmng.tripexecution.devents.position": {
-         "description": "This topic contains all the *domain events* related position tracking of `Trip` entity",
-         "subscribe": {
-            "operationId": "readTripPositionEvents",
-            "security": [
-               {
-                  "apiKey": []
-               }
-            ],
-            "message": {
-               "messageId": "tripPositionEvent",
-               "contentType": "avro/binary",
-               "schemaFormat": "application/vnd.apache.avro",
-               "payload": {
-                  "type": "record",
-                  "name": "TripPositionNotification",
-                  "namespace": "com.company-xyz.transportmng.tripexecution",
-                  "fields": [
-                     {
-                        "name": "id",
-                        "type": {
-                           "avro.java.string": "String",
-                           "type": "string"
-                        }
-                     },
-                     {
-                        "name": "position",
-                        "type": {
-                           "avro.java.string": "String",
-                           "type": "string"
-                        }
-                     },
-                     {
-                        "name": "event_timestamp",
-                        "type": {
-                           "avro.java.string": "String",
-                           "type": "string"
-                        }
-                     }
-                  ]
-               },
-               "bindings": {
-                  "kafka": {
-                     "schemaIdPayloadEncoding": "confluent",
-                     "schemaLookupStrategy": "TopicIdStrategy",
-                     "key": {
-                        "type": "string",
-                        "enum": [
-                           "id"
-                        ]
-                     }
-                  }
-               }
-            }
-         },
-         "bindings": {
-            "kafka": {
-               "partitions": 20,
-               "replicas": 3
-            }
-         }
+      "bindings": {
+        "kafka": {
+          "partitions": 20,
+          "replicas": 3
+        }
       }
-   },
-   "components": {
-      "securitySchemes": {
-         "apiKey": {
-            "type": "apiKey",
-            "in": "user"
-         }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKey": {
+        "type": "apiKey",
+        "in": "user"
       }
-   }
+    }
+  }
 }
 
 ```
 
 #### Entities Async Api V3
+
 ```json
 {
-   "physicalEntities": [
-      {
-         "uuid": null,
-         "schema": null,
-         "name": "transportmng.tripexecution.devents.status",
-         "description": null,
-         "dataSet": null,
-         "creationDate": null,
-         "modificationDate": null,
-         "physicalFields": [
-            {
-               "uuid": null,
-               "name": "tripStatusEvent.id",
-               "type": "string",
-               "ordinalPosition": 1,
-               "description": null,
-               "creationDate": null,
-               "modificationDate": null,
-               "additionalProperties": []
-            },
-            {
-               "uuid": null,
-               "name": "tripStatusEvent.event_timestamp",
-               "type": "string",
-               "ordinalPosition": 3,
-               "description": null,
-               "creationDate": null,
-               "modificationDate": null,
-               "additionalProperties": []
-            },
-            {
-               "uuid": null,
-               "name": "tripStatusEvent",
-               "type": null,
-               "ordinalPosition": 0,
-               "description": null,
-               "creationDate": null,
-               "modificationDate": null,
-               "additionalProperties": []
-            },
-            {
-               "uuid": null,
-               "name": "tripStatusEvent.source_system",
-               "type": "string",
-               "ordinalPosition": 4,
-               "description": null,
-               "creationDate": null,
-               "modificationDate": null,
-               "additionalProperties": []
-            },
-            {
-               "uuid": null,
-               "name": "tripStatusEvent.event_type",
-               "type": "enum",
-               "ordinalPosition": 2,
-               "description": null,
-               "creationDate": null,
-               "modificationDate": null,
-               "additionalProperties": []
-            }
-         ],
-         "system": null,
-         "isConsentView": null,
-         "isHidden": null,
-         "tableType": "TOPIC",
-         "additionalProperties": []
-      }
-   ]
+  "physicalEntities": [
+    {
+      "uuid": null,
+      "schema": null,
+      "name": "transportmng.tripexecution.devents.status",
+      "description": null,
+      "dataSet": null,
+      "creationDate": null,
+      "modificationDate": null,
+      "physicalFields": [
+        {
+          "uuid": null,
+          "name": "tripStatusEvent.id",
+          "type": "string",
+          "ordinalPosition": 1,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripStatusEvent.event_timestamp",
+          "type": "string",
+          "ordinalPosition": 3,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripStatusEvent",
+          "type": null,
+          "ordinalPosition": 0,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripStatusEvent.source_system",
+          "type": "string",
+          "ordinalPosition": 4,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripStatusEvent.event_type",
+          "type": "enum",
+          "ordinalPosition": 2,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        }
+      ],
+      "system": null,
+      "isConsentView": null,
+      "isHidden": null,
+      "tableType": "TOPIC",
+      "additionalProperties": []
+    }
+  ]
 }
 ```
 
 #### Entities Async Api V2
+
 ```json
 {
-   "physicalEntities": [
-      {
-         "uuid": null,
-         "schema": null,
-         "name": "transportmng.tripexecution.devents.status",
-         "description": "This topic contains all the *domain events* related to `Trip` entity",
-         "dataSet": null,
-         "creationDate": null,
-         "modificationDate": null,
-         "physicalFields": [
-            {
-               "uuid": null,
-               "name": "tripStatusEvent.id",
-               "type": "string",
-               "ordinalPosition": 1,
-               "description": null,
-               "creationDate": null,
-               "modificationDate": null,
-               "additionalProperties": []
-            },
-            {
-               "uuid": null,
-               "name": "tripStatusEvent",
-               "type": "avro/binary",
-               "ordinalPosition": 0,
-               "description": null,
-               "creationDate": null,
-               "modificationDate": null,
-               "additionalProperties": []
-            },
-            {
-               "uuid": null,
-               "name": "tripStatusEvent.event_timestamp",
-               "type": "string",
-               "ordinalPosition": 3,
-               "description": null,
-               "creationDate": null,
-               "modificationDate": null,
-               "additionalProperties": []
-            },
-            {
-               "uuid": null,
-               "name": "tripStatusEvent.source_system",
-               "type": "string",
-               "ordinalPosition": 4,
-               "description": null,
-               "creationDate": null,
-               "modificationDate": null,
-               "additionalProperties": []
-            },
-            {
-               "uuid": null,
-               "name": "tripStatusEvent.event_type",
-               "type": "enum",
-               "ordinalPosition": 2,
-               "description": null,
-               "creationDate": null,
-               "modificationDate": null,
-               "additionalProperties": []
-            }
-         ],
-         "system": null,
-         "isConsentView": null,
-         "isHidden": null,
-         "tableType": "TOPIC",
-         "additionalProperties": []
-      },
-      {
-         "uuid": null,
-         "schema": null,
-         "name": "transportmng.tripexecution.devents.position",
-         "description": "This topic contains all the *domain events* related position tracking of `Trip` entity",
-         "dataSet": null,
-         "creationDate": null,
-         "modificationDate": null,
-         "physicalFields": [
-            {
-               "uuid": null,
-               "name": "tripPositionEvent.id",
-               "type": "string",
-               "ordinalPosition": 1,
-               "description": null,
-               "creationDate": null,
-               "modificationDate": null,
-               "additionalProperties": []
-            },
-            {
-               "uuid": null,
-               "name": "tripPositionEvent.position",
-               "type": "string",
-               "ordinalPosition": 2,
-               "description": null,
-               "creationDate": null,
-               "modificationDate": null,
-               "additionalProperties": []
-            },
-            {
-               "uuid": null,
-               "name": "tripPositionEvent.event_timestamp",
-               "type": "string",
-               "ordinalPosition": 3,
-               "description": null,
-               "creationDate": null,
-               "modificationDate": null,
-               "additionalProperties": []
-            },
-            {
-               "uuid": null,
-               "name": "tripPositionEvent",
-               "type": "avro/binary",
-               "ordinalPosition": 0,
-               "description": null,
-               "creationDate": null,
-               "modificationDate": null,
-               "additionalProperties": []
-            }
-         ],
-         "system": null,
-         "isConsentView": null,
-         "isHidden": null,
-         "tableType": "TOPIC",
-         "additionalProperties": []
-      }
-   ]
+  "physicalEntities": [
+    {
+      "uuid": null,
+      "schema": null,
+      "name": "transportmng.tripexecution.devents.status",
+      "description": "This topic contains all the *domain events* related to `Trip` entity",
+      "dataSet": null,
+      "creationDate": null,
+      "modificationDate": null,
+      "physicalFields": [
+        {
+          "uuid": null,
+          "name": "tripStatusEvent.id",
+          "type": "string",
+          "ordinalPosition": 1,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripStatusEvent",
+          "type": "avro/binary",
+          "ordinalPosition": 0,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripStatusEvent.event_timestamp",
+          "type": "string",
+          "ordinalPosition": 3,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripStatusEvent.source_system",
+          "type": "string",
+          "ordinalPosition": 4,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripStatusEvent.event_type",
+          "type": "enum",
+          "ordinalPosition": 2,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        }
+      ],
+      "system": null,
+      "isConsentView": null,
+      "isHidden": null,
+      "tableType": "TOPIC",
+      "additionalProperties": []
+    },
+    {
+      "uuid": null,
+      "schema": null,
+      "name": "transportmng.tripexecution.devents.position",
+      "description": "This topic contains all the *domain events* related position tracking of `Trip` entity",
+      "dataSet": null,
+      "creationDate": null,
+      "modificationDate": null,
+      "physicalFields": [
+        {
+          "uuid": null,
+          "name": "tripPositionEvent.id",
+          "type": "string",
+          "ordinalPosition": 1,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripPositionEvent.position",
+          "type": "string",
+          "ordinalPosition": 2,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripPositionEvent.event_timestamp",
+          "type": "string",
+          "ordinalPosition": 3,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "tripPositionEvent",
+          "type": "avro/binary",
+          "ordinalPosition": 0,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        }
+      ],
+      "system": null,
+      "isConsentView": null,
+      "isHidden": null,
+      "tableType": "TOPIC",
+      "additionalProperties": []
+    }
+  ]
 }
 
 ```
+
+## Prerequisites
+
+The project requires the following dependencies:
+
+* Java 11
+* Maven 3.8.6
+* Project [odm-platform](https://github.com/opendatamesh-initiative/odm-platform)
+
 ## Dependencies
 
 This project needs some artifacts from the odm-platform project.
