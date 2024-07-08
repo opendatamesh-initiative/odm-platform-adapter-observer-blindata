@@ -7,11 +7,6 @@ purpose of this adapter is to keep the data catalog within Blindata constantly u
 creation, deletion, or modification of a dataproduct, Blindata is immediately and automatically notified to ensure that
 its catalog remains aligned.
 
-*_This project has dependencies from the
-project [odm-platform](https://github.com/opendatamesh-initiative/odm-platform)_
-
-      address: The address of ODM Notification Service
-
 ## Contents
 
 1. [General Schema Annotations](#general-schema-annotations)
@@ -21,45 +16,46 @@ project [odm-platform](https://github.com/opendatamesh-initiative/odm-platform)_
     - [Systems](#systems)
     - [DatastoreAPI](#datastoreapi)
         - [JSON Schema](#json-schema)
-            - [Physical Entity](#physical-entity)
-            - [Physical Field](#physical-field)
+            - [From JSONSchema to Physical Entity](#from-jsonschema-to-physical-entities)
+            - [From JSONSchema to Physical Field](#from-jsonschema-to-physical-field)
     - [AsyncAPI](#asyncapi)
         - [Avro](#avro)
-            - [Physical Entity](#from-avro-to-physical-entity)
-            - [Physical Field](#from-avro-to-physical-field)
+            - [From Avro to Physical Entity](#from-avro-to-physical-entity)
+            - [From Avro to Physical Field](#from-avro-to-physical-field)
 3. [Examples](#examples)
     - [DatastoreAPI](#datastore-api-example)
         - [Single Entity](#single-entity)
         - [Multiple Entities](#multiple-entities)
-     - [AsyncAPI](#async-api)
+    - [AsyncAPI](#async-api)
         - [Raw Port Async Api V3](#raw-port-async-api-v3)
         - [Raw Port Async Api V2](#raw-port-async-api-v2)
         - [Entities Async Api V3](#entities-async-api-v3)
         - [Entities Async Api V2](#entities-async-api-v2)
-4. [Prerequisites](#prerequisites)
-5. [Dependencies](#dependencies)
-    - [Clone Dependencies Repository](#clone-dependencies-repository)
-    - [Compile Dependencies](#compile-dependencies)
-6. [Run Locally](#run-locally)
-    - [Clone Repository](#clone-repository)
-    - [Compile Project](#compile-project)
-    - [Run Application](#run-application)
-7. [Run with Docker](#run-with-docker)
-    - [Clone Repository](#clone-repository-1)
-    - [Compile Project](#compile-project-1)
-    - [Build Image](#build-image)
-    - [Run Application](#run-application-1)
-    - [Stop Application](#stop-application)
-8. [Run with Docker Compose](#run-with-docker-compose)
-    - [Clone Repository](#clone-repository-2)
-    - [Compile Project](#compile-project-2)
-    - [Build Image](#build-image-1)
-    - [Run Application](#run-application-2)
-    - [Stop Application](#stop-application-1)
-9. [Test It](#test-it)
-    - [REST Services](#rest-services)
-    - [Blindata Configuration](#blindata-configuration)
-    - [ODM Configuration](#odm-configuration)
+4. [Run the Project](#run-the-project-)
+   - [Prerequisites](#prerequisites)
+   - [Dependencies](#dependencies)
+       - [Clone Dependencies Repository](#clone-dependencies-repository)
+       - [Compile Dependencies](#compile-dependencies)
+   - [Run Locally](#run-locally)
+       - [Clone Repository](#clone-repository)
+       - [Compile Project](#compile-project)
+       - [Run Application](#run-application)
+   - [Run with Docker](#run-with-docker)
+       - [Clone Repository](#clone-repository-1)
+       - [Compile Project](#compile-project-1)
+       - [Build Image](#build-image)
+       - [Run Application](#run-application-1)
+       - [Stop Application](#stop-application)
+   - [Run with Docker Compose](#run-with-docker-compose)
+       - [Clone Repository](#clone-repository-2)
+       - [Compile Project](#compile-project-2)
+       - [Build Image](#build-image-1)
+       - [Run Application](#run-application-2)
+       - [Stop Application](#stop-application-1)
+   - [Test It](#test-it)
+     - [REST Services](#rest-services)
+     - [Blindata Configuration](#blindata-configuration)
+     - [ODM Configuration](#odm-configuration)
 
 ## General Schema Annotations
 
@@ -69,7 +65,9 @@ data structures.
 
 ### Entity
 
-Entities annotations help to describe the general characteristics and metadata of a data structure. In the table below there's a list of annotations each one have a detailed description, its requirement status, and support for JSONSchema and Avro.
+Entities annotations help to describe the general characteristics and metadata of a data structure. In the table below
+there's a list of annotations each one have a detailed description, its requirement status, and support for JSONSchema
+and Avro.
 
 | Property        | Required | Description                                                                                                                              | JSONSchema Supported | Avro Supported |
 |-----------------|----------|------------------------------------------------------------------------------------------------------------------------------------------|----------------------|----------------|
@@ -93,7 +91,9 @@ Entities annotations help to describe the general characteristics and metadata o
 
 ### Fields
 
-Fields annotations help to describe the general characteristics and metadata of a data structure. In the table below there's a list of annotations each one have a detailed description, its requirement status, and support for JSONSchema and Avro.
+Fields annotations help to describe the general characteristics and metadata of a data structure. In the table below
+there's a list of annotations each one have a detailed description, its requirement status, and support for JSONSchema
+and Avro.
 
 | Property               | Required | Description                                                                                                                              | JSONSchema Supported | Avro Supported |
 |------------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------|----------------------|----------------|
@@ -141,6 +141,15 @@ Fields annotations help to describe the general characteristics and metadata of 
 The observer supports the use of two specifications: Datastore API and Async API. For Datastore API the schema format
 supported is JSON, while for Async API is AVRO.
 
+Given a descriptor, the following elements are created in Blindata:
+
+- Systems
+- Physical Entities
+- Physical Fields
+  
+This mapping ensures that all data structures and their components are accurately represented and can be monitored or
+  managed within Blindata, providing a seamless integration between the descriptor and the Blindata environment.
+
 ### Systems
 
 The 'platform' field within the 'promises' field of the port in the descriptor is used to extract the name and system
@@ -161,10 +170,12 @@ blindata:
 
 ### DatastoreApi
 
-##### Physical Entity
+##### From JSONSchema to Physical Entities
 
-This section describes the mapping of schema annotations to physical entity properties within the system. Physical entities represent the main data structures, such as tables or views, in the data store.
-Physical entities are mappen from "schema.content" in case of single entity "schema.content.entities" in case of multiple
+This section describes the mapping of schema annotations to physical entity properties within the system. Physical
+entities represent the main data structures, such as tables or views, in the data store.
+Physical entities are mappen from "schema.content" in case of single entity "schema.content.entities" in case of
+multiple
 entities.
 
 | Schema Annotation      | Physical Entity Property | Description                                                         | Mandatory |
@@ -179,26 +190,27 @@ entities.
 | `schema.scope`         | add.prop                 | The scope of the physical entity within the system.                 | -         |
 | `schema.externalDocs`  | add.prop                 | Links to external documentation related to the physical entity.     | -         |
 
-#### Physical Field
+#### From JSONSchema to Physical Field
 
-This section details the mapping of schema annotations to physical field properties. Physical fields represent the individual attributes or columns within a physical entity, providing specific data points within the entity.
+This section details the mapping of schema annotations to physical field properties. Physical fields represent the
+individual attributes or columns within a physical entity, providing specific data points within the entity.
 Physical fields are mapped from "properties" field inside each entity definition.
 
 | Schema Annotation          | Physical Field Property | Description                          | Mandatory |
 |----------------------------|-------------------------|--------------------------------------|-----------|
 | `properties.name`          | name                    | Object name                          | ✔️        |
-| `properties.physicalType` | type                    | Physical type of the object          | -         |
-| `properties.comments` | description             | Additional comments about the object | -         |
-| `properties.kind`   | add.prop                | Object type (e.g., TABULAR)          | -         |
-| `properties.status` | add.prop                | Object status (e.g., TESTING)        | -         |
-| `properties.tags`   | add.prop                | Tags associated with the object      | -         |
-| `properties.owner`  | add.prop                | Owner of the object                  | -         |
-| `properties.domain` | add.prop                | Domain to which the object belongs   | -         |
+| `properties.physicalType`  | type                    | Physical type of the object          | -         |
+| `properties.comments`      | description             | Additional comments about the object | -         |
+| `properties.kind`          | add.prop                | Object type (e.g., TABULAR)          | -         |
+| `properties.status`        | add.prop                | Object status (e.g., TESTING)        | -         |
+| `properties.tags`          | add.prop                | Tags associated with the object      | -         |
+| `properties.owner`         | add.prop                | Owner of the object                  | -         |
+| `properties.domain`        | add.prop                | Domain to which the object belongs   | -         |
 | `properties.contactpoints` | add.prop                | Contact points related to the object | -         |
-| `properties.scope`  | add.prop                | Scope of the object (e.g., private)  | -         |
-| `properties.version` | add.prop                | Version of the object                | -         |
-| `properties.displayName` | add.prop                | Display name of the object           | -         |
-| `properties.description` | add.prop                | Description of the object            | -         |
+| `properties.scope`         | add.prop                | Scope of the object (e.g., private)  | -         |
+| `properties.version`       | add.prop                | Version of the object                | -         |
+| `properties.displayName`   | add.prop                | Display name of the object           | -         |
+| `properties.description`   | add.prop                | Description of the object            | -         |
 
 ### AsyncApi
 
@@ -219,6 +231,7 @@ Physical entities are mapped from "channel" section of the descriptor.
 | `channel.address`      | add.prop                 | -         | -             |
 
 ##### From Avro to Physical Field
+
 Physical entities can be find in "channel.message" section of the descriptor.
 
 | Schema Annotation              | Physical Field Property | Mandatory | Default Value |
@@ -238,8 +251,12 @@ Physical entities can be find in "channel.message" section of the descriptor.
 ### Datastore Api Example
 
 #### Single Entity
-This section provides examples of how to represent a single entity using the Data Store API. It demonstrates the application of schema annotations to define multiple physical entities and their fields, illustrating how the mappings are structured and implemented in practice.
-rom the descriptor the observer will create a physical entity called "airline_freq" with physical fields :"id", "apt_dst", "flt_freq", "apt_org", "airline_code"
+
+This section provides examples of how to represent a single entity using the Data Store API. It demonstrates the
+application of schema annotations to define multiple physical entities and their fields, illustrating how the mappings
+are structured and implemented in practice.
+rom the descriptor the observer will create a physical entity called "airline_freq" with physical fields :"id", "
+apt_dst", "flt_freq", "apt_org", "airline_code"
 
 ```json
 {
@@ -398,9 +415,14 @@ rom the descriptor the observer will create a physical entity called "airline_fr
   // ... data product's other properties
 }
 ```
+
 #### Multiple Entities
-This section provides examples of how to represent multiple entities using the Data Store API. It demonstrates the application of schema annotations to define multiple physical entities and their fields, illustrating how the mappings are structured and implemented in practice.
-From the descriptor the observer will create two physical entities called "Customer" and "Payments" each one with just a physical field "id".
+
+This section provides examples of how to represent multiple entities using the Data Store API. It demonstrates the
+application of schema annotations to define multiple physical entities and their fields, illustrating how the mappings
+are structured and implemented in practice.
+From the descriptor the observer will create two physical entities called "Customer" and "Payments" each one with just a
+physical field "id".
 
 ```json
 {
@@ -578,7 +600,11 @@ From the descriptor the observer will create two physical entities called "Custo
 ### Async Api
 
 #### Raw Port Async Api V3
-This section illustrates an example of an Async API version 3 configuration for a Trip Status Streaming API. The API is used to stream events related to the Trip entity. It describes the schema for the messages, including the fields and their types.
+
+This section illustrates an example of an Async API version 3 configuration for a Trip Status Streaming API. The API is
+used to stream events related to the Trip entity. It describes the schema for the messages, including the fields and
+their types.
+
 ```json
 {
   "mediaType": "text/json",
@@ -657,7 +683,10 @@ This section illustrates an example of an Async API version 3 configuration for 
 ```
 
 #### Raw Port Async Api V2
-This section provides an example of an Async API version 2 configuration for a Trip Status Streaming API. It includes details on the servers, channels, and message schemas used for streaming events related to the Trip entity.
+
+This section provides an example of an Async API version 2 configuration for a Trip Status Streaming API. It includes
+details on the servers, channels, and message schemas used for streaming events related to the Trip entity.
+
 ```json
 {
   "mediaType": "text/json",
@@ -1063,8 +1092,8 @@ This section provides an example of an Async API version 2 configuration for a T
 }
 
 ```
-
-## Prerequisites
+## Run the Project 
+### Prerequisites
 
 The project requires the following dependencies:
 
@@ -1072,11 +1101,11 @@ The project requires the following dependencies:
 * Maven 3.8.6
 * Project [odm-platform](https://github.com/opendatamesh-initiative/odm-platform)
 
-## Dependencies
+### Dependencies
 
 This project needs some artifacts from the odm-platform project.
 
-### Clone dependencies repository
+#### Clone dependencies repository
 
 Clone the repository and move to the project root folder:
 
@@ -1086,7 +1115,7 @@ cd odm-platform
 
 ```
 
-### Compile dependencies
+#### Compile dependencies
 
 Compile the project:
 
@@ -1094,11 +1123,11 @@ Compile the project:
 mvn clean install -DskipTests
 ```
 
-## Run locally
+### Run locally
 
 *_Dependencies must have been compiled to run this project._
 
-### Clone repository
+#### Clone repository
 
 Clone the repository and move to the project root folder
 
@@ -1107,7 +1136,7 @@ git clone git@github.com:opendatamesh-initiative/odm-platform-adapter-observer-b
 cd odm-platform-adapter-observer-blindata
 ```
 
-### Compile project
+#### Compile project
 
 Compile the project:
 
@@ -1115,7 +1144,7 @@ Compile the project:
 mvn clean package spring-boot:repackage -DskipTests
 ```
 
-### Run application
+#### Run application
 
 Run the application:
 
@@ -1123,11 +1152,11 @@ Run the application:
 java -jar observer-blindata-server/target/odm-platform-adapter-observer-blindata-server-1.0.0.jar
 ```
 
-## Run with Docker
+### Run with Docker
 
 *_Dependencies must have been compiled to run this project._
 
-### Clone repository
+#### Clone repository
 
 Clone the repository and move it to the project root folder
 
@@ -1139,7 +1168,7 @@ cd odm-platform-adapter-observer-blindata
 Here you can find the Dockerfile which creates an image containing the application by directly copying it from the build
 executed locally (i.e. from `target` folder).
 
-### Compile project
+#### Compile project
 
 You need to first execute the build locally by running the following command:
 
@@ -1147,7 +1176,7 @@ You need to first execute the build locally by running the following command:
 mvn clean package spring-boot:repackage -DskipTests
 ```
 
-### Build image
+#### Build image
 
 Build the Docker image of the application and run it.
 
@@ -1164,7 +1193,7 @@ docker build -t odm-observer-blindata-app . -f Dockerfile \
    --build-arg BLINDATA_ROLE=<blindata-role>
 ```
 
-### Run application
+#### Run application
 
 Run the Docker image.
 
@@ -1172,7 +1201,7 @@ Run the Docker image.
 docker run --name odm-observer-blindata-app -p 9002:9002 odm-observer-blindata-app
 ```
 
-### Stop application
+#### Stop application
 
 ```bash
 docker stop odm-observer-blindata-app
@@ -1190,11 +1219,11 @@ To remove a stopped application to rebuild it from scratch execute the following
 docker rm odm-observer-blindata-app
 ```
 
-## Run with Docker Compose
+### Run with Docker Compose
 
 *_Dependencies must have been compiled to run this project._
 
-### Clone repository
+#### Clone repository
 
 Clone the repository and move it to the project root folder
 
@@ -1203,7 +1232,7 @@ git clone git@github.com:opendatamesh-initiative/odm-platform-adapter-observer-b
 cd odm-platform-adapter-observer-blindata
 ```
 
-### Compile project
+#### Compile project
 
 Compile the project:
 
@@ -1211,7 +1240,7 @@ Compile the project:
 mvn clean package spring-boot:repackage -DskipTests
 ```
 
-### Build image
+#### Build image
 
 Build the docker-compose images of the application and a default PostgreSQL DB (v11.0).
 
@@ -1243,7 +1272,7 @@ Then, build the docker-compose file:
 docker-compose build
 ```
 
-### Run application
+#### Run application
 
 Run the docker-compose images.
 
@@ -1251,7 +1280,7 @@ Run the docker-compose images.
 docker-compose up
 ```
 
-### Stop application
+#### Stop application
 
 Stop the docker-compose images
 
@@ -1271,15 +1300,15 @@ To rebuild it from scratch execute the following commands :
 docker-compose build --no-cache
 ```
 
-# Test it
+## Test it
 
-## REST services
+### REST services
 
 You can invoke REST endpoints through *OpenAPI UI* available at the following url:
 
 * [http://localhost:9002/api/v1/up/observer/swagger-ui/index.html](http://localhost:9002/api/v1/up/observer/swagger-ui/index.html)
 
-## Blindata configuration
+### Blindata configuration
 
 In order to connect with Blindata, you must specify some important values in file `application.yml` (or in `.env` file
 if you're running the application with docker-compose, or as build arguments if you're running the application through
@@ -1296,7 +1325,7 @@ blindata:
   systemTechnologyRegex: optional regex to extract system technology from schema (value optional)
 ```
 
-## ODM configuration
+### ODM configuration
 
 In order to connect with ODM microservices, you must specify some important values in file `application.yml` (or
 in `.env` file if you're running the application with docker-compose, or as build arguments if you're running the
