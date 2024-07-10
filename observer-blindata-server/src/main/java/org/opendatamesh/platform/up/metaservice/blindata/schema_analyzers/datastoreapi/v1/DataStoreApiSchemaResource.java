@@ -2,13 +2,40 @@ package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datas
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-@JsonDeserialize(as = DataStoreApiSchemaMultipleEntity.class)
-class DataStoreApiSchemaMultipleEntity extends DataStoreApiSchema {
+@JsonDeserialize(as = DataStoreApiSchemaResource.class)
+class DataStoreApiSchemaResource extends DataStoreApiSchema {
     private int id;
     private String name;
     private String version;
     private String mediaType;
-    private DataStoreApiSchemaContent content;
+    private String databaseSchemaName;
+    private String databaseName;
+    private DataStoreApiSchemaEntity[] tables;
+
+
+    public String getDatabaseSchemaName() {
+        return databaseSchemaName;
+    }
+
+    public void setDatabaseSchemaName(String databaseSchemaName) {
+        this.databaseSchemaName = databaseSchemaName;
+    }
+
+    public String getDatabaseName() {
+        return databaseName;
+    }
+
+    public void setDatabaseName(String databaseName) {
+        this.databaseName = databaseName;
+    }
+
+    public DataStoreApiSchemaEntity[] getTables() {
+        return tables;
+    }
+
+    public void setTables(DataStoreApiSchemaEntity[] tables) {
+        this.tables = tables;
+    }
 
     public int getId() {
         return id;
@@ -42,13 +69,7 @@ class DataStoreApiSchemaMultipleEntity extends DataStoreApiSchema {
         this.mediaType = mediaType;
     }
 
-    public DataStoreApiSchemaContent getContent() {
-        return content;
-    }
 
-    public void setContent(DataStoreApiSchemaContent content) {
-        this.content = content;
-    }
 }
 
 

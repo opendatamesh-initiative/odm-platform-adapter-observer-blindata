@@ -17,7 +17,7 @@ class DataStoreApiSchemaContent {
     private List<DataStoreApiSchemaEntity> entities;
 
     @JsonCreator
-    public DataStoreApiSchemaContent(@JsonProperty("entities") List<DataStoreApiSchemaEntity> entities) {
+    public DataStoreApiSchemaContent(@JsonProperty("tables") List<DataStoreApiSchemaEntity> entities) {
         this.entities = entities;
     }
 
