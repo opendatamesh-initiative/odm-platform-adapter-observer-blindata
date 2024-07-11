@@ -7,7 +7,7 @@ class DataStoreApiSchemaEntity extends DataStoreApiSchema {
 
     private String specification;
     private String specificationVersion;
-    private SchemaEntityDefinition definition;
+    private DataStoreAPISchemaEntityDefinition definition;
 
 
     public String getSpecification() {
@@ -26,11 +26,11 @@ class DataStoreApiSchemaEntity extends DataStoreApiSchema {
         this.specificationVersion = specificationVersion;
     }
 
-    public SchemaEntityDefinition getDefinition() {
+    public DataStoreAPISchemaEntityDefinition getDefinition() {
         return definition;
     }
 
-    public void setDefinition(SchemaEntityDefinition definition) {
+    public void setDefinition(DataStoreAPISchemaEntityDefinition definition) {
         this.definition = definition;
     }
 }

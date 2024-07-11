@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SchemaEntityDefinition {
+public class DataStoreAPISchemaEntityDefinition {
 
     private String name;
     private String kind;

@@ -60,7 +60,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
 
     // ============================= OLD Code =================================================================================
 
-    private BDPhysicalEntityRes fromSchemaEntityToPhysicalEntity(String schema, SchemaEntityDefinition dataStoreApiSchemaEntity) {
+    private BDPhysicalEntityRes fromSchemaEntityToPhysicalEntity(String schema, DataStoreAPISchemaEntityDefinition dataStoreApiSchemaEntity) {
         BDPhysicalEntityRes physicalEntityRes = new BDPhysicalEntityRes();
         physicalEntityRes.setSchema(schema);
         physicalEntityRes.setName(dataStoreApiSchemaEntity.getName());
@@ -73,7 +73,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         return physicalEntityRes;
     }
 
-    private List<AdditionalPropertiesRes> getExtractAdditionalPropertiesForEntities(SchemaEntityDefinition dataStoreApiSchemaEntity) {
+    private List<AdditionalPropertiesRes> getExtractAdditionalPropertiesForEntities(DataStoreAPISchemaEntityDefinition dataStoreApiSchemaEntity) {
         List<AdditionalPropertiesRes> additionalPropertiesRes = new ArrayList<>();
         if (StringUtils.hasText(dataStoreApiSchemaEntity.getStatus())) {
             additionalPropertiesRes.add(new AdditionalPropertiesRes("status", dataStoreApiSchemaEntity.getStatus()));
