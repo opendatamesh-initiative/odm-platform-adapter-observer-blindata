@@ -171,9 +171,9 @@ blindata:
 ### Data Store Api
 A Data Store API Document that conforms to the Data Store API Specification is itself a JSON object, which may be represented either in JSON or YAML format.
 
-More information about Data Stpre API are available here: [Data Store API Specification](https://dpds.opendatamesh.org/specifications/dsas/1.0.0/)
+Other information about Data Store API is available here: [Data Store API Specification](https://dpds.opendatamesh.org/specifications/dsas/1.0.0/)
 
-To map tables and columns in a blindata use the schema field inside Data Store Api Entity, as shown in the example below:
+To map tables and columns in Blindata use the schema field inside Data Store Api Entity, as shown in the example below:
 ```json
 {
   "datastoreapi": ...,
@@ -191,7 +191,7 @@ To map tables and columns in a blindata use the schema field inside Data Store A
         "specification": "json-schema",
         "specificationVersion": "1",
         "externalDocs": "docs",
-        "definition": {Physical Entity Definition }
+        "definition": {Physical Entities Definition }
       }
     ]
   }
@@ -202,9 +202,7 @@ To map tables and columns in a blindata use the schema field inside Data Store A
 This section describes the mapping of schema annotations to physical entity properties within the system. Physical
 entities represent the main data structures, such as tables or views, in the data store.
 
-Physical entities are mapped inside "definition" properties inside "tables" array in "schema".
-
-
+Physical entities are mapped within the "definition" property inside the "tables" array in the "schema".
 
 | Schema Annotation                  | Physical Entity Property | Description                                                         | Mandatory |
 |------------------------------------|--------------------------|---------------------------------------------------------------------|-----------|
