@@ -2,7 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import org.opendatamesh.platform.core.dpds.model.interfaces.PortDPDS;
+import org.opendatamesh.dpds.model.interfaces.PortDPDS;
 import org.opendatamesh.platform.pp.registry.api.resources.ExternalComponentResource;
 import org.opendatamesh.platform.up.metaservice.blindata.client.odm.OdmRegistryClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductPortAssetDetailRes;

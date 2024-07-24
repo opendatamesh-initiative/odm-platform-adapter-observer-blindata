@@ -2,9 +2,9 @@ package org.opendatamesh.platform.up.metaservice.blindata;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.opendatamesh.platform.core.commons.ObjectMapperFactory;
 import org.opendatamesh.platform.core.commons.test.ODMIntegrationTest;
 import org.opendatamesh.platform.core.commons.test.ODMResourceBuilder;
-import org.opendatamesh.platform.core.dpds.ObjectMapperFactory;
 import org.opendatamesh.platform.pp.notification.api.resources.EventNotificationResource;
 import org.opendatamesh.platform.up.observer.api.clients.ConsumeClientImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.fail;
 

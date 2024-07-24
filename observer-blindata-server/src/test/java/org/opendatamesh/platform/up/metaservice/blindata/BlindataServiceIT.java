@@ -107,7 +107,6 @@ public class BlindataServiceIT extends ODMObserverBlindataAppIT {
         policyResource.setName("BlindataIT.policy.name");
         PolicyEngineResource policyEngineResource = new PolicyEngineResource();
         policyEngineResource.setId(1L);
-        policyResource.setPolicyEngine(policyEngineResource);
         PolicyEvaluationResultResource policyEvaluationResultResource = new PolicyEvaluationResultResource();
         policyEvaluationResultResource.setDataProductId(bdDataProductRes.getIdentifier());
         policyEvaluationResultResource.setDataProductVersion(bdDataProductRes.getVersion());

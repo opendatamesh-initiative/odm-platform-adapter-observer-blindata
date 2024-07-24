@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.opendatamesh.platform.core.dpds.model.DataProductVersionDPDS;
+import org.opendatamesh.dpds.model.DataProductVersionDPDS;
 import org.opendatamesh.platform.pp.notification.api.clients.EventNotificationClient;
 import org.opendatamesh.platform.pp.notification.api.resources.EventNotificationResource;
 import org.opendatamesh.platform.pp.notification.api.resources.enums.EventNotificationStatus;

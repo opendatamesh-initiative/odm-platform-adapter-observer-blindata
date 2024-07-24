@@ -1,9 +1,9 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.opendatamesh.platform.core.dpds.model.DataProductVersionDPDS;
-import org.opendatamesh.platform.core.dpds.model.info.InfoDPDS;
-import org.opendatamesh.platform.core.dpds.model.interfaces.PortDPDS;
+import org.opendatamesh.dpds.model.DataProductVersionDPDS;
+import org.opendatamesh.dpds.model.info.InfoDPDS;
+import org.opendatamesh.dpds.model.interfaces.PortDPDS;
 import org.opendatamesh.platform.pp.notification.api.resources.EventNotificationResource;
 import org.opendatamesh.platform.pp.notification.api.resources.enums.EventNotificationStatus;
 import org.opendatamesh.platform.pp.policy.api.clients.PolicyEvaluationResultClient;
