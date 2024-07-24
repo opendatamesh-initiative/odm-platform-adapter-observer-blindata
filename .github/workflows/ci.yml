@@ -38,8 +38,6 @@ jobs:
           cd ..
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build with Maven
-        run: mvn clean package spring-boot:repackage -DskipTests
       - name: Execute tests with Maven
         run: |
           mvn -B test -Dspring.profiles.active=test -Dtest=OpaClientIT -DfailIfNoTests=false
