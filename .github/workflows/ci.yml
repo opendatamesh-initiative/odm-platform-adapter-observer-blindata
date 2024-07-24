@@ -14,7 +14,7 @@ jobs:
       packages: read
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v4
         with:
           ssh-key: ${{secrets.SSH_KEY}}
       - name: Install SSH key
@@ -39,6 +39,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Execute tests with Maven
-        run: |
-          mvn -B test -Dspring.profiles.active=test -Dtest=OpaClientIT -DfailIfNoTests=false
-          mvn -B test -Dspring.profiles.active=test -Dtest=BlindataServiceIT -DfailIfNoTests=false
+        run: mvn -B test
