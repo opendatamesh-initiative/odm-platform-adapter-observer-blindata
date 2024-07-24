@@ -50,22 +50,17 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
     private List<BDPhysicalEntityRes> extractSchemaPropertiesFromSchemaContent(PortStandardDefinition portStandardDefinition) throws JsonProcessingException {
         DataStoreApiDefinition dataStoreApiDefinition = objectMapper.readValue(portStandardDefinition.getDefinition(), DataStoreApiDefinition.class);
         List<BDPhysicalEntityRes> physicalEntityResList = new ArrayList<>();
-        if (dataStoreApiDefinition.getSchema() instanceof DataStoreApiSchemaEntity) {
-            DataStoreApiSchemaEntity dataStoreApiSchemaEntity = ((DataStoreApiSchemaEntity) dataStoreApiDefinition.getSchema());
-            BDPhysicalEntityRes extractedEntityFromSchema = fromSchemaEntityToPhysicalEntity("schema_name", dataStoreApiSchemaEntity); //TODO
+        for (DataStoreApiSchemaEntity entity : ((DataStoreApiSchemaResource) dataStoreApiDefinition.getSchema()).getTables()) {
+            BDPhysicalEntityRes extractedEntityFromSchema = fromSchemaEntityToPhysicalEntity("schema_name", entity.getDefinition());
             physicalEntityResList.add(extractedEntityFromSchema);
-        } else if (dataStoreApiDefinition.getSchema() instanceof DataStoreApiSchemaMultipleEntity) {
-            for (DataStoreApiSchemaEntity entity : ((DataStoreApiSchemaMultipleEntity) dataStoreApiDefinition.getSchema()).getContent().getEntities()) {
-                BDPhysicalEntityRes extractedEntityFromSchema = fromSchemaEntityToPhysicalEntity("schema_name", entity);
-                physicalEntityResList.add(extractedEntityFromSchema);
-            }
         }
+
         return physicalEntityResList;
     }
 
     // ============================= OLD Code =================================================================================
 
-    private BDPhysicalEntityRes fromSchemaEntityToPhysicalEntity(String schema, DataStoreApiSchemaEntity dataStoreApiSchemaEntity) {
+    private BDPhysicalEntityRes fromSchemaEntityToPhysicalEntity(String schema, DataStoreAPISchemaEntityDefinition dataStoreApiSchemaEntity) {
         BDPhysicalEntityRes physicalEntityRes = new BDPhysicalEntityRes();
         physicalEntityRes.setSchema(schema);
         physicalEntityRes.setName(dataStoreApiSchemaEntity.getName());
@@ -78,7 +73,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         return physicalEntityRes;
     }
 
-    private List<AdditionalPropertiesRes> getExtractAdditionalPropertiesForEntities(DataStoreApiSchemaEntity dataStoreApiSchemaEntity) {
+    private List<AdditionalPropertiesRes> getExtractAdditionalPropertiesForEntities(DataStoreAPISchemaEntityDefinition dataStoreApiSchemaEntity) {
         List<AdditionalPropertiesRes> additionalPropertiesRes = new ArrayList<>();
         if (StringUtils.hasText(dataStoreApiSchemaEntity.getStatus())) {
             additionalPropertiesRes.add(new AdditionalPropertiesRes("status", dataStoreApiSchemaEntity.getStatus()));

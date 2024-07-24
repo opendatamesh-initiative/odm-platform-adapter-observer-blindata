@@ -1,31 +1,72 @@
 {
   "datastoreapi": "1.0.0",
   "info": {
-    "databaseName": "airlinedemo",
-    "nameSpace": "nome_schema",
     "title": "flight_frequency Data",
     "summary": "This API exposes the current flight_frequency data of each `Airline` entity",
+    "description": "API description",
+    "termsOfService": "https://example.com/terms/",
     "version": "1.0.0",
-    "datastoreName": "flight_frequency"
+    "datastoreName": "flight_frequency",
+    "contact": {
+      "name": "API Support",
+      "url": "https://www.example.com/support",
+      "email": "support@example.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "nameSpace": "nome_schema"
   },
   "services": {
     "development": {
+      "name": "Flight frequency service",
+      "description": "The service tablethat host the `FREQUENCY` data store in the given environment",
       "serverInfo": {
-        "$ref": "#components.serverInfo.flightFrequencyStoreServerInfo"
+        "flightFrequencyStoreServerInfo": {
+          "host:": "{host}",
+          "port:": "3306",
+          "dbmsType:": "MySQL",
+          "dbmsVersion:": "8",
+          "connectionProtocols": {
+            "jdbc": {
+              "version": "1.0",
+              "url": "jdbc:mysql://{hosts}:3306/foodmart",
+              "driverName": "MySQL JDBC Driver",
+              "driverClass": "org.mysql.Driver",
+              "driverVersion": "latest",
+              "driverLibrary": {
+                "description": "MySQL JDBC Driver Library",
+                "dataType": "application/java-archive",
+                "$href": "https://jdbc.mysql.org/"
+              },
+              "driverDocs": {
+                "description": "MySQL JDBC Driver HomePage",
+                "dataType": "text/html",
+                "$href": "https://jdbc.mysql.org/mysql-8.jar"
+              }
+            }
+          }
+        }
       },
-      "serverVariables": {
+      "variables": {
         "host": "35.52.55.12"
       }
     }
   },
   "schema": {
-    "id": 1,
-    "name": "ab334d27-41e7-3622-88f7-6dd5a200ae30",
-    "version": "1.0.0",
-    "mediaType": "application/json",
-    "content": {
-      "entities": [
-        {
+    "databaseName": "flightdb",
+    "databaseSchemaName": "dwh",
+    "tables": [
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "externalDocs": "docs",
+        "definition": {
           "name": "Customer",
           "type": "object",
           "properties": {
@@ -79,8 +120,17 @@
               "ordinalPosition": 0
             }
           }
-        },
-        {
+        }
+      },
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "externalDocs": "docs",
+        "definition": {
           "name": "Payment",
           "type": "object",
           "properties": {
@@ -135,36 +185,7 @@
             }
           }
         }
-      ]
-    }
-  },
-  "components": {
-    "serverInfo": {
-      "flightFrequencyStoreServerInfo": {
-        "host:": "{host}",
-        "port:": "3306",
-        "dbmsType:": "MySQL",
-        "dbmsVersion:": "8",
-        "connectionProtocols": {
-          "jdbc": {
-            "version": "1.0",
-            "url": "jdbc:mysql://{hosts}:3306/foodmart",
-            "driverName": "MySQL JDBC Driver",
-            "driverClass": "org.mysql.Driver",
-            "driverVersion": "latest",
-            "driverLibrary": {
-              "description": "MySQL JDBC Driver Library",
-              "dataType": "application/java-archive",
-              "$href": "https://jdbc.mysql.org/"
-            },
-            "driverDocs": {
-              "description": "MySQL JDBC Driver HomePage",
-              "dataType": "text/html",
-              "$href": "https://jdbc.mysql.org/mysql-8.jar"
-            }
-          }
-        }
       }
-    }
+    ]
   }
 }

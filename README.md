@@ -14,7 +14,7 @@ its catalog remains aligned.
     - [Fields](#fields)
 2. [Metadata Mapping in Blindata](#metadata-mapping-in-blindata)
     - [Systems](#systems)
-    - [DatastoreAPI](#datastoreapi)
+    - [Data Store API](#data-store-api)
         - [JSON Schema](#json-schema)
             - [From JSONSchema to Physical Entity](#from-jsonschema-to-physical-entities)
             - [From JSONSchema to Physical Field](#from-jsonschema-to-physical-field)
@@ -23,39 +23,37 @@ its catalog remains aligned.
             - [From Avro to Physical Entity](#from-avro-to-physical-entity)
             - [From Avro to Physical Field](#from-avro-to-physical-field)
 3. [Examples](#examples)
-    - [DatastoreAPI](#datastore-api-example)
-        - [Single Entity](#single-entity)
-        - [Multiple Entities](#multiple-entities)
+    - [Data Store API](#datastore-api-example)
     - [AsyncAPI](#async-api)
         - [Raw Port Async Api V3](#raw-port-async-api-v3)
         - [Raw Port Async Api V2](#raw-port-async-api-v2)
         - [Entities Async Api V3](#entities-async-api-v3)
         - [Entities Async Api V2](#entities-async-api-v2)
 4. [Run the Project](#run-the-project-)
-   - [Prerequisites](#prerequisites)
-   - [Dependencies](#dependencies)
-       - [Clone Dependencies Repository](#clone-dependencies-repository)
-       - [Compile Dependencies](#compile-dependencies)
-   - [Run Locally](#run-locally)
-       - [Clone Repository](#clone-repository)
-       - [Compile Project](#compile-project)
-       - [Run Application](#run-application)
-   - [Run with Docker](#run-with-docker)
-       - [Clone Repository](#clone-repository-1)
-       - [Compile Project](#compile-project-1)
-       - [Build Image](#build-image)
-       - [Run Application](#run-application-1)
-       - [Stop Application](#stop-application)
-   - [Run with Docker Compose](#run-with-docker-compose)
-       - [Clone Repository](#clone-repository-2)
-       - [Compile Project](#compile-project-2)
-       - [Build Image](#build-image-1)
-       - [Run Application](#run-application-2)
-       - [Stop Application](#stop-application-1)
-   - [Test It](#test-it)
-     - [REST Services](#rest-services)
-     - [Blindata Configuration](#blindata-configuration)
-     - [ODM Configuration](#odm-configuration)
+    - [Prerequisites](#prerequisites)
+    - [Dependencies](#dependencies)
+        - [Clone Dependencies Repository](#clone-dependencies-repository)
+        - [Compile Dependencies](#compile-dependencies)
+    - [Run Locally](#run-locally)
+        - [Clone Repository](#clone-repository)
+        - [Compile Project](#compile-project)
+        - [Run Application](#run-application)
+    - [Run with Docker](#run-with-docker)
+        - [Clone Repository](#clone-repository-1)
+        - [Compile Project](#compile-project-1)
+        - [Build Image](#build-image)
+        - [Run Application](#run-application-1)
+        - [Stop Application](#stop-application)
+    - [Run with Docker Compose](#run-with-docker-compose)
+        - [Clone Repository](#clone-repository-2)
+        - [Compile Project](#compile-project-2)
+        - [Build Image](#build-image-1)
+        - [Run Application](#run-application-2)
+        - [Stop Application](#stop-application-1)
+    - [Test It](#test-it)
+        - [REST Services](#rest-services)
+        - [Blindata Configuration](#blindata-configuration)
+        - [ODM Configuration](#odm-configuration)
 
 ## General Schema Annotations
 
@@ -146,9 +144,9 @@ Given a descriptor, the following elements are created in Blindata:
 - Systems
 - Physical Entities
 - Physical Fields
-  
+
 This mapping ensures that all data structures and their components are accurately represented and can be monitored or
-  managed within Blindata, providing a seamless integration between the descriptor and the Blindata environment.
+managed within Blindata, providing a seamless integration between the descriptor and the Blindata environment.
 
 ### Systems
 
@@ -168,27 +166,61 @@ blindata:
   systemTechnologyRegex: optional regex to extract system technology from schema (value optional)
 ```
 
-### DatastoreApi
+### Data Store Api
+
+The Data Store API Specification (DSAS) defines a standard, language-agnostic interface to a Data API which allows both humans and computers to understand how to establish a connection and query a database service managing tabular data without access to source code, documentation, or through network traffic inspection. When properly defined, a consumer can understand and interact with the remote database service with a minimal amount of implementation logic.
+
+Other information about Data Store API is available
+here: [Data Store API Specification](https://dpds.opendatamesh.org/specifications/dsas/1.0.0/)
+
+To map tables and columns in Blindata use the schema field inside Data Store Api Entity, as shown in the example below:
+
+```json
+{
+  "datastoreapi": ...,
+  "info": ...,
+  "services": ...,
+  "schema": {
+    "databaseName": "name of the database",
+    "databaseSchemaName": "schema of the database",
+    "tables": [
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "externalDocs": "docs",
+        "definition": {
+          Physical
+          Entities
+          Definition
+        }
+      }
+    ]
+  }
+}
+```
 
 ##### From JSONSchema to Physical Entities
 
 This section describes the mapping of schema annotations to physical entity properties within the system. Physical
 entities represent the main data structures, such as tables or views, in the data store.
-Physical entities are mappen from "schema.content" in case of single entity "schema.content.entities" in case of
-multiple
-entities.
 
-| Schema Annotation      | Physical Entity Property | Description                                                         | Mandatory |
-|------------------------|--------------------------|---------------------------------------------------------------------|-----------|
-| `schema.name`          | name                     | The name of the physical entity.                                    | ✔️        |
-| `schema.physicalType`  | tableType                | Specifies the type of the table (e.g., TABLE, VIEW).                | -         |
-| `schema.description`   | description              | A detailed description of the physical entity.                      | -         |
-| `schema.status`        | add.prop                 | The current status of the physical entity (e.g., active, inactive). | -         |
-| `schema.tags`          | add.prop                 | Tags for categorizing the physical entity.                          | -         |
-| `schema.domain`        | add.prop                 | The domain to which the physical entity belongs.                    | -         |
-| `schema.contactPoints` | add.prop                 | Contact information for the physical entity.                        | -         |
-| `schema.scope`         | add.prop                 | The scope of the physical entity within the system.                 | -         |
-| `schema.externalDocs`  | add.prop                 | Links to external documentation related to the physical entity.     | -         |
+Physical entities are mapped within the "definition" property inside the "tables" array in the "schema".
+
+| Schema Annotation                           | Physical Entity Property | Description                                                         | Mandatory |
+|---------------------------------------------|--------------------------|---------------------------------------------------------------------|-----------|
+| `schema.tables[n].definition.name`          | name                     | The name of the physical entity.                                    | ✔️        |
+| `schema.tables[n].definition.physicalType`  | tableType                | Specifies the type of the table (e.g., TABLE, VIEW).                | -         |
+| `schematables[n].definition.description`    | description              | A detailed description of the physical entity.                      | -         |
+| `schema.tables[n].definition.status`        | add.prop                 | The current status of the physical entity (e.g., active, inactive). | -         |
+| `schema.tables[n].definition.tags`          | add.prop                 | Tags for categorizing the physical entity.                          | -         |
+| `schema.tables[n].definition.domain`        | add.prop                 | The domain to which the physical entity belongs.                    | -         |
+| `schema.tables[n].definition.contactPoints` | add.prop                 | Contact information for the physical entity.                        | -         |
+| `schema.tables[n].definition.scope`         | add.prop                 | The scope of the physical entity within the system.                 | -         |
+| `schema.tables[n].definition.externalDocs`  | add.prop                 | Links to external documentation related to the physical entity.     | -         |
 
 #### From JSONSchema to Physical Field
 
@@ -196,21 +228,21 @@ This section details the mapping of schema annotations to physical field propert
 individual attributes or columns within a physical entity, providing specific data points within the entity.
 Physical fields are mapped from "properties" field inside each entity definition.
 
-| Schema Annotation          | Physical Field Property | Description                          | Mandatory |
-|----------------------------|-------------------------|--------------------------------------|-----------|
-| `properties.name`          | name                    | Object name                          | ✔️        |
-| `properties.physicalType`  | type                    | Physical type of the object          | -         |
-| `properties.comments`      | description             | Additional comments about the object | -         |
-| `properties.kind`          | add.prop                | Object type (e.g., TABULAR)          | -         |
-| `properties.status`        | add.prop                | Object status (e.g., TESTING)        | -         |
-| `properties.tags`          | add.prop                | Tags associated with the object      | -         |
-| `properties.owner`         | add.prop                | Owner of the object                  | -         |
-| `properties.domain`        | add.prop                | Domain to which the object belongs   | -         |
-| `properties.contactpoints` | add.prop                | Contact points related to the object | -         |
-| `properties.scope`         | add.prop                | Scope of the object (e.g., private)  | -         |
-| `properties.version`       | add.prop                | Version of the object                | -         |
-| `properties.displayName`   | add.prop                | Display name of the object           | -         |
-| `properties.description`   | add.prop                | Description of the object            | -         |
+| Schema Annotation                                      | Physical Field Property | Description                          | Mandatory |
+|--------------------------------------------------------|-------------------------|--------------------------------------|-----------|
+| `schema.tables[n].definition.properties.name`          | name                    | Object name                          | ✔️        |
+| `schema.tables[n].definition.properties.physicalType`  | type                    | Physical type of the object          | -         |
+| `schema.tables[n].definition.properties.comments`      | description             | Additional comments about the object | -         |
+| `schema.tables[n].definition.properties.kind`          | add.prop                | Object type (e.g., TABULAR)          | -         |
+| `schema.tables[n].definition.properties.status`        | add.prop                | Object status (e.g., TESTING)        | -         |
+| `schema.tables[n].definition.properties.tags`          | add.prop                | Tags associated with the object      | -         |
+| `schema.tables[n].definition.properties.owner`         | add.prop                | Owner of the object                  | -         |
+| `schema.tables[n].definition.properties.domain`        | add.prop                | Domain to which the object belongs   | -         |
+| `schema.tables[n].definition.properties.contactpoints` | add.prop                | Contact points related to the object | -         |
+| `schema.tables[n].definition.properties.scope`         | add.prop                | Scope of the object (e.g., private)  | -         |
+| `schema.tables[n].definition.properties.version`       | add.prop                | Version of the object                | -         |
+| `schema.tables[n].definition.properties.displayName`   | add.prop                | Human readable name of the object    | -         |
+| `schema.tables[n].definition.properties.description`   | add.prop                | Description of the object            | -         |
 
 ### AsyncApi
 
@@ -250,174 +282,6 @@ Physical entities can be find in "channel.message" section of the descriptor.
 
 ### Datastore Api Example
 
-#### Single Entity
-
-This section provides examples of how to represent a single entity using the Data Store API. It demonstrates the
-application of schema annotations to define multiple physical entities and their fields, illustrating how the mappings
-are structured and implemented in practice.
-rom the descriptor the observer will create a physical entity called "airline_freq" with physical fields :"id", "
-apt_dst", "flt_freq", "apt_org", "airline_code"
-
-```json
-{
-  "...other properties": {
-  },
-  "outputPorts": [
-    {
-      "fullyQualifiedName": "urn:org.opendatamesh:dataproducts:airlinedemo:outputports:flight_frequency_db",
-      "entityType": "outputPorts",
-      "name": "flight_frequency_db",
-      "version": "1.0.0",
-      "displayName": "flight_frequency_db",
-      "description": "Target database for airlines data. MySQL database.",
-      "promises": {
-        "platform": "MySQL_demoBlindataMySql",
-        "serviceType": "datastore-services",
-        "api": {
-          "name": "flightFrequencyApi",
-          "version": "1.0.0",
-          "specification": "datastoreapi",
-          "specificationVersion": "1.0.0",
-          "definition": {
-            "datastoreapi": "1.0.0",
-            "info": {
-              "databaseName": "airlinedemo",
-              "nameSpace": "nome_schema",
-              "title": "flight_frequency Data",
-              "summary": "This API exposes the current flight_frequency data of each `Airline` entity",
-              "version": "1.0.0",
-              "datastoreName": "flight_frequency"
-            },
-            "services": {
-              "development": {
-                "serverInfo": {
-                  "$ref": ""
-                },
-                "serverVariables": {
-                  "host": ""
-                }
-              }
-            },
-            "schema": {
-              "name": "airline_freq",
-              "kind": "TABULAR",
-              "comments": "commento",
-              "examples": [
-                {
-                  "id": 1,
-                  "name": "name"
-                }
-              ],
-              "status": "TESTING",
-              "tags": "tag",
-              "owner": "owner",
-              "domain": "domain",
-              "contactpoints": "contact",
-              "scope": "private",
-              "version": "1.0.0",
-              "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq",
-              "displayName": "Trips Status Table",
-              "description": "The table that stores the updated status of each trip",
-              "physicalType": "VIEW",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "description": "The flight identifier.",
-                  "name": "ID",
-                  "kind": "ATTRIBUTE",
-                  "required": true,
-                  "displayName": "Identifier",
-                  "summary": "Inline description",
-                  "comments": "comment",
-                  "examples": [
-                    "1234567",
-                    "988654"
-                  ],
-                  "status": "statusa",
-                  "tags": [
-                    "tag1",
-                    "tag2"
-                  ],
-                  "externalDocs": "https://",
-                  "default": null,
-                  "isClassified": true,
-                  "classificationLevel": "",
-                  "isUnique": true,
-                  "isNullable": false,
-                  "pattern": "a regex",
-                  "format": "named pattern e.g. email",
-                  "enum": [
-                    "VALORE1",
-                    "VALORE2"
-                  ],
-                  "minLength": 2,
-                  "maxLength": 10,
-                  "contentEncoding": "UTF-8",
-                  "contentMediaType": "application/json",
-                  "precision": 0,
-                  "scale": 10,
-                  "minimum": 0,
-                  "exclusiveMinimum": true,
-                  "maximum": 10000,
-                  "exclusiveMaximum": false,
-                  "readOnly": true,
-                  "writeOnly": true,
-                  "physicalType": "VARCHAR",
-                  "partitionStatus": true,
-                  "partitionKeyPosition": 2,
-                  "clusterStatus": true,
-                  "clusterKeyPosition": 2
-                },
-                "airline_code": {
-                  "name": "airline_code",
-                  "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.id",
-                  "displayName": "Airline ID",
-                  "type": "VARCHAR",
-                  "dataLength": "50",
-                  "columnConstraint": "PRIMARY_KEY",
-                  "ordinalPosition": 1
-                },
-                "apt_org": {
-                  "name": "apt_org",
-                  "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.apt_org",
-                  "displayName": "Origin",
-                  "dataType": "VARCHAR",
-                  "dataLength": "50",
-                  "columnConstraint": "PRIMARY_KEY",
-                  "ordinalPosition": 2
-                },
-                "apt_dst": {
-                  "name": "apt_dst",
-                  "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.apt_dst",
-                  "displayName": "Destination",
-                  "dataType": "VARCHAR",
-                  "dataLength": "50",
-                  "columnConstraint": "PRIMARY_KEY",
-                  "ordinalPosition": 3
-                },
-                "flt_freq": {
-                  "name": "flt_freq",
-                  "fullyQualifiedName": "urn:dsas:com.company-xyz:tables:airline.airline_freq.trip_status.flt_freq",
-                  "displayName": "Flight Frequency",
-                  "dataType": "INTEGER",
-                  "columnConstraint": "NOT_NULL",
-                  "ordinalPosition": 4
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    },
-    // ... outputPort's othe properties
-  ]
-  // ... data product's other properties
-}
-```
-
-#### Multiple Entities
-
 This section provides examples of how to represent multiple entities using the Data Store API. It demonstrates the
 application of schema annotations to define multiple physical entities and their fields, illustrating how the mappings
 are structured and implemented in practice.
@@ -428,31 +292,72 @@ physical field "id".
 {
   "datastoreapi": "1.0.0",
   "info": {
-    "databaseName": "airlinedemo",
-    "nameSpace": "nome_schema",
     "title": "flight_frequency Data",
     "summary": "This API exposes the current flight_frequency data of each `Airline` entity",
+    "description": "API description",
+    "termsOfService": "https://example.com/terms/",
     "version": "1.0.0",
-    "datastoreName": "flight_frequency"
+    "datastoreName": "flight_frequency",
+    "contact": {
+      "name": "API Support",
+      "url": "https://www.example.com/support",
+      "email": "support@example.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "nameSpace": "nome_schema"
   },
   "services": {
     "development": {
+      "name": "Flight frequency service",
+      "description": "The service tablethat host the `FREQUENCY` data store in the given environment",
       "serverInfo": {
-        "$ref": "#components.serverInfo.flightFrequencyStoreServerInfo"
+        "flightFrequencyStoreServerInfo": {
+          "host:": "{host}",
+          "port:": "3306",
+          "dbmsType:": "MySQL",
+          "dbmsVersion:": "8",
+          "connectionProtocols": {
+            "jdbc": {
+              "version": "1.0",
+              "url": "jdbc:mysql://{hosts}:3306/foodmart",
+              "driverName": "MySQL JDBC Driver",
+              "driverClass": "org.mysql.Driver",
+              "driverVersion": "latest",
+              "driverLibrary": {
+                "description": "MySQL JDBC Driver Library",
+                "dataType": "application/java-archive",
+                "$href": "https://jdbc.mysql.org/"
+              },
+              "driverDocs": {
+                "description": "MySQL JDBC Driver HomePage",
+                "dataType": "text/html",
+                "$href": "https://jdbc.mysql.org/mysql-8.jar"
+              }
+            }
+          }
+        }
       },
-      "serverVariables": {
+      "variables": {
         "host": "35.52.55.12"
       }
     }
   },
   "schema": {
-    "id": 1,
-    "name": "ab334d27-41e7-3622-88f7-6dd5a200ae30",
-    "version": "1.0.0",
-    "mediaType": "application/json",
-    "content": {
-      "entities": [
-        {
+    "databaseName": "flightdb",
+    "databaseSchemaName": "dwh",
+    "tables": [
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "externalDocs": "docs",
+        "definition": {
           "name": "Customer",
           "type": "object",
           "properties": {
@@ -506,8 +411,17 @@ physical field "id".
               "ordinalPosition": 0
             }
           }
-        },
-        {
+        }
+      },
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "externalDocs": "docs",
+        "definition": {
           "name": "Payment",
           "type": "object",
           "properties": {
@@ -562,37 +476,8 @@ physical field "id".
             }
           }
         }
-      ]
-    }
-  },
-  "components": {
-    "serverInfo": {
-      "flightFrequencyStoreServerInfo": {
-        "host:": "{host}",
-        "port:": "3306",
-        "dbmsType:": "MySQL",
-        "dbmsVersion:": "8",
-        "connectionProtocols": {
-          "jdbc": {
-            "version": "1.0",
-            "url": "jdbc:mysql://{hosts}:3306/foodmart",
-            "driverName": "MySQL JDBC Driver",
-            "driverClass": "org.mysql.Driver",
-            "driverVersion": "latest",
-            "driverLibrary": {
-              "description": "MySQL JDBC Driver Library",
-              "dataType": "application/java-archive",
-              "$href": "https://jdbc.mysql.org/"
-            },
-            "driverDocs": {
-              "description": "MySQL JDBC Driver HomePage",
-              "dataType": "text/html",
-              "$href": "https://jdbc.mysql.org/mysql-8.jar"
-            }
-          }
-        }
       }
-    }
+    ]
   }
 }
 ```
@@ -1092,7 +977,9 @@ details on the servers, channels, and message schemas used for streaming events 
 }
 
 ```
-## Run the Project 
+
+## Run the Project
+
 ### Prerequisites
 
 The project requires the following dependencies:
