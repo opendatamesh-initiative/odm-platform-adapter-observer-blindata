@@ -168,8 +168,7 @@ blindata:
 
 ### Data Store Api
 
-A Data Store API Document that conforms to the Data Store API Specification is itself a JSON object, which may be
-represented either in JSON or YAML format.
+The Data Store API Specification (DSAS) defines a standard, language-agnostic interface to a Data API which allows both humans and computers to understand how to establish a connection and query a database service managing tabular data without access to source code, documentation, or through network traffic inspection. When properly defined, a consumer can understand and interact with the remote database service with a minimal amount of implementation logic.
 
 Other information about Data Store API is available
 here: [Data Store API Specification](https://dpds.opendatamesh.org/specifications/dsas/1.0.0/)
