@@ -3,9 +3,15 @@ on:
   push:
     branches:
       - 'main'
+  pull_request:
+    branches:
+      - 'main'
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3.5.2
@@ -30,6 +36,8 @@ jobs:
           cd odm-platform
           mvn -B clean install -DskipTests --file pom.xml
           cd ..
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build with Maven
         run: mvn clean package spring-boot:repackage -DskipTests
       - name: Execute tests with Maven
