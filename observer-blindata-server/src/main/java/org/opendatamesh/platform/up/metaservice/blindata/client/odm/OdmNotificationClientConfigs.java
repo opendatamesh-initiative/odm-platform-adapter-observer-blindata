@@ -46,10 +46,6 @@ public class OdmNotificationClientConfigs {
     }
 
     private void registerObserver(ObserverClient observerClient) {
-        Page<ObserverResource> oldBlindataObservers = observerClient.getObservers(Pageable.ofSize(2000), null);
-        oldBlindataObservers
-                .forEach(oldBlindataObserver -> observerClient.removeObserver(oldBlindataObserver.getId()));//TODO
-
         ObserverResource observerResource = new ObserverResource();
         observerResource.setName("BLINDATA");
         observerResource.setDisplayName("Blindata");
