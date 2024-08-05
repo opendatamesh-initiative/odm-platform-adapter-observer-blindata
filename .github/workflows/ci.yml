@@ -40,3 +40,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Execute tests with Maven
         run: mvn -B test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
