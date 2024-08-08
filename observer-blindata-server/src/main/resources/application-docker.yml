@@ -5,7 +5,7 @@ app:
   workdir:
 
 server:
-  port: ${SPRING_PORT}
+  baseUrl: ${SPRING_BASE_URL}:${SPRING_PORT}
   error:
     include-message: always
   servlet:
@@ -40,10 +40,10 @@ odm:
   productPlane:
     registryService:
       active: ${REGISTRY_ACTIVE}
-      address: http://${REGISTRY_HOSTNAME}:${REGISTRY_PORT}
+      address: ${REGISTRY_BASE_URL}:${REGISTRY_PORT}
     policyService:
       active: ${POLICY_ACTIVE}
-      address: http://${POLICY_HOSTNAME}:${POLICY_PORT}
+      address: ${POLICY_BASE_URL}:${POLICY_PORT}
     notificationService:
       active: ${NOTIFICATION_ACTIVE}
-      address: http://${NOTIFICATION_HOSTNAME}:${NOTIFICATION_PORT}
+      address: ${NOTIFICATION_BASE_URL}:${NOTIFICATION_PORT}
