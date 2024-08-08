@@ -6,7 +6,6 @@ app:
 
 server:
   baseUrl: http://localhost:9002
-  port: 9002
   error:
     include-message: always
   servlet:
@@ -41,9 +40,9 @@ odm:
       active: true
       address: http://localhost:8001
     policyService:
-      active: true
+      active: false
       address: http://localhost:8005
     notificationService:
-      active: false
+      active: true
       address: http://localhost:8006
 
