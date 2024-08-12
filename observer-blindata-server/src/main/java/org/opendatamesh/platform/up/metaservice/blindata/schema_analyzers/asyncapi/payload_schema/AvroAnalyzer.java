@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.avro;
+package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.payload_schema;
 
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class AvroAnalyzer {
+class AvroAnalyzer implements AsyncApiPayloadSchemaAnalyzer {
 
-    public List<BDPhysicalFieldRes> avscToBlindata(String rawSchema, String rootName) {
+    public List<BDPhysicalFieldRes> payloadSchemaToBlindataPhysicalFields(String rawSchema, String rootName) {
         List<BDPhysicalFieldRes> mappedPhysicalFieldsList = new ArrayList<>();
 
         Schema schema = new Parser().parse(rawSchema);

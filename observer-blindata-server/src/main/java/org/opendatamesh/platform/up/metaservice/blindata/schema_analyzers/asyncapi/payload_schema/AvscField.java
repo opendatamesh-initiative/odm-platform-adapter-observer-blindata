@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.avro;
+package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.payload_schema;
 
 import java.util.List;
 

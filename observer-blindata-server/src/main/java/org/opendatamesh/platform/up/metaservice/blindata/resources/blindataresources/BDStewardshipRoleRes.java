@@ -13,7 +13,7 @@ public class BDStewardshipRoleRes {
     private String description;
     private Integer order;
     private String roleCategory;
-    private List<BDPermissionRes> permissions;
+    private List<String> permissions;
     private Set<BDStewardshipRoleResourceRes> resources;
 
     public String getUuid() {
@@ -56,11 +56,11 @@ public class BDStewardshipRoleRes {
         this.roleCategory = roleCategory;
     }
 
-    public List<BDPermissionRes> getPermissions() {
+    public List<String> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(List<BDPermissionRes> permissions) {
+    public void setPermissions(List<String> permissions) {
         this.permissions = permissions;
     }
 

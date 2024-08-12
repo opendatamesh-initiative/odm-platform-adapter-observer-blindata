@@ -1,0 +1,141 @@
+{
+  "mediaType": "text/json",
+  "asyncapi": "3.0.0",
+  "info": {
+    "title": "Registration",
+    "version": "1.0.0",
+    "description": "Registration event bus system.",
+    "termsOfService": "https://asyncapi.org/terms/",
+    "contact": {
+      "name": "Mario Rossi",
+      "url": "",
+      "email": "marioRossi@organization.org"
+    },
+    "externalDocs": {
+      "description": "Registration Official Documentation",
+      "url": "https://registration.docs"
+    },
+    "tags": []
+  },
+  "servers": {
+    "development": {
+      "host": "url:port",
+      "description": "Development Kafka broker hosted on AWS.",
+      "protocol": "kafka",
+      "protocolVersion": "",
+      "tags": [
+        {
+          "name": "env:development",
+          "description": "This environment is meant for developers to run their own tests."
+        }
+      ]
+    }
+  },
+  "channels": {
+    "user/signup": {
+      "description": "Channel for user signup events",
+      "address": "org.organization.userSignup.v1",
+      "messages": {
+        "userSignupMessage": {
+          "name": "EmployeeRegistry",
+          "title": "Employee Registry V1",
+          "summary": "Message on topic employee registry.",
+          "description": "",
+          "contentType": "application/json",
+          "payload": {
+            "schemaFormat": "application/schema+json;version=draft-07",
+            "schema":{
+              "javaType": "org.organization.entity.UserSignupV1",
+              "properties": {
+                "userId": {
+                  "type": "string",
+                  "description": "Unique identifier for the user"
+                },
+                "username": {
+                  "type": "string",
+                  "description": "The username of the new user"
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "description": "The email address of the new user"
+                },
+                "signupTimestamp": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "The timestamp of when the user signed up"
+                },
+                "profile": {
+                  "type": "object",
+                  "description": "Profile details of the user",
+                  "properties": {
+                    "firstName": {
+                      "type": "string",
+                      "description": "First name of the user"
+                    },
+                    "lastName": {
+                      "type": "string",
+                      "description": "Last name of the user"
+                    },
+                    "birthdate": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "The user's birthdate"
+                    },
+                    "address": {
+                      "type": "object",
+                      "description": "User's mailing address",
+                      "properties": {
+                        "street": {
+                          "type": "string",
+                          "description": "Street address"
+                        },
+                        "city": {
+                          "type": "string",
+                          "description": "City name"
+                        },
+                        "state": {
+                          "type": "string",
+                          "description": "State or region"
+                        },
+                        "postalCode": {
+                          "type": "string",
+                          "description": "Postal or ZIP code"
+                        },
+                        "country": {
+                          "type": "string",
+                          "description": "Country name"
+                        }
+                      },
+                      "required": [
+                        "street",
+                        "city",
+                        "postalCode",
+                        "country"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "firstName",
+                    "lastName",
+                    "birthdate"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "userId",
+                "username",
+                "email",
+                "signupTimestamp",
+                "profile"
+              ],
+              "additionalProperties": false
+            }
+          }
+        }
+      }
+    }
+  }
+}

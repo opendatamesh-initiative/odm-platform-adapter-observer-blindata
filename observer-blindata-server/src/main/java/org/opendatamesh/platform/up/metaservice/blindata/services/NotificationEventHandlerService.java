@@ -295,7 +295,7 @@ public class NotificationEventHandlerService {
         bdPolicyEvaluationRecord.setImplementationName(odmPolicyEvaluationResult.getPolicy().getName());
         bdPolicyEvaluationRecord.setResolverKey("uuid");
         bdPolicyEvaluationRecord.setResolverValue(bdDataProductCreated.getUuid());
-        bdPolicyEvaluationRecord.setResourceType(BDResourceType.DATA_PRODUCT);
+        bdPolicyEvaluationRecord.setResourceType("DATA_PRODUCT");
         bdPolicyEvaluationRecord.setEvaluationResult(odmPolicyEvaluationResult.getResult() ? BDPolicyEvaluationRecord.BDPolicyEvaluationResult.VERIFIED : BDPolicyEvaluationRecord.BDPolicyEvaluationResult.FAILED);
         bdPolicyEvaluationRecord.setEvaluationDate(odmPolicyEvaluationResult.getCreatedAt());
         //TODO bdPolicyEvaluationRecord.setDescription();
