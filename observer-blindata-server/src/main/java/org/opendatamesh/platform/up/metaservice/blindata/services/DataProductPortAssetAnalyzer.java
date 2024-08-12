@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -49,29 +50,40 @@ public class DataProductPortAssetAnalyzer {
         List<BDDataProductPortAssetDetailRes> dataProductPortAssetDetailRes = new ArrayList<>();
         try {
             for (PortDPDS port : portDPDS) {
-                if (port.getPromises() == null || port.getPromises().getApi() == null) continue;
+                logger.info("Analyzing data assets for port {}", port.getFullyQualifiedName());
+                if (port.getPromises() == null || port.getPromises().getApi() == null) {
+                    logger.info("Data product port: {} has empty Api", port.getFullyQualifiedName());
+                    continue;
+                }
 
                 Optional<ExternalComponentResource> externalComponentResources = registryClient.getApi(port.getPromises().getApi().getName(), port.getPromises().getApi().getVersion()).stream().findFirst();
                 if (externalComponentResources.isEmpty()) {
-                    logger.info("No definition found for the Port {}", port.getFullyQualifiedName());
+                    logger.info("No definition found for the data product port: {}", port.getFullyQualifiedName());
                     continue;
                 }
 
                 PortStandardDefinition portStandardDefinition = externalComponentToPortStandardDefinition(externalComponentResources.get());
+                logger.info("Data product port: {} has specification: {} of version: {}", port.getFullyQualifiedName(), portStandardDefinition.getSpecification(), portStandardDefinition.getSpecificationVersion());
 
                 BDSystemRes platformSystem = getSystem(port);
                 Optional<PortStandardDefinitionAnalyzer> portStandardDefinitionAnalyzer = getPortStandardDefinitionAnalyzer(portStandardDefinition);
                 if (portStandardDefinitionAnalyzer.isEmpty()) {
-                    logger.warn("Port:{} specification:{} version:{} is not supported.", port.getFullyQualifiedName(), portStandardDefinition.getSpecification(), portStandardDefinition.getSpecificationVersion());
+                    logger.warn("Data product port: {} with specification: {} and version: {} is not supported.", port.getFullyQualifiedName(), portStandardDefinition.getSpecification(), portStandardDefinition.getSpecificationVersion());
                     continue;
                 }
 
-                List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionAnalyzer.get().getBDAssetsFromPortStandardDefinition(portStandardDefinition)
-                        //forcing physical entities to have the platform system
-                        .stream().map(pe -> {
-                            pe.setSystem(platformSystem);
-                            return pe;
-                        }).collect(Collectors.toList());
+                List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionAnalyzer.get().getBDAssetsFromPortStandardDefinition(portStandardDefinition);
+                logger.info("Data product port: {}, found {} physical entities", port.getFullyQualifiedName(), extractedEntities.size());
+                //forcing physical entities to have the platform system
+                extractedEntities = extractedEntities.stream().map(pe -> {
+                    if (CollectionUtils.isEmpty(pe.getPhysicalFields())) {
+                        logger.info("Data product port: {}, physical entity: {}, no physical fields found", port.getFullyQualifiedName(), pe.getName());
+                    } else {
+                        logger.info("Data product port: {}, physical entity: {}, found {} physical fields", port.getFullyQualifiedName(), pe.getName(), pe.getPhysicalFields().size());
+                    }
+                    pe.setSystem(platformSystem);
+                    return pe;
+                }).collect(Collectors.toList());
 
                 //IDK why, just supporting backward compatibility
                 BDDataProductPortAssetDetailRes bdDataProductPortAssetDetail = buildDataProductPortAssetDetail(port, platformSystem, extractedEntities);
