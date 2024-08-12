@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-class AvroAnalyzer implements AsyncApiPayloadSchemaAnalyzer {
+class AsyncApiPayloadAvroSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer {
 
     public List<BDPhysicalFieldRes> payloadSchemaToBlindataPhysicalFields(String rawSchema, String rootName) {
         List<BDPhysicalFieldRes> mappedPhysicalFieldsList = new ArrayList<>();

@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class AsyncApiPayloadSchemaAnalyzerFactory {
-    private static final String supportedFileEncoding = "json";
-    private static final Map<String, AsyncApiPayloadSchemaAnalyzer> formatAnalyzerMap = Map.of(
-            "application/vnd.apache.avro", new AvroAnalyzer(),
-            "application/schema", new JsonSchemaAnalyzer()
+    private static final String SUPPORTED_FILE_ENCODING = "json";
+    private static final Map<String, AsyncApiPayloadSchemaAnalyzer> FORMAT_ANALYZER_MAP = Map.of(
+            "application/vnd.apache.avro", new AsyncApiPayloadAvroSchemaAnalyzer(),
+            "application/schema", new AsyncApiPayloadJsonSchemaAnalyzer()
     );
 
     public static AsyncApiPayloadSchemaAnalyzer getPayloadAnalyzer(String fullSchemaFormat) throws UnsupportedSchemaFormatException, UnsupportedFileEncodingException {
@@ -15,11 +15,11 @@ public abstract class AsyncApiPayloadSchemaAnalyzerFactory {
         String schemaFormat = s.get(0);
         String fileEncoding = s.size() > 1 ? s.get(1) : "json";
 
-        if (!fileEncoding.toLowerCase().contains(supportedFileEncoding)) {
+        if (!fileEncoding.toLowerCase().contains(SUPPORTED_FILE_ENCODING)) {
             throw new UnsupportedSchemaFormatException(fileEncoding);
         }
 
-        return formatAnalyzerMap.entrySet()
+        return FORMAT_ANALYZER_MAP.entrySet()
                 .stream()
                 .filter(entry -> schemaFormat.toLowerCase().contains(entry.getKey()))
                 .map(Map.Entry::getValue)
