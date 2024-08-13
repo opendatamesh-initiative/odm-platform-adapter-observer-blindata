@@ -13,7 +13,7 @@ public class BDStewardshipResponsibilityRes {
 
     private BDStewardshipRoleRes stewardshipRole;
 
-    private BDResourceType resourceType = BDResourceType.DATA_PRODUCT;
+    private String resourceType = "DATA_PRODUCT";
 
     private String resourceIdentifier;
 
@@ -49,11 +49,11 @@ public class BDStewardshipResponsibilityRes {
         this.stewardshipRole = stewardshipRole;
     }
 
-    public BDResourceType getResourceType() {
+    public String getResourceType() {
         return resourceType;
     }
 
-    public void setResourceType(BDResourceType resourceType) {
+    public void setResourceType(String resourceType) {
         this.resourceType = resourceType;
     }
 

@@ -85,7 +85,7 @@ public class BlindataServiceIT extends ODMObserverBlindataAppIT {
         BDStewardshipResponsibilityRes bdResponsibility = new BDStewardshipResponsibilityRes();
         bdResponsibility.setUser(bdUser);
         bdResponsibility.setResourceIdentifier(bdDataProductRes.getUuid());
-        bdResponsibility.setResourceType(BDResourceType.DATA_PRODUCT);
+        bdResponsibility.setResourceType("DATA_PRODUCT");
         bdResponsibility.setStewardshipRole(bdRole);
         bdResponsibility.setResourceName(bdDataProductRes.getName());
 
@@ -122,7 +122,7 @@ public class BlindataServiceIT extends ODMObserverBlindataAppIT {
         bdPolicyEvaluationRecord.setEvaluationResult(BDPolicyEvaluationRecord.BDPolicyEvaluationResult.VERIFIED);
         bdPolicyEvaluationRecord.setResolverKey("uuid");
         bdPolicyEvaluationRecord.setResolverValue(bdDataProductRes.getUuid());
-        bdPolicyEvaluationRecord.setResourceType(BDResourceType.DATA_PRODUCT);
+        bdPolicyEvaluationRecord.setResourceType("DATA_PRODUCT");
         BDPolicyEvaluationRecords bdPolicyEvaluationRecords = new BDPolicyEvaluationRecords();
         bdPolicyEvaluationRecords.setRecords(Lists.newArrayList(bdPolicyEvaluationRecord));
 

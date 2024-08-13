@@ -268,7 +268,7 @@ public class ConsumeIT extends ODMObserverBlindataAppIT {
         BDStewardshipResponsibilityRes bdResponsibility = new BDStewardshipResponsibilityRes();
         bdResponsibility.setUser(bdUser);
         bdResponsibility.setResourceIdentifier("abc123");
-        bdResponsibility.setResourceType(BDResourceType.DATA_PRODUCT);
+        bdResponsibility.setResourceType("DATA_PRODUCT");
         bdResponsibility.setStewardshipRole(bdRole);
         bdResponsibility.setResourceName("abc");
 
@@ -366,7 +366,7 @@ public class ConsumeIT extends ODMObserverBlindataAppIT {
         BDStewardshipResponsibilityRes bdResponsibility = new BDStewardshipResponsibilityRes();
         bdResponsibility.setUser(bdUser);
         bdResponsibility.setResourceIdentifier("abc123");
-        bdResponsibility.setResourceType(BDResourceType.DATA_PRODUCT);
+        bdResponsibility.setResourceType("DATA_PRODUCT");
         bdResponsibility.setStewardshipRole(bdRole);
         bdResponsibility.setResourceName("abc");
 

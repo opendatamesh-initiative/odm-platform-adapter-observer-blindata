@@ -1,0 +1,230 @@
+{
+  "physicalEntities": [
+    {
+      "uuid": null,
+      "schema": null,
+      "name": "user/signup",
+      "description": "Channel for user signup events",
+      "dataSet": null,
+      "creationDate": null,
+      "modificationDate": null,
+      "physicalFields": [
+        {
+          "uuid": null,
+          "name": "userSignupMessage.profile.lastName",
+          "type": "string",
+          "ordinalPosition": 7,
+          "description": "Last name of the user",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "REQUIRED",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "uuid": null,
+          "name": "userSignupMessage.signupTimestamp",
+          "type": "string",
+          "ordinalPosition": 4,
+          "description": "The timestamp of when the user signed up",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "REQUIRED",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "uuid": null,
+          "name": "userSignupMessage.profile.firstName",
+          "type": "string",
+          "ordinalPosition": 6,
+          "description": "First name of the user",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "REQUIRED",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "uuid": null,
+          "name": "userSignupMessage.profile.address",
+          "type": "object",
+          "ordinalPosition": 9,
+          "description": "User's mailing address",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "userSignupMessage.userId",
+          "type": "string",
+          "ordinalPosition": 1,
+          "description": "Unique identifier for the user",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "REQUIRED",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "uuid": null,
+          "name": "userSignupMessage.username",
+          "type": "string",
+          "ordinalPosition": 2,
+          "description": "The username of the new user",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "REQUIRED",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "uuid": null,
+          "name": "userSignupMessage.profile.address.street",
+          "type": "string",
+          "ordinalPosition": 10,
+          "description": "Street address",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "REQUIRED",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "uuid": null,
+          "name": "userSignupMessage",
+          "type": "application/json",
+          "ordinalPosition": 0,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "userSignupMessage.profile",
+          "type": "object",
+          "ordinalPosition": 5,
+          "description": "Profile details of the user",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "REQUIRED",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "uuid": null,
+          "name": "userSignupMessage.profile.address.country",
+          "type": "string",
+          "ordinalPosition": 14,
+          "description": "Country name",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "REQUIRED",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "uuid": null,
+          "name": "userSignupMessage.profile.address.city",
+          "type": "string",
+          "ordinalPosition": 11,
+          "description": "City name",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "REQUIRED",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "uuid": null,
+          "name": "userSignupMessage.email",
+          "type": "string",
+          "ordinalPosition": 3,
+          "description": "The email address of the new user",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "REQUIRED",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "uuid": null,
+          "name": "userSignupMessage.profile.address.state",
+          "type": "string",
+          "ordinalPosition": 12,
+          "description": "State or region",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": []
+        },
+        {
+          "uuid": null,
+          "name": "userSignupMessage.profile.address.postalCode",
+          "type": "string",
+          "ordinalPosition": 13,
+          "description": "Postal or ZIP code",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "REQUIRED",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "uuid": null,
+          "name": "userSignupMessage.profile.birthdate",
+          "type": "string",
+          "ordinalPosition": 8,
+          "description": "The user's birthdate",
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "REQUIRED",
+              "value": "true"
+            }
+          ]
+        }
+      ],
+      "system": null,
+      "isConsentView": null,
+      "isHidden": null,
+      "tableType": "TOPIC",
+      "additionalProperties": []
+    }
+  ]
+}

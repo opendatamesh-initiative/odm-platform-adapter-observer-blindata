@@ -10,8 +10,11 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPhysicalFieldRes;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinition;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionAnalyzer;
-import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.avro.AvroAnalyzer;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.payload_schema.AsyncApiPayloadSchemaAnalyzer;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.payload_schema.AsyncApiPayloadSchemaAnalyzerFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.payload_schema.UnsupportedSchemaFormatException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,10 +28,6 @@ public class PortAsyncApi3Analyzer implements PortStandardDefinitionAnalyzer {
     private final String VERSION = "3.*.*";
 
     private final String TABLE_TYPE_TOPIC = "TOPIC";
-
-    private final String ASYNC_API_SCHEMA_FORMAT = "application/vnd.aai.asyncapi";
-    private final String AVRO_SCHEMA_FORMAT = "application/vnd.apache.avro";
-    private final String DEFAULT_SCHEMA_FORMAT = ASYNC_API_SCHEMA_FORMAT;
 
     private final ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -76,15 +75,18 @@ public class PortAsyncApi3Analyzer implements PortStandardDefinitionAnalyzer {
         BDPhysicalFieldRes rootPhysicalField = buildRootPhysicalField(rootName, message);
         extractedPhysicalFields.add(rootPhysicalField);
 
-        String schemaFormat = message.getPayload().getSchemaFormat() != null ? message.getPayload().getSchemaFormat() : DEFAULT_SCHEMA_FORMAT;
+        if (message.getPayload() == null || !StringUtils.hasText(message.getPayload().getSchemaFormat())) {
+            log.warn("Missing schema format on message: {}, default AsyncApi Schema Object is not supported", message.getTitle());
+            return extractedPhysicalFields;
+        }
 
-        if (schemaFormat.contains(AVRO_SCHEMA_FORMAT)) {
-            AvroAnalyzer avroAnalyzer = new AvroAnalyzer();
+        try {
+            AsyncApiPayloadSchemaAnalyzer payloadSchemaAnalyzer = AsyncApiPayloadSchemaAnalyzerFactory.getPayloadAnalyzer(message.getPayload().getSchemaFormat());
             String payload = objectMapper.writeValueAsString(message.getPayload().getSchema());
-            List<BDPhysicalFieldRes> avroPhysicalFields = avroAnalyzer.avscToBlindata(payload, rootPhysicalField.getName());
+            List<BDPhysicalFieldRes> avroPhysicalFields = payloadSchemaAnalyzer.payloadSchemaToBlindataPhysicalFields(payload, rootPhysicalField.getName());
             extractedPhysicalFields.addAll(avroPhysicalFields);
-        } else {
-            log.warn("Schema format {} not supported for AsyncApi specification.", schemaFormat);
+        } catch (UnsupportedSchemaFormatException e) {
+            log.warn(e.getMessage());
         }
 
         return extractedPhysicalFields;

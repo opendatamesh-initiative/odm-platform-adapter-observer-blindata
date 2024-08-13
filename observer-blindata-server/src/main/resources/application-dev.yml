@@ -5,7 +5,8 @@ app:
   workdir:
 
 server:
-  baseUrl: http://localhost:8080
+  port: 9002
+  baseUrl: http://localhost:9002
   error:
     include-message: always
   servlet:
@@ -27,7 +28,7 @@ blindata:
   user: "owner@default.blindata.io"
   password: "owner123"
   tenantUUID: "83471577-3921-48ed-bd8f-fde278aa0449"
-  roleUuid: ""
+  roleUuid: "bcb001b7-58ea-43df-8ac4-db28f4b6c262"
   systemNameRegex: ".*"
   systemTechnologyRegex: "(?!::)([^:]+)$"
 

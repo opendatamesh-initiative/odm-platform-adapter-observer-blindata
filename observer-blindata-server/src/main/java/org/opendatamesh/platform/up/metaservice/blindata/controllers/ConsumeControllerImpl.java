@@ -16,5 +16,4 @@ public class ConsumeControllerImpl extends AbstractConsumeController {
     public EventNotificationResource consumeEventNotification(EventNotificationResource notification) {
         return notificationEventConsumerService.consumeEventNotification(notification);
     }
-
 }

@@ -8,9 +8,9 @@ class AsyncApiChannelItem {
     private String ref;
     private List<String> servers;
     private AsyncApiOperation subscribe;
+    private AsyncApiOperation publish;
 
    /*
-    private AsyncApiOperation publish;
     private Map<String, Object> parameters;
     private Map<String, Object> bindings;
     */
@@ -45,5 +45,13 @@ class AsyncApiChannelItem {
 
     public void setSubscribe(AsyncApiOperation subscribe) {
         this.subscribe = subscribe;
+    }
+
+    public AsyncApiOperation getPublish() {
+        return publish;
+    }
+
+    public void setPublish(AsyncApiOperation publish) {
+        this.publish = publish;
     }
 }

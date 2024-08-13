@@ -15,7 +15,7 @@ public class BDPolicyEvaluationRecord {
 
     private String resolverValue;
 
-    private BDResourceType resourceType;
+    private String resourceType;
 
     private BDPolicyEvaluationResult evaluationResult;
 
@@ -52,11 +52,11 @@ public class BDPolicyEvaluationRecord {
         this.resolverValue = resolverValue;
     }
 
-    public BDResourceType getResourceType() {
+    public String getResourceType() {
         return resourceType;
     }
 
-    public void setResourceType(BDResourceType resourceType) {
+    public void setResourceType(String resourceType) {
         this.resourceType = resourceType;
     }
 

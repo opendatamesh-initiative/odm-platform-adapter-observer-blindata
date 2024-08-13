@@ -1,5 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.opendatamesh.dpds.model.interfaces.PortDPDS;
@@ -11,6 +13,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDSystemRes;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinition;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionAnalyzer;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.utils.InternalRefResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,7 @@ public class DataProductPortAssetAnalyzer {
 
     @Autowired
     ObjectMapper objectMapper;
+
     @Autowired
     private OdmRegistryClient registryClient;
 
@@ -111,7 +115,13 @@ public class DataProductPortAssetAnalyzer {
         PortStandardDefinition portStandardDefinition = new PortStandardDefinition();
         portStandardDefinition.setSpecification(externalComponentResources.getSpecification());
         portStandardDefinition.setSpecificationVersion(externalComponentResources.getSpecificationVersion());
-        portStandardDefinition.setDefinition(externalComponentResources.getDefinition());
+        try {
+            JsonNode rootNode = objectMapper.readTree(externalComponentResources.getDefinition());
+            InternalRefResolver.resolveRefs(rootNode, rootNode);
+            portStandardDefinition.setDefinition(objectMapper.writeValueAsString(rootNode));
+        } catch (JsonProcessingException e) {
+            logger.warn("Failed to parse the JSON of port standard definition schema: {}", externalComponentResources.getId());
+        }
         return portStandardDefinition;
     }
 
@@ -150,4 +160,5 @@ public class DataProductPortAssetAnalyzer {
         }
         return platform;
     }
+
 }
