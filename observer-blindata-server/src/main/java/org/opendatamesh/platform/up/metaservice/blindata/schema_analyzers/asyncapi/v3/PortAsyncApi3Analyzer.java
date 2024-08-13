@@ -14,6 +14,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asynca
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.payload_schema.AsyncApiPayloadSchemaAnalyzerFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.payload_schema.UnsupportedSchemaFormatException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,9 +28,6 @@ public class PortAsyncApi3Analyzer implements PortStandardDefinitionAnalyzer {
     private final String VERSION = "3.*.*";
 
     private final String TABLE_TYPE_TOPIC = "TOPIC";
-
-    private final String ASYNC_API_SCHEMA_FORMAT = "application/vnd.aai.asyncapi";
-    private final String DEFAULT_SCHEMA_FORMAT = ASYNC_API_SCHEMA_FORMAT;
 
     private final ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -77,10 +75,13 @@ public class PortAsyncApi3Analyzer implements PortStandardDefinitionAnalyzer {
         BDPhysicalFieldRes rootPhysicalField = buildRootPhysicalField(rootName, message);
         extractedPhysicalFields.add(rootPhysicalField);
 
-        String schemaFormat = message.getPayload().getSchemaFormat() != null ? message.getPayload().getSchemaFormat() : DEFAULT_SCHEMA_FORMAT;
+        if (message.getPayload() == null || !StringUtils.hasText(message.getPayload().getSchemaFormat())) {
+            log.warn("Missing schema format on message: {}, default AsyncApi Schema Object is not supported", message.getTitle());
+            return extractedPhysicalFields;
+        }
 
         try {
-            AsyncApiPayloadSchemaAnalyzer payloadSchemaAnalyzer = AsyncApiPayloadSchemaAnalyzerFactory.getPayloadAnalyzer(schemaFormat);
+            AsyncApiPayloadSchemaAnalyzer payloadSchemaAnalyzer = AsyncApiPayloadSchemaAnalyzerFactory.getPayloadAnalyzer(message.getPayload().getSchemaFormat());
             String payload = objectMapper.writeValueAsString(message.getPayload().getSchema());
             List<BDPhysicalFieldRes> avroPhysicalFields = payloadSchemaAnalyzer.payloadSchemaToBlindataPhysicalFields(payload, rootPhysicalField.getName());
             extractedPhysicalFields.addAll(avroPhysicalFields);

@@ -1,6 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.payload_schema;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,24 +10,24 @@ import java.util.Map;
 
 public class JsonProperty {
     private String javaType;
-    private String type;
+    private JsonNode type;
     private String description;
     private String format;
     private Map<String, JsonProperty> properties = new HashMap<>();
     private List<String> required = new ArrayList<>();
     private Boolean additionalProperties;
-    private Map<String, String> additionalAttributes = new HashMap<>();
+    private Map<String, JsonNode> additionalAttributes = new HashMap<>();
 
     @JsonAnySetter
-    public void add(String property, String value) {
+    public void add(String property, JsonNode value) {
         this.additionalAttributes.putIfAbsent(property, value);
     }
 
-    public String getType() {
+    public JsonNode getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(JsonNode type) {
         this.type = type;
     }
 
@@ -70,11 +71,11 @@ public class JsonProperty {
         this.additionalProperties = additionalProperties;
     }
 
-    public Map<String, String> getAdditionalAttributes() {
+    public Map<String, JsonNode> getAdditionalAttributes() {
         return additionalAttributes;
     }
 
-    public void setAdditionalAttributes(Map<String, String> additionalAttributes) {
+    public void setAdditionalAttributes(Map<String, JsonNode> additionalAttributes) {
         this.additionalAttributes = additionalAttributes;
     }
 

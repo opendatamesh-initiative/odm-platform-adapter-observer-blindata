@@ -2,6 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.async
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -61,8 +62,8 @@ class AsyncApiPayloadJsonSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
 
     private List<AdditionalPropertiesRes> buildBlindataPhysicalFieldAdditionalProperties(JsonProperty childProperty, JsonProperty parentProperty, String childPropertyName) {
         List<AdditionalPropertiesRes> additionalPropertiesRes = new ArrayList<>();
-        for (Map.Entry<String, String> additionalAttribute : childProperty.getAdditionalAttributes().entrySet()) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes(additionalAttribute.getKey(), additionalAttribute.getValue()));
+        for (Map.Entry<String, JsonNode> additionalAttribute : childProperty.getAdditionalAttributes().entrySet()) {
+            additionalPropertiesRes.add(new AdditionalPropertiesRes(additionalAttribute.getKey(), additionalAttribute.getValue().toString()));
         }
         if (parentProperty.getRequired().contains(childPropertyName)) {
             additionalPropertiesRes.add(new AdditionalPropertiesRes("REQUIRED", "true"));
@@ -73,7 +74,7 @@ class AsyncApiPayloadJsonSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
     private BDPhysicalFieldRes buildBlindataPhysicalField(String name, JsonProperty childProperty, int ordinalPosition) {
         BDPhysicalFieldRes bdPhysicalFieldRes = new BDPhysicalFieldRes();
         bdPhysicalFieldRes.setName(name);
-        bdPhysicalFieldRes.setType(childProperty.getJavaType() != null ? childProperty.getJavaType() : childProperty.getType());
+        bdPhysicalFieldRes.setType(childProperty.getJavaType() != null ? childProperty.getJavaType() : childProperty.getType().textValue());
         bdPhysicalFieldRes.setDescription(childProperty.getDescription());
         bdPhysicalFieldRes.setOrdinalPosition(ordinalPosition);
         return bdPhysicalFieldRes;

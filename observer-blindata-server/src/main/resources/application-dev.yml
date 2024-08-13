@@ -5,6 +5,7 @@ app:
   workdir:
 
 server:
+  port: 9002
   baseUrl: http://localhost:9002
   error:
     include-message: always
