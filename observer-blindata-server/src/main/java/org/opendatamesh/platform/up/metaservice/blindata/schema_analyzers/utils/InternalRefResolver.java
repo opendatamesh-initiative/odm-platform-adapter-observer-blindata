@@ -40,7 +40,7 @@ public abstract class InternalRefResolver {
 
     private static String convertDotNotationToSlash(String refPath) {
         if (refPath.contains(".")) {
-            return refPath.replace(".", "/");
+            return "/" + refPath.replace(".", "/");
         }
         return refPath;
     }
