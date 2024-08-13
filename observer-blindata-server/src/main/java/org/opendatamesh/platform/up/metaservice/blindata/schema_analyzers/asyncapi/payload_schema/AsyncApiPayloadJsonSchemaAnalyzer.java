@@ -72,9 +72,13 @@ class AsyncApiPayloadJsonSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
     }
 
     private BDPhysicalFieldRes buildBlindataPhysicalField(String name, JsonProperty childProperty, int ordinalPosition) {
+        String type = childProperty.getJavaType();
+        type = type != null ? type : childProperty.getType().textValue();
+        type = type != null ? type : childProperty.getType().toString();
+
         BDPhysicalFieldRes bdPhysicalFieldRes = new BDPhysicalFieldRes();
         bdPhysicalFieldRes.setName(name);
-        bdPhysicalFieldRes.setType(childProperty.getJavaType() != null ? childProperty.getJavaType() : childProperty.getType().textValue());
+        bdPhysicalFieldRes.setType(type);
         bdPhysicalFieldRes.setDescription(childProperty.getDescription());
         bdPhysicalFieldRes.setOrdinalPosition(ordinalPosition);
         return bdPhysicalFieldRes;
