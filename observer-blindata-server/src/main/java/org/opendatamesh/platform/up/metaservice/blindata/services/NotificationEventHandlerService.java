@@ -193,7 +193,7 @@ public class NotificationEventHandlerService {
             if (role != null && blindataUser.isPresent()) {
                 logger.info("Try to assign responsibility to: {} ", blindataUser.get());
                 Optional<BDStewardshipResponsibilityRes> responsibility = bdStewardshipClient.getResponsibility(blindataUser.get().getUuid(), res.getUuid());
-                if (responsibility.isPresent()) {
+                if (responsibility.isEmpty()) {
                     BDStewardshipResponsibilityRes responsibilityRes = bdStewardshipClient.createResponsibility(createResponsibility(role, blindataUser.get(), res));
                     logger.info("Responsibility created: {}", responsibilityRes);
                 }

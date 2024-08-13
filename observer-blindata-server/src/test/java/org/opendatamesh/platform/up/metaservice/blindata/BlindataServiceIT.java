@@ -90,7 +90,7 @@ public class BlindataServiceIT extends ODMObserverBlindataAppIT {
         bdResponsibility.setResourceName(bdDataProductRes.getName());
 
         Mockito.when(bdStewardshipClient.createResponsibility(Mockito.any())).thenReturn(bdResponsibility);
-        Mockito.when(bdStewardshipClient.getResponsibility(Mockito.any(), Mockito.any())).thenReturn(Optional.of(bdResponsibility));
+        Mockito.when(bdStewardshipClient.getResponsibility(Mockito.any(), Mockito.any())).thenReturn(Optional.empty());
 
         BDUploadResultsMessage uploadResultsMessage = new BDUploadResultsMessage();
         uploadResultsMessage.setRowCreated(1);
