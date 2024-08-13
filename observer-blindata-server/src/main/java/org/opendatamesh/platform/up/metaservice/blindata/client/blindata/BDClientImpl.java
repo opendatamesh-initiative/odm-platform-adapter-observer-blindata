@@ -126,12 +126,14 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     }
 
     @Override
-    public Optional<BDStewardshipResponsibilityRes> getResponsibility(String userUuid, String resourceIdentifier) throws BlindataClientException, BlindataClientResourceMappingException {
+    public Optional<BDStewardshipResponsibilityRes> getActiveResponsibility(String userUuid, String resourceIdentifier) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
             BDStewardshipResponsibilitySearchOptions filters = new BDStewardshipResponsibilitySearchOptions();
             filters.setResourceIdentifier(resourceIdentifier);
             filters.setUserUuid(userUuid);
             filters.setRoleUuid(credentials.getRoleUuid());
+            filters.setEndDateIsNull(true);
+
             return restUtils.getPage(
                     String.format("%s/api/v1/stewardship/responsibilities", credentials.getBlindataUrl()),
                     getAuthenticatedHttpHeaders(),

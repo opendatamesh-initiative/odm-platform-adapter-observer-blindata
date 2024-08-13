@@ -4,6 +4,7 @@ public class BDStewardshipResponsibilitySearchOptions {
     private String userUuid;
     private String resourceIdentifier;
     private String roleUuid;
+    private Boolean endDateIsNull;
 
     public String getUserUuid() {
         return userUuid;
@@ -27,5 +28,13 @@ public class BDStewardshipResponsibilitySearchOptions {
 
     public void setRoleUuid(String roleUuid) {
         this.roleUuid = roleUuid;
+    }
+
+    public Boolean getEndDateIsNull() {
+        return endDateIsNull;
+    }
+
+    public void setEndDateIsNull(Boolean endDateIsNull) {
+        this.endDateIsNull = endDateIsNull;
     }
 }

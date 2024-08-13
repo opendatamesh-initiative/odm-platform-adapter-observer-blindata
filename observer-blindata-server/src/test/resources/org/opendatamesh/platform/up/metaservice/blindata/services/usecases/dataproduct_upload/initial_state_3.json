@@ -1,0 +1,28 @@
+{
+  "_comment": "No data product present in Blindata. RoleUuid defined but responsibility not assigned on Blindata.",
+  "dataProductInfo": {
+    "fullyQualifiedName": "FQN",
+    "entityType": "source-aligned",
+    "name": "test-dp",
+    "versionNumber": "1.0.0",
+    "displayName": "Test Dp",
+    "description": "Description",
+    "domain": "Test Domain",
+    "owner": {
+      "id": "owner@email.org",
+      "name": ""
+    }
+  },
+  "existentDataProduct": {
+    "uuid": "dataProductUuid"
+  },
+  "user": {
+    "uuid": "userUuid",
+    "username": "owner@email.org"
+  },
+  "defaultRoleUuid": "roleUuid",
+  "dataProductRole": {
+    "uuid": "blindataRoleUuid"
+  },
+  "dataProductResponsibility": null
+}

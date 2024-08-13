@@ -1,8 +1,0 @@
-{
-  "id": 1,
-  "event" : {
-    "id": 1,
-    "type": "DATA_PRODUCT_TASK_COMPLETED",
-    "entityId": "abc123"
-  }
-}

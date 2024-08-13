@@ -10,10 +10,10 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPhysicalFieldRes;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinition;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionAnalyzer;
-import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.payload_schema.AsyncApiPayloadSchemaAnalyzer;
-import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.payload_schema.AsyncApiPayloadSchemaAnalyzerFactory;
-import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.payload_schema.UnsupportedFileEncodingException;
-import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.payload_schema.UnsupportedSchemaFormatException;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.message_payload_schema.AsyncApiPayloadSchemaAnalyzer;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.message_payload_schema.AsyncApiPayloadSchemaAnalyzerFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.message_payload_schema.UnsupportedFileEncodingException;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.message_payload_schema.UnsupportedSchemaFormatException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 

@@ -31,6 +31,40 @@ blindata:
   roleUuid: "bcb001b7-58ea-43df-8ac4-db28f4b6c262"
   systemNameRegex: ".*"
   systemTechnologyRegex: "(?!::)([^:]+)$"
+  eventHandlers: "[
+      {
+        \"eventType\": \"DATA_PRODUCT_VERSION_CREATED\",
+        \"filter\":  \"\",
+        \"activeUseCases\": [
+          \"DATA_PRODUCT_UPLOAD\",
+          \"DATA_PRODUCT_VERSION_UPLOAD\",
+          \"POLICIES_UPLOAD\"
+        ]
+      },
+      {
+        \"eventType\": \"DATA_PRODUCT_VERSION_DELETED\",
+        \"filter\": \"\",
+        \"activeUseCases\": [
+          \"DATA_PRODUCT_REMOVAL\"
+        ]
+      },
+       {
+        \"eventType\": \"DATA_PRODUCT_ACTIVITY_COMPLETED\",
+        \"filter\": \"\",
+        \"activeUseCases\": [
+          \"POLICIES_UPLOAD\"
+        ]
+      },
+       {
+        \"eventType\": \"DATA_PRODUCT_TASK_COMPLETED\",
+        \"filter\": \"\",
+        \"activeUseCases\": [
+          \"POLICIES_UPLOAD\"
+        ]
+      }
+    ]"
+
+#\"#root['afterState']['info']['fullyQualifiedName'] == 'urn:org.opendatamesh:dataproducts:hrs:payroll-tsstudiolabor-employee-registry-dps'\",
 
 #############################
 # ODM projects configurations
@@ -41,7 +75,7 @@ odm:
       active: true
       address: http://localhost:8001
     policyService:
-      active: false
+      active: true
       address: http://localhost:8005
     notificationService:
       active: true

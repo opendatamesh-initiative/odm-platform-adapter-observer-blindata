@@ -8,7 +8,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.Bl
 import java.util.Optional;
 
 public interface BDStewardshipClient {
-    Optional<BDStewardshipResponsibilityRes> getResponsibility(String userUuid, String resourceIdentifier) throws BlindataClientException, BlindataClientResourceMappingException;
+    Optional<BDStewardshipResponsibilityRes> getActiveResponsibility(String userUuid, String resourceIdentifier) throws BlindataClientException, BlindataClientResourceMappingException;
 
     BDStewardshipResponsibilityRes createResponsibility(BDStewardshipResponsibilityRes responsibilityRes) throws BlindataClientException, BlindataClientResourceMappingException;
 
