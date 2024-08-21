@@ -3,20 +3,20 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.poli
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 
 import java.io.IOException;
 
 import static org.mockito.Mockito.*;
 
-class PoliciesUploadTest {
+public class PoliciesUploadTest {
 
     private ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     @Test
-    void testPoliciesUpload() throws IOException, UseCaseExecutionException {
+    public void testPoliciesUpload() throws IOException, UseCaseExecutionException {
         PoliciesUploadInitialState initialState = objectMapper.readValue(
                 Resources.toByteArray(getClass().getResource("initial_state_1.json")),
                 PoliciesUploadInitialState.class

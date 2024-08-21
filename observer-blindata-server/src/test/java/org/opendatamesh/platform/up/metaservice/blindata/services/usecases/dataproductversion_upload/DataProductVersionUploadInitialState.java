@@ -8,7 +8,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import java.util.List;
 
 @Data
-class DataProductVersionUploadInitialState {
+public class DataProductVersionUploadInitialState {
     private BDDataProductRes existentDataProduct;
     private DataProductVersionDPDS dataProductDescriptor;
     private List<BDDataProductPortAssetDetailRes> extractedAssets;

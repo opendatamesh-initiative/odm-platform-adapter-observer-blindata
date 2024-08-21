@@ -2,7 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.data
 
 import org.opendatamesh.dpds.model.info.InfoDPDS;
 
-class DataProductUploadOdmOutputPortMock implements DataProductUploadOdmOutputPort {
+public class DataProductUploadOdmOutputPortMock implements DataProductUploadOdmOutputPort {
 
     private final DataProductUploadInitialState initialState;
 

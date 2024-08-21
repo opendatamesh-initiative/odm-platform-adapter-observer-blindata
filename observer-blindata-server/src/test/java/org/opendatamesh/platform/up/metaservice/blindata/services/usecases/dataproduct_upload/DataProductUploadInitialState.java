@@ -8,7 +8,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDStewardshipRoleRes;
 
 @Data
-class DataProductUploadInitialState {
+public class DataProductUploadInitialState {
     private InfoDPDS dataProductInfo;
     private BDDataProductRes existentDataProduct;
     private BDShortUserRes user;

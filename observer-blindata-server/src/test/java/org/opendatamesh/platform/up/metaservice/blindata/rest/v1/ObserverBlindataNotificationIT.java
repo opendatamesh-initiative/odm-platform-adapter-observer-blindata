@@ -2,7 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.rest.v1;
 
 import com.google.common.io.Resources;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opendatamesh.platform.pp.notification.api.resources.EventNotificationResource;
 import org.opendatamesh.platform.up.metaservice.blindata.ObserverBlindataAppIT;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.OBEventNotificationStatus;
@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
 
-public class ObserverBlindataNotificationIT extends ObserverBlindataAppIT {
+class ObserverBlindataNotificationIT extends ObserverBlindataAppIT {
     @Test
     public void testNotificationEvent() throws IOException {
         EventNotificationResource notificationResource = mapper.readValue(
