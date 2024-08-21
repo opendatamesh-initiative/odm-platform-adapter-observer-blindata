@@ -54,17 +54,8 @@ blindata:
         \"activeUseCases\": [
           \"POLICIES_UPLOAD\"
         ]
-      },
-       {
-        \"eventType\": \"DATA_PRODUCT_TASK_COMPLETED\",
-        \"filter\": \"\",
-        \"activeUseCases\": [
-          \"POLICIES_UPLOAD\"
-        ]
       }
     ]"
-
-#\"#root['afterState']['info']['fullyQualifiedName'] == 'urn:org.opendatamesh:dataproducts:hrs:payroll-tsstudiolabor-employee-registry-dps'\",
 
 #############################
 # ODM projects configurations
