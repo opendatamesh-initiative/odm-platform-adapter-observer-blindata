@@ -14,7 +14,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asynca
 import java.io.IOException;
 import java.util.List;
 
-public class PortAsyncApiAnalyzerTests {
+public class PortAsyncApiAnalyzerTest {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 

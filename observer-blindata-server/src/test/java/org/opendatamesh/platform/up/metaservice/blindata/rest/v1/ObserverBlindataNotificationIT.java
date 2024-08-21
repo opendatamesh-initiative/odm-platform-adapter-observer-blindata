@@ -1,11 +1,11 @@
-package org.opendatamesh.platform.up.metaservice.blindata.services.rest.v1;
+package org.opendatamesh.platform.up.metaservice.blindata.rest.v1;
 
 import com.google.common.io.Resources;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.opendatamesh.platform.pp.notification.api.resources.EventNotificationResource;
+import org.opendatamesh.platform.up.metaservice.blindata.ObserverBlindataAppIT;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.OBEventNotificationStatus;
-import org.opendatamesh.platform.up.metaservice.blindata.services.ObserverBlindataAppIT;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

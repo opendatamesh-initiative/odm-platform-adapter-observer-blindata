@@ -1,9 +1,8 @@
-package org.opendatamesh.platform.up.metaservice.blindata.services;
+package org.opendatamesh.platform.up.metaservice.blindata;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.runner.RunWith;
-import org.opendatamesh.platform.up.metaservice.blindata.ObserverBlindataApp;
-import org.opendatamesh.platform.up.metaservice.blindata.services.rest.v1.RoutesV1;
+import org.opendatamesh.platform.up.metaservice.blindata.rest.v1.RoutesV1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;

@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.services.rest.v1;
+package org.opendatamesh.platform.up.metaservice.blindata.rest.v1;
 
 public enum RoutesV1 {
     CONSUME("/api/v1/up/observer/notifications");

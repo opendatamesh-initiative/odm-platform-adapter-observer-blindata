@@ -13,7 +13,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datast
 import java.io.IOException;
 import java.util.List;
 
-public class PortDataStoreApiAnalyzerTests {
+public class PortDataStoreApiAnalyzerTest {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Test

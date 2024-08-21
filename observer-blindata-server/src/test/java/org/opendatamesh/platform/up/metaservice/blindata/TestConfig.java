@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.services;
+package org.opendatamesh.platform.up.metaservice.blindata;
 
 import org.opendatamesh.platform.pp.notification.api.clients.EventNotificationClient;
 import org.springframework.boot.test.context.TestConfiguration;
