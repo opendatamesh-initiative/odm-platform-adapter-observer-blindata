@@ -1,0 +1,504 @@
+{
+  "dataProductDescriptor": "1.0.0",
+  "info": {
+    "name": "tripExecution",
+    "displayName": "Trip Execution",
+    "fullyQualifiedName": "urn:org.opendatamesh:dataproducts:tripExecution",
+    "version": "1.2.18",
+    "domain": "Transport Management",
+    "owner": {
+      "id": "john.doe@company-xyz.com",
+      "name": "John Doe"
+    }
+  },
+  "interfaceComponents": {
+    "inputPorts": [],
+    "outputPorts": [
+      {
+        "description": "This port exposes the last known status of each trip operated in the last 12 months",
+        "fullyQualifiedName": "urn:dpds:com.company-xyz:dataproducts:tripExecution:1:outputports:tripStatus",
+        "name": "tripStatus",
+        "displayName": "Trip Status",
+        "version": "1.2.0",
+        "promises": {
+          "platform": "westeurope.azure::postgres",
+          "serviceType": "datastore-services",
+          "api": {
+            "name": "tripStatusApi",
+            "version": "1.0.0",
+            "specification": "datastoreapi",
+            "specificationVersion": "1.0.0",
+            "definition": {
+              "datastoreapi": "1.0.0",
+              "info": {
+                "databaseName": "airlinedemo",
+                "nameSpace": "nome_schema",
+                "title": "flight_frequency Data",
+                "summary": "This API exposes the current flight_frequency data of each `Airline` entity",
+                "version": "1.0.0",
+                "datastoreName": "flight_frequency"
+              },
+              "services": {
+                "development": {
+                  "serverInfo": {
+                    "$ref": "#components.serverInfo.flightFrequencyStoreServerInfo"
+                  },
+                  "serverVariables": {
+                    "host": "35.52.55.12"
+                  }
+                }
+              },
+              "schema": {
+                "id": 1,
+                "name": "ab334d27-41e7-3622-88f7-6dd5a200ae30",
+                "version": "1.0.0",
+                "mediaType": "application/json",
+                "content": {
+                  "entities": [
+                    {
+                      "name": "Customer",
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The customer identifier.",
+                          "name": "ID",
+                          "kind": "ATTRIBUTE",
+                          "required": true,
+                          "displayName": "Identifier",
+                          "summary": "Inline description",
+                          "comments": "come sopra",
+                          "examples": ["1234567", "988654"],
+                          "status": "come sopra",
+                          "tags": ["tag1", "tag2"],
+                          "externalDocs": "https://www.google.it/",
+                          "default": null,
+                          "isClassified": true,
+                          "classificationLevel": "INTERNAL",
+                          "isUnique": true,
+                          "isNullable": false,
+                          "pattern": "^[0-9]+$",
+                          "format": "named pattern e.g. email",
+                          "enum": ["VAL1", "VAL2"],
+                          "minLength": 2,
+                          "maxLength": 10,
+                          "contentEncoding": "UTF-8",
+                          "contentMediaType": "application/json",
+                          "precision": 0,
+                          "scale": 10,
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 10000,
+                          "exclusiveMaximum": false,
+                          "readOnly": true,
+                          "writeOnly": true,
+                          "physicalType": "VARCHAR",
+                          "partitionStatus": true,
+                          "partitionKeyPosition": 2,
+                          "clusterStatus": true,
+                          "clusterKeyPosition": 2,
+                          "ordinalPosition": 0
+                        }
+                      }
+                    },
+                    {
+                      "name": "Payment",
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The customer identifier.",
+                          "name": "ID",
+                          "kind": "ATTRIBUTE",
+                          "required": true,
+                          "displayName": "Identifier",
+                          "summary": "Inline description",
+                          "comments": "come sopra",
+                          "examples": ["1234567", "988654"],
+                          "status": "come sopra",
+                          "tags": ["tag1", "tag2"],
+                          "externalDocs": "https://www.google.it/",
+                          "default": null,
+                          "isClassified": true,
+                          "classificationLevel": "INTERNAL",
+                          "isUnique": true,
+                          "isNullable": false,
+                          "pattern": "^[0-9]+$",
+                          "format": "named pattern e.g. email",
+                          "enum": ["VAL1", "VAL2"],
+                          "minLength": 2,
+                          "maxLength": 10,
+                          "contentEncoding": "UTF-8",
+                          "contentMediaType": "application/json",
+                          "precision": 0,
+                          "scale": 10,
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 10000,
+                          "exclusiveMaximum": false,
+                          "readOnly": true,
+                          "writeOnly": true,
+                          "physicalType": "VARCHAR",
+                          "partitionStatus": true,
+                          "partitionKeyPosition": 2,
+                          "clusterStatus": true,
+                          "clusterKeyPosition": 2,
+                          "ordinalPosition": 0
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "components": {
+                "serverInfo": {
+                  "flightFrequencyStoreServerInfo": {
+                    "host:": "{host}",
+                    "port:": "3306",
+                    "dbmsType:": "MySQL",
+                    "dbmsVersion:": "8",
+                    "connectionProtocols": {
+                      "jdbc": {
+                        "version": "1.0",
+                        "url": "jdbc:mysql://{hosts}:3306/foodmart",
+                        "driverName": "MySQL JDBC Driver",
+                        "driverClass": "org.mysql.Driver",
+                        "driverVersion": "latest",
+                        "driverLibrary": {
+                          "description": "MySQL JDBC Driver Library",
+                          "dataType": "application/java-archive",
+                          "$href": "https://jdbc.mysql.org/"
+                        },
+                        "driverDocs": {
+                          "description": "MySQL JDBC Driver HomePage",
+                          "dataType": "text/html",
+                          "$href": "https://jdbc.mysql.org/mysql-8.jar"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "externalDocs": {
+              "description": "The OpenAPI v3.1.0 specification used to define the API of this port",
+              "mediaType": "text/html",
+              "$href": "https://spec.openapis.org/oas/v3.1.0"
+            }
+          },
+          "deprecationPolicy": {
+            "description": "When a new major version become available the previous one is kept online for 3 months",
+            "x-deprecation-period": "3M"
+          },
+          "slo": {
+            "description": "The slo are hight for all base service indicators because this service is business critical",
+            "x-operationalSlo": {
+              "availability": "0.99999",
+              "responsetime": "1s"
+            },
+            "x-qualitySlo": {
+              "freshness": "5m"
+            }
+          }
+        },
+        "expectatctions": {
+          "audience": {
+            "description": "This port is designed to help operations departments. It is not for customer care and finance departments",
+            "x-includes": ["operations"],
+            "x-excludes": ["customer-care", "finance"]
+          },
+          "usage": {
+            "description": "This port is designed to operational access not for analysis",
+            "x-filterOn": ["id"],
+            "x-forbiddenOperations": ["group-by", "unfiltered-selections"]
+          }
+        },
+        "contracts": {
+          "termsAndConditions": {
+            "description": "A detailed description of the data product, that include also the target audience",
+            "externalDocs": {
+              "mediaType": "text/html",
+              "$href": "https://wiki.example-xyz.com/corporate-mesh/dp/trip-execution.html#terms-and-conditions"
+            }
+          },
+          "billingPolicy": {
+            "description": "This port is billed by number of monthly queries",
+            "x-billingUnit": "milion queries",
+            "x-pricePerUnit": 0.01,
+            "x-billingPeriod": "month"
+          },
+          "sla": {
+            "description": "The sla are hight for all base service indicators because this service is business critical",
+            "x-operationalSla": {
+              "availability": "0.999",
+              "responsetime": "5s"
+            },
+            "x-qualitySla": {
+              "freshness": "10m"
+            }
+          }
+        }
+      },
+      {
+        "description": "This port expose all modifications in the status of each trip as events",
+        "fullyQualifiedName": "urn:dpds:com.company-xyz:dataproducts:tripExecution:1:outputports:tripEvents",
+        "name": "tripEvents",
+        "displayName": "Trip Events",
+        "version": "1.2.0",
+        "promises": {
+          "platform": "westeurope.azure:confluent",
+          "serviceType": "streaming-services",
+          "api": {
+            "name": "tripEventsApi",
+            "version": "1.0.0",
+            "specification": "asyncapi",
+            "specificationVersion": "2.5.0",
+            "definition": {
+              "mediaType": "text/json",
+              "asyncapi": "2.5.0",
+              "info": {
+                "title": "Trip Status Streaming API",
+                "version": "1.0.0",
+                "description": "This API exposes all events related to `Trip` entity"
+              },
+              "servers": {
+                "development": {
+                  "url": "https://company-xyz.com/platform/dev/confluent-cloud",
+                  "description": "Confluent Cloud DEV bootstrap server",
+                  "protocol": "kafka",
+                  "protocolVersion": "latest",
+                  "bindings": {
+                    "kafka": {
+                      "schemaRegistryUrl": "https://company-xyz.com/platform/dev/confluent-schema-registry",
+                      "schemaRegistryVendor": "confluent"
+                    }
+                  }
+                },
+                "production": {
+                  "url": "https://company-xyz.com/platform/prod/confluent-cloud",
+                  "description": "Confluent Cloud PRODUCTION bootstrap server",
+                  "protocol": "kafka",
+                  "protocolVersion": "latest",
+                  "bindings": {
+                    "kafka": {
+                      "schemaRegistryUrl": "https://company-xyz.com/platform/prod/confluent-schema-registry",
+                      "schemaRegistryVendor": "confluent"
+                    }
+                  }
+                }
+              },
+              "defaultContentType": "avro/binary",
+              "channels": {
+                "transportmng.tripexecution.devents.status": {
+                  "description": "This topic contains all the *domain events* related to `Trip` entity",
+                  "subscribe": {
+                    "operationId": "readTripStatusEvents",
+                    "security": [
+                      {
+                        "apiKey": []
+                      }
+                    ],
+                    "message": {
+                      "messageId": "tripStatusEvent",
+                      "contentType": "avro/binary",
+                      "schemaFormat": "application/vnd.apache.avro",
+                      "payload": {
+                        "type": "record",
+                        "name": "TripStatusChange",
+                        "namespace": "com.company-xyz.transportmng.tripexecution",
+                        "fields": [
+                          {
+                            "name": "id",
+                            "type": {
+                              "avro.java.string": "String",
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "name": "event_type",
+                            "type": {
+                              "name": "tripEvent",
+                              "symbols": [
+                                "planned",
+                                "booking_started",
+                                "booking_ended",
+                                "loading_started",
+                                "loading_ended",
+                                "departed_from_origin",
+                                "unloading_at_stop_started",
+                                "unloading_at_stop_ended",
+                                "loading_at_stop_started",
+                                "loading_at_stop_ended",
+                                "departed_from_stop",
+                                "arrived_at_destination",
+                                "unloading_started",
+                                "unloading_ended",
+                                "completed"
+                              ],
+                              "type": "enum"
+                            }
+                          },
+                          {
+                            "name": "event_timestamp",
+                            "type": {
+                              "avro.java.string": "String",
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "name": "source_system",
+                            "default": "TMS",
+                            "type": {
+                              "avro.java.string": "String",
+                              "type": "string"
+                            }
+                          }
+                        ]
+                      },
+                      "bindings": {
+                        "kafka": {
+                          "schemaIdPayloadEncoding": "confluent",
+                          "schemaLookupStrategy": "TopicIdStrategy",
+                          "key": {
+                            "type": "string",
+                            "enum": ["id"]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "bindings": {
+                    "kafka": {
+                      "partitions": 20,
+                      "replicas": 3
+                    }
+                  }
+                },
+                "transportmng.tripexecution.devents.position": {
+                  "description": "This topic contains all the *domain events* related position tracking of `Trip` entity",
+                  "subscribe": {
+                    "operationId": "readTripPositionEvents",
+                    "security": [
+                      {
+                        "apiKey": []
+                      }
+                    ],
+                    "message": {
+                      "messageId": "tripPositionEvent",
+                      "contentType": "avro/binary",
+                      "schemaFormat": "application/vnd.apache.avro",
+                      "payload": {
+                        "type": "record",
+                        "name": "TripPositionNotification",
+                        "namespace": "com.company-xyz.transportmng.tripexecution",
+                        "fields": [
+                          {
+                            "name": "id",
+                            "type": {
+                              "avro.java.string": "String",
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "name": "position",
+                            "type": {
+                              "avro.java.string": "String",
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "name": "event_timestamp",
+                            "type": {
+                              "avro.java.string": "String",
+                              "type": "string"
+                            }
+                          }
+                        ]
+                      },
+                      "bindings": {
+                        "kafka": {
+                          "schemaIdPayloadEncoding": "confluent",
+                          "schemaLookupStrategy": "TopicIdStrategy",
+                          "key": {
+                            "type": "string",
+                            "enum": ["id"]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "bindings": {
+                    "kafka": {
+                      "partitions": 20,
+                      "replicas": 3
+                    }
+                  }
+                }
+              },
+              "components": {
+                "securitySchemes": {
+                  "apiKey": {
+                    "type": "apiKey",
+                    "in": "user"
+                  }
+                }
+              }
+            },
+            "externalDocs": {
+              "description": "The AsyncAPI v2.5.0 specification used to define the API of this port",
+              "mediaType": "text/html",
+              "$href": "https://www.asyncapi.com/docs/reference/specification/v2.5.0"
+            }
+          },
+          "deprecationPolicy": {
+            "description": "When a new major version become available the previous one is kept online for 3 months",
+            "x-deprecation-period": "3M"
+          },
+          "slo": {
+            "description": "The SLO are hight for all base service indicators because this service is business critical",
+            "x-operationalSlo": {
+              "availability": "0.99999",
+              "responsetime": "1s"
+            },
+            "x-qualitySlo": {
+              "freshness": "5m"
+            }
+          }
+        },
+        "expectatctions": {
+          "audience": {
+            "description": "This port is designed to help operations departments. It is not for customer care and finance departments",
+            "x-includes": ["operations"],
+            "x-excludes": ["customer-care", "finance"]
+          }
+        },
+        "contracts": {
+          "termsAndConditions": {
+            "description": "A detailed description of the data product, that include also the target audience",
+            "externalDocs": {
+              "mediaType": "text/html",
+              "$href": "https://wiki.example-xyz.com/corporate-mesh/dp/trip-execution.html#terms-and-conditions"
+            }
+          },
+          "billingPolicy": {
+            "description": "This port is billed by outbound throughput",
+            "x-billingUnit": "MB",
+            "x-pricePerUnit": 0.005,
+            "x-billingPeriod": "month"
+          },
+          "sla": {
+            "description": "The sla are hight for all base service indicators because this service is business critical",
+            "x-operationalSla": {
+              "availability": "0.999",
+              "responsetime": "5s"
+            },
+            "x-qualitySla": {
+              "freshness": "10m"
+            }
+          }
+        }
+      }
+    ],
+    "observabilityPorts": []
+  }
+}

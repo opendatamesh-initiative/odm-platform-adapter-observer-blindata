@@ -50,6 +50,10 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
     private List<BDPhysicalEntityRes> extractSchemaPropertiesFromSchemaContent(PortStandardDefinition portStandardDefinition) throws JsonProcessingException {
         DataStoreApiDefinition dataStoreApiDefinition = objectMapper.readValue(portStandardDefinition.getDefinition(), DataStoreApiDefinition.class);
         List<BDPhysicalEntityRes> physicalEntityResList = new ArrayList<>();
+        if (dataStoreApiDefinition.getSchema() == null) {
+            log.warn("Missing schema, impossible to extract properties");
+            return physicalEntityResList;
+        }
         for (DataStoreApiSchemaEntity entity : ((DataStoreApiSchemaResource) dataStoreApiDefinition.getSchema()).getTables()) {
             BDPhysicalEntityRes extractedEntityFromSchema = fromSchemaEntityToPhysicalEntity("schema_name", entity.getDefinition());
             physicalEntityResList.add(extractedEntityFromSchema);
