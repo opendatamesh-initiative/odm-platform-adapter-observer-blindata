@@ -31,6 +31,20 @@ blindata:
   roleUuid: "bcb001b7-58ea-43df-8ac4-db28f4b6c262"
   systemNameRegex: ".*"
   systemTechnologyRegex: "(?!::)([^:]+)$"
+  eventHandlers:
+    - eventType: DATA_PRODUCT_CREATED
+      filter: ""
+      activeUseCases:
+        - DATA_PRODUCT_UPLOAD
+    - eventType: DATA_PRODUCT_VERSION_CREATED
+      filter: ""
+      activeUseCases:
+        - DATA_PRODUCT_VERSION_UPLOAD
+        - POLICIES_UPLOAD
+    - eventType: DATA_PRODUCT_ACTIVITY_COMPLETED
+      filter: ""
+      activeUseCases:
+        - POLICIES_UPLOAD
 
 #############################
 # ODM projects configurations
@@ -41,7 +55,7 @@ odm:
       active: true
       address: http://localhost:8001
     policyService:
-      active: false
+      active: true
       address: http://localhost:8005
     notificationService:
       active: true

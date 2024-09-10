@@ -1,0 +1,21 @@
+{
+  "_comment": "No data product present in Blindata. No roleUuid defined.",
+  "dataProductInfo": {
+    "fullyQualifiedName": "FQN",
+    "entityType": "source-aligned",
+    "name": "test-dp",
+    "versionNumber": "1.0.0",
+    "displayName": "Test Dp",
+    "description": "Description",
+    "domain": "Test Domain",
+    "owner": {
+      "id": "",
+      "name": "owner@email.org"
+    }
+  },
+  "existentDataProduct": null,
+  "user": null,
+  "defaultRoleUuid": null,
+  "dataProductRole": null,
+  "dataProductResponsibility": null
+}

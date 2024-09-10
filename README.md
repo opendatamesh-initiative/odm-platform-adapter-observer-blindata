@@ -9,59 +9,189 @@ its catalog remains aligned.
 
 ## Contents
 
-1. [General Schema Annotations](#general-schema-annotations)
-    - [Entity](#entity)
-    - [Fields](#fields)
-2. [Metadata Mapping in Blindata](#metadata-mapping-in-blindata)
-    - [Systems](#systems)
-    - [Data Store API](#data-store-api)
-        - [JSON Schema](#json-schema)
-            - [From JSONSchema to Physical Entity](#from-jsonschema-to-physical-entities)
-            - [From JSONSchema to Physical Field](#from-jsonschema-to-physical-field)
-    - [AsyncAPI](#asyncapi)
-        - [Avro](#avro)
-            - [From Avro to Physical Entity](#from-avro-to-physical-entity)
-            - [From Avro to Physical Field](#from-avro-to-physical-field)
-3. [Examples](#examples)
-    - [Data Store API](#datastore-api-example)
-    - [AsyncAPI](#async-api)
-        - [Raw Port Async Api V3](#raw-port-async-api-v3)
-        - [Raw Port Async Api V2](#raw-port-async-api-v2)
-        - [Entities Async Api V3](#entities-async-api-v3)
-        - [Entities Async Api V2](#entities-async-api-v2)
-4. [Run the Project](#run-the-project-)
-    - [Prerequisites](#prerequisites)
-    - [Dependencies](#dependencies)
-        - [Clone Dependencies Repository](#clone-dependencies-repository)
-        - [Compile Dependencies](#compile-dependencies)
-    - [Run Locally](#run-locally)
-        - [Clone Repository](#clone-repository)
-        - [Compile Project](#compile-project)
-        - [Run Application](#run-application)
-    - [Run with Docker](#run-with-docker)
-        - [Clone Repository](#clone-repository-1)
-        - [Compile Project](#compile-project-1)
-        - [Build Image](#build-image)
-        - [Run Application](#run-application-1)
-        - [Stop Application](#stop-application)
-    - [Run with Docker Compose](#run-with-docker-compose)
-        - [Clone Repository](#clone-repository-2)
-        - [Compile Project](#compile-project-2)
-        - [Build Image](#build-image-1)
-        - [Run Application](#run-application-2)
-        - [Stop Application](#stop-application-1)
-    - [Test It](#test-it)
-        - [REST Services](#rest-services)
-        - [Blindata Configuration](#blindata-configuration)
-        - [ODM Configuration](#odm-configuration)
+<!-- TOC -->
+* [Open Data Mesh Observer Blindata](#open-data-mesh-observer-blindata)
+  * [Contents](#contents)
+* [Event Handling](#event-handling)
+    * [Configuration](#configuration)
+* [Mapping data product descriptor into Blindata](#mapping-data-product-descriptor-into-blindata)
+  * [Promises.Platform](#promisesplatform)
+  * [General Schema Annotations](#general-schema-annotations)
+    * [Entities](#entities)
+    * [Fields](#fields)
+  * [Promises.Api.Definition: Specifications mapping in Blindata](#promisesapidefinition-specifications-mapping-in-blindata)
+    * [Data Store Api](#data-store-api)
+        * [From JSONSchema to Physical Entities](#from-jsonschema-to-physical-entities)
+      * [From JSONSchema to Physical Field](#from-jsonschema-to-physical-field)
+    * [AsyncApi](#asyncapi)
+        * [From Avro to Physical Fields](#from-avro-to-physical-fields)
+        * [From Json Schema to Physical Fields](#from-json-schema-to-physical-fields)
+* [Examples](#examples)
+  * [Datastore Api Example](#datastore-api-example)
+  * [Async Api](#async-api)
+    * [Raw Port Async Api V3](#raw-port-async-api-v3)
+    * [Raw Port Async Api V2](#raw-port-async-api-v2)
+    * [Entities Async Api V3](#entities-async-api-v3)
+    * [Entities Async Api V2](#entities-async-api-v2)
+* [Run the Project](#run-the-project)
+  * [Prerequisites](#prerequisites)
+  * [Dependencies](#dependencies)
+    * [Clone dependencies repository](#clone-dependencies-repository)
+    * [Compile dependencies](#compile-dependencies)
+  * [Run locally](#run-locally)
+    * [Clone repository](#clone-repository)
+    * [Compile project](#compile-project)
+    * [Run application](#run-application)
+  * [Run with Docker](#run-with-docker)
+    * [Clone repository](#clone-repository-1)
+    * [Compile project](#compile-project-1)
+    * [Build image](#build-image)
+    * [Run application](#run-application-1)
+    * [Stop application](#stop-application)
+  * [Run with Docker Compose](#run-with-docker-compose)
+    * [Clone repository](#clone-repository-2)
+    * [Compile project](#compile-project-2)
+    * [Build image](#build-image-1)
+    * [Run application](#run-application-2)
+    * [Stop application](#stop-application-1)
+* [Test it](#test-it)
+    * [REST services](#rest-services)
+    * [Blindata configuration](#blindata-configuration)
+    * [ODM configuration](#odm-configuration)
+<!-- TOC -->
+
+# Event Handling
+
+The observer adapter for Blindata is designed to react to Notification Events that are emitted by the Open Data Mesh
+Product Platform.
+
+The observer can subscribe to notification events whit two level of granularity:
+
+1. The event type. This can be:
+    - DATA_PRODUCT_CREATED
+    - DATA_PRODUCT_UPDATED
+    - DATA_PRODUCT_DELETED
+    - DATA_PRODUCT_VERSION_CREATED
+    - DATA_PRODUCT_VERSION_DELETED
+    - DATA_PRODUCT_ACTIVITY_CREATED
+    - DATA_PRODUCT_ACTIVITY_STARTED
+    - DATA_PRODUCT_ACTIVITY_COMPLETED
+    - DATA_PRODUCT_TASK_CREATED
+    - DATA_PRODUCT_TASK_STARTED
+    - DATA_PRODUCT_TASK_COMPLETED
+2. The event content using a SpeL expression.
+   E.g. An expression to capture an event regarding a data product ( match done by its fullyQualifiedName ).
+   ```
+   #root['afterState']['info']['fullyQualifiedName'] == 'urn:org.opendatamesh:dataproducts:hrs:users'
+   ```
+   ```json
+    {
+      "id": "",
+      "type": "",
+      "entityId": "",
+      "beforeState": {},
+      "afterState": {
+        //data product descriptor here
+      }, 
+      "time": ""
+   }
+   ```
+
+P.A. its is always mandatory to specify the event type.
+
+For every subscription it is possible to specify a set of actions that the observer will perform.
+These are:
+
+1. **DATA_PRODUCT_UPLOAD**. It uploads the main information of the data product to Blindata and assigns ownership
+   responsibilities to the designated user.
+    - Supported event types:
+        - DATA_PRODUCT_CREATED
+        - DATA_PRODUCT_VERSION_CREATED
+2. **DATA_PRODUCT_VERSION_UPLOAD**. It uploads the data product's ports metadata along with the assets specified in the
+   descriptor api definitions.
+    - Supported event types:
+        - DATA_PRODUCT_VERSION_CREATED
+        - DATA_PRODUCT_ACTIVITY_COMPLETED
+3. **DATA_PRODUCT_REMOVAL**. It removes the data product from Blindata.
+    - Supported event types:
+        - DATA_PRODUCT_DELETED
+4. **POLICIES_UPLOAD**. It gathers all policy evaluation results for the specified data product and uploads them to
+   Blindata.
+    - Supported event types:
+        - DATA_PRODUCT_VERSION_CREATED
+        - DATA_PRODUCT_ACTIVITY_COMPLETED
+
+### Configuration
+
+The configuration can be written in the application.yml or passed as an argument at startup.
+An example of a configuration can be: 
+```yaml
+blindata:
+  eventHandlers: "[
+      {
+        \"eventType\": \"DATA_PRODUCT_VERSION_CREATED\",
+        \"filter\":  \"\",
+        \"activeUseCases\": [
+          \"DATA_PRODUCT_UPLOAD\",
+          \"DATA_PRODUCT_VERSION_UPLOAD\",
+          \"POLICIES_UPLOAD\"
+        ]
+      },
+      {
+        \"eventType\": \"DATA_PRODUCT_VERSION_DELETED\",
+        \"filter\": \"\",
+        \"activeUseCases\": [
+          \"DATA_PRODUCT_REMOVAL\"
+        ]
+      },
+       {
+        \"eventType\": \"DATA_PRODUCT_ACTIVITY_COMPLETED\",
+        \"filter\": \"\",
+        \"activeUseCases\": [
+          \"POLICIES_UPLOAD\"
+        ]
+      }
+    ]"
+```
+P.A. Actions are automatically ordered based on the correct sequence of execution.
+
+# Mapping data product descriptor into Blindata
+
+Given a descriptor, the following elements are created in Blindata:
+
+- Systems
+- Physical Entities
+- Physical Fields
+
+This mapping ensures that all data structures and their components are accurately represented and can be monitored or
+managed within Blindata, providing a seamless integration between the descriptor and the Blindata environment.
+
+## Promises.Platform
+
+The 'platform' field within the 'promises' field of the port in the descriptor is used to extract the name and system
+technology of the system to be created in Blindata.
+
+| Data product descriptor field | Blindata Field | Mandatory |
+|-------------------------------|----------------|-----------|
+| `promises.platform`           | `system.name`  | -         |
+
+To extract the name and technology for association, two regular expressions must be defined within the Blindata
+configurations, as shown below.
+
+```yaml
+blindata:
+  systemNameRegex: optional regex to extract system name from schema (value optional)
+  systemTechnologyRegex: optional regex to extract system technology from schema (value optional)
+```
 
 ## General Schema Annotations
 
-Schema annotations describe the properties and metadata associated with entity and field
-schemas. These annotations help to better define and document data schemas, improving the understanding and usability of
+General schema annotations can be used to enrich schemas declarations with additional metadata information.
+These annotations are independent form specifications and schema formats and are used to improve the understanding and
+usability of
 data structures.
 
-### Entity
+### Entities
 
 Entities annotations help to describe the general characteristics and metadata of a data structure. In the table below
 there's a list of annotations each one have a detailed description, its requirement status, and support for JSONSchema
@@ -134,41 +264,18 @@ and Avro.
 | `maximum`              | No       | The maximum value of a numeric field.                                                                                                    | ✔️                   | -              |
 | `exclusiveMaximum`     | No       | Specifies if the maximum value is exclusive.                                                                                             | ✔️                   | -              |
 
-## Mapping in Blindata
+## Promises.Api.Definition: Specifications mapping in Blindata
 
-The observer supports the use of two specifications: Datastore API and Async API. For Datastore API the schema format
-supported is JSON, while for Async API is AVRO.
-
-Given a descriptor, the following elements are created in Blindata:
-
-- Systems
-- Physical Entities
-- Physical Fields
-
-This mapping ensures that all data structures and their components are accurately represented and can be monitored or
-managed within Blindata, providing a seamless integration between the descriptor and the Blindata environment.
-
-### Systems
-
-The 'platform' field within the 'promises' field of the port in the descriptor is used to extract the name and system
-technology of the system to be created in Blindata.
-
-| Data product descriptor field | Blindata Field | Mandatory |
-|-------------------------------|----------------|-----------|
-| `promises.platform`           | `system.name`  | -         |
-
-To extract the name and technology for association, two regular expressions must be defined within the Blindata
-configurations, as shown below.
-
-```yaml
-blindata:
-  systemNameRegex: optional regex to extract system name from schema (value optional)
-  systemTechnologyRegex: optional regex to extract system technology from schema (value optional)
-```
+The observer supports the use of two specifications: `Datastore API` and `Async API`.
+For Datastore API, the supported format for declaring entities is the `Standard Definition Object`.
+For Async API the supported schema formats for the message payload are `AVRO` and `JSON SCHEMA`.
 
 ### Data Store Api
 
-The Data Store API Specification (DSAS) defines a standard, language-agnostic interface to a Data API which allows both humans and computers to understand how to establish a connection and query a database service managing tabular data without access to source code, documentation, or through network traffic inspection. When properly defined, a consumer can understand and interact with the remote database service with a minimal amount of implementation logic.
+The Data Store API Specification (DSAS) defines a standard, language-agnostic interface to a Data API which allows both
+humans and computers to understand how to establish a connection and query a database service managing tabular data
+without access to source code, documentation, or through network traffic inspection. When properly defined, a consumer
+can understand and interact with the remote database service with a minimal amount of implementation logic.
 
 Other information about Data Store API is available
 here: [Data Store API Specification](https://dpds.opendatamesh.org/specifications/dsas/1.0.0/)
@@ -228,29 +335,28 @@ This section details the mapping of schema annotations to physical field propert
 individual attributes or columns within a physical entity, providing specific data points within the entity.
 Physical fields are mapped from "properties" field inside each entity definition.
 
-| Schema Annotation                                      | Physical Field Property | Description                          | Mandatory |
-|--------------------------------------------------------|-------------------------|--------------------------------------|-----------|
-| `schema.tables[n].definition.properties.name`          | name                    | Object name                          | ✔️        |
-| `schema.tables[n].definition.properties.physicalType`  | type                    | Physical type of the object          | -         |
-| `schema.tables[n].definition.properties.comments`      | description             | Additional comments about the object | -         |
-| `schema.tables[n].definition.properties.kind`          | add.prop                | Object type (e.g., TABULAR)          | -         |
-| `schema.tables[n].definition.properties.status`        | add.prop                | Object status (e.g., TESTING)        | -         |
-| `schema.tables[n].definition.properties.tags`          | add.prop                | Tags associated with the object      | -         |
-| `schema.tables[n].definition.properties.owner`         | add.prop                | Owner of the object                  | -         |
-| `schema.tables[n].definition.properties.domain`        | add.prop                | Domain to which the object belongs   | -         |
-| `schema.tables[n].definition.properties.contactpoints` | add.prop                | Contact points related to the object | -         |
-| `schema.tables[n].definition.properties.scope`         | add.prop                | Scope of the object (e.g., private)  | -         |
-| `schema.tables[n].definition.properties.version`       | add.prop                | Version of the object                | -         |
-| `schema.tables[n].definition.properties.displayName`   | add.prop                | Human readable name of the object    | -         |
-| `schema.tables[n].definition.properties.description`   | add.prop                | Description of the object            | -         |
+| Schema Annotation                                            | Physical Field Property | Description                          | Mandatory |
+|--------------------------------------------------------------|-------------------------|--------------------------------------|-----------|
+| `schema.tables[n].definition.properties.<key>.name`          | name                    | Object name                          | ✔️        |
+| `schema.tables[n].definition.properties.<key>.physicalType`  | type                    | Physical type of the object          | -         |
+| `schema.tables[n].definition.properties.<key>.comments`      | description             | Additional comments about the object | -         |
+| `schema.tables[n].definition.properties.<key>.kind`          | add.prop                | Object type (e.g., TABULAR)          | -         |
+| `schema.tables[n].definition.properties.<key>.status`        | add.prop                | Object status (e.g., TESTING)        | -         |
+| `schema.tables[n].definition.properties.<key>.tags`          | add.prop                | Tags associated with the object      | -         |
+| `schema.tables[n].definition.properties.<key>.owner`         | add.prop                | Owner of the object                  | -         |
+| `schema.tables[n].definition.properties.<key>.domain`        | add.prop                | Domain to which the object belongs   | -         |
+| `schema.tables[n].definition.properties.<key>.contactpoints` | add.prop                | Contact points related to the object | -         |
+| `schema.tables[n].definition.properties.<key>.scope`         | add.prop                | Scope of the object (e.g., private)  | -         |
+| `schema.tables[n].definition.properties.<key>.version`       | add.prop                | Version of the object                | -         |
+| `schema.tables[n].definition.properties.<key>.displayName`   | add.prop                | Human readable name of the object    | -         |
+| `schema.tables[n].definition.properties.<key>.description`   | add.prop                | Description of the object            | -         |
 
 ### AsyncApi
 
-##### From Avro to Physical Entity
+The supported version are 2.x.x and 3.x.x.
+Each `channel` declared inside the specification is mapped into a Physical Entity as follows.
 
-Physical entities are mapped from "channel" section of the descriptor.
-
-| Schema Annotation      | Physical Entity Property | Mandatory | Default Value |
+| Specification field    | Physical Entity Property | Mandatory | Default Value |
 |------------------------|--------------------------|-----------|---------------|
 | `channel.name`         | name                     | ✔️        | -             |
 | `channel`              | tableType                | -         | TOPIC         |
@@ -262,25 +368,48 @@ Physical entities are mapped from "channel" section of the descriptor.
 | `channel.summary`      | add.prop                 | -         | -             |
 | `channel.address`      | add.prop                 | -         | -             |
 
-##### From Avro to Physical Field
+Each `message` with its payload schema is mapped into a set of Physical Fields, each one associated to the
+Physical Entity that represents the `channel`.
 
-Physical entities can be find in "channel.message" section of the descriptor.
+The `message` `payload` schema can be defined in different formats and encoding.
+The supported ones are: `vnd.apache.avro` and `schema+json`.
 
-| Schema Annotation              | Physical Field Property | Mandatory | Default Value |
-|--------------------------------|-------------------------|-----------|---------------|
-| `channel.message.id`           | name                    | ✔️        | -             |
-| `channel.message.contentType`  | type                    | -         | TOPIC         |
-| `channel.message.description`  | description             | -         | -             |
-| `channel.message.name`         | add.prop                | -         | -             |
-| `channel.message.title`        | add.prop                | -         | -             |
-| `channel.message.tags`         | add.prop                | -         | -             |
-| `channel.message.externalDocs` | add.prop                | -         | -             |
-| `channel.message.summary`      | add.prop                | -         | -             |
-| `channel.message.address`      | add.prop                | -         | -             |
+##### From Avro to Physical Fields
 
-## Examples
+When a `message` `payload` schema is defined in `vnd.apache.avro` format, the message with its content
+is mapped as follows.
 
-### Datastore Api Example
+| Specification field                    | Physical Field Property |
+|----------------------------------------|-------------------------|
+| `[..].payload.schema.fields.[..].name` | name                    |
+| `[..].payload.schema.fields.[..].type` | type                    |
+| The position in the fields array       | ordinalPosition         |
+
+##### From Json Schema to Physical Fields
+
+When a `message` `payload` schema is defined in `schema+json` format, the message with its content
+is mapped as follows.
+
+The `message` is mapped in a Physical Field as follows.
+
+| Specification field        | Physical Field Property |
+|----------------------------|-------------------------|
+| `[..].message.id`          | name                    |
+| `[..].message.contentType` | type                    |
+
+The `message` `payload` is mapped in a set of Physical Fields as follows.
+
+| Specification field                   | Physical Field Property |
+|---------------------------------------|-------------------------|
+| `[..].payload.[..].<key>`             | name                    |
+| `[..].payload.[..].<key>.type`        | type                    |
+| `[..].payload.[..].<key>.javaType`    | type                    |
+| `[..].payload.[..].<key>.description` | description             |
+| `[..].payload.[..].<key>.required`    | add.prop                |
+
+# Examples
+
+## Datastore Api Example
 
 This section provides examples of how to represent multiple entities using the Data Store API. It demonstrates the
 application of schema annotations to define multiple physical entities and their fields, illustrating how the mappings
@@ -482,9 +611,9 @@ physical field "id".
 }
 ```
 
-### Async Api
+## Async Api
 
-#### Raw Port Async Api V3
+### Raw Port Async Api V3
 
 This section illustrates an example of an Async API version 3 configuration for a Trip Status Streaming API. The API is
 used to stream events related to the Trip entity. It describes the schema for the messages, including the fields and
@@ -567,7 +696,7 @@ their types.
 
 ```
 
-#### Raw Port Async Api V2
+### Raw Port Async Api V2
 
 This section provides an example of an Async API version 2 configuration for a Trip Status Streaming API. It includes
 details on the servers, channels, and message schemas used for streaming events related to the Trip entity.
@@ -771,7 +900,7 @@ details on the servers, channels, and message schemas used for streaming events 
 
 ```
 
-#### Entities Async Api V3
+### Entities Async Api V3
 
 ```json
 {
@@ -846,7 +975,7 @@ details on the servers, channels, and message schemas used for streaming events 
 }
 ```
 
-#### Entities Async Api V2
+### Entities Async Api V2
 
 ```json
 {
@@ -978,9 +1107,9 @@ details on the servers, channels, and message schemas used for streaming events 
 
 ```
 
-## Run the Project
+# Run the Project
 
-### Prerequisites
+## Prerequisites
 
 The project requires the following dependencies:
 
@@ -988,11 +1117,11 @@ The project requires the following dependencies:
 * Maven 3.8.6
 * Project [odm-platform](https://github.com/opendatamesh-initiative/odm-platform)
 
-### Dependencies
+## Dependencies
 
 This project needs some artifacts from the odm-platform project.
 
-#### Clone dependencies repository
+### Clone dependencies repository
 
 Clone the repository and move to the project root folder:
 
@@ -1002,7 +1131,7 @@ cd odm-platform
 
 ```
 
-#### Compile dependencies
+### Compile dependencies
 
 Compile the project:
 
@@ -1010,11 +1139,11 @@ Compile the project:
 mvn clean install -DskipTests
 ```
 
-### Run locally
+## Run locally
 
 *_Dependencies must have been compiled to run this project._
 
-#### Clone repository
+### Clone repository
 
 Clone the repository and move to the project root folder
 
@@ -1023,7 +1152,7 @@ git clone git@github.com:opendatamesh-initiative/odm-platform-adapter-observer-b
 cd odm-platform-adapter-observer-blindata
 ```
 
-#### Compile project
+### Compile project
 
 Compile the project:
 
@@ -1031,7 +1160,7 @@ Compile the project:
 mvn clean package spring-boot:repackage -DskipTests
 ```
 
-#### Run application
+### Run application
 
 Run the application:
 
@@ -1039,11 +1168,11 @@ Run the application:
 java -jar observer-blindata-server/target/odm-platform-adapter-observer-blindata-server-1.0.0.jar
 ```
 
-### Run with Docker
+## Run with Docker
 
 *_Dependencies must have been compiled to run this project._
 
-#### Clone repository
+### Clone repository
 
 Clone the repository and move it to the project root folder
 
@@ -1055,7 +1184,7 @@ cd odm-platform-adapter-observer-blindata
 Here you can find the Dockerfile which creates an image containing the application by directly copying it from the build
 executed locally (i.e. from `target` folder).
 
-#### Compile project
+### Compile project
 
 You need to first execute the build locally by running the following command:
 
@@ -1063,7 +1192,7 @@ You need to first execute the build locally by running the following command:
 mvn clean package spring-boot:repackage -DskipTests
 ```
 
-#### Build image
+### Build image
 
 Build the Docker image of the application and run it.
 
@@ -1080,7 +1209,7 @@ docker build -t odm-observer-blindata-app . -f Dockerfile \
    --build-arg BLINDATA_ROLE=<blindata-role>
 ```
 
-#### Run application
+### Run application
 
 Run the Docker image.
 
@@ -1088,7 +1217,7 @@ Run the Docker image.
 docker run --name odm-observer-blindata-app -p 9002:9002 odm-observer-blindata-app
 ```
 
-#### Stop application
+### Stop application
 
 ```bash
 docker stop odm-observer-blindata-app
@@ -1106,11 +1235,11 @@ To remove a stopped application to rebuild it from scratch execute the following
 docker rm odm-observer-blindata-app
 ```
 
-### Run with Docker Compose
+## Run with Docker Compose
 
 *_Dependencies must have been compiled to run this project._
 
-#### Clone repository
+### Clone repository
 
 Clone the repository and move it to the project root folder
 
@@ -1119,7 +1248,7 @@ git clone git@github.com:opendatamesh-initiative/odm-platform-adapter-observer-b
 cd odm-platform-adapter-observer-blindata
 ```
 
-#### Compile project
+### Compile project
 
 Compile the project:
 
@@ -1127,7 +1256,7 @@ Compile the project:
 mvn clean package spring-boot:repackage -DskipTests
 ```
 
-#### Build image
+### Build image
 
 Build the docker-compose images of the application and a default PostgreSQL DB (v11.0).
 
@@ -1159,7 +1288,7 @@ Then, build the docker-compose file:
 docker-compose build
 ```
 
-#### Run application
+### Run application
 
 Run the docker-compose images.
 
@@ -1167,7 +1296,7 @@ Run the docker-compose images.
 docker-compose up
 ```
 
-#### Stop application
+### Stop application
 
 Stop the docker-compose images
 
@@ -1187,7 +1316,7 @@ To rebuild it from scratch execute the following commands :
 docker-compose build --no-cache
 ```
 
-## Test it
+# Test it
 
 ### REST services
 

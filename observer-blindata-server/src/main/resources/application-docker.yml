@@ -31,7 +31,20 @@ blindata:
   roleUuid: ${BLINDATA_ROLE}
   systemNameRegex: "^([^:]+)"
   systemTechnologyRegex: "(?!::)([^:]+)$"
-
+  eventHandlers:
+    - eventType: DATA_PRODUCT_CREATED
+      filter: ""
+      activeUseCases:
+        - DATA_PRODUCT_UPLOAD
+    - eventType: DATA_PRODUCT_VERSION_CREATED
+      filter: ""
+      activeUseCases:
+        - DATA_PRODUCT_VERSION_UPLOAD
+        - POLICIES_UPLOAD
+    - eventType: DATA_PRODUCT_ACTIVITY_COMPLETED
+      filter: ""
+      activeUseCases:
+        - POLICIES_UPLOAD
 
 #############################
 # ODM projects configurations

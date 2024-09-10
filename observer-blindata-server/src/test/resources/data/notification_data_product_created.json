@@ -1,9 +1,0 @@
-{
-  "id": 1,
-  "event" : {
-    "id": 1,
-    "type": "DATA_PRODUCT_CREATED",
-    "entityId": "abc123",
-    "afterState": "{\"fullyQualifiedName\":\"urn:org.opendatamesh:dataproduct:tripExecution\",\"description\":\"Thisisprod-1\",\"domain\":\"Disney\"}"
-  }
-}

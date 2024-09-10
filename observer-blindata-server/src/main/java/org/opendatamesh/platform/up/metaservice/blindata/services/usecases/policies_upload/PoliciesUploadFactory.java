@@ -1,0 +1,77 @@
+package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.opendatamesh.dpds.model.DataProductVersionDPDS;
+import org.opendatamesh.platform.pp.devops.api.resources.ActivityResource;
+import org.opendatamesh.platform.pp.policy.api.clients.PolicyEvaluationResultClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDPolicyEvaluationResultClient;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.EventType;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.OBEventNotificationResource;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Set;
+
+@Component
+public class PoliciesUploadFactory implements UseCaseFactory {
+
+    @Autowired
+    private PolicyEvaluationResultClient odmPolicyEvaluationResultClient;
+
+    @Autowired
+    private BDDataProductClient bdDataProductClient;
+
+    @Autowired
+    private BDPolicyEvaluationResultClient bdPolicyEvaluationResultClient;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private final Set<String> supportedEventTypes = Set.of(
+            EventType.DATA_PRODUCT_VERSION_CREATED.name(),
+            EventType.DATA_PRODUCT_ACTIVITY_COMPLETED.name()
+    );
+
+    @Override
+    public UseCase getUseCase(OBEventNotificationResource event) throws UseCaseInitException {
+        if (!supportedEventTypes.contains(event.getEvent().getType().toUpperCase())) {
+            throw new UseCaseInitException("Failed to init PoliciesUpload use case, unsupported event type: " + event.getEvent().getType());
+        }
+        try {
+            PoliciesUploadBlindataOutputPort bdOutputPort = new PoliciesUploadBlindataOutputPortImpl(
+                    bdDataProductClient,
+                    bdPolicyEvaluationResultClient
+            );
+            PoliciesUploadOdmOutputPort odmOutputPort = initOdmOutputPort(event);
+            return new PoliciesUpload(
+                    bdOutputPort,
+                    odmOutputPort
+            );
+        } catch (Exception e) {
+            throw new UseCaseInitException("Failed to init PoliciesUpload use case.", e);
+        }
+    }
+
+    private PoliciesUploadOdmOutputPort initOdmOutputPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
+        if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_ACTIVITY_COMPLETED.name())) {
+            ActivityResource activityResource = objectMapper.readValue(event.getEvent().getAfterState().toString(), ActivityResource.class);
+            DataProductVersionDPDS odmDataProduct = objectMapper.readValue(activityResource.getDataProductVersion(), DataProductVersionDPDS.class);
+            return new PoliciesUploadOdmOutputPortImpl(
+                    odmPolicyEvaluationResultClient,
+                    odmDataProduct.getInfo());
+        }
+        if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_VERSION_CREATED.name())) {
+            DataProductVersionDPDS odmDataProduct = objectMapper.readValue(event.getEvent().getAfterState().toString(), DataProductVersionDPDS.class);
+            return new PoliciesUploadOdmOutputPortImpl(
+                    odmPolicyEvaluationResultClient,
+                    odmDataProduct.getInfo());
+        } else {
+            throw new UseCaseInitException("Failed to init OdmOutputPort on PoliciesUpload use case.");
+        }
+    }
+}

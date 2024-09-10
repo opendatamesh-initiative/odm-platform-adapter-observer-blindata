@@ -175,9 +175,7 @@ public class RestUtils {
             for (Field f : filters.getClass().getDeclaredFields()) {
                 boolean isAccessible = f.isAccessible();
                 f.setAccessible(true);
-                if (f.get(filters) instanceof String) {
-                    builder.queryParam(f.getName(), f.get(filters));
-                }
+                builder.queryParam(f.getName(), f.get(filters));
                 f.setAccessible(isAccessible);
             }
         } catch (Exception e) {

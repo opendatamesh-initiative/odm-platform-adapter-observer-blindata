@@ -67,9 +67,12 @@ public class DataProductPortAssetAnalyzer {
                 }
 
                 PortStandardDefinition portStandardDefinition = externalComponentToPortStandardDefinition(externalComponentResources.get());
-                logger.info("Data product port: {} has specification: {} of version: {}", port.getFullyQualifiedName(), portStandardDefinition.getSpecification(), portStandardDefinition.getSpecificationVersion());
 
+                if (portIsNotValid(port, portStandardDefinition)) continue;
+
+                logger.info("Data product port: {} has specification: {} of version: {}", port.getFullyQualifiedName(), portStandardDefinition.getSpecification(), portStandardDefinition.getSpecificationVersion());
                 BDSystemRes platformSystem = getSystem(port);
+
                 Optional<PortStandardDefinitionAnalyzer> portStandardDefinitionAnalyzer = getPortStandardDefinitionAnalyzer(portStandardDefinition);
                 if (portStandardDefinitionAnalyzer.isEmpty()) {
                     logger.warn("Data product port: {} with specification: {} and version: {} is not supported.", port.getFullyQualifiedName(), portStandardDefinition.getSpecification(), portStandardDefinition.getSpecificationVersion());
@@ -98,6 +101,18 @@ public class DataProductPortAssetAnalyzer {
             logger.warn(e.getMessage(), e);
             return dataProductPortAssetDetailRes;
         }
+    }
+
+    private boolean portIsNotValid(PortDPDS port, PortStandardDefinition portStandardDefinition) {
+        if (!StringUtils.hasText(portStandardDefinition.getSpecification())) {
+            logger.warn("Missing specification on port: {}", port.getFullyQualifiedName());
+            return true;
+        }
+        if (!StringUtils.hasText(portStandardDefinition.getSpecificationVersion())) {
+            logger.warn("Missing specification version on port: {}", port.getFullyQualifiedName());
+            return true;
+        }
+        return false;
     }
 
     private BDDataProductPortAssetDetailRes buildDataProductPortAssetDetail(PortDPDS port, BDSystemRes platformSystem, List<BDPhysicalEntityRes> extractedEntities) {
