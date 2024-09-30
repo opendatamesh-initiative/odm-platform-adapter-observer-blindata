@@ -8,6 +8,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDStewardshipRoleRes;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
+import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
@@ -82,6 +83,18 @@ class DataProductUpload implements UseCase {
         blindataDataProduct.setVersion(odmDataProduct.getVersionNumber());
         blindataDataProduct.setDisplayName(odmDataProduct.getDisplayName());
         blindataDataProduct.setDescription(odmDataProduct.getDescription());
+
+        if (!StringUtils.hasText(odmDataProduct.getName())) {
+            String name = extractNameFromFQN(odmDataProduct.getFullyQualifiedName());
+            blindataDataProduct.setName(name);
+            blindataDataProduct.setDisplayName(name);
+        }
+
+        if (!StringUtils.hasText(odmDataProduct.getVersionNumber())) {
+            blindataDataProduct.setVersion("0.0.0");
+            blindataDataProduct.setProductStatus("DRAFT");
+        }
+
         return blindataDataProduct;
     }
 
@@ -93,5 +106,15 @@ class DataProductUpload implements UseCase {
         newDataProduct = blindataOutputPort.updateDataProduct(newDataProduct);
         log.info("{} Data product: {} with uuid: {} updated on Blindata", USE_CASE_PREFIX, odmOutputPort.getDataProductInfo().getFullyQualifiedName(), newDataProduct.getUuid());
         assignResponsibilityToDataProduct(newDataProduct);
+    }
+
+    private String extractNameFromFQN(String fullyQualifiedName) {
+        String[] parts = fullyQualifiedName.split("[.:/\\\\]");
+        // The product name is assumed to be the last part of the fully qualified name
+        if (parts.length > 1) {
+            return parts[parts.length - 1];
+        } else {
+            return null;
+        }
     }
 }

@@ -39,6 +39,7 @@ blindata:
     - eventType: DATA_PRODUCT_VERSION_CREATED
       filter: ""
       activeUseCases:
+        - DATA_PRODUCT_UPLOAD
         - DATA_PRODUCT_VERSION_UPLOAD
         - POLICIES_UPLOAD
     - eventType: DATA_PRODUCT_ACTIVITY_COMPLETED

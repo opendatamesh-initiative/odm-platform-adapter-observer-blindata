@@ -25,6 +25,8 @@ public class BDDataProductRes {
 
     private List<BDDataProductPortRes> ports;
 
+    private String productStatus;
+
     public String getUuid() {
         return uuid;
     }
@@ -95,6 +97,14 @@ public class BDDataProductRes {
 
     public void setPorts(List<BDDataProductPortRes> ports) {
         this.ports = ports;
+    }
+
+    public String getProductStatus() {
+        return productStatus;
+    }
+
+    public void setProductStatus(String productStatus) {
+        this.productStatus = productStatus;
     }
 }
 
