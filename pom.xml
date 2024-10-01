@@ -78,4 +78,22 @@ License.
      <module>observer-blindata-server</module>
     </modules>
 
+    <profiles>
+        <profile>
+            <id>github</id>
+            <activation>
+                <property>
+                    <name>GitHubPackages</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub Packages</name>
+                    <url>https://maven.pkg.github.com/opendatamesh-initiative/odm-platform-adapter-observer-blindata</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
 </project>
