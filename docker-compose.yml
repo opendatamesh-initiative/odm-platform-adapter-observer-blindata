@@ -1,31 +1,10 @@
 version: '3.3'
 
 services:
-
-  # Spring Boot app
   observer-blindata:
-    depends_on:
-      - PostgreSQL
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        SPRING_PROFILES_ACTIVE: "docker"
-        SPRING_PORT: "${SPRING_PORT}"
-        BLINDATA_URL: "${BLINDATA_URL}"
-        BLINDATA_USER: "${BLINDATA_USER}"
-        BLINDATA_PWD: "${BLINDATA_PWD}"
-        BLINDATA_TENANT: "${BLINDATA_TENANT}"
-        BLINDATA_ROLE: "${BLINDATA_ROLE}"
-        REGISTRY_ACTIVE: "${REGISTRY_ACTIVE}"
-        REGISTRY_HOSTNAME: "${REGISTRY_HOSTNAME}"
-        REGISTRY_PORT: "${REGISTRY_PORT}"
-        POLICY_ACTIVE: "${POLICY_ACTIVE}"
-        POLICY_HOSTNAME: "${POLICY_HOSTNAME}"
-        POLICY_PORT: "${POLICY_PORT}"
-        NOTIFICATION_ACTIVE: "${NOTIFICATION_ACTIVE}"
-        NOTIFICATION_HOSTNAME: "${NOTIFICATION_HOSTNAME}"
-        NOTIFICATION_PORT: "${NOTIFICATION_PORT}"
+        PROFILES_ACTIVE: "docker"
     env_file: .env
-    ports:
-      - "${SPRING_PORT}:${SPRING_PORT}"

@@ -1,25 +1,30 @@
-##########################
-# Spring profile
-##########################
-spring:
-  profiles:
-    active: dev
+app:
+  workdir:
 
-##########################
-# Logging configuration
-##########################
-logging:
-  level:
-    org:
-      apache:
-        http: INFO
-    httpclient:
-      wire: INFO
-    opendatamesh.platform.up.metaservice.api.*: DEBUG
+server:
+  port: 9002
+  baseUrl: http://localhost:9002
+  error:
+    include-message: always
+  servlet:
+    context-path: /api/v1/up/observer/
 
-##########################
-# Doc configuration
-##########################
-springdoc:
-  swagger-ui:
-    operationsSorter: alpha
+blindata:
+  systemNameRegex: ".*"
+  systemTechnologyRegex: "(?!::)([^:]+)$"
+  eventHandlers:
+    - eventType: DATA_PRODUCT_CREATED
+      filter: ""
+      activeUseCases:
+        - DATA_PRODUCT_UPLOAD
+    - eventType: DATA_PRODUCT_VERSION_CREATED
+      filter: ""
+      activeUseCases:
+        - DATA_PRODUCT_UPLOAD
+        - DATA_PRODUCT_VERSION_UPLOAD
+        - POLICIES_UPLOAD
+    - eventType: DATA_PRODUCT_ACTIVITY_COMPLETED
+      filter: ""
+      activeUseCases:
+        - POLICIES_UPLOAD
+

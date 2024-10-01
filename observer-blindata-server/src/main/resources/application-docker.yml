@@ -1,54 +1,18 @@
-##########################
-# Server configuration
-##########################
-app:
-  workdir:
-
-server:
-  baseUrl: ${SPRING_BASE_URL}:${SPRING_PORT}
-  error:
-    include-message: always
-  servlet:
-    context-path: /api/v1/up/observer/
-
-############################################
-# Spring configurations
-############################################
-
 spring:
-  # Profile
   profile: docker
 
+server:
+  port: ${SPRING_PORT}
+  baseUrl: ${SPRING_BASE_URL}:${SPRING_PORT}
 
-##########################
-# Blindata configuration
-##########################
+
 blindata:
   url: ${BLINDATA_URL}
   user: ${BLINDATA_USER}
   password: ${BLINDATA_PWD}
   tenantUUID: ${BLINDATA_TENANT}
   roleUuid: ${BLINDATA_ROLE}
-  systemNameRegex: "^([^:]+)"
-  systemTechnologyRegex: "(?!::)([^:]+)$"
-  eventHandlers:
-    - eventType: DATA_PRODUCT_CREATED
-      filter: ""
-      activeUseCases:
-        - DATA_PRODUCT_UPLOAD
-    - eventType: DATA_PRODUCT_VERSION_CREATED
-      filter: ""
-      activeUseCases:
-        - DATA_PRODUCT_VERSION_UPLOAD
-        - POLICIES_UPLOAD
-    - eventType: DATA_PRODUCT_ACTIVITY_COMPLETED
-      filter: ""
-      activeUseCases:
-        - POLICIES_UPLOAD
 
-#############################
-# ODM projects configurations
-#############################
 odm:
   productPlane:
     registryService:
