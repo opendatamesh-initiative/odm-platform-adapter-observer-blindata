@@ -11,7 +11,7 @@ server:
 
 blindata:
   systemNameRegex: ".*"
-  systemTechnologyRegex: "(?!::)([^:]+)$"
+  systemTechnologyRegex: "[^:]*:"
   eventHandlers:
     - eventType: DATA_PRODUCT_CREATED
       filter: ""

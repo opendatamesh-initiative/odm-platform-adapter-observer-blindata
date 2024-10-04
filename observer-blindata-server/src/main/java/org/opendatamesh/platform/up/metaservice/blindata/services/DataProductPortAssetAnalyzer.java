@@ -159,7 +159,7 @@ public class DataProductPortAssetAnalyzer {
             Pattern pattern = Pattern.compile(systemTechnologyRegex);
             Matcher matcher = pattern.matcher(platform);
             if (matcher.find()) {
-                return matcher.group(1);
+                return matcher.group(0);
             }
         }
         return null;
