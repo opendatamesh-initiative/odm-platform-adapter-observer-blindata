@@ -93,14 +93,12 @@ jobs:
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
           docker tag ${{ env.IMAGE_NAME }} $IMAGE_ID:${{ env.TAG_VERSION }}
           docker push $IMAGE_ID:${{ env.TAG_VERSION }}
-#
-#     FOR THIS STEP DOCKER HUB SECRETS ARE NEEDED INSIDE THIS REPOSITORY
-#      - name: DockerHub login
-#        env:
-#          DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
-#          DOCKER_PWD: ${{ secrets.DOCKER_PASSWORD }}
-#        run: docker login -u $DOCKER_USER -p $DOCKER_PWD
-#      - name: DockerHub images build
-#        run: docker build . --file Dockerfile --tag opendatamesh/${{ env.IMAGE_NAME }}:${{ env.TAG_VERSION }}
-#      - name: DockerHub images push
-#        run: docker push opendatamesh/${{ env.IMAGE_NAME }}:${{ env.TAG_VERSION }}
+      - name: DockerHub login
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PWD: ${{ secrets.DOCKER_PASSWORD }}
+        run: docker login -u $DOCKER_USER -p $DOCKER_PWD
+      - name: DockerHub images build
+        run: docker build . --file Dockerfile --tag opendatamesh/${{ env.IMAGE_NAME }}:${{ env.TAG_VERSION }}
+      - name: DockerHub images push
+        run: docker push opendatamesh/${{ env.IMAGE_NAME }}:${{ env.TAG_VERSION }}
