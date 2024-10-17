@@ -2,7 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.data
 
 import org.opendatamesh.dpds.model.info.InfoDPDS;
 
-interface DataProductUploadOdmOutputPort {
+interface DataProductUploadOdmOutboundPort {
     InfoDPDS getDataProductInfo();
 }
 

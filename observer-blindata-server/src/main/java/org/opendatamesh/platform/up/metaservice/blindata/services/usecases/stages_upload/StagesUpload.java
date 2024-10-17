@@ -14,27 +14,27 @@ import java.util.Optional;
 class StagesUpload implements UseCase {
     private final String USE_CASE_PREFIX = "[StagesUpload]";
 
-    private final StagesUploadBlindataOutputPort blindataOutputPort;
-    private final StagesUploadOdmOutputPort odmOutputPort;
+    private final StagesUploadBlindataOutboundPort blindataOutboundPort;
+    private final StagesUploadOdmOutboundPort odmOutboundPort;
 
-    StagesUpload(StagesUploadBlindataOutputPort blindataOutputPort, StagesUploadOdmOutputPort odmOutputPort) {
-        this.blindataOutputPort = blindataOutputPort;
-        this.odmOutputPort = odmOutputPort;
+    StagesUpload(StagesUploadBlindataOutboundPort blindataOutboundPort, StagesUploadOdmOutboundPort odmOutboundPort) {
+        this.blindataOutboundPort = blindataOutboundPort;
+        this.odmOutboundPort = odmOutboundPort;
     }
 
     @Override
     public void execute() throws UseCaseExecutionException {
         try {
-            Optional<BDDataProductRes> existentDataProduct = blindataOutputPort.findDataProduct(odmOutputPort.getDataProductVersion().getInfo().getFullyQualifiedName());
+            Optional<BDDataProductRes> existentDataProduct = blindataOutboundPort.findDataProduct(odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName());
             if (existentDataProduct.isEmpty()) {
-                log.warn("{} Data product: {} has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutputPort.getDataProductVersion().getInfo().getFullyQualifiedName());
+                log.warn("{} Data product: {} has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName());
                 return;
             }
 
-            List<BDDataProductStageRes> stages = odmOutputPort.extractDataProductStages();
+            List<BDDataProductStageRes> stages = odmOutboundPort.extractDataProductStages();
             log.info("{} Data product: {}, found {} stages.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), stages.size());
             if (!CollectionUtils.isEmpty(stages)) {
-                blindataOutputPort.uploadDataProductStages(existentDataProduct.get().getUuid(), stages);
+                blindataOutboundPort.uploadDataProductStages(existentDataProduct.get().getUuid(), stages);
             }
         } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);

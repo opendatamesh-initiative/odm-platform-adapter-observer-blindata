@@ -6,7 +6,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import java.util.List;
 import java.util.Optional;
 
-interface StagesUploadBlindataOutputPort {
+interface StagesUploadBlindataOutboundPort {
     void uploadDataProductStages(String dataProductUuid, List<BDDataProductStageRes> stages);
 
     Optional<BDDataProductRes> findDataProduct(String fullyQualifiedName);

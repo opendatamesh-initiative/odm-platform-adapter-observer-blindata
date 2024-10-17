@@ -19,31 +19,31 @@ class DataProductVersionUpload implements UseCase {
 
     private final String USE_CASE_PREFIX = "[DataProductVersionUpload]";
 
-    private final DataProductVersionUploadBlindataOutputPort blindataOutputPort;
-    private final DataProductVersionUploadOdmOutputPort odmOutputPort;
+    private final DataProductVersionUploadBlindataOutboundPort blindataOutboundPort;
+    private final DataProductVersionUploadOdmOutboundPort odmOutboundPort;
 
-    public DataProductVersionUpload(DataProductVersionUploadBlindataOutputPort blindataOutputPort, DataProductVersionUploadOdmOutputPort odmOutputPort) {
-        this.blindataOutputPort = blindataOutputPort;
-        this.odmOutputPort = odmOutputPort;
+    public DataProductVersionUpload(DataProductVersionUploadBlindataOutboundPort blindataOutboundPort, DataProductVersionUploadOdmOutboundPort odmOutboundPort) {
+        this.blindataOutboundPort = blindataOutboundPort;
+        this.odmOutboundPort = odmOutboundPort;
     }
 
     @Override
     public void execute() throws UseCaseExecutionException {
         try {
-            InterfaceComponentsDPDS interfaceComponentsDPDS = odmOutputPort.getDataProductVersion().getInterfaceComponents();
+            InterfaceComponentsDPDS interfaceComponentsDPDS = odmOutboundPort.getDataProductVersion().getInterfaceComponents();
             if (interfaceComponentsDPDS == null) {
-                log.warn("{} Missing interface components on data product: {}.", USE_CASE_PREFIX, odmOutputPort.getDataProductVersion().getInfo().getFullyQualifiedName());
+                log.warn("{} Missing interface components on data product: {}.", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName());
                 return;
             }
-            Optional<BDDataProductRes> existentDataProduct = blindataOutputPort.findDataProduct(odmOutputPort.getDataProductVersion().getInfo().getFullyQualifiedName());
+            Optional<BDDataProductRes> existentDataProduct = blindataOutboundPort.findDataProduct(odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName());
             if (existentDataProduct.isEmpty()) {
-                log.warn("{} Data product: {} has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutputPort.getDataProductVersion().getInfo().getFullyQualifiedName());
+                log.warn("{} Data product: {} has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName());
                 return;
             }
             List<BDDataProductPortRes> bdDataProductPorts = extractBdDataProductPorts(interfaceComponentsDPDS);
             log.info("{} Data product: {}, Blindata ports found: {}.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), bdDataProductPorts.size());
             existentDataProduct.get().setPorts(bdDataProductPorts);
-            blindataOutputPort.updateDataProductPorts(existentDataProduct.get());
+            blindataOutboundPort.updateDataProductPorts(existentDataProduct.get());
             log.info("{} Data product: {}, updated ports on Blindata.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier());
 
             List<BDDataProductPortAssetDetailRes> dataProductPortAssets = extractBdAssetsFromDpPorts(interfaceComponentsDPDS);
@@ -70,8 +70,8 @@ class DataProductVersionUpload implements UseCase {
         if (!CollectionUtils.isEmpty(dataProductPortAssets)) {
             BDProductPortAssetsRes bdDataProductAssets = new BDProductPortAssetsRes();
             bdDataProductAssets.setPorts(dataProductPortAssets);
-            blindataOutputPort.createDataProductAssets(bdDataProductAssets);
-            log.info("{} Data product: {}, uploaded {} assets on Blindata.", USE_CASE_PREFIX, odmOutputPort.getDataProductVersion().getInfo().getFullyQualifiedName(), dataProductPortAssets.size());
+            blindataOutboundPort.createDataProductAssets(bdDataProductAssets);
+            log.info("{} Data product: {}, uploaded {} assets on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName(), dataProductPortAssets.size());
         }
     }
 
@@ -107,23 +107,23 @@ class DataProductVersionUpload implements UseCase {
     private List<BDDataProductPortAssetDetailRes> extractBdAssetsFromDpPorts(InterfaceComponentsDPDS interfaceComponentsDPDS) {
         List<BDDataProductPortAssetDetailRes> dataProductPortAssets = new ArrayList<>();
         Optional.ofNullable(interfaceComponentsDPDS.getInputPorts())
-                .map(odmOutputPort::extractBDAssetsFromPorts)
+                .map(odmOutboundPort::extractBDAssetsFromPorts)
                 .ifPresent(dataProductPortAssets::addAll);
 
         Optional.ofNullable(interfaceComponentsDPDS.getOutputPorts())
-                .map(odmOutputPort::extractBDAssetsFromPorts)
+                .map(odmOutboundPort::extractBDAssetsFromPorts)
                 .ifPresent(dataProductPortAssets::addAll);
 
         Optional.ofNullable(interfaceComponentsDPDS.getControlPorts())
-                .map(odmOutputPort::extractBDAssetsFromPorts)
+                .map(odmOutboundPort::extractBDAssetsFromPorts)
                 .ifPresent(dataProductPortAssets::addAll);
 
         Optional.ofNullable(interfaceComponentsDPDS.getDiscoveryPorts())
-                .map(odmOutputPort::extractBDAssetsFromPorts)
+                .map(odmOutboundPort::extractBDAssetsFromPorts)
                 .ifPresent(dataProductPortAssets::addAll);
 
         Optional.ofNullable(interfaceComponentsDPDS.getObservabilityPorts())
-                .map(odmOutputPort::extractBDAssetsFromPorts)
+                .map(odmOutboundPort::extractBDAssetsFromPorts)
                 .ifPresent(dataProductPortAssets::addAll);
         return dataProductPortAssets;
     }

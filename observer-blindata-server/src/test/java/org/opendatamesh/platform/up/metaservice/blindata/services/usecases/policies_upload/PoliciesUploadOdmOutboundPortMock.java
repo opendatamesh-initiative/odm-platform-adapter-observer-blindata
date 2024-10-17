@@ -5,11 +5,11 @@ import org.opendatamesh.platform.pp.policy.api.resources.PolicyEvaluationResultR
 
 import java.util.List;
 
-public class PoliciesUploadOdmOutputPortMock implements PoliciesUploadOdmOutputPort {
+public class PoliciesUploadOdmOutboundPortMock implements PoliciesUploadOdmOutboundPort {
 
     private final PoliciesUploadInitialState initialState;
 
-    public PoliciesUploadOdmOutputPortMock(PoliciesUploadInitialState initialState) {
+    public PoliciesUploadOdmOutboundPortMock(PoliciesUploadInitialState initialState) {
         this.initialState = initialState;
     }
 

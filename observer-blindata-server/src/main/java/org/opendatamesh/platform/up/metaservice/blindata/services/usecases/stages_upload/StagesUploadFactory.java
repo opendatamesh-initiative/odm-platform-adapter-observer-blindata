@@ -36,24 +36,24 @@ public class StagesUploadFactory implements UseCaseFactory {
             throw new UseCaseInitException("Failed to init PoliciesUpload use case, unsupported event type: " + event.getEvent().getType());
         }
         try {
-            StagesUploadBlindataOutputPort bdOutputPort = new StagesUploadBlindataOutputPortImpl(bdDataProductClient);
-            StagesUploadOdmOutputPort odmOutputPort = initOdmOutputPort(event);
-            return new StagesUpload(bdOutputPort, odmOutputPort);
+            StagesUploadBlindataOutboundPort bdOutboundPort = new StagesUploadBlindataOutboundPortImpl(bdDataProductClient);
+            StagesUploadOdmOutboundPort odmOutboundPort = initodmOutboundPort(event);
+            return new StagesUpload(bdOutboundPort, odmOutboundPort);
         } catch (Exception e) {
             throw new UseCaseInitException("Failed to init PoliciesUpload use case.", e);
         }
     }
 
-    private StagesUploadOdmOutputPort initOdmOutputPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
+    private StagesUploadOdmOutboundPort initodmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
         if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_ACTIVITY_COMPLETED.name())) {
             ActivityResource activityResource = objectMapper.readValue(event.getEvent().getAfterState().toString(), ActivityResource.class);
             DataProductVersionDPDS odmDataProduct = objectMapper.readValue(activityResource.getDataProductVersion(), DataProductVersionDPDS.class);
-            return new StagesUploadOdmOutputPortImpl(odmDataProduct, activityResource);
+            return new StagesUploadOdmOutboundPortImpl(odmDataProduct, activityResource);
         } else if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_VERSION_CREATED.name())) {
             DataProductVersionDPDS odmDataProduct = objectMapper.readValue(event.getEvent().getAfterState().toString(), DataProductVersionDPDS.class);
-            return new StagesUploadOdmOutputPortImpl(odmDataProduct, null);
+            return new StagesUploadOdmOutboundPortImpl(odmDataProduct, null);
         } else {
-            throw new UseCaseInitException("Failed to init OdmOutputPort on DataProductVersionUpload use case.");
+            throw new UseCaseInitException("Failed to init odmOutboundPort on DataProductVersionUpload use case.");
         }
     }
 }

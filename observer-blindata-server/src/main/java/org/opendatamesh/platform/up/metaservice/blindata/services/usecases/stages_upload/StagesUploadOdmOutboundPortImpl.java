@@ -12,12 +12,12 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import java.util.*;
 
 @Slf4j
-class StagesUploadOdmOutputPortImpl implements StagesUploadOdmOutputPort {
+class StagesUploadOdmOutboundPortImpl implements StagesUploadOdmOutboundPort {
 
     private final DataProductVersionDPDS dataProductVersion;
     private final ActivityResource activityResource;
 
-    StagesUploadOdmOutputPortImpl(DataProductVersionDPDS dataProductVersion, ActivityResource activityResource) {
+    StagesUploadOdmOutboundPortImpl(DataProductVersionDPDS dataProductVersion, ActivityResource activityResource) {
         this.dataProductVersion = dataProductVersion;
         this.activityResource = activityResource;
     }

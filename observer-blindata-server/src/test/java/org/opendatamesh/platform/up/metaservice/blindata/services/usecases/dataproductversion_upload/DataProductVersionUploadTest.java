@@ -21,12 +21,12 @@ public class DataProductVersionUploadTest {
                 DataProductVersionUploadInitialState.class
         );
 
-        DataProductVersionUploadOdmOutputPort odmOutputPort = new DataProductVersionUploadOdmOutputPortMock(initialState);
-        DataProductVersionUploadBlindataOutputPort blindataOutputPort = spy(new DataProductVersionUploadBlindataOutputPortMock(initialState));
+        DataProductVersionUploadOdmOutboundPort odmOutboundPort = new DataProductVersionUploadOdmOutboundPortMock(initialState);
+        DataProductVersionUploadBlindataOutboundPort blindataOutboundPort = spy(new DataProductVersionUploadBlindataOutboundPortMock(initialState));
 
-        new DataProductVersionUpload(blindataOutputPort, odmOutputPort).execute();
-        verify(blindataOutputPort, times(1)).findDataProduct(initialState.getExistentDataProduct().getIdentifier());
-        verify(blindataOutputPort, times(1)).updateDataProductPorts(any());
-        verify(blindataOutputPort, times(1)).createDataProductAssets(any());
+        new DataProductVersionUpload(blindataOutboundPort, odmOutboundPort).execute();
+        verify(blindataOutboundPort, times(1)).findDataProduct(initialState.getExistentDataProduct().getIdentifier());
+        verify(blindataOutboundPort, times(1)).updateDataProductPorts(any());
+        verify(blindataOutboundPort, times(1)).createDataProductAssets(any());
     }
 }

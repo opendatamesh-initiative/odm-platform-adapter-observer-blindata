@@ -21,11 +21,11 @@ public class StagesUploadTest {
                 StagesUploadInitialState.class
         );
 
-        StagesUploadOdmOutputPort odmOutputPort = new StagesUploadOdmOutputPortMock(initialState);
-        StagesUploadBlindataOutputPort blindataOutputPort = spy(new StagesUploadBlindataOutputPortMock(initialState));
+        StagesUploadOdmOutboundPort odmOutboundPort = new StagesUploadOdmOutboundPortMock(initialState);
+        StagesUploadBlindataOutboundPort blindataOutboundPort = spy(new StagesUploadBlindataOutboundPortMock(initialState));
 
-        new StagesUpload(blindataOutputPort, odmOutputPort).execute();
-        verify(blindataOutputPort, times(1)).findDataProduct(initialState.getExistentDataProduct().getIdentifier());
-        verify(blindataOutputPort, times(1)).uploadDataProductStages(initialState.getExistentDataProduct().getUuid(), initialState.getDataProductVersionStages());
+        new StagesUpload(blindataOutboundPort, odmOutboundPort).execute();
+        verify(blindataOutboundPort, times(1)).findDataProduct(initialState.getExistentDataProduct().getIdentifier());
+        verify(blindataOutboundPort, times(1)).uploadDataProductStages(initialState.getExistentDataProduct().getUuid(), initialState.getDataProductVersionStages());
     }
 }

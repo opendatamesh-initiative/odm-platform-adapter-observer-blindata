@@ -1,32 +1,31 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductversion_upload;
 
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDProductPortAssetsRes;
 
 import java.util.Optional;
 
-class DataProductVersionUploadBlindataOutputPortImpl implements DataProductVersionUploadBlindataOutputPort {
+public class DataProductVersionUploadBlindataOutboundPortMock implements DataProductVersionUploadBlindataOutboundPort {
 
-    private final BDDataProductClient bdDataProductClient;
+    private final DataProductVersionUploadInitialState initialState;
 
-    public DataProductVersionUploadBlindataOutputPortImpl(BDDataProductClient bdDataProductClient) {
-        this.bdDataProductClient = bdDataProductClient;
+    public DataProductVersionUploadBlindataOutboundPortMock(DataProductVersionUploadInitialState initialState) {
+        this.initialState = initialState;
     }
+
 
     @Override
     public Optional<BDDataProductRes> findDataProduct(String fullyQualifiedName) {
-        return bdDataProductClient.getDataProduct(fullyQualifiedName);
+        return Optional.ofNullable(initialState.getExistentDataProduct());
     }
 
     @Override
     public void updateDataProductPorts(BDDataProductRes dataProduct) {
-        bdDataProductClient.updateDataProduct(dataProduct);
+        //DO NOTHING
     }
 
     @Override
     public void createDataProductAssets(BDProductPortAssetsRes dataProductPortsAssets) {
-        bdDataProductClient.createDataProductAssets(dataProductPortsAssets);
+        //DO NOTHING
     }
-
 }

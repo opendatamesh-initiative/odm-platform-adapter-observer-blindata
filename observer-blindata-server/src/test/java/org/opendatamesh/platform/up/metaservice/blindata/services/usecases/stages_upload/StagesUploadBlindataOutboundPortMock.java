@@ -6,11 +6,11 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import java.util.List;
 import java.util.Optional;
 
-public class StagesUploadBlindataOutputPortMock implements StagesUploadBlindataOutputPort {
+public class StagesUploadBlindataOutboundPortMock implements StagesUploadBlindataOutboundPort {
 
     private final StagesUploadInitialState initialState;
 
-    public StagesUploadBlindataOutputPortMock(StagesUploadInitialState initialState) {
+    public StagesUploadBlindataOutboundPortMock(StagesUploadInitialState initialState) {
         this.initialState = initialState;
     }
 

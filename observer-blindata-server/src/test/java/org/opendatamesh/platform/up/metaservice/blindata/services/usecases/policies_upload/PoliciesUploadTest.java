@@ -22,14 +22,14 @@ public class PoliciesUploadTest {
                 PoliciesUploadInitialState.class
         );
 
-        PoliciesUploadOdmOutputPort odmOutputPort = spy(new PoliciesUploadOdmOutputPortMock(initialState));
-        PoliciesUploadBlindataOutputPort blindataOutputPort = spy(new PoliciesUploadBlindataOutputPortMock(initialState));
+        PoliciesUploadOdmOutboundPort odmOutboundPort = spy(new PoliciesUploadOdmOutboundPortMock(initialState));
+        PoliciesUploadBlindataOutboundPort blindataOutboundPort = spy(new PoliciesUploadBlindataOutboundPortMock(initialState));
 
-        new PoliciesUpload(blindataOutputPort, odmOutputPort).execute();
+        new PoliciesUpload(blindataOutboundPort, odmOutboundPort).execute();
 
-        verify(odmOutputPort, times(1)).getDataProductPoliciesEvaluationResults(any());
+        verify(odmOutboundPort, times(1)).getDataProductPoliciesEvaluationResults(any());
 
-        verify(blindataOutputPort, times(1)).findDataProduct(initialState.getDataProductInfo().getFullyQualifiedName());
-        verify(blindataOutputPort, times(1)).createPolicyEvaluationRecords(any());
+        verify(blindataOutboundPort, times(1)).findDataProduct(initialState.getDataProductInfo().getFullyQualifiedName());
+        verify(blindataOutboundPort, times(1)).createPolicyEvaluationRecords(any());
     }
 }

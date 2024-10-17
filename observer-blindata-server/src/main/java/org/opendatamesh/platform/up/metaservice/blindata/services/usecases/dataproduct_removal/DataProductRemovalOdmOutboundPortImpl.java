@@ -1,10 +1,10 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_removal;
 
-class DataProductRemovalOdmOutputPortImpl implements DataProductRemovalOdmOutputPort {
+class DataProductRemovalOdmOutboundPortImpl implements DataProductRemovalOdmOutboundPort {
 
     private final String dataProductFqn;
 
-    public DataProductRemovalOdmOutputPortImpl(String dataProductFqn) {
+    public DataProductRemovalOdmOutboundPortImpl(String dataProductFqn) {
         this.dataProductFqn = dataProductFqn;
     }
 

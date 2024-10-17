@@ -1,5 +1,5 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_removal;
 
-interface DataProductRemovalBlindataOutputPort {
+interface DataProductRemovalBlindataOutboundPort {
     void deleteDataProduct(String fullyQualifiedName);
 }

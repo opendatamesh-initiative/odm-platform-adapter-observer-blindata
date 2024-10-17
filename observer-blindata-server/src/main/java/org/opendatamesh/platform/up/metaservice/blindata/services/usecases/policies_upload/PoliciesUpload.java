@@ -17,37 +17,37 @@ class PoliciesUpload implements UseCase {
 
     private final String USE_CASE_PREFIX = "[PoliciesUpload]";
 
-    private final PoliciesUploadBlindataOutputPort blindataOutputPort;
-    private final PoliciesUploadOdmOutputPort odmOutputPort;
+    private final PoliciesUploadBlindataOutboundPort blindataOutboundPort;
+    private final PoliciesUploadOdmOutboundPort odmOutboundPort;
 
-    public PoliciesUpload(PoliciesUploadBlindataOutputPort blindataOutputPort, PoliciesUploadOdmOutputPort odmOutputPort) {
-        this.blindataOutputPort = blindataOutputPort;
-        this.odmOutputPort = odmOutputPort;
+    public PoliciesUpload(PoliciesUploadBlindataOutboundPort blindataOutboundPort, PoliciesUploadOdmOutboundPort odmOutboundPort) {
+        this.blindataOutboundPort = blindataOutboundPort;
+        this.odmOutboundPort = odmOutboundPort;
     }
 
     @Override
     public void execute() throws UseCaseExecutionException {
         try {
-            Optional<BDDataProductRes> blindataDataProduct = blindataOutputPort.findDataProduct(odmOutputPort.getDataProductInfo().getFullyQualifiedName());
+            Optional<BDDataProductRes> blindataDataProduct = blindataOutboundPort.findDataProduct(odmOutboundPort.getDataProductInfo().getFullyQualifiedName());
             if (blindataDataProduct.isEmpty()) {
-                log.warn("{} Data product: {} has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutputPort.getDataProductInfo().getFullyQualifiedName());
+                log.warn("{} Data product: {} has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName());
                 return;
             }
-            List<PolicyEvaluationResultResource> odmPolicyEvaluationResults = odmOutputPort.getDataProductPoliciesEvaluationResults(odmOutputPort.getDataProductInfo());
+            List<PolicyEvaluationResultResource> odmPolicyEvaluationResults = odmOutboundPort.getDataProductPoliciesEvaluationResults(odmOutboundPort.getDataProductInfo());
             if (odmPolicyEvaluationResults.isEmpty()) {
-                log.warn("{} Data product: {} has not policies evaluation results.", USE_CASE_PREFIX, odmOutputPort.getDataProductInfo().getFullyQualifiedName());
+                log.warn("{} Data product: {} has not policies evaluation results.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName());
                 return;
             }
 
-            log.info("{} Data product: {} found {} policies results.", USE_CASE_PREFIX, odmOutputPort.getDataProductInfo().getFullyQualifiedName(), odmPolicyEvaluationResults.size());
+            log.info("{} Data product: {} found {} policies results.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), odmPolicyEvaluationResults.size());
             BDPolicyEvaluationRecords bdPolicyEvaluationRecords = new BDPolicyEvaluationRecords();
             for (PolicyEvaluationResultResource odmPolicyEvaluationResult : odmPolicyEvaluationResults) {
                 BDPolicyEvaluationRecord bdPolicyEvaluationRecord = odmEvaluationResultToBlindataEvaluationRecord(blindataDataProduct.get().getUuid(), odmPolicyEvaluationResult);
                 bdPolicyEvaluationRecords.getRecords().add(bdPolicyEvaluationRecord);
             }
 
-            BDUploadResultsMessage uploadResultsMessage = blindataOutputPort.createPolicyEvaluationRecords(bdPolicyEvaluationRecords);
-            log.info("{} Data product: {} uploaded {} policies results on Blindata, discarded {}.", USE_CASE_PREFIX, odmOutputPort.getDataProductInfo().getFullyQualifiedName(), uploadResultsMessage.getRowCreated(), uploadResultsMessage.getRowDiscarded());
+            BDUploadResultsMessage uploadResultsMessage = blindataOutboundPort.createPolicyEvaluationRecords(bdPolicyEvaluationRecords);
+            log.info("{} Data product: {} uploaded {} policies results on Blindata, discarded {}.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), uploadResultsMessage.getRowCreated(), uploadResultsMessage.getRowDiscarded());
         } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);
         }

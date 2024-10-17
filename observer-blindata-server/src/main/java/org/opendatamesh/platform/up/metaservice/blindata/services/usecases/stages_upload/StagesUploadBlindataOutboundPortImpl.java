@@ -8,10 +8,10 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import java.util.List;
 import java.util.Optional;
 
-class StagesUploadBlindataOutputPortImpl implements StagesUploadBlindataOutputPort {
+class StagesUploadBlindataOutboundPortImpl implements StagesUploadBlindataOutboundPort {
     private final BDDataProductClient bdDataProductClient;
 
-    StagesUploadBlindataOutputPortImpl(BDDataProductClient bdDataProductClient) {
+    StagesUploadBlindataOutboundPortImpl(BDDataProductClient bdDataProductClient) {
         this.bdDataProductClient = bdDataProductClient;
     }
 

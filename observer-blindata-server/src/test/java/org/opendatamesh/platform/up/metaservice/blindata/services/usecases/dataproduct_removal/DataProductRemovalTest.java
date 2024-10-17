@@ -10,11 +10,11 @@ public class DataProductRemovalTest {
     public void testDataProductRemoval() throws UseCaseExecutionException {
         DataProductRemovalInitialState initialState = new DataProductRemovalInitialState();
         initialState.setFqn("FQN");
-        DataProductRemovalOdmOutputPort odmOutputPort = new DataProductRemovalOdmOutputPortMock(initialState);
-        DataProductRemovalBlindataOutputPort blindataOutputPort = mock(DataProductRemovalBlindataOutputPort.class);
+        DataProductRemovalOdmOutboundPort odmOutboundPort = new DataProductRemovalOdmOutboundPortMock(initialState);
+        DataProductRemovalBlindataOutboundPort blindataOutboundPort = mock(DataProductRemovalBlindataOutboundPort.class);
 
-        new DataProductRemoval(odmOutputPort, blindataOutputPort).execute();
+        new DataProductRemoval(odmOutboundPort, blindataOutboundPort).execute();
 
-        verify(blindataOutputPort, times(1)).deleteDataProduct("FQN");
+        verify(blindataOutboundPort, times(1)).deleteDataProduct("FQN");
     }
 }

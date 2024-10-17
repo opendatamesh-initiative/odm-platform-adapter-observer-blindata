@@ -13,14 +13,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-class DataProductVersionUploadOdmOutputPortImpl implements DataProductVersionUploadOdmOutputPort {
+class DataProductVersionUploadOdmOutboundPortImpl implements DataProductVersionUploadOdmOutboundPort {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final DataProductPortAssetAnalyzer dataProductPortAssetAnalyzer;
     private final DataProductVersionDPDS dataProductVersion;
     private final ActivityResource activityResource;
 
-    public DataProductVersionUploadOdmOutputPortImpl(DataProductPortAssetAnalyzer dataProductPortAssetAnalyzer, DataProductVersionDPDS dataProductVersion, ActivityResource activityResource) {
+    public DataProductVersionUploadOdmOutboundPortImpl(DataProductPortAssetAnalyzer dataProductPortAssetAnalyzer, DataProductVersionDPDS dataProductVersion, ActivityResource activityResource) {
         this.dataProductPortAssetAnalyzer = dataProductPortAssetAnalyzer;
         this.dataProductVersion = dataProductVersion;
         this.activityResource = activityResource;

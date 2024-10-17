@@ -48,31 +48,31 @@ public class DataProductUploadFactory implements UseCaseFactory {
             throw new UseCaseInitException("Failed to init DataProductUpload use case, unsupported event type: " + event.getEvent().getType());
         }
         try {
-            DataProductUploadBlindataOutputPort blindataOutputPort = new DataProductUploadBlindataOutputPortImpl(
+            DataProductUploadBlindataOutboundPort blindataOutboundPort = new DataProductUploadBlindataOutboundPortImpl(
                     bdUserClient,
                     bdDataProductClient,
                     bdStewardshipClient,
                     roleUuid
             );
-            DataProductUploadOdmOutputPort odmOutputPort = initOdmOutputPort(event);
+            DataProductUploadOdmOutboundPort odmOutboundPort = initodmOutboundPort(event);
             return new DataProductUpload(
-                    odmOutputPort,
-                    blindataOutputPort
+                    odmOutboundPort,
+                    blindataOutboundPort
             );
         } catch (Exception e) {
             throw new UseCaseInitException("Failed to init DataProductUpload use case." + e.getMessage(), e);
         }
     }
 
-    private DataProductUploadOdmOutputPort initOdmOutputPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
+    private DataProductUploadOdmOutboundPort initodmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
         if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_CREATED.name())) {
             DataProductResource odmDataProduct = objectMapper.readValue(event.getEvent().getAfterState().toString(), DataProductResource.class);
-            return new DataProductUploadOdmOutputPortImpl(odmDataProduct);
+            return new DataProductUploadOdmOutboundPortImpl(odmDataProduct);
         } else if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_VERSION_CREATED.name())) {
             DataProductVersionDPDS odmDataProductVersion = objectMapper.readValue(event.getEvent().getAfterState().toString(), DataProductVersionDPDS.class);
-            return new DataProductUploadOdmOutputPortImpl(odmDataProductVersion.getInfo());
+            return new DataProductUploadOdmOutboundPortImpl(odmDataProductVersion.getInfo());
         } else {
-            throw new UseCaseInitException("Failed to init OdmOutputPort on DataProductUpload use case.");
+            throw new UseCaseInitException("Failed to init odmOutboundPort on DataProductUpload use case.");
         }
     }
 }
