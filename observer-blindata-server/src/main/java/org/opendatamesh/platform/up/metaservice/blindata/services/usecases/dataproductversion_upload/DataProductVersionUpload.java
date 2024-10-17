@@ -52,7 +52,9 @@ class DataProductVersionUpload implements UseCase {
 
             List<BDDataProductStageRes> stages = odmOutputPort.extractDataProductStages();
             log.info("{} Data product: {}, found {} stages.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), stages.size());
-            blindataOutputPort.uploadDataProductStages(existentDataProduct.get().getUuid(), stages);
+            if (!CollectionUtils.isEmpty(stages)) {
+                blindataOutputPort.uploadDataProductStages(existentDataProduct.get().getUuid(), stages);
+            }
 
         } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);
