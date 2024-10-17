@@ -2,11 +2,8 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.data
 
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductStageRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductStagesUploadRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDProductPortAssetsRes;
 
-import java.util.List;
 import java.util.Optional;
 
 class DataProductVersionUploadBlindataOutputPortImpl implements DataProductVersionUploadBlindataOutputPort {

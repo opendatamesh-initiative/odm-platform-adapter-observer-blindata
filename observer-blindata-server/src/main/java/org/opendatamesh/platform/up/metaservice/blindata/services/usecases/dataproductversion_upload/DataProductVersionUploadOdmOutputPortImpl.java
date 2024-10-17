@@ -3,20 +3,15 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.data
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import org.opendatamesh.dpds.model.DataProductVersionDPDS;
 import org.opendatamesh.dpds.model.interfaces.PortDPDS;
-import org.opendatamesh.dpds.model.internals.InternalComponentsDPDS;
-import org.opendatamesh.dpds.model.internals.LifecycleInfoDPDS;
 import org.opendatamesh.platform.pp.devops.api.resources.ActivityResource;
-import org.opendatamesh.platform.pp.devops.api.resources.ActivityStatus;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductPortAssetDetailRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductStageRes;
 import org.opendatamesh.platform.up.metaservice.blindata.services.DataProductPortAssetAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.List;
 
 class DataProductVersionUploadOdmOutputPortImpl implements DataProductVersionUploadOdmOutputPort {
     private final Logger logger = LoggerFactory.getLogger(getClass());
