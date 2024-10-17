@@ -6,7 +6,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 
 import java.util.Optional;
 
-public interface PoliciesUploadBlindataOutputPort {
+interface PoliciesUploadBlindataOutputPort {
     Optional<BDDataProductRes> findDataProduct(String fullyQualifiedName);
 
     BDUploadResultsMessage createPolicyEvaluationRecords(BDPolicyEvaluationRecords bdPolicyEvaluationRecords);

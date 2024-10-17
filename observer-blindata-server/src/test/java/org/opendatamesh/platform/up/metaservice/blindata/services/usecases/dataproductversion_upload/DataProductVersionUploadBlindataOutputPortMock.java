@@ -30,9 +30,4 @@ public class DataProductVersionUploadBlindataOutputPortMock implements DataProdu
     public void createDataProductAssets(BDProductPortAssetsRes dataProductPortsAssets) {
         //DO NOTHING
     }
-
-    @Override
-    public void uploadDataProductStages(String dataProductUuid, List<BDDataProductStageRes> stages) {
-        //DO NOTHING
-    }
 }

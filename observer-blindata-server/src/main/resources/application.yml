@@ -22,10 +22,11 @@ blindata:
       activeUseCases:
         - DATA_PRODUCT_UPLOAD
         - DATA_PRODUCT_VERSION_UPLOAD
+        - STAGES_UPLOAD
         - POLICIES_UPLOAD
     - eventType: DATA_PRODUCT_ACTIVITY_COMPLETED
       filter: ""
       activeUseCases:
-        - DATA_PRODUCT_VERSION_UPLOAD
+        - STAGES_UPLOAD
         - POLICIES_UPLOAD
 

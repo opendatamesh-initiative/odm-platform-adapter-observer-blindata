@@ -3,7 +3,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.data
 import org.opendatamesh.dpds.model.info.InfoDPDS;
 import org.opendatamesh.platform.pp.registry.api.resources.DataProductResource;
 
-public class DataProductUploadOdmOutputPortImpl implements DataProductUploadOdmOutputPort {
+class DataProductUploadOdmOutputPortImpl implements DataProductUploadOdmOutputPort {
 
     private final InfoDPDS dataProductInfo;
 

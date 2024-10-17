@@ -7,7 +7,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 
 import java.util.Optional;
 
-public interface DataProductUploadBlindataOutputPort {
+interface DataProductUploadBlindataOutputPort {
 
     String getDefaultRoleUuid();
 

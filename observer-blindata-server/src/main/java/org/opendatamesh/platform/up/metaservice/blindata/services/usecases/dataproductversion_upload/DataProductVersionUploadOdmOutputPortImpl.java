@@ -49,40 +49,4 @@ class DataProductVersionUploadOdmOutputPortImpl implements DataProductVersionUpl
     public List<BDDataProductPortAssetDetailRes> extractBDAssetsFromPorts(List<PortDPDS> ports) {
         return dataProductPortAssetAnalyzer.extractPhysicalResourcesFromPorts(ports);
     }
-
-    @Override
-    public List<BDDataProductStageRes> extractDataProductStages() {
-        if (isACompletedActivity()) {
-            BDDataProductStageRes stage = new BDDataProductStageRes();
-            stage.setName(activityResource.getStage());
-            stage.setValue(getDataProductVersion().getInfo().getVersionNumber());
-            return Lists.newArrayList(stage);
-        } else {
-            SortedSet<String> stages = extractStageNamesFromDescriptor();
-            return buildBlindataStages(stages);
-        }
-    }
-
-    private List<BDDataProductStageRes> buildBlindataStages(SortedSet<String> stages) {
-        List<BDDataProductStageRes> bdStages = new ArrayList<>();
-        int i = 0;
-        for (String stageName : stages) {
-            BDDataProductStageRes bdStage = new BDDataProductStageRes();
-            bdStage.setName(stageName);
-            bdStage.setOrder(i);
-            i++;
-            bdStages.add(bdStage);
-        }
-        return bdStages;
-    }
-
-    private SortedSet<String> extractStageNamesFromDescriptor() {
-        return Optional.ofNullable(dataProductVersion.getInternalComponents())
-                .map(InternalComponentsDPDS::getLifecycleInfo)
-                .map(LifecycleInfoDPDS::getStageNames).orElse(Collections.emptySortedSet());
-    }
-
-    private boolean isACompletedActivity() {
-        return activityResource != null && ActivityStatus.PROCESSED.equals(activityResource.getStatus());
-    }
 }

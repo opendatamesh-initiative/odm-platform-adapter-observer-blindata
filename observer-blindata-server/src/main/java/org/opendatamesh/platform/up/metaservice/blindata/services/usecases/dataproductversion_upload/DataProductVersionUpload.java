@@ -50,12 +50,6 @@ class DataProductVersionUpload implements UseCase {
             log.info("{} Data product: {}, found {} data assets.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), dataProductPortAssets.size());
             uploadAssetsOnBlindata(dataProductPortAssets);
 
-            List<BDDataProductStageRes> stages = odmOutputPort.extractDataProductStages();
-            log.info("{} Data product: {}, found {} stages.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), stages.size());
-            if (!CollectionUtils.isEmpty(stages)) {
-                blindataOutputPort.uploadDataProductStages(existentDataProduct.get().getUuid(), stages);
-            }
-
         } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);
         }
@@ -77,7 +71,7 @@ class DataProductVersionUpload implements UseCase {
             BDProductPortAssetsRes bdDataProductAssets = new BDProductPortAssetsRes();
             bdDataProductAssets.setPorts(dataProductPortAssets);
             blindataOutputPort.createDataProductAssets(bdDataProductAssets);
-            log.info("{} Data product: {}, uploaded assets on Blindata.", USE_CASE_PREFIX, odmOutputPort.getDataProductVersion().getInfo().getFullyQualifiedName(), dataProductPortAssets.size());
+            log.info("{} Data product: {}, uploaded {} assets on Blindata.", USE_CASE_PREFIX, odmOutputPort.getDataProductVersion().getInfo().getFullyQualifiedName(), dataProductPortAssets.size());
         }
     }
 

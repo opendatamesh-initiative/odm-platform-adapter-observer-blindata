@@ -24,9 +24,4 @@ public class DataProductVersionUploadOdmOutputPortMock implements DataProductVer
     public List<BDDataProductPortAssetDetailRes> extractBDAssetsFromPorts(List<PortDPDS> ports) {
         return initialState.getExtractedAssets();
     }
-
-    @Override
-    public List<BDDataProductStageRes> extractDataProductStages() {
-        return initialState.getDataProductVersionStages();
-    }
 }

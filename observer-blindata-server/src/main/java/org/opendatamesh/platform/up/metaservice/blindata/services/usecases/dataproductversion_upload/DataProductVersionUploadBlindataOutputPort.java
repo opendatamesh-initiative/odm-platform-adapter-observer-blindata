@@ -7,14 +7,12 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import java.util.List;
 import java.util.Optional;
 
-public interface DataProductVersionUploadBlindataOutputPort {
+interface DataProductVersionUploadBlindataOutputPort {
 
     Optional<BDDataProductRes> findDataProduct(String fullyQualifiedName);
 
     void updateDataProductPorts(BDDataProductRes dataProduct);
 
     void createDataProductAssets(BDProductPortAssetsRes dataProductPortsAssets);
-
-    void uploadDataProductStages(String dataProductUuid, List<BDDataProductStageRes> stages);
 }
 

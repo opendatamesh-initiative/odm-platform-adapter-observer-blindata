@@ -463,22 +463,10 @@
       ]
     }
   },
-  "extractedAssets": [
+  "dataProductVersionStages": [
     {
-      "portIdentifier": "portFQN",
-      "assets": [
-        {
-          "system": {
-            "uuid": "systemUuid"
-          },
-          "physicalEntities": [
-            {
-              "name": "peName",
-              "schema": "peSchema"
-            }
-          ]
-        }
-      ]
+      "name": "DEV",
+      "value": "1.0.0"
     }
   ]
 }

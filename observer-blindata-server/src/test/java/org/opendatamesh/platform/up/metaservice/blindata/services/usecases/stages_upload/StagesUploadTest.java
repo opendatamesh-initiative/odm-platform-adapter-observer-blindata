@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductversion_upload;
+package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.stages_upload;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,23 +10,22 @@ import java.io.IOException;
 
 import static org.mockito.Mockito.*;
 
-public class DataProductVersionUploadTest {
+public class StagesUploadTest {
     private ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     @Test
     public void testDataProductVersionUpload() throws IOException, UseCaseExecutionException {
-        DataProductVersionUploadInitialState initialState = objectMapper.readValue(
+        StagesUploadInitialState initialState = objectMapper.readValue(
                 Resources.toByteArray(getClass().getResource("initial_state_1.json")),
-                DataProductVersionUploadInitialState.class
+                StagesUploadInitialState.class
         );
 
-        DataProductVersionUploadOdmOutputPort odmOutputPort = new DataProductVersionUploadOdmOutputPortMock(initialState);
-        DataProductVersionUploadBlindataOutputPort blindataOutputPort = spy(new DataProductVersionUploadBlindataOutputPortMock(initialState));
+        StagesUploadOdmOutputPort odmOutputPort = new StagesUploadOdmOutputPortMock(initialState);
+        StagesUploadBlindataOutputPort blindataOutputPort = spy(new StagesUploadBlindataOutputPortMock(initialState));
 
-        new DataProductVersionUpload(blindataOutputPort, odmOutputPort).execute();
+        new StagesUpload(blindataOutputPort, odmOutputPort).execute();
         verify(blindataOutputPort, times(1)).findDataProduct(initialState.getExistentDataProduct().getIdentifier());
-        verify(blindataOutputPort, times(1)).updateDataProductPorts(any());
-        verify(blindataOutputPort, times(1)).createDataProductAssets(any());
+        verify(blindataOutputPort, times(1)).uploadDataProductStages(initialState.getExistentDataProduct().getUuid(), initialState.getDataProductVersionStages());
     }
 }

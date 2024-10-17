@@ -112,6 +112,10 @@ These are:
     - Supported event types:
         - DATA_PRODUCT_VERSION_CREATED
         - DATA_PRODUCT_ACTIVITY_COMPLETED
+2. **STAGES_UPLOAD**. It uploads the data product's stages which are defined inside the lifecycleInfo of the descriptor.
+    - Supported event types:
+        - DATA_PRODUCT_VERSION_CREATED
+        - DATA_PRODUCT_ACTIVITY_COMPLETED
 3. **DATA_PRODUCT_REMOVAL**. It removes the data product from Blindata.
     - Supported event types:
         - DATA_PRODUCT_DELETED
@@ -134,6 +138,7 @@ blindata:
         \"activeUseCases\": [
           \"DATA_PRODUCT_UPLOAD\",
           \"DATA_PRODUCT_VERSION_UPLOAD\",
+          \"STAGES_UPLOAD\",
           \"POLICIES_UPLOAD\"
         ]
       },
@@ -148,6 +153,7 @@ blindata:
         \"eventType\": \"DATA_PRODUCT_ACTIVITY_COMPLETED\",
         \"filter\": \"\",
         \"activeUseCases\": [
+          \"STAGES_UPLOAD\",
           \"POLICIES_UPLOAD\"
         ]
       }

@@ -32,11 +32,4 @@ class DataProductVersionUploadBlindataOutputPortImpl implements DataProductVersi
         bdDataProductClient.createDataProductAssets(dataProductPortsAssets);
     }
 
-    @Override
-    public void uploadDataProductStages(String dataProductUuid, List<BDDataProductStageRes> stages) {
-        BDDataProductStagesUploadRes stagesUploadRes = new BDDataProductStagesUploadRes();
-        stagesUploadRes.setDataProductUuid(dataProductUuid);
-        stagesUploadRes.setStages(stages);
-        bdDataProductClient.uploadStages(stagesUploadRes);
-    }
 }

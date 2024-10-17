@@ -5,7 +5,8 @@ import org.opendatamesh.platform.pp.policy.api.resources.PolicyEvaluationResultR
 
 import java.util.List;
 
-public interface PoliciesUploadOdmOutputPort {
+interface PoliciesUploadOdmOutputPort {
     InfoDPDS getDataProductInfo();
+
     List<PolicyEvaluationResultResource> getDataProductPoliciesEvaluationResults(InfoDPDS infoDPDS);
 }

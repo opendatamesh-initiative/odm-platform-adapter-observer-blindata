@@ -2,7 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.data
 
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
 
-public class DataProductRemovalBlindataOutputPortImpl implements DataProductRemovalBlindataOutputPort {
+class DataProductRemovalBlindataOutputPortImpl implements DataProductRemovalBlindataOutputPort {
 
     private final BDDataProductClient bdDataProductClient;
 
