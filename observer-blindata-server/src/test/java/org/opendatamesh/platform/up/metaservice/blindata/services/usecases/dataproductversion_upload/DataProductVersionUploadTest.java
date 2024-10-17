@@ -28,5 +28,6 @@ public class DataProductVersionUploadTest {
         verify(blindataOutputPort, times(1)).findDataProduct(initialState.getExistentDataProduct().getIdentifier());
         verify(blindataOutputPort, times(1)).updateDataProductPorts(any());
         verify(blindataOutputPort, times(1)).createDataProductAssets(any());
+        verify(blindataOutputPort, times(1)).uploadDataProductStages(initialState.getExistentDataProduct().getUuid(), initialState.getDataProductVersionStages());
     }
 }

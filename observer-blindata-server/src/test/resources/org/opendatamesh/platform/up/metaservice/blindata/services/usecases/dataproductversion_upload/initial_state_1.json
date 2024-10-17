@@ -480,5 +480,11 @@
         }
       ]
     }
+  ],
+  "dataProductVersionStages": [
+    {
+      "name": "DEV",
+      "value": "1.0.0"
+    }
   ]
 }

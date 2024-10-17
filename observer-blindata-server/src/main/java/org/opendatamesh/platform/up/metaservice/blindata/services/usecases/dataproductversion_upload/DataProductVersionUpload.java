@@ -49,7 +49,12 @@ class DataProductVersionUpload implements UseCase {
             List<BDDataProductPortAssetDetailRes> dataProductPortAssets = extractBdAssetsFromDpPorts(interfaceComponentsDPDS);
             log.info("{} Data product: {}, found {} data assets.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), dataProductPortAssets.size());
             uploadAssetsOnBlindata(dataProductPortAssets);
-        } catch (Exception e){
+
+            List<BDDataProductStageRes> stages = odmOutputPort.extractDataProductStages();
+            log.info("{} Data product: {}, found {} stages.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), stages.size());
+            blindataOutputPort.uploadDataProductStages(existentDataProduct.get().getUuid(), stages);
+
+        } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);
         }
 

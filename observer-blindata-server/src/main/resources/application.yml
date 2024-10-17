@@ -26,5 +26,6 @@ blindata:
     - eventType: DATA_PRODUCT_ACTIVITY_COMPLETED
       filter: ""
       activeUseCases:
+        - DATA_PRODUCT_VERSION_UPLOAD
         - POLICIES_UPLOAD
 

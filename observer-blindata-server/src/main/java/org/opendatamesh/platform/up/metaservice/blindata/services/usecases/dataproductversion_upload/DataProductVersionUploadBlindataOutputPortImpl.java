@@ -2,8 +2,11 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.data
 
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductStageRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductStagesUploadRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDProductPortAssetsRes;
 
+import java.util.List;
 import java.util.Optional;
 
 class DataProductVersionUploadBlindataOutputPortImpl implements DataProductVersionUploadBlindataOutputPort {
@@ -27,5 +30,13 @@ class DataProductVersionUploadBlindataOutputPortImpl implements DataProductVersi
     @Override
     public void createDataProductAssets(BDProductPortAssetsRes dataProductPortsAssets) {
         bdDataProductClient.createDataProductAssets(dataProductPortsAssets);
+    }
+
+    @Override
+    public void uploadDataProductStages(String dataProductUuid, List<BDDataProductStageRes> stages) {
+        BDDataProductStagesUploadRes stagesUploadRes = new BDDataProductStagesUploadRes();
+        stagesUploadRes.setDataProductUuid(dataProductUuid);
+        stagesUploadRes.setStages(stages);
+        bdDataProductClient.uploadStages(stagesUploadRes);
     }
 }

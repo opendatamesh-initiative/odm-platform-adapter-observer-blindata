@@ -55,10 +55,10 @@ public class DataProductVersionUploadFactory implements UseCaseFactory {
         if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_ACTIVITY_COMPLETED.name())) {
             ActivityResource activityResource = objectMapper.readValue(event.getEvent().getAfterState().toString(), ActivityResource.class);
             DataProductVersionDPDS odmDataProduct = objectMapper.readValue(activityResource.getDataProductVersion(), DataProductVersionDPDS.class);
-            return new DataProductVersionUploadOdmOutputPortImpl(dataProductPortAssetAnalyzer, odmDataProduct);
-        } else if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_VERSION_CREATED.name())){
+            return new DataProductVersionUploadOdmOutputPortImpl(dataProductPortAssetAnalyzer, odmDataProduct, activityResource);
+        } else if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_VERSION_CREATED.name())) {
             DataProductVersionDPDS odmDataProduct = objectMapper.readValue(event.getEvent().getAfterState().toString(), DataProductVersionDPDS.class);
-            return new DataProductVersionUploadOdmOutputPortImpl(dataProductPortAssetAnalyzer, odmDataProduct);
+            return new DataProductVersionUploadOdmOutputPortImpl(dataProductPortAssetAnalyzer, odmDataProduct, null);
         } else {
             throw new UseCaseInitException("Failed to init OdmOutputPort on DataProductVersionUpload use case.");
         }

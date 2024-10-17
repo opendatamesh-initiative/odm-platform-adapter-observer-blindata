@@ -126,6 +126,22 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     }
 
     @Override
+    public void uploadStages(BDDataProductStagesUploadRes stagesUploadRes) {
+        try {
+            restUtils.genericPost(
+                    String.format("%s/api/v1/dataproducts/stages/*/upload", credentials.getBlindataUrl()),
+                    getAuthenticatedHttpHeaders(),
+                    stagesUploadRes,
+                    BDDataProductStagesUploadRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
     public Optional<BDStewardshipResponsibilityRes> getActiveResponsibility(String userUuid, String resourceIdentifier) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
             BDStewardshipResponsibilitySearchOptions filters = new BDStewardshipResponsibilitySearchOptions();
