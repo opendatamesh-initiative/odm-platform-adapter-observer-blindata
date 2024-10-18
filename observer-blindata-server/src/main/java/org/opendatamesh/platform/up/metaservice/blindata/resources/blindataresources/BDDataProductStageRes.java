@@ -3,7 +3,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.resources.blindatareso
 public class BDDataProductStageRes {
     private String uuid;
     private String name;
-    private String value;
+    private String version;
     private Integer order;
 
     public String getUuid() {
@@ -22,12 +22,12 @@ public class BDDataProductStageRes {
         this.name = name;
     }
 
-    public String getValue() {
-        return value;
+    public String getVersion() {
+        return version;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public Integer getOrder() {

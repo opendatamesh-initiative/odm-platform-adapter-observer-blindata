@@ -27,7 +27,7 @@ class StagesUploadOdmOutboundPortImpl implements StagesUploadOdmOutboundPort {
         if (isACompletedActivity()) {
             BDDataProductStageRes stage = new BDDataProductStageRes();
             stage.setName(activityResource.getStage());
-            stage.setValue(dataProductVersion.getInfo().getVersionNumber());
+            stage.setVersion(dataProductVersion.getInfo().getVersionNumber());
             return Lists.newArrayList(stage);
         } else {
             SortedSet<String> stages = extractStageNamesFromDescriptor();

@@ -129,7 +129,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     public void uploadStages(BDDataProductStagesUploadRes stagesUploadRes) {
         try {
             restUtils.genericPost(
-                    String.format("%s/api/v1/dataproducts/stages/*/upload", credentials.getBlindataUrl()),
+                    String.format("%s/api/v1/dataproducts/*/stages/*/upload", credentials.getBlindataUrl()),
                     getAuthenticatedHttpHeaders(),
                     stagesUploadRes,
                     BDDataProductStagesUploadRes.class
