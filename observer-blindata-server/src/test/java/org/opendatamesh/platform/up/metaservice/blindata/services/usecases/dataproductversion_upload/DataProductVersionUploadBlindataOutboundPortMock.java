@@ -5,11 +5,11 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 
 import java.util.Optional;
 
-public class DataProductVersionUploadBlindataOutputPortMock implements DataProductVersionUploadBlindataOutputPort {
+public class DataProductVersionUploadBlindataOutboundPortMock implements DataProductVersionUploadBlindataOutboundPort {
 
     private final DataProductVersionUploadInitialState initialState;
 
-    public DataProductVersionUploadBlindataOutputPortMock(DataProductVersionUploadInitialState initialState) {
+    public DataProductVersionUploadBlindataOutboundPortMock(DataProductVersionUploadInitialState initialState) {
         this.initialState = initialState;
     }
 

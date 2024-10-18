@@ -6,7 +6,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 
 import java.util.List;
 
-public interface DataProductVersionUploadOdmOutputPort {
+interface DataProductVersionUploadOdmOutboundPort {
     DataProductVersionDPDS getDataProductVersion();
+
     List<BDDataProductPortAssetDetailRes> extractBDAssetsFromPorts(List<PortDPDS> ports);
 }

@@ -21,14 +21,14 @@ public class DataProductUploadTest {
                 DataProductUploadInitialState.class
         );
 
-        DataProductUploadOdmOutputPort odmOutputPort = new DataProductUploadOdmOutputPortMock(initialState);
-        DataProductUploadBlindataOutputPort blindataOutputPort = spy(new DataProductUploadBlindataOutputPortMock(initialState));
+        DataProductUploadOdmOutboundPort odmOutboundPort = new DataProductUploadOdmOutboundPortMock(initialState);
+        DataProductUploadBlindataOutboundPort blindataOutboundPort = spy(new DataProductUploadBlindataOutboundPortMock(initialState));
 
-        new DataProductUpload(odmOutputPort, blindataOutputPort).execute();
+        new DataProductUpload(odmOutboundPort, blindataOutboundPort).execute();
 
-        verify(blindataOutputPort, times(1)).createDataProduct(any());
-        verify(blindataOutputPort, times(0)).updateDataProduct(any());
-        verify(blindataOutputPort, times(0)).createDataProductResponsibility(any(), any(), any());
+        verify(blindataOutboundPort, times(1)).createDataProduct(any());
+        verify(blindataOutboundPort, times(0)).updateDataProduct(any());
+        verify(blindataOutboundPort, times(0)).createDataProductResponsibility(any(), any(), any());
     }
 
     @Test
@@ -38,14 +38,14 @@ public class DataProductUploadTest {
                 DataProductUploadInitialState.class
         );
 
-        DataProductUploadOdmOutputPort odmOutputPort = new DataProductUploadOdmOutputPortMock(initialState);
-        DataProductUploadBlindataOutputPort blindataOutputPort = spy(new DataProductUploadBlindataOutputPortMock(initialState));
+        DataProductUploadOdmOutboundPort odmOutboundPort = new DataProductUploadOdmOutboundPortMock(initialState);
+        DataProductUploadBlindataOutboundPort blindataOutboundPort = spy(new DataProductUploadBlindataOutboundPortMock(initialState));
 
-        new DataProductUpload(odmOutputPort, blindataOutputPort).execute();
+        new DataProductUpload(odmOutboundPort, blindataOutboundPort).execute();
 
-        verify(blindataOutputPort, times(1)).createDataProduct(any());
-        verify(blindataOutputPort, times(0)).updateDataProduct(any());
-        verify(blindataOutputPort, times(1)).createDataProductResponsibility(any(), any(), any());
+        verify(blindataOutboundPort, times(1)).createDataProduct(any());
+        verify(blindataOutboundPort, times(0)).updateDataProduct(any());
+        verify(blindataOutboundPort, times(1)).createDataProductResponsibility(any(), any(), any());
     }
 
 
@@ -56,13 +56,13 @@ public class DataProductUploadTest {
                 DataProductUploadInitialState.class
         );
 
-        DataProductUploadOdmOutputPort odmOutputPort = new DataProductUploadOdmOutputPortMock(initialState);
-        DataProductUploadBlindataOutputPort blindataOutputPort = spy(new DataProductUploadBlindataOutputPortMock(initialState));
+        DataProductUploadOdmOutboundPort odmOutboundPort = new DataProductUploadOdmOutboundPortMock(initialState);
+        DataProductUploadBlindataOutboundPort blindataOutboundPort = spy(new DataProductUploadBlindataOutboundPortMock(initialState));
 
-        new DataProductUpload(odmOutputPort, blindataOutputPort).execute();
+        new DataProductUpload(odmOutboundPort, blindataOutboundPort).execute();
 
-        verify(blindataOutputPort, times(0)).createDataProduct(any());
-        verify(blindataOutputPort, times(1)).updateDataProduct(any());
-        verify(blindataOutputPort, times(1)).createDataProductResponsibility(any(), any(), any());
+        verify(blindataOutboundPort, times(0)).createDataProduct(any());
+        verify(blindataOutboundPort, times(1)).updateDataProduct(any());
+        verify(blindataOutboundPort, times(1)).createDataProductResponsibility(any(), any(), any());
     }
 }

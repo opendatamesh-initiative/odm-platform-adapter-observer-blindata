@@ -8,12 +8,12 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 
 import java.util.Optional;
 
-class PoliciesUploadBlindataOutputPortImpl implements PoliciesUploadBlindataOutputPort {
+class PoliciesUploadBlindataOutboundPortImpl implements PoliciesUploadBlindataOutboundPort {
 
     private final BDDataProductClient bdDataProductClient;
     private final BDPolicyEvaluationResultClient policyEvaluationResultClient;
 
-    public PoliciesUploadBlindataOutputPortImpl(BDDataProductClient bdDataProductClient, BDPolicyEvaluationResultClient policyEvaluationResultClient) {
+    public PoliciesUploadBlindataOutboundPortImpl(BDDataProductClient bdDataProductClient, BDPolicyEvaluationResultClient policyEvaluationResultClient) {
         this.bdDataProductClient = bdDataProductClient;
         this.policyEvaluationResultClient = policyEvaluationResultClient;
     }

@@ -8,12 +8,12 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
-class PoliciesUploadOdmOutputPortImpl implements PoliciesUploadOdmOutputPort {
+class PoliciesUploadOdmOutboundPortImpl implements PoliciesUploadOdmOutboundPort {
 
     private final PolicyEvaluationResultClient policyEvaluationResultClient;
     private final InfoDPDS dataProductInfo;
 
-    public PoliciesUploadOdmOutputPortImpl(PolicyEvaluationResultClient policyEvaluationResultClient, InfoDPDS dataProductInfo) {
+    public PoliciesUploadOdmOutboundPortImpl(PolicyEvaluationResultClient policyEvaluationResultClient, InfoDPDS dataProductInfo) {
         this.policyEvaluationResultClient = policyEvaluationResultClient;
         this.dataProductInfo = dataProductInfo;
     }

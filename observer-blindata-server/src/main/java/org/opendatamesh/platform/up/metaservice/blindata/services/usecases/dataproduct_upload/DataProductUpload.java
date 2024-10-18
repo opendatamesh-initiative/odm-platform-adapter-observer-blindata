@@ -17,23 +17,23 @@ class DataProductUpload implements UseCase {
 
     private final String USE_CASE_PREFIX = "[DataProductUpload]";
 
-    private final DataProductUploadOdmOutputPort odmOutputPort;
-    private final DataProductUploadBlindataOutputPort blindataOutputPort;
+    private final DataProductUploadOdmOutboundPort odmOutboundPort;
+    private final DataProductUploadBlindataOutboundPort blindataOutboundPort;
 
-    public DataProductUpload(DataProductUploadOdmOutputPort odmOutputPort, DataProductUploadBlindataOutputPort blindataOutputPort) {
-        this.odmOutputPort = odmOutputPort;
-        this.blindataOutputPort = blindataOutputPort;
+    public DataProductUpload(DataProductUploadOdmOutboundPort odmOutboundPort, DataProductUploadBlindataOutboundPort blindataOutboundPort) {
+        this.odmOutboundPort = odmOutboundPort;
+        this.blindataOutboundPort = blindataOutboundPort;
     }
 
     @Override
     public void execute() throws UseCaseExecutionException {
         try {
-            InfoDPDS odmDataProductInfo = odmOutputPort.getDataProductInfo();
+            InfoDPDS odmDataProductInfo = odmOutboundPort.getDataProductInfo();
             if (odmDataProductInfo == null) {
                 log.warn("{} Missing odm data product info", USE_CASE_PREFIX);
                 return;
             }
-            Optional<BDDataProductRes> blindataDataProduct = blindataOutputPort.findDataProduct(odmDataProductInfo.getFullyQualifiedName());
+            Optional<BDDataProductRes> blindataDataProduct = blindataOutboundPort.findDataProduct(odmDataProductInfo.getFullyQualifiedName());
             if (blindataDataProduct.isEmpty()) {
                 createDataProduct();
             } else {
@@ -45,34 +45,34 @@ class DataProductUpload implements UseCase {
     }
 
     private void createDataProduct() {
-        BDDataProductRes blindataDataProduct = odmToBlindataDataProduct(odmOutputPort.getDataProductInfo());
-        blindataDataProduct = blindataOutputPort.createDataProduct(blindataDataProduct);
-        log.info("{} Data product: {} created with uuid: {} on Blindata", USE_CASE_PREFIX, odmOutputPort.getDataProductInfo().getFullyQualifiedName(), blindataDataProduct.getUuid());
+        BDDataProductRes blindataDataProduct = odmToBlindataDataProduct(odmOutboundPort.getDataProductInfo());
+        blindataDataProduct = blindataOutboundPort.createDataProduct(blindataDataProduct);
+        log.info("{} Data product: {} created with uuid: {} on Blindata", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), blindataDataProduct.getUuid());
         assignResponsibilityToDataProduct(blindataDataProduct);
     }
 
     private void assignResponsibilityToDataProduct(BDDataProductRes blindataDataProduct) {
-        if (odmOutputPort.getDataProductInfo().getOwner() == null) {
-            log.info("{} Data product: {}, owner not defined, skipping responsibilities assignment.", USE_CASE_PREFIX, odmOutputPort.getDataProductInfo().getFullyQualifiedName());
+        if (odmOutboundPort.getDataProductInfo().getOwner() == null) {
+            log.info("{} Data product: {}, owner not defined, skipping responsibilities assignment.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName());
             return;
         }
-        BDStewardshipRoleRes dataProductRole = blindataOutputPort.findDataProductRole(blindataOutputPort.getDefaultRoleUuid());
-        Optional<BDShortUserRes> blindataUser = blindataOutputPort.findUser(odmOutputPort.getDataProductInfo().getOwner().getId());
+        BDStewardshipRoleRes dataProductRole = blindataOutboundPort.findDataProductRole(blindataOutboundPort.getDefaultRoleUuid());
+        Optional<BDShortUserRes> blindataUser = blindataOutboundPort.findUser(odmOutboundPort.getDataProductInfo().getOwner().getId());
         if (dataProductRole == null) {
-            log.warn("{} Impossible to assign responsibility on data product: {}, role: {} not found on Blindata.", USE_CASE_PREFIX, odmOutputPort.getDataProductInfo().getFullyQualifiedName(), blindataOutputPort.getDefaultRoleUuid());
+            log.warn("{} Impossible to assign responsibility on data product: {}, role: {} not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), blindataOutboundPort.getDefaultRoleUuid());
             return;
         }
         if (blindataUser.isEmpty()) {
-            log.warn("{} Impossible to assign responsibility on data product: {}, user: {} not found on Blindata.", USE_CASE_PREFIX, odmOutputPort.getDataProductInfo().getFullyQualifiedName(), odmOutputPort.getDataProductInfo().getOwner().getId());
+            log.warn("{} Impossible to assign responsibility on data product: {}, user: {} not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), odmOutboundPort.getDataProductInfo().getOwner().getId());
             return;
         }
-        Optional<BDStewardshipResponsibilityRes> existentResponsibility = blindataOutputPort.findDataProductResponsibilities(blindataUser.get().getUuid(), blindataDataProduct.getUuid());
+        Optional<BDStewardshipResponsibilityRes> existentResponsibility = blindataOutboundPort.findDataProductResponsibilities(blindataUser.get().getUuid(), blindataDataProduct.getUuid());
         if (existentResponsibility.isPresent()) {
-            log.info("{} Responsibility on data product: {}, for the user: {} is already present on Blindata.", USE_CASE_PREFIX, odmOutputPort.getDataProductInfo().getFullyQualifiedName(), odmOutputPort.getDataProductInfo().getOwner().getId());
+            log.info("{} Responsibility on data product: {}, for the user: {} is already present on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), odmOutboundPort.getDataProductInfo().getOwner().getId());
             return;
         }
-        blindataOutputPort.createDataProductResponsibility(dataProductRole, blindataUser.get(), blindataDataProduct);
-        log.info("{} Assigned responsibility on data product: {}, for the user: {} on Blindata.", USE_CASE_PREFIX, odmOutputPort.getDataProductInfo().getFullyQualifiedName(), odmOutputPort.getDataProductInfo().getOwner().getId());
+        blindataOutboundPort.createDataProductResponsibility(dataProductRole, blindataUser.get(), blindataDataProduct);
+        log.info("{} Assigned responsibility on data product: {}, for the user: {} on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), odmOutboundPort.getDataProductInfo().getOwner().getId());
     }
 
     private BDDataProductRes odmToBlindataDataProduct(InfoDPDS odmDataProduct) {
@@ -100,11 +100,11 @@ class DataProductUpload implements UseCase {
 
 
     private void updateDataProduct(String blindataDataProductUuid) {
-        BDDataProductRes newDataProduct = odmToBlindataDataProduct(odmOutputPort.getDataProductInfo());
+        BDDataProductRes newDataProduct = odmToBlindataDataProduct(odmOutboundPort.getDataProductInfo());
         newDataProduct.setUuid(blindataDataProductUuid);
 
-        newDataProduct = blindataOutputPort.updateDataProduct(newDataProduct);
-        log.info("{} Data product: {} with uuid: {} updated on Blindata", USE_CASE_PREFIX, odmOutputPort.getDataProductInfo().getFullyQualifiedName(), newDataProduct.getUuid());
+        newDataProduct = blindataOutboundPort.updateDataProduct(newDataProduct);
+        log.info("{} Data product: {} with uuid: {} updated on Blindata", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), newDataProduct.getUuid());
         assignResponsibilityToDataProduct(newDataProduct);
     }
 

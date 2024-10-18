@@ -11,13 +11,13 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import java.util.Date;
 import java.util.Optional;
 
-class DataProductUploadBlindataOutputPortImpl implements DataProductUploadBlindataOutputPort {
+class DataProductUploadBlindataOutboundPortImpl implements DataProductUploadBlindataOutboundPort {
     private final BDUserClient bdUserClient;
     private final BDDataProductClient bdDataProductClient;
     private final BDStewardshipClient bdStewardshipClient;
     private final String defaultRoleUuid;
 
-    public DataProductUploadBlindataOutputPortImpl(BDUserClient bdUserClient, BDDataProductClient bdDataProductClient, BDStewardshipClient bdStewardshipClient, String defaultRoleUuid) {
+    public DataProductUploadBlindataOutboundPortImpl(BDUserClient bdUserClient, BDDataProductClient bdDataProductClient, BDStewardshipClient bdStewardshipClient, String defaultRoleUuid) {
         this.bdUserClient = bdUserClient;
         this.bdDataProductClient = bdDataProductClient;
         this.bdStewardshipClient = bdStewardshipClient;

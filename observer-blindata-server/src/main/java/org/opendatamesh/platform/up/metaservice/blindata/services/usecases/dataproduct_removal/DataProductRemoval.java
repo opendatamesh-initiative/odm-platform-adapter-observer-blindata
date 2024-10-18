@@ -9,19 +9,19 @@ class DataProductRemoval implements UseCase {
 
     private final String USE_CASE_PREFIX = "[DataProductRemoval]";
 
-    private final DataProductRemovalOdmOutputPort odmOutputPort;
-    private final DataProductRemovalBlindataOutputPort blindataOutputPort;
+    private final DataProductRemovalOdmOutboundPort odmOutboundPort;
+    private final DataProductRemovalBlindataOutboundPort blindataOutboundPort;
 
-    public DataProductRemoval(DataProductRemovalOdmOutputPort odmOutputPort, DataProductRemovalBlindataOutputPort blindataOutputPort) {
-        this.odmOutputPort = odmOutputPort;
-        this.blindataOutputPort = blindataOutputPort;
+    public DataProductRemoval(DataProductRemovalOdmOutboundPort odmOutboundPort, DataProductRemovalBlindataOutboundPort blindataOutboundPort) {
+        this.odmOutboundPort = odmOutboundPort;
+        this.blindataOutboundPort = blindataOutboundPort;
     }
 
     @Override
     public void execute() throws UseCaseExecutionException {
-        String fullyQualifiedName = odmOutputPort.getDataProductFullyQualifiedName();
+        String fullyQualifiedName = odmOutboundPort.getDataProductFullyQualifiedName();
 
         log.info("{} Deleting data product {} on Blindata.", USE_CASE_PREFIX, fullyQualifiedName);
-        blindataOutputPort.deleteDataProduct(fullyQualifiedName);
+        blindataOutboundPort.deleteDataProduct(fullyQualifiedName);
     }
 }

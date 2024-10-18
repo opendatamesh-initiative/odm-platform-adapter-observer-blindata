@@ -36,28 +36,28 @@ public class DataProductRemovalFactory implements UseCaseFactory {
             throw new UseCaseInitException("Failed to init DataProductRemoval use case, unsupported event type: " + event.getEvent().getType());
         }
         try {
-            DataProductRemovalOdmOutputPort odmOutputPort = initOdmOutputPort(event);
-            DataProductRemovalBlindataOutputPort blindataOutputPort = new DataProductRemovalBlindataOutputPortImpl(
+            DataProductRemovalOdmOutboundPort odmOutboundPort = initodmOutboundPort(event);
+            DataProductRemovalBlindataOutboundPort blindataOutboundPort = new DataProductRemovalBlindataOutboundPortImpl(
                     bdDataProductClient
             );
             return new DataProductRemoval(
-                    odmOutputPort,
-                    blindataOutputPort
+                    odmOutboundPort,
+                    blindataOutboundPort
             );
         } catch (Exception e) {
             throw new UseCaseInitException("Failed to init DataProductRemoval use case." + e.getMessage(), e);
         }
     }
 
-    private DataProductRemovalOdmOutputPort initOdmOutputPort(OBEventNotificationResource event) throws JsonProcessingException {
+    private DataProductRemovalOdmOutboundPort initodmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException {
         try {
             DataProductVersionDPDS dataProductVersion = objectMapper.readValue(event.getEvent().getBeforeState().toString(), DataProductVersionDPDS.class);
             String fullyQualifiedName = dataProductVersion.getInfo().getFullyQualifiedName();
-            return new DataProductRemovalOdmOutputPortImpl(fullyQualifiedName);
+            return new DataProductRemovalOdmOutboundPortImpl(fullyQualifiedName);
         } catch (JacksonException e) {
             DataProductResource dataProductResource = objectMapper.readValue(event.getEvent().getBeforeState().toString(), DataProductResource.class);
             String fullyQualifiedName = dataProductResource.getFullyQualifiedName();
-            return new DataProductRemovalOdmOutputPortImpl(fullyQualifiedName);
+            return new DataProductRemovalOdmOutboundPortImpl(fullyQualifiedName);
         }
     }
 }

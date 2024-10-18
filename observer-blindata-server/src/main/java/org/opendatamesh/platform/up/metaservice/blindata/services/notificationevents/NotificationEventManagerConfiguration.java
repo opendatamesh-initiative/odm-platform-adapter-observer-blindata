@@ -6,6 +6,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.datap
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload.DataProductUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductversion_upload.DataProductVersionUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload.PoliciesUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.stages_upload.StagesUploadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +30,8 @@ public class NotificationEventManagerConfiguration {
     private PoliciesUploadFactory policiesUploadFactory;
     @Autowired
     private DataProductRemovalFactory dataProductRemovalFactory;
+    @Autowired
+    private StagesUploadFactory stagesUploadFactory;
 
     private final BlindataProperties blindataProperties;
 
@@ -45,6 +48,7 @@ public class NotificationEventManagerConfiguration {
             eventHandlers.add(new UseCasesExecutionTemplate(
                     eventHandler.getActiveUseCases().contains("DATA_PRODUCT_UPLOAD") ? dataProductUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("DATA_PRODUCT_VERSION_UPLOAD") ? dataProductVersionUploadFactory : null,
+                    eventHandler.getActiveUseCases().contains("STAGES_UPLOAD") ? stagesUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("POLICIES_UPLOAD") ? policiesUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("DATA_PRODUCT_REMOVAL") ? dataProductRemovalFactory : null,
                     eventHandler.getEventType(),

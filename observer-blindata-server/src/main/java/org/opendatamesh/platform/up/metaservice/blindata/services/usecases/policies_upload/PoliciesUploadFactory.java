@@ -43,35 +43,35 @@ public class PoliciesUploadFactory implements UseCaseFactory {
             throw new UseCaseInitException("Failed to init PoliciesUpload use case, unsupported event type: " + event.getEvent().getType());
         }
         try {
-            PoliciesUploadBlindataOutputPort bdOutputPort = new PoliciesUploadBlindataOutputPortImpl(
+            PoliciesUploadBlindataOutboundPort bdOutboundPort = new PoliciesUploadBlindataOutboundPortImpl(
                     bdDataProductClient,
                     bdPolicyEvaluationResultClient
             );
-            PoliciesUploadOdmOutputPort odmOutputPort = initOdmOutputPort(event);
+            PoliciesUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
             return new PoliciesUpload(
-                    bdOutputPort,
-                    odmOutputPort
+                    bdOutboundPort,
+                    odmOutboundPort
             );
         } catch (Exception e) {
             throw new UseCaseInitException("Failed to init PoliciesUpload use case.", e);
         }
     }
 
-    private PoliciesUploadOdmOutputPort initOdmOutputPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
+    private PoliciesUploadOdmOutboundPort initOdmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
         if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_ACTIVITY_COMPLETED.name())) {
             ActivityResource activityResource = objectMapper.readValue(event.getEvent().getAfterState().toString(), ActivityResource.class);
             DataProductVersionDPDS odmDataProduct = objectMapper.readValue(activityResource.getDataProductVersion(), DataProductVersionDPDS.class);
-            return new PoliciesUploadOdmOutputPortImpl(
+            return new PoliciesUploadOdmOutboundPortImpl(
                     odmPolicyEvaluationResultClient,
                     odmDataProduct.getInfo());
         }
         if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_VERSION_CREATED.name())) {
             DataProductVersionDPDS odmDataProduct = objectMapper.readValue(event.getEvent().getAfterState().toString(), DataProductVersionDPDS.class);
-            return new PoliciesUploadOdmOutputPortImpl(
+            return new PoliciesUploadOdmOutboundPortImpl(
                     odmPolicyEvaluationResultClient,
                     odmDataProduct.getInfo());
         } else {
-            throw new UseCaseInitException("Failed to init OdmOutputPort on PoliciesUpload use case.");
+            throw new UseCaseInitException("Failed to init OdmOutboundPort on PoliciesUpload use case.");
         }
     }
 }

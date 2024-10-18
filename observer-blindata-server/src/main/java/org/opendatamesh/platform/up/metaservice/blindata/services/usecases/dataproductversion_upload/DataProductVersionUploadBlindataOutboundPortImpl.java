@@ -6,11 +6,11 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 
 import java.util.Optional;
 
-class DataProductVersionUploadBlindataOutputPortImpl implements DataProductVersionUploadBlindataOutputPort {
+class DataProductVersionUploadBlindataOutboundPortImpl implements DataProductVersionUploadBlindataOutboundPort {
 
     private final BDDataProductClient bdDataProductClient;
 
-    public DataProductVersionUploadBlindataOutputPortImpl(BDDataProductClient bdDataProductClient) {
+    public DataProductVersionUploadBlindataOutboundPortImpl(BDDataProductClient bdDataProductClient) {
         this.bdDataProductClient = bdDataProductClient;
     }
 
@@ -28,4 +28,5 @@ class DataProductVersionUploadBlindataOutputPortImpl implements DataProductVersi
     public void createDataProductAssets(BDProductPortAssetsRes dataProductPortsAssets) {
         bdDataProductClient.createDataProductAssets(dataProductPortsAssets);
     }
+
 }
