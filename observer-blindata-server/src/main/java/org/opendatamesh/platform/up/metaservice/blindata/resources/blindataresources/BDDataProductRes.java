@@ -2,7 +2,10 @@ package org.opendatamesh.platform.up.metaservice.blindata.resources.blindatareso
 
 import lombok.EqualsAndHashCode;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @EqualsAndHashCode
 public class BDDataProductRes {
@@ -105,6 +108,20 @@ public class BDDataProductRes {
 
     public void setProductStatus(String productStatus) {
         this.productStatus = productStatus;
+    }
+
+    public void addOldAdditionalProperties(BDDataProductRes oldDataProduct) {
+        if (oldDataProduct == null) return;
+        Map<String, AdditionalPropertiesRes> propertyMap = new LinkedHashMap<>();
+        for (AdditionalPropertiesRes prop : oldDataProduct.getAdditionalProperties()) {
+            propertyMap.put(prop.getName(), prop);
+        }
+        if (this.getAdditionalProperties() != null) {
+            for (AdditionalPropertiesRes prop : this.getAdditionalProperties()) {
+                propertyMap.put(prop.getName(), prop);
+            }
+        }
+        this.additionalProperties = new ArrayList<>(propertyMap.values());
     }
 }
 

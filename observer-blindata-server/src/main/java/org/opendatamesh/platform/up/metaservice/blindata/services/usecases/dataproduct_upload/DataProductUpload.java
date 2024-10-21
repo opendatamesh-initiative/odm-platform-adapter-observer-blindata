@@ -37,7 +37,7 @@ class DataProductUpload implements UseCase {
             if (blindataDataProduct.isEmpty()) {
                 createDataProduct();
             } else {
-                updateDataProduct(blindataDataProduct.get().getUuid());
+                updateDataProduct(blindataDataProduct.get());
             }
         } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);
@@ -78,10 +78,10 @@ class DataProductUpload implements UseCase {
     private BDDataProductRes odmToBlindataDataProduct(InfoDPDS odmDataProduct) {
         BDDataProductRes blindataDataProduct = new BDDataProductRes();
         blindataDataProduct.setName(odmDataProduct.getName());
+        blindataDataProduct.setDisplayName(odmDataProduct.getDisplayName());
         blindataDataProduct.setDomain(odmDataProduct.getDomain());
         blindataDataProduct.setIdentifier(odmDataProduct.getFullyQualifiedName());
         blindataDataProduct.setVersion(odmDataProduct.getVersionNumber());
-        blindataDataProduct.setDisplayName(odmDataProduct.getDisplayName());
         blindataDataProduct.setDescription(odmDataProduct.getDescription());
 
         if (!StringUtils.hasText(odmDataProduct.getName())) {
@@ -99,13 +99,15 @@ class DataProductUpload implements UseCase {
     }
 
 
-    private void updateDataProduct(String blindataDataProductUuid) {
-        BDDataProductRes newDataProduct = odmToBlindataDataProduct(odmOutboundPort.getDataProductInfo());
-        newDataProduct.setUuid(blindataDataProductUuid);
-
-        newDataProduct = blindataOutboundPort.updateDataProduct(newDataProduct);
-        log.info("{} Data product: {} with uuid: {} updated on Blindata", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), newDataProduct.getUuid());
-        assignResponsibilityToDataProduct(newDataProduct);
+    private void updateDataProduct(BDDataProductRes oldBdDataProduct) {
+        BDDataProductRes newBdDataProduct = odmToBlindataDataProduct(odmOutboundPort.getDataProductInfo());
+        newBdDataProduct.setUuid(oldBdDataProduct.getUuid());
+        newBdDataProduct.setDisplayName(oldBdDataProduct.getDisplayName());
+        newBdDataProduct.setName(oldBdDataProduct.getName());
+        newBdDataProduct.addOldAdditionalProperties(oldBdDataProduct);
+        newBdDataProduct = blindataOutboundPort.updateDataProduct(newBdDataProduct);
+        log.info("{} Data product: {} with uuid: {} updated on Blindata", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), newBdDataProduct.getUuid());
+        assignResponsibilityToDataProduct(newBdDataProduct);
     }
 
     private String extractNameFromFQN(String fullyQualifiedName) {
