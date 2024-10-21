@@ -113,8 +113,10 @@ public class BDDataProductRes {
     public void addOldAdditionalProperties(BDDataProductRes oldDataProduct) {
         if (oldDataProduct == null) return;
         Map<String, AdditionalPropertiesRes> propertyMap = new LinkedHashMap<>();
-        for (AdditionalPropertiesRes prop : oldDataProduct.getAdditionalProperties()) {
-            propertyMap.put(prop.getName(), prop);
+        if (oldDataProduct.getAdditionalProperties() != null) {
+            for (AdditionalPropertiesRes prop : oldDataProduct.getAdditionalProperties()) {
+                propertyMap.put(prop.getName(), prop);
+            }
         }
         if (this.getAdditionalProperties() != null) {
             for (AdditionalPropertiesRes prop : this.getAdditionalProperties()) {
