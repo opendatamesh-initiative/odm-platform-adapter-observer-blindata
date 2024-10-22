@@ -55,7 +55,10 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
             return physicalEntityResList;
         }
         for (DataStoreApiSchemaEntity entity : ((DataStoreApiSchemaResource) dataStoreApiDefinition.getSchema()).getTables()) {
-            BDPhysicalEntityRes extractedEntityFromSchema = fromSchemaEntityToPhysicalEntity("schema_name", entity.getDefinition());
+            final String schemaName = StringUtils.hasText(((DataStoreApiSchemaResource) dataStoreApiDefinition.getSchema()).getDatabaseSchemaName())
+                    ? ((DataStoreApiSchemaResource) dataStoreApiDefinition.getSchema()).getDatabaseSchemaName()
+                    : "schema_name";
+            BDPhysicalEntityRes extractedEntityFromSchema = fromSchemaEntityToPhysicalEntity(schemaName, entity.getDefinition());
             physicalEntityResList.add(extractedEntityFromSchema);
         }
 
