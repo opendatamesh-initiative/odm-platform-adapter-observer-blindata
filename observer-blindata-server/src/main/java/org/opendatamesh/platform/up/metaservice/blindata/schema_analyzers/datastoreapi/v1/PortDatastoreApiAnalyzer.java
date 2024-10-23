@@ -50,13 +50,23 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
     private List<BDPhysicalEntityRes> extractSchemaPropertiesFromSchemaContent(PortStandardDefinition portStandardDefinition) throws JsonProcessingException {
         DataStoreApiDefinition dataStoreApiDefinition = objectMapper.readValue(portStandardDefinition.getDefinition(), DataStoreApiDefinition.class);
         List<BDPhysicalEntityRes> physicalEntityResList = new ArrayList<>();
-        if (dataStoreApiDefinition.getSchema() == null) {
+
+        DataStoreApiSchema schema = dataStoreApiDefinition.getSchema();
+        if (schema == null) {
             log.warn("Missing schema, impossible to extract properties");
             return physicalEntityResList;
         }
-        for (DataStoreApiSchemaEntity entity : ((DataStoreApiSchemaResource) dataStoreApiDefinition.getSchema()).getTables()) {
-            BDPhysicalEntityRes extractedEntityFromSchema = fromSchemaEntityToPhysicalEntity("schema_name", entity.getDefinition());
-            physicalEntityResList.add(extractedEntityFromSchema);
+        if (schema instanceof DataStoreApiSchemaResource) {
+            DataStoreApiSchemaResource schemaResource = (DataStoreApiSchemaResource) schema;
+            for (DataStoreApiSchemaEntity entity : schemaResource.getTables()) {
+                final String schemaName = StringUtils.hasText(schemaResource.getDatabaseSchemaName())
+                        ? schemaResource.getDatabaseSchemaName()
+                        : "schema_name";
+                BDPhysicalEntityRes extractedEntityFromSchema = fromSchemaEntityToPhysicalEntity(schemaName, entity.getDefinition());
+                physicalEntityResList.add(extractedEntityFromSchema);
+            }
+        } else {
+            log.warn("Schema is not of type DataStoreApiSchemaResource, skipping extraction.");
         }
 
         return physicalEntityResList;

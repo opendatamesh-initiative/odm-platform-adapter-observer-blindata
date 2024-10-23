@@ -2,7 +2,7 @@
   "physicalEntities": [
     {
       "uuid": null,
-      "schema": "schema_name",
+      "schema": "dwh",
       "name": "airline_freq",
       "description": "The table that stores the updated status of each trip",
       "dataSet": null,
