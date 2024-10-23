@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.opendatamesh</groupId>
         <artifactId>odm-platform-adapter-observer-blindata</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -15,7 +15,7 @@
     <artifactId>odm-platform-adapter-observer-blindata-server</artifactId>
     <name>ODM Platform Observer Blindata Adapter</name>
     <description>Open Data Mesh Platform Observer Adapter Implementation for blindata.io</description>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 
     <licenses>
         <license>
