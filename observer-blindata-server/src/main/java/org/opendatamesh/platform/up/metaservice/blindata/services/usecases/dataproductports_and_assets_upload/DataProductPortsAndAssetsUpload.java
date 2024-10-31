@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductversion_upload;
+package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload;
 
 import lombok.extern.slf4j.Slf4j;
 import org.opendatamesh.dpds.model.interfaces.InterfaceComponentsDPDS;
@@ -15,14 +15,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-class DataProductVersionUpload implements UseCase {
+class DataProductPortsAndAssetsUpload implements UseCase {
 
     private final String USE_CASE_PREFIX = "[DataProductVersionUpload]";
 
-    private final DataProductVersionUploadBlindataOutboundPort blindataOutboundPort;
-    private final DataProductVersionUploadOdmOutboundPort odmOutboundPort;
+    private final DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort;
+    private final DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort;
 
-    public DataProductVersionUpload(DataProductVersionUploadBlindataOutboundPort blindataOutboundPort, DataProductVersionUploadOdmOutboundPort odmOutboundPort) {
+    public DataProductPortsAndAssetsUpload(DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort, DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort) {
         this.blindataOutboundPort = blindataOutboundPort;
         this.odmOutboundPort = odmOutboundPort;
     }

@@ -40,9 +40,26 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     }
 
     @Override
-    public BDDataProductRes updateDataProduct(BDDataProductRes dataProduct) throws BlindataClientException, BlindataClientResourceMappingException {
+    public BDDataProductRes putDataProduct(BDDataProductRes dataProduct) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
             return restUtils.put(
+                    String.format("%s/api/v1/dataproducts/{id}", credentials.getBlindataUrl()),
+                    getAuthenticatedHttpHeaders(),
+                    dataProduct.getUuid(),
+                    dataProduct,
+                    BDDataProductRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public BDDataProductRes patchDataProduct(BDDataProductRes dataProduct) throws BlindataClientException, BlindataClientResourceMappingException {
+        try {
+            return restUtils.patch(
                     String.format("%s/api/v1/dataproducts/{id}", credentials.getBlindataUrl()),
                     getAuthenticatedHttpHeaders(),
                     dataProduct.getUuid(),

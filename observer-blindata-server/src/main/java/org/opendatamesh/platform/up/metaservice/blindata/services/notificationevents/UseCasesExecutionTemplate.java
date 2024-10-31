@@ -6,7 +6,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.OBEventNo
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.OBEventNotificationStatus;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_removal.DataProductRemovalFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload.DataProductUploadFactory;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductversion_upload.DataProductVersionUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload.DataProductPortsAndAssetsUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload.PoliciesUploadFactory;
@@ -22,7 +22,7 @@ import java.util.Optional;
 public class UseCasesExecutionTemplate implements NotificationEventHandler {
 
     private final Optional<DataProductUploadFactory> dataProductCreation;
-    private final Optional<DataProductVersionUploadFactory> dataProductVersionCreation;
+    private final Optional<DataProductPortsAndAssetsUploadFactory> dataProductVersionCreation;
     private final Optional<StagesUploadFactory> stagesUploadFactory;
     private final Optional<PoliciesUploadFactory> policiesCreation;
     private final Optional<DataProductRemovalFactory> dataProductDeletion;
@@ -32,7 +32,7 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
 
     public UseCasesExecutionTemplate(
             DataProductUploadFactory dataProductCreation,
-            DataProductVersionUploadFactory dataProductVersionCreation,
+            DataProductPortsAndAssetsUploadFactory dataProductVersionCreation,
             StagesUploadFactory stagesUploadFactory,
             PoliciesUploadFactory policiesCreation,
             DataProductRemovalFactory dataProductDeletion,

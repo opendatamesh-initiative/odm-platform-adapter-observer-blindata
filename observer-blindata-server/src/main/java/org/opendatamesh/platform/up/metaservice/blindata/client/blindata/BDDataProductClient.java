@@ -16,7 +16,9 @@ public interface BDDataProductClient {
 
     BDDataProductRes createDataProduct(BDDataProductRes dataProduct) throws BlindataClientException, BlindataClientResourceMappingException;
 
-    BDDataProductRes updateDataProduct(BDDataProductRes dataProduct) throws BlindataClientException, BlindataClientResourceMappingException;
+    BDDataProductRes putDataProduct(BDDataProductRes dataProduct) throws BlindataClientException, BlindataClientResourceMappingException;
+
+    BDDataProductRes patchDataProduct(BDDataProductRes dataProduct) throws BlindataClientException, BlindataClientResourceMappingException;
 
     Page<BDDataProductRes> getDataProducts(Pageable pageable, BDDataProductSearchOptions filters) throws BlindataClientException, BlindataClientResourceMappingException;
 

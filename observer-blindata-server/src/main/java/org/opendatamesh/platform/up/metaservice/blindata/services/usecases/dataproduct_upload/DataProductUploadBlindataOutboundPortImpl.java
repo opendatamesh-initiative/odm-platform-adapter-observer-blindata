@@ -41,7 +41,7 @@ class DataProductUploadBlindataOutboundPortImpl implements DataProductUploadBlin
 
     @Override
     public BDDataProductRes updateDataProduct(BDDataProductRes dataProduct) {
-        return bdDataProductClient.updateDataProduct(dataProduct);
+        return bdDataProductClient.patchDataProduct(dataProduct);
     }
 
     @Override
