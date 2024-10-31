@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_removal.DataProductRemovalFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload.DataProductUploadFactory;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductversion_upload.DataProductVersionUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload.DataProductPortsAndAssetsUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload.PoliciesUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.stages_upload.StagesUploadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class NotificationEventManagerConfiguration {
     @Autowired
     private DataProductUploadFactory dataProductUploadFactory;
     @Autowired
-    private DataProductVersionUploadFactory dataProductVersionUploadFactory;
+    private DataProductPortsAndAssetsUploadFactory dataProductPortsAndAssetsUploadFactory;
     @Autowired
     private PoliciesUploadFactory policiesUploadFactory;
     @Autowired
@@ -47,7 +47,7 @@ public class NotificationEventManagerConfiguration {
             validateEventHandler(eventHandler);
             eventHandlers.add(new UseCasesExecutionTemplate(
                     eventHandler.getActiveUseCases().contains("DATA_PRODUCT_UPLOAD") ? dataProductUploadFactory : null,
-                    eventHandler.getActiveUseCases().contains("DATA_PRODUCT_VERSION_UPLOAD") ? dataProductVersionUploadFactory : null,
+                    eventHandler.getActiveUseCases().contains("DATA_PRODUCT_VERSION_UPLOAD") ? dataProductPortsAndAssetsUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("STAGES_UPLOAD") ? stagesUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("POLICIES_UPLOAD") ? policiesUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("DATA_PRODUCT_REMOVAL") ? dataProductRemovalFactory : null,

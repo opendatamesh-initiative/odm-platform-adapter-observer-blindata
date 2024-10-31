@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductversion_upload;
+package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -13,14 +13,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-class DataProductVersionUploadOdmOutboundPortImpl implements DataProductVersionUploadOdmOutboundPort {
+class DataProductPortsAndAssetsUploadOdmOutboundPortImpl implements DataProductPortsAndAssetsUploadOdmOutboundPort {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final DataProductPortAssetAnalyzer dataProductPortAssetAnalyzer;
     private final DataProductVersionDPDS dataProductVersion;
     private final ActivityResource activityResource;
 
-    public DataProductVersionUploadOdmOutboundPortImpl(DataProductPortAssetAnalyzer dataProductPortAssetAnalyzer, DataProductVersionDPDS dataProductVersion, ActivityResource activityResource) {
+    public DataProductPortsAndAssetsUploadOdmOutboundPortImpl(DataProductPortAssetAnalyzer dataProductPortAssetAnalyzer, DataProductVersionDPDS dataProductVersion, ActivityResource activityResource) {
         this.dataProductPortAssetAnalyzer = dataProductPortAssetAnalyzer;
         this.dataProductVersion = dataProductVersion;
         this.activityResource = activityResource;

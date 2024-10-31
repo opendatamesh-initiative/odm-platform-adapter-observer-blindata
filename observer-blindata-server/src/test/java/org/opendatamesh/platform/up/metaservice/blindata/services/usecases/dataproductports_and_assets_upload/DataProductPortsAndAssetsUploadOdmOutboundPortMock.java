@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductversion_upload;
+package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload;
 
 import org.opendatamesh.dpds.model.DataProductVersionDPDS;
 import org.opendatamesh.dpds.model.interfaces.PortDPDS;
@@ -6,11 +6,11 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 
 import java.util.List;
 
-public class DataProductVersionUploadOdmOutboundPortMock implements DataProductVersionUploadOdmOutboundPort {
+public class DataProductPortsAndAssetsUploadOdmOutboundPortMock implements DataProductPortsAndAssetsUploadOdmOutboundPort {
 
     private final DataProductVersionUploadInitialState initialState;
 
-    public DataProductVersionUploadOdmOutboundPortMock(DataProductVersionUploadInitialState initialState) {
+    public DataProductPortsAndAssetsUploadOdmOutboundPortMock(DataProductVersionUploadInitialState initialState) {
         this.initialState = initialState;
     }
 

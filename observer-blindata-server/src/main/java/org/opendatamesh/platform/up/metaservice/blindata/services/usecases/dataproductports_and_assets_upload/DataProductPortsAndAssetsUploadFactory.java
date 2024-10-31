@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductversion_upload;
+package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 
 @Component
-public class DataProductVersionUploadFactory implements UseCaseFactory {
+public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory {
 
     @Autowired
     private BDDataProductClient bdDataProductClient;
@@ -39,10 +39,10 @@ public class DataProductVersionUploadFactory implements UseCaseFactory {
             throw new UseCaseInitException("Failed to init DataProductVersionUpload use case, unsupported event type: " + event.getEvent().getType());
         }
         try {
-            DataProductVersionUploadBlindataOutboundPort bdOutboundPort = new DataProductVersionUploadBlindataOutboundPortImpl(bdDataProductClient);
-            DataProductVersionUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
+            DataProductPortsAndAssetsUploadBlindataOutboundPort bdOutboundPort = new DataProductPortsAndAssetsUploadBlindataOutboundPortImpl(bdDataProductClient);
+            DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
 
-            return new DataProductVersionUpload(
+            return new DataProductPortsAndAssetsUpload(
                     bdOutboundPort,
                     odmOutboundPort
             );
@@ -51,14 +51,14 @@ public class DataProductVersionUploadFactory implements UseCaseFactory {
         }
     }
 
-    private DataProductVersionUploadOdmOutboundPort initOdmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
+    private DataProductPortsAndAssetsUploadOdmOutboundPort initOdmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
         if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_ACTIVITY_COMPLETED.name())) {
             ActivityResource activityResource = objectMapper.readValue(event.getEvent().getAfterState().toString(), ActivityResource.class);
             DataProductVersionDPDS odmDataProduct = objectMapper.readValue(activityResource.getDataProductVersion(), DataProductVersionDPDS.class);
-            return new DataProductVersionUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, odmDataProduct, activityResource);
+            return new DataProductPortsAndAssetsUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, odmDataProduct, activityResource);
         } else if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_VERSION_CREATED.name())) {
             DataProductVersionDPDS odmDataProduct = objectMapper.readValue(event.getEvent().getAfterState().toString(), DataProductVersionDPDS.class);
-            return new DataProductVersionUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, odmDataProduct, null);
+            return new DataProductPortsAndAssetsUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, odmDataProduct, null);
         } else {
             throw new UseCaseInitException("Failed to init odmOutboundPort on DataProductVersionUpload use case.");
         }

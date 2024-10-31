@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductversion_upload;
+package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload;
 
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductRes;
@@ -6,11 +6,11 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 
 import java.util.Optional;
 
-class DataProductVersionUploadBlindataOutboundPortImpl implements DataProductVersionUploadBlindataOutboundPort {
+class DataProductPortsAndAssetsUploadBlindataOutboundPortImpl implements DataProductPortsAndAssetsUploadBlindataOutboundPort {
 
     private final BDDataProductClient bdDataProductClient;
 
-    public DataProductVersionUploadBlindataOutboundPortImpl(BDDataProductClient bdDataProductClient) {
+    public DataProductPortsAndAssetsUploadBlindataOutboundPortImpl(BDDataProductClient bdDataProductClient) {
         this.bdDataProductClient = bdDataProductClient;
     }
 
@@ -21,7 +21,7 @@ class DataProductVersionUploadBlindataOutboundPortImpl implements DataProductVer
 
     @Override
     public void updateDataProductPorts(BDDataProductRes dataProduct) {
-        bdDataProductClient.updateDataProduct(dataProduct);
+        bdDataProductClient.patchDataProduct(dataProduct);
     }
 
     @Override
