@@ -102,9 +102,6 @@ class DataProductUpload implements UseCase {
     private void updateDataProduct(BDDataProductRes oldBdDataProduct) {
         BDDataProductRes newBdDataProduct = odmToBlindataDataProduct(odmOutboundPort.getDataProductInfo());
         newBdDataProduct.setUuid(oldBdDataProduct.getUuid());
-        //Keeps the old name in Blindata (only the name, not the fully qualified name)
-        newBdDataProduct.setDisplayName(oldBdDataProduct.getDisplayName());
-        newBdDataProduct.setName(oldBdDataProduct.getName());
 
         newBdDataProduct.addOldAdditionalProperties(oldBdDataProduct);
         newBdDataProduct = blindataOutboundPort.updateDataProduct(newBdDataProduct);
