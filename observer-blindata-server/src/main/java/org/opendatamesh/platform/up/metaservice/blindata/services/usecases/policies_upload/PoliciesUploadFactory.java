@@ -1,9 +1,9 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opendatamesh.dpds.model.DataProductVersionDPDS;
-import org.opendatamesh.platform.pp.devops.api.resources.ActivityResource;
 import org.opendatamesh.platform.pp.policy.api.clients.PolicyEvaluationResultClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDPolicyEvaluationResultClient;
@@ -59,8 +59,9 @@ public class PoliciesUploadFactory implements UseCaseFactory {
 
     private PoliciesUploadOdmOutboundPort initOdmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
         if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_ACTIVITY_COMPLETED.name())) {
-            ActivityResource activityResource = objectMapper.readValue(event.getEvent().getAfterState().toString(), ActivityResource.class);
-            DataProductVersionDPDS odmDataProduct = objectMapper.readValue(activityResource.getDataProductVersion(), DataProductVersionDPDS.class);
+            JsonNode afterStateNode = objectMapper.readTree(event.getEvent().getAfterState().toString());
+            JsonNode dataProductVersionNode = afterStateNode.get("dataProductVersion");
+            DataProductVersionDPDS odmDataProduct = objectMapper.treeToValue(dataProductVersionNode, DataProductVersionDPDS.class);
             return new PoliciesUploadOdmOutboundPortImpl(
                     odmPolicyEvaluationResultClient,
                     odmDataProduct.getInfo());

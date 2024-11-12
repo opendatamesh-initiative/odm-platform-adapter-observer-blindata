@@ -1,6 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.stages_upload;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opendatamesh.dpds.model.DataProductVersionDPDS;
 import org.opendatamesh.platform.pp.devops.api.resources.ActivityResource;
@@ -37,17 +38,20 @@ public class StagesUploadFactory implements UseCaseFactory {
         }
         try {
             StagesUploadBlindataOutboundPort bdOutboundPort = new StagesUploadBlindataOutboundPortImpl(bdDataProductClient);
-            StagesUploadOdmOutboundPort odmOutboundPort = initodmOutboundPort(event);
+            StagesUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
             return new StagesUpload(bdOutboundPort, odmOutboundPort);
         } catch (Exception e) {
             throw new UseCaseInitException("Failed to init PoliciesUpload use case.", e);
         }
     }
 
-    private StagesUploadOdmOutboundPort initodmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
+    private StagesUploadOdmOutboundPort initOdmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
         if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_ACTIVITY_COMPLETED.name())) {
-            ActivityResource activityResource = objectMapper.readValue(event.getEvent().getAfterState().toString(), ActivityResource.class);
-            DataProductVersionDPDS odmDataProduct = objectMapper.readValue(activityResource.getDataProductVersion(), DataProductVersionDPDS.class);
+            JsonNode afterStateNode = objectMapper.readTree(event.getEvent().getAfterState().toString());
+            JsonNode activityNode = afterStateNode.get("activity");
+            JsonNode dataProductVersionNode = afterStateNode.get("dataProductVersion");
+            ActivityResource activityResource = objectMapper.treeToValue(activityNode, ActivityResource.class);
+            DataProductVersionDPDS odmDataProduct = objectMapper.treeToValue(dataProductVersionNode, DataProductVersionDPDS.class);
             return new StagesUploadOdmOutboundPortImpl(odmDataProduct, activityResource);
         } else if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_VERSION_CREATED.name())) {
             DataProductVersionDPDS odmDataProduct = objectMapper.readValue(event.getEvent().getAfterState().toString(), DataProductVersionDPDS.class);
