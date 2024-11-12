@@ -1,5 +1,8 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.opendatamesh.dpds.model.interfaces.InterfaceComponentsDPDS;
 import org.opendatamesh.dpds.model.interfaces.PortDPDS;
@@ -17,7 +20,7 @@ import java.util.Optional;
 @Slf4j
 class DataProductPortsAndAssetsUpload implements UseCase {
 
-    private final String USE_CASE_PREFIX = "[DataProductVersionUpload]";
+    private static final String USE_CASE_PREFIX = "[DataProductVersionUpload]";
 
     private final DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort;
     private final DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort;
@@ -88,8 +91,23 @@ class DataProductPortsAndAssetsUpload implements UseCase {
             port.setServicesType(odmDataProductPort.getPromises().getServicesType());
             port.setAdditionalProperties(extractAdditionalProperties(odmDataProductPort.getPromises()));
         }
-
+        addDependsOnIfPresent(odmDataProductPort, port);
         return port;
+
+    }
+
+    private void addDependsOnIfPresent(PortDPDS odmDataProductPort, BDDataProductPortRes port) {
+        if (!StringUtils.hasText(odmDataProductPort.getRawContent())) {
+            return;
+        }
+        try {
+            JsonNode portRawContent = new ObjectMapper().readValue(odmDataProductPort.getRawContent(), JsonNode.class);
+            JsonNode dependsOnNode = portRawContent.get("x-dependsOn");
+            String dependsOn = Optional.ofNullable(dependsOnNode).map(JsonNode::asText).orElse(null);
+            port.setDependsOnIdentifier(dependsOn);
+        } catch (JsonProcessingException e) {
+            log.warn("{}: {}", USE_CASE_PREFIX, e.getMessage(), e);
+        }
 
     }
 

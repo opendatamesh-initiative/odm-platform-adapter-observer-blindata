@@ -1,0 +1,76 @@
+{
+  "uuid": "blindataDataProductUuid",
+  "name": null,
+  "displayName": null,
+  "identifier": "urn:dpds:it.quantyca:dataproducts:sampleDomain:tripExecution",
+  "description": null,
+  "version": null,
+  "domain": null,
+  "additionalProperties": null,
+  "ports": [
+    {
+      "uuid": null,
+      "name": "tmsTripCDC",
+      "displayName": "tms Trip CDC",
+      "identifier": "urn:dpds:it.quantyca:dataproducts:sampleDomain:tripExecution:1.0.0:inputports:tmsTripCDC",
+      "description": "input port 1 of data product",
+      "version": "1.0.0",
+      "servicesType": "rest-services",
+      "entityType": "inputPorts",
+      "dependsOnIdentifier": "urn:dpds:it.quantyca:dataproducts:sampleDomain:sampleDataProduct:1:sampleOutputPort",
+      "additionalProperties": [
+        {
+          "name": "sloDescription",
+          "value": "slo for input port 1"
+        },
+        {
+          "name": "deprecationPolicy",
+          "value": "deprecationPolicy for input port 1"
+        }
+      ]
+    },
+    {
+      "uuid": null,
+      "name": "input-port2",
+      "displayName": "input port 2",
+      "identifier": "urn:dpds:it.quantyca:dataproducts:sampleDomain:tripExecution:1.0.0:inputports:input-port-2",
+      "description": "input port 2 of data product",
+      "version": "1.0.0",
+      "servicesType": "streaming-services",
+      "entityType": "inputPorts",
+      "dependsOnIdentifier": null,
+      "additionalProperties": [
+        {
+          "name": "sloDescription",
+          "value": "slo for input port 2"
+        },
+        {
+          "name": "deprecationPolicy",
+          "value": "deprecationPolicy for input port 2"
+        }
+      ]
+    },
+    {
+      "uuid": null,
+      "name": "output-port1",
+      "displayName": "output port 1",
+      "identifier": "urn:dpds:it.quantyca:dataproducts:sampleDomain:tripExecution:1.0.0:outputports:output-port-1",
+      "description": "output port 1 of data product",
+      "version": "1.0.0",
+      "servicesType": "rest-services",
+      "entityType": "outputPorts",
+      "dependsOnIdentifier": null,
+      "additionalProperties": [
+        {
+          "name": "sloDescription",
+          "value": "slo for output port 1"
+        },
+        {
+          "name": "deprecationPolicy",
+          "value": "deprecationPolicy for output port 1"
+        }
+      ]
+    }
+  ],
+  "productStatus": null
+}

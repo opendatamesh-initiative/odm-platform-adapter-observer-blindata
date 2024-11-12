@@ -33,6 +33,7 @@ its catalog remains aligned.
     * [Raw Port Async Api V2](#raw-port-async-api-v2)
     * [Entities Async Api V3](#entities-async-api-v3)
     * [Entities Async Api V2](#entities-async-api-v2)
+  * [Input port dependency](#input-port-dependency)
 * [Run the Project](#run-the-project)
   * [Prerequisites](#prerequisites)
   * [Dependencies](#dependencies)
@@ -128,7 +129,8 @@ These are:
 ### Configuration
 
 The configuration can be written in the application.yml or passed as an argument at startup.
-An example of a configuration can be: 
+An example of a configuration can be:
+
 ```yaml
 blindata:
   eventHandlers: "[
@@ -159,6 +161,7 @@ blindata:
       }
     ]"
 ```
+
 P.A. Actions are automatically ordered based on the correct sequence of execution.
 
 # Mapping data product descriptor into Blindata
@@ -1112,6 +1115,13 @@ details on the servers, channels, and message schemas used for streaming events 
 }
 
 ```
+
+## Input port dependency
+
+To map an external dependency for an InputPort, version 1.0.0 of the data product descriptor specification should be
+extended with the ```x-dependsOn``` field. This field must contain a single string representing the fully qualified name (FQN)
+of another data product port. This value will be uploaded to Blindata as dependsOnIdentifier and will be used to resolve
+data product dependencies and reconstruct data lineage at the data product level.
 
 # Run the Project
 
