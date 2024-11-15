@@ -1,13 +1,12 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.opendatamesh.dpds.model.DataProductVersionDPDS;
-import org.opendatamesh.platform.pp.devops.api.resources.ActivityResource;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.OBEventNotificationResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.eventstates.DataProductActivityEventState;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.eventstates.DataProductVersionEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.services.DataProductPortAssetAnalyzer;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseFactory;
@@ -53,18 +52,16 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory {
     }
 
     private DataProductPortsAndAssetsUploadOdmOutboundPort initOdmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
-        if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_ACTIVITY_COMPLETED.name())) {
-            JsonNode afterStateNode = objectMapper.readTree(event.getEvent().getAfterState().toString());
-            JsonNode activityNode = afterStateNode.get("activity");
-            JsonNode dataProductVersionNode = afterStateNode.get("dataProductVersion");
-            ActivityResource activityResource = objectMapper.treeToValue(activityNode, ActivityResource.class);
-            DataProductVersionDPDS odmDataProduct = objectMapper.treeToValue(dataProductVersionNode, DataProductVersionDPDS.class);
-            return new DataProductPortsAndAssetsUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, odmDataProduct, activityResource);
-        } else if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_VERSION_CREATED.name())) {
-            DataProductVersionDPDS odmDataProduct = objectMapper.readValue(event.getEvent().getAfterState().toString(), DataProductVersionDPDS.class);
-            return new DataProductPortsAndAssetsUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, odmDataProduct, null);
-        } else {
-            throw new UseCaseInitException("Failed to init odmOutboundPort on DataProductVersionUpload use case.");
+        switch (EventType.valueOf(event.getEvent().getType())) {
+            case DATA_PRODUCT_ACTIVITY_COMPLETED:{
+                DataProductActivityEventState afterState = objectMapper.treeToValue(event.getEvent().getAfterState(), DataProductActivityEventState.class);
+                return new DataProductPortsAndAssetsUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, afterState.getDataProductVersion(), afterState.getActivity());
+            }
+            case DATA_PRODUCT_VERSION_CREATED: {
+                DataProductVersionEventState afterState = objectMapper.treeToValue(event.getEvent().getAfterState(), DataProductVersionEventState.class);
+                return new DataProductPortsAndAssetsUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, afterState.getDataProductVersion(), null);
+            }
+            default: throw new UseCaseInitException("Failed to init odmOutboundPort on DataProductVersionUpload use case.");
         }
     }
 }

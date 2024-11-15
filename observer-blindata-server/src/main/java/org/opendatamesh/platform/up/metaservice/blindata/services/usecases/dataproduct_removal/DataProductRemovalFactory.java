@@ -1,13 +1,10 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_removal;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.opendatamesh.dpds.model.DataProductVersionDPDS;
-import org.opendatamesh.platform.pp.registry.api.resources.DataProductResource;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.OBEventNotificationResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.eventstates.DataProductEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
@@ -15,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
+
+import static org.opendatamesh.platform.up.metaservice.blindata.resources.odm.EventType.DATA_PRODUCT_DELETED;
 
 @Component
 public class DataProductRemovalFactory implements UseCaseFactory {
@@ -26,7 +25,7 @@ public class DataProductRemovalFactory implements UseCaseFactory {
     private ObjectMapper objectMapper;
 
     private final Set<String> supportedEventTypes = Set.of(
-            EventType.DATA_PRODUCT_DELETED.name()
+            DATA_PRODUCT_DELETED.name()
     );
 
 
@@ -36,7 +35,7 @@ public class DataProductRemovalFactory implements UseCaseFactory {
             throw new UseCaseInitException("Failed to init DataProductRemoval use case, unsupported event type: " + event.getEvent().getType());
         }
         try {
-            DataProductRemovalOdmOutboundPort odmOutboundPort = initodmOutboundPort(event);
+            DataProductRemovalOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
             DataProductRemovalBlindataOutboundPort blindataOutboundPort = new DataProductRemovalBlindataOutboundPortImpl(
                     bdDataProductClient
             );
@@ -49,16 +48,10 @@ public class DataProductRemovalFactory implements UseCaseFactory {
         }
     }
 
-    private DataProductRemovalOdmOutboundPort initodmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException {
-        try {
-            DataProductVersionDPDS dataProductVersion = objectMapper.readValue(event.getEvent().getBeforeState().toString(), DataProductVersionDPDS.class);
-            String fullyQualifiedName = dataProductVersion.getInfo().getFullyQualifiedName();
-            return new DataProductRemovalOdmOutboundPortImpl(fullyQualifiedName);
-        } catch (JacksonException e) {
-            DataProductResource dataProductResource = objectMapper.readValue(event.getEvent().getBeforeState().toString(), DataProductResource.class);
-            String fullyQualifiedName = dataProductResource.getFullyQualifiedName();
-            return new DataProductRemovalOdmOutboundPortImpl(fullyQualifiedName);
-        }
+    private DataProductRemovalOdmOutboundPort initOdmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException {
+        DataProductEventState dataProductEventState = objectMapper.treeToValue(event.getEvent().getBeforeState(), DataProductEventState.class);
+        String fullyQualifiedName = dataProductEventState.getDataProduct().getFullyQualifiedName();
+        return new DataProductRemovalOdmOutboundPortImpl(fullyQualifiedName);
     }
 }
 

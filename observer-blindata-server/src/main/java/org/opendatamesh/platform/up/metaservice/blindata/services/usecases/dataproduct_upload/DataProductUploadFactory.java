@@ -2,13 +2,13 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.data
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.opendatamesh.dpds.model.DataProductVersionDPDS;
-import org.opendatamesh.platform.pp.registry.api.resources.DataProductResource;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDStewardshipClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDUserClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.OBEventNotificationResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.eventstates.DataProductEventState;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.eventstates.DataProductVersionEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
@@ -54,7 +54,7 @@ public class DataProductUploadFactory implements UseCaseFactory {
                     bdStewardshipClient,
                     roleUuid
             );
-            DataProductUploadOdmOutboundPort odmOutboundPort = initodmOutboundPort(event);
+            DataProductUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
             return new DataProductUpload(
                     odmOutboundPort,
                     blindataOutboundPort
@@ -64,15 +64,18 @@ public class DataProductUploadFactory implements UseCaseFactory {
         }
     }
 
-    private DataProductUploadOdmOutboundPort initodmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
-        if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_CREATED.name())) {
-            DataProductResource odmDataProduct = objectMapper.readValue(event.getEvent().getAfterState().toString(), DataProductResource.class);
-            return new DataProductUploadOdmOutboundPortImpl(odmDataProduct);
-        } else if (event.getEvent().getType().equalsIgnoreCase(EventType.DATA_PRODUCT_VERSION_CREATED.name())) {
-            DataProductVersionDPDS odmDataProductVersion = objectMapper.readValue(event.getEvent().getAfterState().toString(), DataProductVersionDPDS.class);
-            return new DataProductUploadOdmOutboundPortImpl(odmDataProductVersion.getInfo());
-        } else {
-            throw new UseCaseInitException("Failed to init odmOutboundPort on DataProductUpload use case.");
+    private DataProductUploadOdmOutboundPort initOdmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
+        switch (EventType.valueOf(event.getEvent().getType())) {
+            case DATA_PRODUCT_CREATED: {
+                DataProductEventState dataProductEventState = objectMapper.treeToValue(event.getEvent().getAfterState(), DataProductEventState.class);
+                return new DataProductUploadOdmOutboundPortImpl(dataProductEventState.getDataProduct());
+            }
+            case DATA_PRODUCT_VERSION_CREATED: {
+                DataProductVersionEventState dataProductVersionEventState = objectMapper.treeToValue(event.getEvent().getAfterState(), DataProductVersionEventState.class);
+                return new DataProductUploadOdmOutboundPortImpl(dataProductVersionEventState.getDataProductVersion().getInfo());
+            }
+            default:
+                throw new UseCaseInitException("Failed to init odmOutboundPort on DataProductUpload use case.");
         }
     }
 }
