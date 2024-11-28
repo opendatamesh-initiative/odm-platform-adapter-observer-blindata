@@ -51,6 +51,7 @@ class DataStoreApiSchemaColumn {
     private int partitionKeyPosition;
     private boolean clusterStatus;
     private int clusterKeyPosition;
+    private int ordinalPosition;
 
     @JsonCreator
     public DataStoreApiSchemaColumn(
@@ -90,7 +91,8 @@ class DataStoreApiSchemaColumn {
             @JsonProperty("partitionStatus") boolean partitionStatus,
             @JsonProperty("partitionKeyPosition") int partitionKeyPosition,
             @JsonProperty("clusterStatus") boolean clusterStatus,
-            @JsonProperty("clusterKeyPosition") int clusterKeyPosition) {
+            @JsonProperty("clusterKeyPosition") int clusterKeyPosition,
+            @JsonProperty("ordinalPosition") int ordinalPosition) {
         this.type = type;
         this.description = description;
         this.name = name;
@@ -128,6 +130,7 @@ class DataStoreApiSchemaColumn {
         this.partitionKeyPosition = partitionKeyPosition;
         this.clusterStatus = clusterStatus;
         this.clusterKeyPosition = clusterKeyPosition;
+        this.ordinalPosition = ordinalPosition;
     }
 
 

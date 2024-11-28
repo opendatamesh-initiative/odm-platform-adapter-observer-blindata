@@ -83,8 +83,17 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         if (!CollectionUtils.isEmpty(dataStoreApiSchemaEntity.getProperties())) {
             physicalEntityRes.setPhysicalFields(dataStoreApiSchemaEntity.getProperties().values().stream().map(this::extractPhysicalFieldsFromColumn).collect(Collectors.toSet()));
         }
+
+        enreachWithSemanticLinking(physicalEntityRes.getPhysicalFields(), sContext);
         physicalEntityRes.setAdditionalProperties(getExtractAdditionalPropertiesForEntities(dataStoreApiSchemaEntity));
         return physicalEntityRes;
+    }
+
+    private void enreachWithSemanticLinking(Set<BDPhysicalFieldRes> physicalFieldResList, Map<String, Object> sContext) {
+        SemanticLinkEnricher enricher = new SemanticLinkEnricher();
+        enricher.enrichWithSemanticLinks(physicalFieldResList, sContext);
+
+
     }
 
     private List<AdditionalPropertiesRes> getExtractAdditionalPropertiesForEntities(DataStoreAPISchemaEntityDefinition dataStoreApiSchemaEntity) {
@@ -113,10 +122,19 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
     private BDPhysicalFieldRes extractPhysicalFieldsFromColumn(DataStoreApiSchemaColumn schema) {
         BDPhysicalFieldRes fieldRes = new BDPhysicalFieldRes();
         fieldRes.setName(schema.getName());
+        fieldRes.setOrdinalPosition(schema.getOrdinalPosition());
         fieldRes.setType(schema.getPhysicalType());
         fieldRes.setDescription(StringUtils.hasText(schema.getDescription()) ? schema.getDescription() : null);
+        fieldRes.setLogicalField(getLogicalFieldFromBlindata(schema.getName()));
         fieldRes.setAdditionalProperties(extractAdditionalPropertiesForFields(schema));
+
         return fieldRes;
+    }
+
+    private BDLogicaFieldRes getLogicalFieldFromBlindata(String fieldName) {
+        //Devo prendere il logical field da blindata
+        BDLogicaFieldRes logicaFieldRes = new BDLogicaFieldRes();
+        return logicaFieldRes;
     }
 
     private List<AdditionalPropertiesRes> extractAdditionalPropertiesForFields(DataStoreApiSchemaColumn dataStoreApiSchemaColumn) {
