@@ -31,9 +31,6 @@ public class BDPhysicalFieldRes {
     @Schema(description = "The date of modification of this entity in the system")
     private Date modificationDate;
 
-    @Schema(description = "The associated LogicalField", hidden = true)
-    private BDLogicaFieldRes logicalField;
-
     @Schema(description = "List of user defined properties")
     private List<AdditionalPropertiesRes> additionalProperties = new ArrayList<>();
 

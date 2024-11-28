@@ -16,31 +16,6 @@ import java.util.List;
 public class PortDataStoreApiAnalyzerTest {
     private ObjectMapper objectMapper = new ObjectMapper();
 
-
-    @Test
-    public void testDatastoreApiV0AnalyzerSingleEntityWithSemanticLinking() throws IOException {
-        String rawDefinition = objectMapper.readValue(
-                Resources.toByteArray(
-                        getClass().getResource("testDataStoreApiSemanticLinking.json")
-                ),
-                JsonNode.class
-        ).toString();
-
-        PortStandardDefinition portStandardDefinition = new PortStandardDefinition();
-        portStandardDefinition.setSpecification("datastoreapi");
-        portStandardDefinition.setSpecificationVersion("1.0.0");
-        portStandardDefinition.setDefinition(rawDefinition);
-
-        PortStandardDefinitionAnalyzer portStandardDefinitionAnalyzer = new PortDatastoreApiAnalyzer();
-        Assertions.assertThat(portStandardDefinitionAnalyzer.supportsPortStandardDefinition(portStandardDefinition)).isTrue();
-
-        List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionAnalyzer.getBDAssetsFromPortStandardDefinition(portStandardDefinition);
-        List<BDPhysicalEntityRes> expectedEntities = objectMapper.readValue(Resources.toByteArray(getClass().getResource("testDataStoreApiV0Analyzer_singleEntitySchema_expectedEntities.json")), Entities.class).physicalEntities;
-
-        Assertions.assertThat(extractedEntities).containsExactlyInAnyOrderElementsOf(expectedEntities);
-    }
-
-
     @Test
     public void testDatastoreApiV0AnalyzerSingleEntity() throws IOException {
         String rawDefinition = objectMapper.readValue(

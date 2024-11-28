@@ -72,7 +72,7 @@ public class DataProductUploadFactory implements UseCaseFactory {
             }
             case DATA_PRODUCT_VERSION_CREATED: {
                 DataProductVersionEventState dataProductVersionEventState = objectMapper.treeToValue(event.getEvent().getAfterState(), DataProductVersionEventState.class);
-                return null;
+                return new DataProductUploadOdmOutboundPortImpl(dataProductVersionEventState.getDataProductVersion().getInfo());
             }
             default:
                 throw new UseCaseInitException("Failed to init odmOutboundPort on DataProductUpload use case.");

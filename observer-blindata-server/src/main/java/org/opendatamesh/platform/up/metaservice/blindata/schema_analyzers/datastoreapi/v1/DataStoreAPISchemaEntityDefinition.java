@@ -1,7 +1,5 @@
 package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +24,6 @@ public class DataStoreAPISchemaEntityDefinition {
     private String physicalType;
     private String externalDocs;
     private Map<String, DataStoreApiSchemaColumn> properties = new HashMap<>();
-    @JsonProperty("s-context")
-    private Map<String, Object> sContext;
 
     public Map<String, DataStoreApiSchemaColumn> getProperties() {
         return properties;
@@ -163,13 +159,5 @@ public class DataStoreAPISchemaEntityDefinition {
 
     public void setExternalDocs(String externalDocs) {
         this.externalDocs = externalDocs;
-    }
-
-    public Map<String, Object> getsContext() {
-        return sContext;
-    }
-
-    public void setsContext(Map<String, Object> sContext) {
-        this.sContext = sContext;
     }
 }
