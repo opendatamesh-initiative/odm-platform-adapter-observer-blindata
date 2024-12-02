@@ -24,11 +24,14 @@ class StagesUploadOdmOutboundPortImpl implements StagesUploadOdmOutboundPort {
 
     @Override
     public List<BDDataProductStageRes> extractDataProductStages() {
-        if (isACompletedActivity()) {
-            BDDataProductStageRes stage = new BDDataProductStageRes();
-            stage.setName(activityResource.getStage());
-            stage.setVersion(dataProductVersion.getInfo().getVersionNumber());
-            return Lists.newArrayList(stage);
+        if (activityResource != null) {
+            if (isACompletedActivity()) {
+                BDDataProductStageRes stage = new BDDataProductStageRes();
+                stage.setName(activityResource.getStage());
+                stage.setVersion(dataProductVersion.getInfo().getVersionNumber());
+                return Lists.newArrayList(stage);
+            }
+            return Collections.emptyList();
         } else {
             SortedSet<String> stages = extractStageNamesFromDescriptor();
             return buildBlindataStages(stages);
@@ -60,7 +63,7 @@ class StagesUploadOdmOutboundPortImpl implements StagesUploadOdmOutboundPort {
     }
 
     private boolean isACompletedActivity() {
-        return activityResource != null && ActivityStatus.PROCESSED.equals(activityResource.getStatus());
+        return ActivityStatus.PROCESSED.equals(activityResource.getStatus());
     }
 }
 
