@@ -102,13 +102,18 @@ class DataProductPortsAndAssetsUpload implements UseCase {
         }
         try {
             JsonNode portRawContent = new ObjectMapper().readValue(odmDataProductPort.getRawContent(), JsonNode.class);
-            JsonNode dependsOnNode = portRawContent.get("x-dependsOn");
+            JsonNode xDependsOnNode = portRawContent.get("x-dependsOn");
+            JsonNode dependsOnNode = portRawContent.get("dependsOn");
+            String xDependsOn = Optional.ofNullable(xDependsOnNode).map(JsonNode::asText).orElse(null);
             String dependsOn = Optional.ofNullable(dependsOnNode).map(JsonNode::asText).orElse(null);
-            port.setDependsOnIdentifier(dependsOn);
+            if (xDependsOn != null && dependsOn != null) {
+                log.warn("{}: Both 'x-dependsOn' and 'dependsOn' are present. 'dependsOn' will be used.", USE_CASE_PREFIX);
+            }
+            // Prioritize 'dependsOn' if it exists; otherwise, use 'x-dependsOn'
+            port.setDependsOnIdentifier(dependsOn != null ? dependsOn : xDependsOn);
         } catch (JsonProcessingException e) {
             log.warn("{}: {}", USE_CASE_PREFIX, e.getMessage(), e);
         }
-
     }
 
     private List<AdditionalPropertiesRes> extractAdditionalProperties(PromisesDPDS promises) {

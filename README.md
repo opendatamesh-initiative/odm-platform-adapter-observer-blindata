@@ -1119,7 +1119,8 @@ details on the servers, channels, and message schemas used for streaming events 
 ## Input port dependency
 
 To map an external dependency for an InputPort, version 1.0.0 of the data product descriptor specification should be
-extended with the ```x-dependsOn``` field. This field must contain a single string representing the fully qualified name (FQN)
+extended with the ```x-dependsOn``` field. For versions > 1.0.0 it is possible to use the ```dependsOn``` field. 
+Both ```x-dependsOn``` and ```dependsOn``` must contain a single string representing the fully qualified name (FQN)
 of another data product port. This value will be uploaded to Blindata as dependsOnIdentifier and will be used to resolve
 data product dependencies and reconstruct data lineage at the data product level.
 
