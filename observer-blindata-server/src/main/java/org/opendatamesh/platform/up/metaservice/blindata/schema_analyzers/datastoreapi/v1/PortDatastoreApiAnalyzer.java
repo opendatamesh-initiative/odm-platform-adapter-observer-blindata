@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 @Component
 public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer {
 
-    @Autowired
-    private SemanticLinkManager semanticLinkManager;
+    private final SemanticLinkManager semanticLinkManager;
+
 
     private static final Logger log = LoggerFactory.getLogger(PortDatastoreApiAnalyzer.class);
     private final String SPECIFICATION = "datastoreapi";
@@ -35,6 +35,11 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
             .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+
+    @Autowired
+    public PortDatastoreApiAnalyzer(SemanticLinkManager semanticLinkManager) {
+        this.semanticLinkManager = semanticLinkManager;
+    }
 
     @Override
     public boolean supportsPortStandardDefinition(PortStandardDefinition portStandardDefinition) {
@@ -88,7 +93,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         if (!CollectionUtils.isEmpty(dataStoreApiSchemaEntity.getProperties())) {
             physicalEntityRes.setPhysicalFields(dataStoreApiSchemaEntity.getProperties().values().stream().map(this::extractPhysicalFieldsFromColumn).collect(Collectors.toSet()));
         }
-        semanticLinkManager.enrichPhysicalPropertiesWithSemanticLinks( dataStoreApiSchemaEntity.getsContext(), physicalEntityRes);
+        semanticLinkManager.enrichPhysicalPropertiesWithSemanticLinks(dataStoreApiSchemaEntity.getsContext(), physicalEntityRes);
         physicalEntityRes.setAdditionalProperties(getExtractAdditionalPropertiesForEntities(dataStoreApiSchemaEntity));
         return physicalEntityRes;
     }

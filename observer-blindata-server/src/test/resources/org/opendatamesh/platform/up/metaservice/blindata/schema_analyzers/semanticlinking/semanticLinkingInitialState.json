@@ -1,0 +1,38 @@
+{
+  "s-context": {
+    "s-base": "https://ontology.company-xyz.com",
+    "s-type": "[Airline]",
+    "destination": "flightTo[Airport].name",
+    "pilot": {
+      "s-type": "copyrightHolder[Staff]",
+      "organizationId": null,
+      "email": "contactPoint[ContactPoint].mail"
+    }
+  },
+  "physicalEntityRes": {
+    "uuid": null,
+    "schema": "layer2",
+    "name": "airline_freq",
+    "description": "The table that stores the updated status of each trip",
+    "dataSet": null,
+    "creationDate": null,
+    "modificationDate": null,
+    "physicalFields": [
+      {
+        "uuid": null,
+        "name": "destination",
+        "type": null,
+        "ordinalPosition": null,
+        "description": "The Airport of destination",
+        "creationDate": null,
+        "modificationDate": null,
+        "logicalFields": []
+      }
+    ],
+    "dataCategories": null,
+    "system": null,
+    "isConsentView": null,
+    "isHidden": null,
+    "tableType": "VIEW"
+  }
+}

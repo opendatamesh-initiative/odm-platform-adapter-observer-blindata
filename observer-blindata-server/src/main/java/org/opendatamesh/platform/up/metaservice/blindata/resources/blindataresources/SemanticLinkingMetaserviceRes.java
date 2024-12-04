@@ -6,19 +6,19 @@ public class SemanticLinkingMetaserviceRes {
 
     BDDataCategoryRes rootDataCategory;
 
+    public LogicalFieldSemanticLinkRes getSemanticLinkRes() {
+        return semanticLinkRes;
+    }
+
+    public void setSemanticLinkRes(LogicalFieldSemanticLinkRes semanticLinkRes) {
+        this.semanticLinkRes = semanticLinkRes;
+    }
+
     public BDDataCategoryRes getRootDataCategory() {
         return rootDataCategory;
     }
 
     public void setRootDataCategory(BDDataCategoryRes rootDataCategory) {
         this.rootDataCategory = rootDataCategory;
-    }
-
-    public LogicalFieldSemanticLinkRes getSemanticLinkElementRes() {
-        return semanticLinkRes;
-    }
-
-    public void setSemanticLinkElementResList(LogicalFieldSemanticLinkRes semanticLinkElementRes) {
-        this.semanticLinkRes = semanticLinkElementRes;
     }
 }
