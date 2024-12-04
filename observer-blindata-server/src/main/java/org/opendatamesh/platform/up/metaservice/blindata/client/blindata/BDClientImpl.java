@@ -9,12 +9,15 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.Bl
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
-public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, BDUserClient, BDPolicyEvaluationResultClient {
+public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, BDUserClient, BDPolicyEvaluationResultClient, BDSemanticLinkingClient {
     private final BDCredentials credentials;
     private final RestUtils restUtils;
 
@@ -248,6 +251,33 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
             throw new BlindataClientResourceMappingException(e.getMessage(), e);
         }
     }
+
+
+    @Override
+    public SemanticLinkingMetaserviceRes getSemanticLinkElements(String pathString, String defaultNamespaceIdentifier)
+            throws BlindataClientException {
+        try {
+            String url = String.format(
+                    "%s/api/v1/logical/semanticlinking/*/metaservice-path?pathString=%s&defaultNamespaceIdentifier=%s",
+                    credentials.getBlindataUrl(),
+                    pathString,
+                    defaultNamespaceIdentifier
+            );
+            HttpHeaders headers = getAuthenticatedHttpHeaders();
+            RestTemplate restTemplate = new RestTemplate();
+
+            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+            ResponseEntity<SemanticLinkingMetaserviceRes> responseEntity = restTemplate.exchange(
+                    url, HttpMethod.GET, requestEntity, SemanticLinkingMetaserviceRes.class
+            );
+
+            return responseEntity.getBody() != null ? responseEntity.getBody() : null;
+
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getMessage());
+        }
+    }
+
 
     private HttpHeaders getAuthenticatedHttpHeaders() {
         HttpHeaders headers = new HttpHeaders();

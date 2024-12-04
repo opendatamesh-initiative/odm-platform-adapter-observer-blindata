@@ -34,4 +34,6 @@ public class BDPhysicalFieldRes {
     @Schema(description = "List of user defined properties")
     private List<AdditionalPropertiesRes> additionalProperties = new ArrayList<>();
 
+    @Schema(description = "A list of associated logical fields with corresponding semantic link path")
+    private List<LogicalFieldSemanticLinkRes> logicalFields = new ArrayList<>();
 }

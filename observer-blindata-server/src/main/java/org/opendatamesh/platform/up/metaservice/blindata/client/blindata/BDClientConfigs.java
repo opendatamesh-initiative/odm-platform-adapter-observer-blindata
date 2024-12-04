@@ -33,4 +33,9 @@ public class BDClientConfigs {
         return new BDClientImpl(bdCredentials, restTemplate);
     }
 
+    @Bean
+    BDSemanticLinkingClient bdSemanticLinkingClient() {
+        return new BDClientImpl(bdCredentials, restTemplate);
+    }
+
 }

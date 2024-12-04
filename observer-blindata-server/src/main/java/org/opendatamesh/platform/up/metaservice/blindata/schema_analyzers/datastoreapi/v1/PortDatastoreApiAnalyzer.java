@@ -9,8 +9,10 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPhysicalFieldRes;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinition;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionAnalyzer;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -22,6 +24,9 @@ import java.util.stream.Collectors;
 
 @Component
 public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer {
+
+    @Autowired
+    private SemanticLinkManager semanticLinkManager;
 
     private static final Logger log = LoggerFactory.getLogger(PortDatastoreApiAnalyzer.class);
     private final String SPECIFICATION = "datastoreapi";
@@ -83,6 +88,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         if (!CollectionUtils.isEmpty(dataStoreApiSchemaEntity.getProperties())) {
             physicalEntityRes.setPhysicalFields(dataStoreApiSchemaEntity.getProperties().values().stream().map(this::extractPhysicalFieldsFromColumn).collect(Collectors.toSet()));
         }
+        semanticLinkManager.enrichPhysicalPropertiesWithSemanticLinks( dataStoreApiSchemaEntity.getsContext(), physicalEntityRes);
         physicalEntityRes.setAdditionalProperties(getExtractAdditionalPropertiesForEntities(dataStoreApiSchemaEntity));
         return physicalEntityRes;
     }
