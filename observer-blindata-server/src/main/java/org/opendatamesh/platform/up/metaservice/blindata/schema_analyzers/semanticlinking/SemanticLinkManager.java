@@ -6,5 +6,7 @@ import java.util.Map;
 
 public interface SemanticLinkManager {
 
-    void enrichPhysicalPropertiesWithSemanticLinks(Map<String, Object> sContext, BDPhysicalEntityRes physicalEntity);
+    void enrichPhysicalFieldsWithSemanticLinks(Map<String, Object> sContext, BDPhysicalEntityRes physicalEntity);
+
+    void linkPhysicalEntityToDataCategory(Map<String, Object> sContext, BDPhysicalEntityRes physicalEntity);
 }

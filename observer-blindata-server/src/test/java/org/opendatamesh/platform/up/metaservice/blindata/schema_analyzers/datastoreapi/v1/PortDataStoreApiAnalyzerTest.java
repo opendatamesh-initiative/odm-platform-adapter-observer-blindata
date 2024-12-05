@@ -9,6 +9,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinition;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionAnalyzer;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkingManagerInitialState;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkingManagerMockFactory;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class PortDataStoreApiAnalyzerTest {
         portStandardDefinition.setSpecificationVersion("1.0.0");
         portStandardDefinition.setDefinition(rawDefinition);
 
-        final SemanticLinkManager semanticLinkManager = mockFactory.buildSemanticLinkingManagerMock(null);
+        final SemanticLinkManager semanticLinkManager = mockFactory.buildSemanticLinkingManagerMock(new SemanticLinkingManagerInitialState());
         PortStandardDefinitionAnalyzer portStandardDefinitionAnalyzer = new PortDatastoreApiAnalyzer(semanticLinkManager);
         Assertions.assertThat(portStandardDefinitionAnalyzer.supportsPortStandardDefinition(portStandardDefinition)).isTrue();
 

@@ -1,7 +1,10 @@
 package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking;
 
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDSemanticLinkingClient;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.*;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataCategoryRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPhysicalEntityRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPhysicalFieldRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.LogicalFieldSemanticLinkRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.BlindataClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,32 +21,40 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
         this.client = client;
     }
 
-    public void enrichPhysicalPropertiesWithSemanticLinks(Map<String, Object> sContext, BDPhysicalEntityRes physicalEntity) {
+    public void enrichPhysicalFieldsWithSemanticLinks(Map<String, Object> sContext, BDPhysicalEntityRes physicalEntity) {
         if (sContext != null && physicalEntity != null) {
             final Map<String, BDSemanticLink> semanticLinksByPhysicalFieldName = getSemanticLinksByPhysicalFieldName(physicalEntity.getPhysicalFields(), sContext);
             for (Map.Entry<String, BDSemanticLink> entry : semanticLinksByPhysicalFieldName.entrySet()) {
                 String pfName = entry.getKey();
                 BDSemanticLink semanticLink = entry.getValue();
-                SemanticLinkingMetaserviceRes extractedSemanticLinkFromBlindata = resolveSemanticLinkElements(semanticLink);
+                LogicalFieldSemanticLinkRes extractedSemanticLinkFromBlindata = resolveSemanticLinkElements(semanticLink);
                 if (extractedSemanticLinkFromBlindata != null) {
                     enrichPhysicalFieldAndEntityWithExtractedSemanticLink(physicalEntity.getPhysicalFields(), pfName, extractedSemanticLinkFromBlindata, physicalEntity);
-                    Set<BDDataCategoryRes> dataCategoryRes = new HashSet<>();
-                    dataCategoryRes.add(extractedSemanticLinkFromBlindata.getRootDataCategory());
-                    physicalEntity.setDataCategories(dataCategoryRes);
                 }
             }
         }
     }
 
-    private void enrichPhysicalFieldAndEntityWithExtractedSemanticLink(Set<BDPhysicalFieldRes> physicalFieldResList, String pfName, SemanticLinkingMetaserviceRes extractedSemanticLinkFromBlindata, BDPhysicalEntityRes physicalEntity) {
+    @Override
+    public void linkPhysicalEntityToDataCategory(Map<String, Object> sContext, BDPhysicalEntityRes physicalEntity) {
+        if (sContext != null) {
+            String defaultNamespaceIdentifier = (String) sContext.get("s-base");
+            String rootCategoryName = (String) sContext.get("s-type");
+            final BDDataCategoryRes dataCategoryRes = client.getDataCategoryByNameAndNamespace(rootCategoryName.replaceAll("[\\[\\]]", ""), defaultNamespaceIdentifier).get();
+            Set<BDDataCategoryRes> dataCategoryResSet = new HashSet<>();
+            dataCategoryResSet.add(dataCategoryRes);
+            physicalEntity.setDataCategories(dataCategoryResSet);
+        }
+    }
+
+    private void enrichPhysicalFieldAndEntityWithExtractedSemanticLink(Set<BDPhysicalFieldRes> physicalFieldResList, String pfName, LogicalFieldSemanticLinkRes semanticLinkRes, BDPhysicalEntityRes physicalEntity) {
         BDPhysicalFieldRes correspondingPhysicalField = physicalFieldResList.stream()
                 .filter(field -> pfName.equals(field.getName()))
                 .findFirst()
                 .orElse(null);
         if (correspondingPhysicalField != null) {
-            LogicalFieldSemanticLinkRes logicalFieldSemanticLinkRes = extractedSemanticLinkFromBlindata.getSemanticLinkRes();
             List<LogicalFieldSemanticLinkRes> logicalFieldSemanticLinkResList = new ArrayList<>();
-            logicalFieldSemanticLinkResList.add(logicalFieldSemanticLinkRes);
+            logicalFieldSemanticLinkResList.add(semanticLinkRes);
             correspondingPhysicalField.setLogicalFields(logicalFieldSemanticLinkResList);
         }
     }
@@ -63,7 +74,7 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
         return semanticLinkMapByPhysicalFieldName;
     }
 
-    public SemanticLinkingMetaserviceRes resolveSemanticLinkElements(BDSemanticLink semanticLink) {
+    public LogicalFieldSemanticLinkRes resolveSemanticLinkElements(BDSemanticLink semanticLink) {
         try {
             return client.getSemanticLinkElements(
                     semanticLink.getSemanticLinkString(),

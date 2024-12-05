@@ -3,6 +3,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.seman
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPhysicalEntityRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.LogicalFieldSemanticLinkRes;
 
 import java.util.Map;
 
@@ -13,4 +14,6 @@ public class SemanticLinkingManagerInitialState {
 
     @JsonProperty("s-context")
     private Map<String, Object> sContext;
+
+    private LogicalFieldSemanticLinkRes semanticLinkRes;
 }

@@ -2,10 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.seman
 
 public class SemanticLinkingManagerMockFactory {
 
-    private SemanticLinkingManagerInitialState initialState;
-
-
     public SemanticLinkManager buildSemanticLinkingManagerMock(SemanticLinkingManagerInitialState initialState) {
-        return new SemanticLinkManagerImpl(new BDSemanticLinkingClientMock());
+        return new SemanticLinkManagerImpl(new BDSemanticLinkingClientMock(initialState));
     }
 }

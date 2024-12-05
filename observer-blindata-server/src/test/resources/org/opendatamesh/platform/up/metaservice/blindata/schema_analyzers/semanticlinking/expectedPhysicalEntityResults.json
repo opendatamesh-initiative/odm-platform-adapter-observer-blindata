@@ -1,0 +1,69 @@
+{
+  "uuid": null,
+  "schema": "layer2",
+  "name": "airline_freq",
+  "description": "The table that stores the updated status of each trip",
+  "dataSet": null,
+  "creationDate": null,
+  "modificationDate": null,
+  "physicalFields": [
+    {
+      "uuid": null,
+      "name": "destination",
+      "type": null,
+      "ordinalPosition": null,
+      "description": "The Airport of destination",
+      "creationDate": null,
+      "modificationDate": null,
+      "additionalProperties": [],
+      "logicalFields": [
+        {
+          "semanticLink": {
+            "defaultNamespaceIdentifier": "https://ontology.company-xyz.com",
+            "semanticLinkString": "[Airline].flightTo[Airport].name",
+            "semanticLinkElements": [
+              {
+                "sequenceId": null,
+                "baseLink": null,
+                "resourceType": "DATA_CATEGORY",
+                "resourceIdentifier": "2c2b941e-cc59-4107-a174-3c8243216637",
+                "resourceName": "Airline",
+                "ordinalPosition": 0
+              },
+              {
+                "sequenceId": null,
+                "baseLink": null,
+                "resourceType": "LOGICAL_RELATION",
+                "resourceIdentifier": "29d2ce8a-a7b9-4ca0-8efb-459f84d81d6c",
+                "resourceName": "flightTo",
+                "ordinalPosition": 1
+              },
+              {
+                "sequenceId": null,
+                "baseLink": null,
+                "resourceType": "DATA_CATEGORY",
+                "resourceIdentifier": "96a79cc5-64aa-44ad-976a-700e13ec8f5d",
+                "resourceName": "Airport",
+                "ordinalPosition": 2
+              },
+              {
+                "sequenceId": null,
+                "baseLink": null,
+                "resourceType": "LOGICAL_FIELD",
+                "resourceIdentifier": "178f0fe3-f27c-4a69-849b-9ad86f876ec6",
+                "resourceName": "name",
+                "ordinalPosition": 3
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "dataCategories": null,
+  "system": null,
+  "isConsentView": null,
+  "isHidden": null,
+  "tableType": "VIEW",
+  "additionalProperties": []
+}

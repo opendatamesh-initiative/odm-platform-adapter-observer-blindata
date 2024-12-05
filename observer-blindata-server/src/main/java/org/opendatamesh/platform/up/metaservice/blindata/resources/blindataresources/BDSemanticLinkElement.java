@@ -6,7 +6,7 @@ public class BDSemanticLinkElement {
 
     private BDSemanticLinkHeader baseLink;
 
-    private BDResourceType resourceType;
+    private String resourceType;
 
     private String resourceIdentifier;
 
@@ -30,11 +30,11 @@ public class BDSemanticLinkElement {
         this.baseLink = baseLink;
     }
 
-    public BDResourceType getResourceType() {
+    public String getResourceType() {
         return resourceType;
     }
 
-    public void setResourceType(BDResourceType resourceType) {
+    public void setResourceType(String resourceType) {
         this.resourceType = resourceType;
     }
 
