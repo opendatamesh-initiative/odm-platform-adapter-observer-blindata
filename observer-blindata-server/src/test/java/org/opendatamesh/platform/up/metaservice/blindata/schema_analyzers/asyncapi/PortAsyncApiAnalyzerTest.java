@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.services.schema_analyzers.asyncapi;
+package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
