@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.services.schema_analyzers.datastoreapi.v1;
+package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPhysicalEntityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinition;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionAnalyzer;
-import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1.PortDatastoreApiAnalyzer;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkingManagerInitialState;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkingManagerMockFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,8 +18,11 @@ import java.util.List;
 public class PortDataStoreApiAnalyzerTest {
     private ObjectMapper objectMapper = new ObjectMapper();
 
+
     @Test
     public void testDatastoreApiV0AnalyzerSingleEntity() throws IOException {
+        SemanticLinkingManagerMockFactory mockFactory = new SemanticLinkingManagerMockFactory();
+
         String rawDefinition = objectMapper.readValue(
                 Resources.toByteArray(
                         getClass().getResource("testDataStoreApiV0Analyzer_singleEntitySchema_rawPortStandardDefinition.json")
@@ -30,7 +35,8 @@ public class PortDataStoreApiAnalyzerTest {
         portStandardDefinition.setSpecificationVersion("1.0.0");
         portStandardDefinition.setDefinition(rawDefinition);
 
-        PortStandardDefinitionAnalyzer portStandardDefinitionAnalyzer = new PortDatastoreApiAnalyzer();
+        final SemanticLinkManager semanticLinkManager = mockFactory.buildSemanticLinkingManagerMock(new SemanticLinkingManagerInitialState());
+        PortStandardDefinitionAnalyzer portStandardDefinitionAnalyzer = new PortDatastoreApiAnalyzer(semanticLinkManager);
         Assertions.assertThat(portStandardDefinitionAnalyzer.supportsPortStandardDefinition(portStandardDefinition)).isTrue();
 
         List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionAnalyzer.getBDAssetsFromPortStandardDefinition(portStandardDefinition);
@@ -42,6 +48,8 @@ public class PortDataStoreApiAnalyzerTest {
 
     @Test
     public void testDatastoreApiV0AnalyzerMultipleEntities() throws IOException {
+        SemanticLinkingManagerMockFactory mockFactory = new SemanticLinkingManagerMockFactory();
+
         String rawDefinition = objectMapper.readValue(
                 Resources.toByteArray(
                         getClass().getResource("testDataStoreApiV0Analyzer_multipleEntitiesSchema_rawPortStandardDefinition.json")
@@ -54,7 +62,7 @@ public class PortDataStoreApiAnalyzerTest {
         portStandardDefinition.setSpecificationVersion("1.0.0");
         portStandardDefinition.setDefinition(rawDefinition);
 
-        PortStandardDefinitionAnalyzer portStandardDefinitionAnalyzer = new PortDatastoreApiAnalyzer();
+        PortStandardDefinitionAnalyzer portStandardDefinitionAnalyzer = new PortDatastoreApiAnalyzer(mockFactory.buildSemanticLinkingManagerMock(null));
         Assertions.assertThat(portStandardDefinitionAnalyzer.supportsPortStandardDefinition(portStandardDefinition)).isTrue();
 
         List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionAnalyzer.getBDAssetsFromPortStandardDefinition(portStandardDefinition);

@@ -9,12 +9,16 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.Bl
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
-public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, BDUserClient, BDPolicyEvaluationResultClient {
+public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, BDUserClient, BDPolicyEvaluationResultClient, BDSemanticLinkingClient {
     private final BDCredentials credentials;
     private final RestUtils restUtils;
 
@@ -248,6 +252,55 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
             throw new BlindataClientResourceMappingException(e.getMessage(), e);
         }
     }
+
+
+    @Override
+    public LogicalFieldSemanticLinkRes getSemanticLinkElements(String pathString, String defaultNamespaceIdentifier)
+            throws BlindataClientException {
+        try {
+            String url = String.format(
+                    "%s/api/v1/logical/semanticlinking/*/resolvefield?pathString=%s&defaultNamespaceIdentifier=%s",
+                    credentials.getBlindataUrl(),
+                    pathString,
+                    defaultNamespaceIdentifier
+            );
+            HttpHeaders headers = getAuthenticatedHttpHeaders();
+            RestTemplate restTemplate = new RestTemplate();
+
+            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+            ResponseEntity<LogicalFieldSemanticLinkRes> responseEntity = restTemplate.exchange(
+                    url, HttpMethod.GET, requestEntity, LogicalFieldSemanticLinkRes.class
+            );
+
+            return responseEntity.getBody() != null ? responseEntity.getBody() : null;
+
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getMessage());
+        } catch (HttpClientErrorException e) {
+            throw new BlindataClientException(e.getRawStatusCode(), e.getMessage());
+        }
+    }
+
+    @Override
+    public Optional<BDDataCategoryRes> getDataCategoryByNameAndNamespace(String dataCategoryName, String defaultNamespaceIdentifier) {
+        try {
+            BDDataCategorySearchOptions filters = new BDDataCategorySearchOptions();
+            filters.setSearch(dataCategoryName);
+            filters.setNamespaceIdentifier(defaultNamespaceIdentifier);
+            return restUtils.getPage(
+                    String.format("%s/api/v1/datacategories", credentials.getBlindataUrl()),
+                    getAuthenticatedHttpHeaders(),
+                    PageRequest.ofSize(1),
+                    filters,
+                    BDDataCategoryRes.class
+            ).stream().findFirst();
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
 
     private HttpHeaders getAuthenticatedHttpHeaders() {
         HttpHeaders headers = new HttpHeaders();
