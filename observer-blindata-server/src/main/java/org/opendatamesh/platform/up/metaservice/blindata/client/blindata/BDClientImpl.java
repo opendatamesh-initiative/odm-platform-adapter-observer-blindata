@@ -16,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, BDUserClient, BDPolicyEvaluationResultClient, BDSemanticLinkingClient {
@@ -286,16 +284,18 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     @Override
     public Optional<BDDataCategoryRes> getDataCategoryByNameAndNamespaceUuid(String dataCategoryName, String namespaceUuid) {
         try {
-            BDDataCategorySearchOptions filters = new BDDataCategorySearchOptions();
-            List<String> namespaceUuids = new ArrayList<>();
-            namespaceUuids.add(namespaceUuid);
-            filters.setSearch(dataCategoryName);
-            filters.setNamespaceUuid(namespaceUuids);
+            String url = String.format(
+                    "%s/api/v1/datacategories?namespaceUuid=%s&search=%s",
+                    credentials.getBlindataUrl(),
+                    namespaceUuid,
+                    dataCategoryName
+            );
+
             return restUtils.getPage(
-                    String.format("%s/api/v1/datacategories", credentials.getBlindataUrl()),
+                   url,
                     getAuthenticatedHttpHeaders(),
                     PageRequest.ofSize(1),
-                    filters,
+                    null,
                     BDDataCategoryRes.class
             ).stream().findFirst();
         } catch (ClientException e) {
@@ -308,15 +308,16 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     @Override
     public Optional<BDLogicalNamespaceRes> getLogicalNamespaceByIdentifier(String identifier) {
         try {
-            BDNamespaceSearchOptions filters = new BDNamespaceSearchOptions();
-            List<String> identifiers = new ArrayList<>();
-            identifiers.add(identifier);
-            filters.setIdentifiers(identifiers);
+            String url = String.format(
+                    "%s/api/v1/logical/namespaces?identifiers=%s",
+                    credentials.getBlindataUrl(),
+                    identifier
+            );
             return restUtils.getPage(
-                    String.format("%s/api/v1/logical/namespaces", credentials.getBlindataUrl()),
+                    url,
                     getAuthenticatedHttpHeaders(),
                     PageRequest.ofSize(1),
-                    filters,
+                    null,
                     BDLogicalNamespaceRes.class
             ).stream().findFirst();
         } catch (ClientException e) {

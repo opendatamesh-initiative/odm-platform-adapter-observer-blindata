@@ -38,7 +38,7 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
         try {
             if (sContext != null && rootNamespace != null) {
                 String rootCategoryName = (String) sContext.get("s-type");
-                final BDDataCategoryRes dataCategoryRes = client.getDataCategoryByNameAndNamespaceUuid(rootCategoryName.replaceAll("[\\[\\]]", ""), rootNamespace.getUuid()).get();
+                final BDDataCategoryRes dataCategoryRes = client.getDataCategoryByNameAndNamespaceUuid(rootCategoryName.replaceAll("[\\[\\]]", ""), rootNamespace.getUuid()).orElse(null);
                 Set<BDDataCategoryRes> dataCategoryResSet = new HashSet<>();
                 dataCategoryResSet.add(dataCategoryRes);
                 physicalEntity.setDataCategories(dataCategoryResSet);
@@ -52,7 +52,7 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
         try {
             if (sContext != null) {
                 String defaultNamespaceIdentifier = (String) sContext.get("s-base");
-                return client.getLogicalNamespaceByIdentifier(defaultNamespaceIdentifier).get();
+                return client.getLogicalNamespaceByIdentifier(defaultNamespaceIdentifier.replaceAll("[\\[\\]]", "")).orElse(null);
             }
         } catch (BlindataClientException e) {
             logger.warn("Error in get Logical Namespace : {}", e.getMessage());
