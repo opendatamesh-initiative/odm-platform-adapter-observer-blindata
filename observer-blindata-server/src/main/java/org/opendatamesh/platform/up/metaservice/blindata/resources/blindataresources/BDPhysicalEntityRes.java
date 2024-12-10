@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
 @Data
 public class BDPhysicalEntityRes {
 
@@ -33,6 +34,9 @@ public class BDPhysicalEntityRes {
 
     @Schema(description = "The set of PhysicalFields associated to this PhysicalEntity", hidden = true)
     private Set<BDPhysicalFieldRes> physicalFields;
+
+    @Schema(description = "The set of DataCategories contained in this PhysicalEntity")
+    private Set<BDDataCategoryRes> dataCategories;
 
     @Schema(description = "The System this PhysicalEntity belongs to")
     private BDSystemRes system;

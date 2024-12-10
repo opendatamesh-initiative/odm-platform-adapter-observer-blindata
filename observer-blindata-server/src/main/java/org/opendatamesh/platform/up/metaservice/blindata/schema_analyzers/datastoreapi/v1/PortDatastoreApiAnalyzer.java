@@ -9,8 +9,10 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPhysicalFieldRes;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinition;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionAnalyzer;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -23,6 +25,9 @@ import java.util.stream.Collectors;
 @Component
 public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer {
 
+    private final SemanticLinkManager semanticLinkManager;
+
+
     private static final Logger log = LoggerFactory.getLogger(PortDatastoreApiAnalyzer.class);
     private final String SPECIFICATION = "datastoreapi";
     private final String VERSION = "1.*.*";
@@ -30,6 +35,11 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
             .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+
+    @Autowired
+    public PortDatastoreApiAnalyzer(SemanticLinkManager semanticLinkManager) {
+        this.semanticLinkManager = semanticLinkManager;
+    }
 
     @Override
     public boolean supportsPortStandardDefinition(PortStandardDefinition portStandardDefinition) {
@@ -83,6 +93,8 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         if (!CollectionUtils.isEmpty(dataStoreApiSchemaEntity.getProperties())) {
             physicalEntityRes.setPhysicalFields(dataStoreApiSchemaEntity.getProperties().values().stream().map(this::extractPhysicalFieldsFromColumn).collect(Collectors.toSet()));
         }
+        semanticLinkManager.enrichPhysicalFieldsWithSemanticLinks(dataStoreApiSchemaEntity.getsContext(), physicalEntityRes);
+        semanticLinkManager.linkPhysicalEntityToDataCategory(dataStoreApiSchemaEntity.getsContext(), physicalEntityRes);
         physicalEntityRes.setAdditionalProperties(getExtractAdditionalPropertiesForEntities(dataStoreApiSchemaEntity));
         return physicalEntityRes;
     }
