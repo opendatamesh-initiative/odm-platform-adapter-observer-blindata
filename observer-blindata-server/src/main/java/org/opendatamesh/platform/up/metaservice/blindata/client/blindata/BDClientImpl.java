@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, BDUserClient, BDPolicyEvaluationResultClient, BDSemanticLinkingClient {
@@ -282,11 +284,13 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     }
 
     @Override
-    public Optional<BDDataCategoryRes> getDataCategoryByNameAndNamespace(String dataCategoryName, String defaultNamespaceIdentifier) {
+    public Optional<BDDataCategoryRes> getDataCategoryByNameAndNamespaceUuid(String dataCategoryName, String namespaceUuid) {
         try {
             BDDataCategorySearchOptions filters = new BDDataCategorySearchOptions();
+            List<String> namespaceUuids = new ArrayList<>();
+            namespaceUuids.add(namespaceUuid);
             filters.setSearch(dataCategoryName);
-            filters.setNamespaceIdentifier(defaultNamespaceIdentifier);
+            filters.setNamespaceUuid(namespaceUuids);
             return restUtils.getPage(
                     String.format("%s/api/v1/datacategories", credentials.getBlindataUrl()),
                     getAuthenticatedHttpHeaders(),
@@ -298,6 +302,25 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
             throw new BlindataClientException(e.getCode(), e.getResponseBody());
         } catch (ClientResourceMappingException e) {
             throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Optional<BDLogicalNamespaceRes> getLogicalNamespaceByIdentifier(String identifier) {
+        try {
+            BDNamespaceSearchOptions filters = new BDNamespaceSearchOptions();
+            List<String> identifiers = new ArrayList<>();
+            identifiers.add(identifier);
+            filters.setIdentifiers(identifiers);
+            return restUtils.getPage(
+                    String.format("%s/api/v1/logical/namespaces", credentials.getBlindataUrl()),
+                    getAuthenticatedHttpHeaders(),
+                    PageRequest.ofSize(1),
+                    filters,
+                    BDLogicalNamespaceRes.class
+            ).stream().findFirst();
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
         }
     }
 

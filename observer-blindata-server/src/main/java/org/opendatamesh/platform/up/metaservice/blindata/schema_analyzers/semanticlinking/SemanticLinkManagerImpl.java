@@ -1,10 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking;
 
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDSemanticLinkingClient;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataCategoryRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPhysicalEntityRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPhysicalFieldRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.LogicalFieldSemanticLinkRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.BlindataClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,14 +34,30 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
 
     @Override
     public void linkPhysicalEntityToDataCategory(Map<String, Object> sContext, BDPhysicalEntityRes physicalEntity) {
-        if (sContext != null) {
-            String defaultNamespaceIdentifier = (String) sContext.get("s-base");
-            String rootCategoryName = (String) sContext.get("s-type");
-            final BDDataCategoryRes dataCategoryRes = client.getDataCategoryByNameAndNamespace(rootCategoryName.replaceAll("[\\[\\]]", ""), defaultNamespaceIdentifier).get();
-            Set<BDDataCategoryRes> dataCategoryResSet = new HashSet<>();
-            dataCategoryResSet.add(dataCategoryRes);
-            physicalEntity.setDataCategories(dataCategoryResSet);
+        final BDLogicalNamespaceRes rootNamespace = getRootNamespace(sContext);
+        try {
+            if (sContext != null && rootNamespace != null) {
+                String rootCategoryName = (String) sContext.get("s-type");
+                final BDDataCategoryRes dataCategoryRes = client.getDataCategoryByNameAndNamespaceUuid(rootCategoryName.replaceAll("[\\[\\]]", ""), rootNamespace.getUuid()).get();
+                Set<BDDataCategoryRes> dataCategoryResSet = new HashSet<>();
+                dataCategoryResSet.add(dataCategoryRes);
+                physicalEntity.setDataCategories(dataCategoryResSet);
+            }
+        } catch (BlindataClientException e) {
+            logger.warn("Error in SemanticLinkManager: Data Category not found: {}", e.getMessage());
         }
+    }
+
+    private BDLogicalNamespaceRes getRootNamespace(Map<String, Object> sContext) {
+        try {
+            if (sContext != null) {
+                String defaultNamespaceIdentifier = (String) sContext.get("s-base");
+                return client.getLogicalNamespaceByIdentifier(defaultNamespaceIdentifier).get();
+            }
+        } catch (BlindataClientException e) {
+            logger.warn("Error in get Logical Namespace : {}", e.getMessage());
+        }
+        return null;
     }
 
     private void enrichPhysicalFieldAndEntityWithExtractedSemanticLink(Set<BDPhysicalFieldRes> physicalFieldResList, String pfName, LogicalFieldSemanticLinkRes semanticLinkRes, BDPhysicalEntityRes physicalEntity) {
@@ -81,7 +94,7 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
                     semanticLink.getDefaultNamespaceIdentifier()
             );
         } catch (BlindataClientException e) {
-            logger.error("Error in SemanticLinkManager: BlindataClientException occurred. API Message: {}", e.getMessage());
+            logger.warn("Error in SemanticLinkManager: BlindataClientException occurred. API Message: {}", e.getMessage());
             return null;
         }
     }
