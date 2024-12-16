@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources;
+package org.opendatamesh.platform.up.metaservice.blindata.client.blindata;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
