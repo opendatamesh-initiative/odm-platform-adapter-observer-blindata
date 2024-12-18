@@ -20,10 +20,16 @@ import java.util.Optional;
 
 public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, BDUserClient, BDPolicyEvaluationResultClient, BDSemanticLinkingClient {
     private final BDCredentials credentials;
+    private final BDDataProductClientConfig dataProductClientConfig;
     private final RestUtils restUtils;
 
-    public BDClientImpl(BDCredentials bdCredentials, RestTemplate restTemplate) {
+    public BDClientImpl(
+            BDCredentials bdCredentials,
+            BDDataProductClientConfig dataProductClientConfig,
+            RestTemplate restTemplate
+    ) {
         this.credentials = bdCredentials;
+        this.dataProductClientConfig = dataProductClientConfig;
         this.restUtils = new RestUtils(restTemplate);
     }
 
@@ -64,7 +70,10 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     public BDDataProductRes patchDataProduct(BDDataProductRes dataProduct) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
             return restUtils.patch(
-                    String.format("%s/api/v1/dataproducts/{id}", credentials.getBlindataUrl()),
+                    String.format("%s/api/v1/dataproducts/{id}%s",
+                            credentials.getBlindataUrl(),
+                            dataProductClientConfig.isAssetsCleanup() ? "?assetsCleanup=true" : ""
+                    ),
                     getAuthenticatedHttpHeaders(),
                     dataProduct.getUuid(),
                     dataProduct,
@@ -133,7 +142,10 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     public BDProductPortAssetsRes createDataProductAssets(BDProductPortAssetsRes dataProductPortAssets) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
             return restUtils.patch(
-                    String.format("%s/api/v1/dataproducts/*/port-assets", credentials.getBlindataUrl()),
+                    String.format("%s/api/v1/dataproducts/*/port-assets%s",
+                            credentials.getBlindataUrl(),
+                            dataProductClientConfig.isAssetsCleanup() ? "?assetsCleanup=true" : ""
+                    ),
                     getAuthenticatedHttpHeaders(),
                     null,
                     dataProductPortAssets,
@@ -292,7 +304,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
             );
 
             return restUtils.getPage(
-                   url,
+                    url,
                     getAuthenticatedHttpHeaders(),
                     PageRequest.ofSize(1),
                     null,

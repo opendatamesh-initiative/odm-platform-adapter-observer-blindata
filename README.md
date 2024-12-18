@@ -1356,6 +1356,8 @@ blindata:
   roleUuid: A possible role identifier. You need this identifier to create or update responsibilities in Blindata (value optional)
   systemNameRegex: optional regex to extract system name from schema (value optional)
   systemTechnologyRegex: optional regex to extract system technology from schema (value optional)
+  dataProducts:
+    assetsCleanup: (true/false, default true) the option to enable/disable the cleanup of deprecated assets associated to data products ports
 ```
 
 ### ODM configuration
