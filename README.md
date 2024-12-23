@@ -10,55 +10,57 @@ its catalog remains aligned.
 ## Contents
 
 <!-- TOC -->
+
 * [Open Data Mesh Observer Blindata](#open-data-mesh-observer-blindata)
-  * [Contents](#contents)
+    * [Contents](#contents)
 * [Event Handling](#event-handling)
     * [Configuration](#configuration)
 * [Mapping data product descriptor into Blindata](#mapping-data-product-descriptor-into-blindata)
-  * [Promises.Platform](#promisesplatform)
-  * [General Schema Annotations](#general-schema-annotations)
-    * [Entities](#entities)
-    * [Fields](#fields)
-  * [Promises.Api.Definition: Specifications mapping in Blindata](#promisesapidefinition-specifications-mapping-in-blindata)
-    * [Data Store Api](#data-store-api)
-        * [From JSONSchema to Physical Entities](#from-jsonschema-to-physical-entities)
-      * [From JSONSchema to Physical Field](#from-jsonschema-to-physical-field)
-    * [AsyncApi](#asyncapi)
-        * [From Avro to Physical Fields](#from-avro-to-physical-fields)
-        * [From Json Schema to Physical Fields](#from-json-schema-to-physical-fields)
+    * [Promises.Platform](#promisesplatform)
+    * [General Schema Annotations](#general-schema-annotations)
+        * [Entities](#entities)
+        * [Fields](#fields)
+    * [Promises.Api.Definition: Specifications mapping in Blindata](#promisesapidefinition-specifications-mapping-in-blindata)
+        * [Data Store Api](#data-store-api)
+            * [From JSONSchema to Physical Entities](#from-jsonschema-to-physical-entities)
+            * [From JSONSchema to Physical Field](#from-jsonschema-to-physical-field)
+        * [AsyncApi](#asyncapi)
+            * [From Avro to Physical Fields](#from-avro-to-physical-fields)
+            * [From Json Schema to Physical Fields](#from-json-schema-to-physical-fields)
 * [Examples](#examples)
-  * [Datastore Api Example](#datastore-api-example)
-  * [Async Api](#async-api)
-    * [Raw Port Async Api V3](#raw-port-async-api-v3)
-    * [Raw Port Async Api V2](#raw-port-async-api-v2)
-    * [Entities Async Api V3](#entities-async-api-v3)
-    * [Entities Async Api V2](#entities-async-api-v2)
-  * [Input port dependency](#input-port-dependency)
+    * [Datastore Api Example](#datastore-api-example)
+    * [Async Api](#async-api)
+        * [Raw Port Async Api V3](#raw-port-async-api-v3)
+        * [Raw Port Async Api V2](#raw-port-async-api-v2)
+        * [Entities Async Api V3](#entities-async-api-v3)
+        * [Entities Async Api V2](#entities-async-api-v2)
+    * [Input port dependency](#input-port-dependency)
 * [Run the Project](#run-the-project)
-  * [Prerequisites](#prerequisites)
-  * [Dependencies](#dependencies)
-    * [Clone dependencies repository](#clone-dependencies-repository)
-    * [Compile dependencies](#compile-dependencies)
-  * [Run locally](#run-locally)
-    * [Clone repository](#clone-repository)
-    * [Compile project](#compile-project)
-    * [Run application](#run-application)
-  * [Run with Docker](#run-with-docker)
-    * [Clone repository](#clone-repository-1)
-    * [Compile project](#compile-project-1)
-    * [Build image](#build-image)
-    * [Run application](#run-application-1)
-    * [Stop application](#stop-application)
-  * [Run with Docker Compose](#run-with-docker-compose)
-    * [Clone repository](#clone-repository-2)
-    * [Compile project](#compile-project-2)
-    * [Build image](#build-image-1)
-    * [Run application](#run-application-2)
-    * [Stop application](#stop-application-1)
+    * [Prerequisites](#prerequisites)
+    * [Dependencies](#dependencies)
+        * [Clone dependencies repository](#clone-dependencies-repository)
+        * [Compile dependencies](#compile-dependencies)
+    * [Run locally](#run-locally)
+        * [Clone repository](#clone-repository)
+        * [Compile project](#compile-project)
+        * [Run application](#run-application)
+    * [Run with Docker](#run-with-docker)
+        * [Clone repository](#clone-repository-1)
+        * [Compile project](#compile-project-1)
+        * [Build image](#build-image)
+        * [Run application](#run-application-1)
+        * [Stop application](#stop-application)
+    * [Run with Docker Compose](#run-with-docker-compose)
+        * [Clone repository](#clone-repository-2)
+        * [Compile project](#compile-project-2)
+        * [Build image](#build-image-1)
+        * [Run application](#run-application-2)
+        * [Stop application](#stop-application-1)
 * [Test it](#test-it)
     * [REST services](#rest-services)
     * [Blindata configuration](#blindata-configuration)
     * [ODM configuration](#odm-configuration)
+
 <!-- TOC -->
 
 # Event Handling
@@ -1119,10 +1121,23 @@ details on the servers, channels, and message schemas used for streaming events 
 ## Input port dependency
 
 To map an external dependency for an InputPort, version 1.0.0 of the data product descriptor specification should be
-extended with the ```x-dependsOn``` field. For versions > 1.0.0 it is possible to use the ```dependsOn``` field. 
-Both ```x-dependsOn``` and ```dependsOn``` must contain a single string representing the fully qualified name (FQN)
-of another data product port. This value will be uploaded to Blindata as dependsOnIdentifier and will be used to resolve
-data product dependencies and reconstruct data lineage at the data product level.
+extended with the ```x-dependsOn``` field. For versions > 1.0.0 it is possible to use the ```dependsOn``` field.
+
+**Dependencies on Other Data Product Ports**
+To define dependencies on another data product port, the `x-dependsOn` or `dependsOn` field must include a single string
+representing
+the fully qualified name (FQN) of the target data product port. This value will be uploaded to Blindata as the
+dependsOnIdentifier.
+It plays a critical role in resolving data product dependencies and reconstructing data lineage at the data product
+level.
+
+**Dependencies on Blindata Systems**
+To map dependencies to systems in Blindata, the `x-dependsOn` or `dependsOn` field must contain a single string
+comprising a prefix and the Blindata system name.
+This format helps distinguish system dependencies from input port dependencies.
+The application extracts the system name from the combined string using the regex specified in the
+`blindata.dependsOnSystemNameRegex` property.
+The default is `blindata:systems:(.+)`.
 
 # Run the Project
 

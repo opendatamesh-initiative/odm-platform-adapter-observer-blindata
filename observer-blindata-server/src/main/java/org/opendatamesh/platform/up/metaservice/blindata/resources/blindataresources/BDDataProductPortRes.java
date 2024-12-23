@@ -25,6 +25,8 @@ public class BDDataProductPortRes {
 
     private String dependsOnIdentifier;
 
+    private BDSystemRes dependsOnSystem;
+
     private List<AdditionalPropertiesRes> additionalProperties;
 
 
@@ -106,5 +108,13 @@ public class BDDataProductPortRes {
 
     public void setAdditionalProperties(List<AdditionalPropertiesRes> additionalProperties) {
         this.additionalProperties = additionalProperties;
+    }
+
+    public BDSystemRes getDependsOnSystem() {
+        return dependsOnSystem;
+    }
+
+    public void setDependsOnSystem(BDSystemRes dependsOnSystem) {
+        this.dependsOnSystem = dependsOnSystem;
     }
 }

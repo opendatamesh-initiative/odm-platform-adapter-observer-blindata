@@ -2,6 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.data
 
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDProductPortAssetsRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDSystemRes;
 
 import java.util.Optional;
 
@@ -12,5 +13,7 @@ interface DataProductPortsAndAssetsUploadBlindataOutboundPort {
     void updateDataProductPorts(BDDataProductRes dataProduct);
 
     void createDataProductAssets(BDProductPortAssetsRes dataProductPortsAssets);
+
+    Optional<BDSystemRes> getSystemDependency(String portDependency);
 }
 

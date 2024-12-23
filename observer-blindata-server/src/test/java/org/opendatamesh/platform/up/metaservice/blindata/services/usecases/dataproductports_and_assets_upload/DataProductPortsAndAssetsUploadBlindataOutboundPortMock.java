@@ -2,6 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.data
 
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDProductPortAssetsRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDSystemRes;
 
 import java.util.Optional;
 
@@ -27,5 +28,10 @@ public class DataProductPortsAndAssetsUploadBlindataOutboundPortMock implements 
     @Override
     public void createDataProductAssets(BDProductPortAssetsRes dataProductPortsAssets) {
         //DO NOTHING
+    }
+
+    @Override
+    public Optional<BDSystemRes> getSystemDependency(String portDependency) {
+        return Optional.empty();
     }
 }

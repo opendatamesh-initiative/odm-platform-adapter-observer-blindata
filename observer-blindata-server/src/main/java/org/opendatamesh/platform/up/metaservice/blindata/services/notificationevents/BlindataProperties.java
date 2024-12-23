@@ -14,6 +14,7 @@ public class BlindataProperties {
     private String roleUuid;
     private String systemNameRegex;
     private String systemTechnologyRegex;
+    private String dependsOnSystemNameRegex;
     private List<EventHandler> eventHandlers;
 
     // Getters and Setters
@@ -121,5 +122,13 @@ public class BlindataProperties {
 
     public void setEventHandlers(List<EventHandler> eventHandlers) {
         this.eventHandlers = eventHandlers;
+    }
+
+    public String getDependsOnSystemNameRegex() {
+        return dependsOnSystemNameRegex;
+    }
+
+    public void setDependsOnSystemNameRegex(String dependsOnSystemNameRegex) {
+        this.dependsOnSystemNameRegex = dependsOnSystemNameRegex;
     }
 }
