@@ -110,7 +110,14 @@ class DataProductPortsAndAssetsUpload implements UseCase {
                 log.warn("{}: Both 'x-dependsOn' and 'dependsOn' are present. 'dependsOn' will be used.", USE_CASE_PREFIX);
             }
             // Prioritize 'dependsOn' if it exists; otherwise, use 'x-dependsOn'
-            port.setDependsOnIdentifier(dependsOn != null ? dependsOn : xDependsOn);
+            String portDependency = dependsOn != null ? dependsOn : xDependsOn;
+            if (StringUtils.hasText(portDependency)) {
+                blindataOutboundPort.getSystemDependency(portDependency)
+                        .ifPresentOrElse(
+                                port::setDependsOnSystem,
+                                () -> port.setDependsOnIdentifier(portDependency)
+                        );
+            }
         } catch (JsonProcessingException e) {
             log.warn("{}: {}", USE_CASE_PREFIX, e.getMessage(), e);
         }

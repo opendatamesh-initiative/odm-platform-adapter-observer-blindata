@@ -8,6 +8,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.OBEventNo
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.eventstates.DataProductActivityEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.eventstates.DataProductVersionEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.services.DataProductPortAssetAnalyzer;
+import org.opendatamesh.platform.up.metaservice.blindata.services.notificationevents.BlindataProperties;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
@@ -21,12 +22,12 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory {
 
     @Autowired
     private BDDataProductClient bdDataProductClient;
-
     @Autowired
     private DataProductPortAssetAnalyzer dataProductPortAssetAnalyzer;
-
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private BlindataProperties blindataProperties;
 
     private final Set<String> supportedEventTypes = Set.of(
             EventType.DATA_PRODUCT_VERSION_CREATED.name(),
@@ -39,7 +40,7 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory {
             throw new UseCaseInitException("Failed to init DataProductVersionUpload use case, unsupported event type: " + event.getEvent().getType());
         }
         try {
-            DataProductPortsAndAssetsUploadBlindataOutboundPort bdOutboundPort = new DataProductPortsAndAssetsUploadBlindataOutboundPortImpl(bdDataProductClient);
+            DataProductPortsAndAssetsUploadBlindataOutboundPort bdOutboundPort = new DataProductPortsAndAssetsUploadBlindataOutboundPortImpl(bdDataProductClient, blindataProperties.getDependsOnSystemNameRegex());
             DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
 
             return new DataProductPortsAndAssetsUpload(
@@ -53,7 +54,7 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory {
 
     private DataProductPortsAndAssetsUploadOdmOutboundPort initOdmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
         switch (EventType.valueOf(event.getEvent().getType())) {
-            case DATA_PRODUCT_ACTIVITY_COMPLETED:{
+            case DATA_PRODUCT_ACTIVITY_COMPLETED: {
                 DataProductActivityEventState afterState = objectMapper.treeToValue(event.getEvent().getAfterState(), DataProductActivityEventState.class);
                 return new DataProductPortsAndAssetsUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, afterState.getDataProductVersion(), afterState.getActivity());
             }
@@ -61,7 +62,8 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory {
                 DataProductVersionEventState afterState = objectMapper.treeToValue(event.getEvent().getAfterState(), DataProductVersionEventState.class);
                 return new DataProductPortsAndAssetsUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, afterState.getDataProductVersion(), null);
             }
-            default: throw new UseCaseInitException("Failed to init odmOutboundPort on DataProductVersionUpload use case.");
+            default:
+                throw new UseCaseInitException("Failed to init odmOutboundPort on DataProductVersionUpload use case.");
         }
     }
 }

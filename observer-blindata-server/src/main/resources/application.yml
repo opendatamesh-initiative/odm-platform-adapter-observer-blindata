@@ -12,6 +12,7 @@ server:
 blindata:
   systemNameRegex: ".*"
   systemTechnologyRegex: "[^:]*"
+  dependsOnSystemNameRegex: "blindata:systems:(.+)"
   eventHandlers:
     - eventType: DATA_PRODUCT_CREATED
       filter: ""
