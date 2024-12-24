@@ -117,7 +117,6 @@ class DataProductPortsAndAssetsUpload implements UseCase {
                                 port::setDependsOnSystem,
                                 () -> port.setDependsOnIdentifier(portDependency)
                         );
-                port.setDependsOnIdentifier(portDependency);
             }
         } catch (JsonProcessingException e) {
             log.warn("{}: {}", USE_CASE_PREFIX, e.getMessage(), e);
