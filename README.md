@@ -35,6 +35,9 @@ its catalog remains aligned.
         * [Entities Async Api V3](#entities-async-api-v3)
         * [Entities Async Api V2](#entities-async-api-v2)
     * [Input port dependency](#input-port-dependency)
+* [Blindata credentials configurations](#blindata-credentials-configurations)
+    * [Using Api Key](#using-api-key)
+    * [Using Oauth2](#using-oauth2)
 * [Run the Project](#run-the-project)
     * [Prerequisites](#prerequisites)
     * [Dependencies](#dependencies)
@@ -1139,6 +1142,66 @@ The application extracts the system name from the combined string using the rege
 `blindata.dependsOnSystemNameRegex` property.
 The default is `blindata:systems:(.+)`.
 
+# Blindata credentials configurations
+
+First, you need to set the URL for communicating with Blindata:
+
+```yaml
+blindata:
+  url: https://app.blindata.io (an example)
+```
+Next, configure the Observer with the appropriate authentication method to interact with Blindata's APIs.
+For more details, refer to the [official documentation](https://help.blindata.io/administration/authentication-methods/)
+
+## Using Api Key
+
+If you want to use Api Key authentication method, you must add the following application properties.
+
+```yaml
+blindata:
+  [ ... ]
+  user: <The user identifier>
+  password: <The user password>
+  tenantUUID: <The Blindata tenant Uuid>
+  [ ... ]
+```
+
+## Using Oauth2
+
+If you want to use the Oauth2 protocol to retrieve a token from an external provider (e.g. Microsoft Entra ID, Google
+Cloud Identity) and then
+authenticate on Blindata API, you can configure one of the following methods.
+
+**Using shared secret**
+
+```yaml
+blindata:
+  [ ... ]
+  oauth2:
+    url: https://login.microsoftonline.com/<microsoftTenantId>/oauth2/v2.0/token
+    grantType: client_credentials
+    scope: https://app.blindata.io/.default (an example)s
+    clientId: <client identifier>
+    clientSecret: <client secret>
+  [ ... ]
+```
+
+**Using a certificate**
+The supported certificate format is `.pem` (Base64 format).
+
+```yaml
+blindata:
+  [ ... ]
+  oauth2:
+    url: https://login.microsoftonline.com/<microsoftTenantId>/oauth2/v2.0/token
+    grantType: client_credentials
+    scope: https://app.blindata.io/.default
+    clientId: <client identifier>
+    clientCertificate: <client certificate with the public key>
+    clientCertificatePrivateKey: <client certificate private key>
+  [ ... ] 
+```
+
 # Run the Project
 
 ## Prerequisites
@@ -1157,9 +1220,9 @@ This project needs some artifacts from the odm-platform project.
 
 Clone the repository and move to the project root folder:
 
-```bash
-git clone https://github.com/opendatamesh-initiative/odm-platform.git
-cd odm-platform
+  ```bash
+  git clone https://github.com/opendatamesh-initiative/odm-platform.git
+  cd odm-platform
 
 ```
 
