@@ -1187,6 +1187,7 @@ blindata:
 ```
 
 **Using a certificate**
+The supported certificate format is `.pem` (Base64 format).
 
 ```yaml
 blindata:

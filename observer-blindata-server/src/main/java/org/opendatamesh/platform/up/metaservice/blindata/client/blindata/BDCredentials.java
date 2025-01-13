@@ -90,6 +90,7 @@ public class BDCredentials {
                 StringUtils.hasText(this.oauth2GrantType) &&
                 StringUtils.hasText(this.oauth2Scope) &&
                 StringUtils.hasText(this.oauth2ClientId) &&
-                (StringUtils.hasText(this.oauth2ClientSecret) || (StringUtils.hasText(this.oauth2ClientCertificate) && StringUtils.hasText(this.oauth2ClientCertificatePrivateKey)));
+                (StringUtils.hasText(this.oauth2ClientSecret) || (StringUtils.hasText(this.oauth2ClientCertificate) && StringUtils.hasText(this.oauth2ClientCertificatePrivateKey))) &&
+                StringUtils.hasText(blindataTenantUuid);
     }
 }

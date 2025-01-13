@@ -367,9 +367,9 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
 
     private HttpHeaders getAuthenticatedHttpHeaders(HttpHeaders headers) {
         HttpHeaders authenticatedHeaders = headers != null ? new HttpHeaders(headers) : new HttpHeaders();
+        authenticatedHeaders.set("X-BD-Tenant", credentials.getBlindataTenantUuid());
 
         if (credentials.apiKeyIsConfigured()) {
-            authenticatedHeaders.set("X-BD-Tenant", credentials.getBlindataTenantUuid());
             authenticatedHeaders.set("X-BD-User", credentials.getBlindataUsername());
             authenticatedHeaders.set("X-BD-ApiKey", credentials.getBlindataPass());
             return authenticatedHeaders;
@@ -507,6 +507,6 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     }
 
     private String generateOauth2CacheKey() {
-        return credentials.getOauth2ClientId() + "-" + credentials.getOauth2Scope();
+        return credentials.getBlindataTenantUuid() + "-" + credentials.getOauth2ClientId() + "-" + credentials.getOauth2Scope();
     }
 }
