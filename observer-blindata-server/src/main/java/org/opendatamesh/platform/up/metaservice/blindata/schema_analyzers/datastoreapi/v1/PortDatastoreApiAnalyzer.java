@@ -93,8 +93,10 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         if (!CollectionUtils.isEmpty(dataStoreApiSchemaEntity.getProperties())) {
             physicalEntityRes.setPhysicalFields(dataStoreApiSchemaEntity.getProperties().values().stream().map(this::extractPhysicalFieldsFromColumn).collect(Collectors.toSet()));
         }
-        semanticLinkManager.enrichPhysicalFieldsWithSemanticLinks(dataStoreApiSchemaEntity.getsContext(), physicalEntityRes);
-        semanticLinkManager.linkPhysicalEntityToDataCategory(dataStoreApiSchemaEntity.getsContext(), physicalEntityRes);
+        if (dataStoreApiSchemaEntity.getsContext() != null && physicalEntityRes != null) {
+            semanticLinkManager.enrichPhysicalFieldsWithSemanticLinks(dataStoreApiSchemaEntity.getsContext(), physicalEntityRes);
+            semanticLinkManager.linkPhysicalEntityToDataCategory(dataStoreApiSchemaEntity.getsContext(), physicalEntityRes);
+        }
         physicalEntityRes.setAdditionalProperties(getExtractAdditionalPropertiesForEntities(dataStoreApiSchemaEntity));
         return physicalEntityRes;
     }

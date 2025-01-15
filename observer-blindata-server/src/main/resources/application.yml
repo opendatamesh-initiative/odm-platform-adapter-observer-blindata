@@ -7,12 +7,19 @@ server:
   error:
     include-message: always
   servlet:
-    context-path: /api/v1/up/observer/
+    context-path: /api/v1/up/
 
 blindata:
   systemNameRegex: ".*"
   systemTechnologyRegex: "[^:]*"
   dependsOnSystemNameRegex: "blindata:systems:(.+)"
+  validator:
+    active: false
+    policyEngine:
+      name: blindata_observer_validator
+    policy:
+      name: blindata_observer_validator_policy
+      blocking: true
   eventHandlers:
     - eventType: DATA_PRODUCT_CREATED
       filter: ""

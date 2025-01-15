@@ -8,14 +8,18 @@ import org.opendatamesh.dpds.model.interfaces.InterfaceComponentsDPDS;
 import org.opendatamesh.dpds.model.interfaces.PortDPDS;
 import org.opendatamesh.dpds.model.interfaces.PromisesDPDS;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.*;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseIncorrectInputException;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @Slf4j
 class DataProductPortsAndAssetsUpload implements UseCase {
@@ -32,12 +36,10 @@ class DataProductPortsAndAssetsUpload implements UseCase {
 
     @Override
     public void execute() throws UseCaseExecutionException {
-        try {
+        withErrorHandling(() -> {
             InterfaceComponentsDPDS interfaceComponentsDPDS = odmOutboundPort.getDataProductVersion().getInterfaceComponents();
-            if (interfaceComponentsDPDS == null) {
-                log.warn("{} Missing interface components on data product: {}.", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName());
-                return;
-            }
+            validateDataProductDescriptorPorts(interfaceComponentsDPDS);
+
             Optional<BDDataProductRes> existentDataProduct = blindataOutboundPort.findDataProduct(odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName());
             if (existentDataProduct.isEmpty()) {
                 log.warn("{} Data product: {} has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName());
@@ -51,12 +53,51 @@ class DataProductPortsAndAssetsUpload implements UseCase {
 
             List<BDDataProductPortAssetDetailRes> dataProductPortAssets = extractBdAssetsFromDpPorts(interfaceComponentsDPDS);
             log.info("{} Data product: {}, found {} data assets.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), dataProductPortAssets.size());
+            validateDataProductPortsAssets(dataProductPortAssets);
             uploadAssetsOnBlindata(dataProductPortAssets);
+        });
+    }
 
-        } catch (Exception e) {
-            throw new UseCaseExecutionException(e.getMessage(), e);
+    private void validateDataProductDescriptorPorts(InterfaceComponentsDPDS interfaceComponentsDPDS) {
+        if (interfaceComponentsDPDS == null ||
+                (CollectionUtils.isEmpty(interfaceComponentsDPDS.getControlPorts()) &&
+                        CollectionUtils.isEmpty(interfaceComponentsDPDS.getOutputPorts()) &&
+                        CollectionUtils.isEmpty(interfaceComponentsDPDS.getObservabilityPorts()) &&
+                        CollectionUtils.isEmpty(interfaceComponentsDPDS.getInputPorts()) &&
+                        CollectionUtils.isEmpty(interfaceComponentsDPDS.getDiscoveryPorts()))
+        ) {
+            throw new UseCaseIncorrectInputException(String.format("%s Missing interface components on data product: %s", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName()));
         }
 
+    }
+
+    private void validateDataProductPortsAssets(List<BDDataProductPortAssetDetailRes> dataProductPortAssetsDetails) {
+        for (BDDataProductPortAssetDetailRes dataProductPortAssetsDetail : dataProductPortAssetsDetails) {
+            getOrElseThrow(dataProductPortAssetsDetail::getPortIdentifier, new UseCaseIncorrectInputException(USE_CASE_PREFIX + "Missing port identifier on data product port asset"));
+            for (BDProductPortAssetSystemRes dataProductPortAssets : dataProductPortAssetsDetail.getAssets()) {
+                validateSystem(dataProductPortAssets.getSystem());
+                if (dataProductPortAssets.getPhysicalEntities() == null) {
+                    throw new UseCaseIncorrectInputException(USE_CASE_PREFIX + " Missing physical entities on data product port assets");
+                }
+                dataProductPortAssets.getPhysicalEntities().forEach(this::validatePhysicalEntity);
+            }
+        }
+    }
+
+    private void validateSystem(BDSystemRes system) {
+        if (system == null) {
+            throw new UseCaseIncorrectInputException(USE_CASE_PREFIX + " Missing system on data product port assets.");
+        }
+        getOrElseThrow(system::getName, new UseCaseIncorrectInputException(USE_CASE_PREFIX + " Missing name on data product port asset system."));
+    }
+
+    private void validatePhysicalEntity(BDPhysicalEntityRes physicalEntity) {
+        getOrElseThrow(physicalEntity::getName, new UseCaseIncorrectInputException(USE_CASE_PREFIX + " Missing name on data product port asset physical entity."));
+        if (physicalEntity.getPhysicalFields() != null) {
+            for (BDPhysicalFieldRes physicalField : physicalEntity.getPhysicalFields()) {
+                getOrElseThrow(physicalField::getName, new UseCaseIncorrectInputException(USE_CASE_PREFIX + " Missing name on data product port asset physical field."));
+            }
+        }
     }
 
     private List<BDDataProductPortRes> extractBdDataProductPorts(InterfaceComponentsDPDS interfaceComponentsDPDS) {
@@ -80,13 +121,12 @@ class DataProductPortsAndAssetsUpload implements UseCase {
 
     private BDDataProductPortRes odmToBlindataDataProductPort(PortDPDS odmDataProductPort, String entityType) {
         BDDataProductPortRes port = new BDDataProductPortRes();
+        port.setIdentifier(getOrElseThrow(odmDataProductPort::getFullyQualifiedName, new UseCaseIncorrectInputException(" Missing identifier on data product port.")));
+        port.setName(getOrElseThrow(odmDataProductPort::getName, new UseCaseIncorrectInputException(USE_CASE_PREFIX + " Missing name on data product port.")));
         port.setDisplayName(odmDataProductPort.getDisplayName());
+        port.setVersion(getOrElseThrow(odmDataProductPort::getVersion, new UseCaseIncorrectInputException(USE_CASE_PREFIX + " Missing version on data product port.")));
         port.setDescription(odmDataProductPort.getDescription());
-        port.setName(odmDataProductPort.getName());
-        port.setIdentifier(odmDataProductPort.getFullyQualifiedName());
-        port.setDisplayName(odmDataProductPort.getDisplayName());
-        port.setEntityType(entityType);
-        port.setVersion(odmDataProductPort.getVersion());
+        port.setEntityType(getOrElseThrow(() -> entityType, new UseCaseIncorrectInputException(USE_CASE_PREFIX + " Missing type on data product port.")));
         if (odmDataProductPort.getPromises() != null) {
             port.setServicesType(odmDataProductPort.getPromises().getServicesType());
             port.setAdditionalProperties(extractAdditionalProperties(odmDataProductPort.getPromises()));
@@ -156,5 +196,27 @@ class DataProductPortsAndAssetsUpload implements UseCase {
                 .map(odmOutboundPort::extractBDAssetsFromPorts)
                 .ifPresent(dataProductPortAssets::addAll);
         return dataProductPortAssets;
+    }
+
+    private String getOrElseThrow(Supplier<String> getter, RuntimeException e) {
+        return Optional.ofNullable(getter.get())
+                .filter(StringUtils::hasText)
+                .orElseThrow(() -> e);
+    }
+
+    private void withErrorHandling(Runnable runnable) throws UseCaseExecutionException {
+        try {
+            runnable.run();
+        } catch (UseCaseIncorrectInputException e) {
+            throw e;
+        } catch (BlindataClientException e) {
+            if (e.getCode() != HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+                throw new UseCaseIncorrectInputException(e.getMessage(), e);
+            } else {
+                throw e;
+            }
+        } catch (Exception e) {
+            throw new UseCaseExecutionException(e.getMessage(), e);
+        }
     }
 }

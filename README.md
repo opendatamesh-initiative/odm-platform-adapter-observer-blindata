@@ -10,60 +10,59 @@ its catalog remains aligned.
 ## Contents
 
 <!-- TOC -->
-
 * [Open Data Mesh Observer Blindata](#open-data-mesh-observer-blindata)
-    * [Contents](#contents)
+  * [Contents](#contents)
 * [Event Handling](#event-handling)
     * [Configuration](#configuration)
+* [Data Product Validation](#data-product-validation)
 * [Mapping data product descriptor into Blindata](#mapping-data-product-descriptor-into-blindata)
-    * [Promises.Platform](#promisesplatform)
-    * [General Schema Annotations](#general-schema-annotations)
-        * [Entities](#entities)
-        * [Fields](#fields)
-    * [Promises.Api.Definition: Specifications mapping in Blindata](#promisesapidefinition-specifications-mapping-in-blindata)
-        * [Data Store Api](#data-store-api)
-            * [From JSONSchema to Physical Entities](#from-jsonschema-to-physical-entities)
-            * [From JSONSchema to Physical Field](#from-jsonschema-to-physical-field)
-        * [AsyncApi](#asyncapi)
-            * [From Avro to Physical Fields](#from-avro-to-physical-fields)
-            * [From Json Schema to Physical Fields](#from-json-schema-to-physical-fields)
+  * [Promises.Platform](#promisesplatform)
+  * [General Schema Annotations](#general-schema-annotations)
+    * [Entities](#entities)
+    * [Fields](#fields)
+  * [Promises.Api.Definition: Specifications mapping in Blindata](#promisesapidefinition-specifications-mapping-in-blindata)
+    * [Data Store Api](#data-store-api)
+        * [From JSONSchema to Physical Entities](#from-jsonschema-to-physical-entities)
+      * [From JSONSchema to Physical Field](#from-jsonschema-to-physical-field)
+    * [AsyncApi](#asyncapi)
+        * [From Avro to Physical Fields](#from-avro-to-physical-fields)
+        * [From Json Schema to Physical Fields](#from-json-schema-to-physical-fields)
 * [Examples](#examples)
-    * [Datastore Api Example](#datastore-api-example)
-    * [Async Api](#async-api)
-        * [Raw Port Async Api V3](#raw-port-async-api-v3)
-        * [Raw Port Async Api V2](#raw-port-async-api-v2)
-        * [Entities Async Api V3](#entities-async-api-v3)
-        * [Entities Async Api V2](#entities-async-api-v2)
-    * [Input port dependency](#input-port-dependency)
+  * [Datastore Api Example](#datastore-api-example)
+  * [Async Api](#async-api)
+    * [Raw Port Async Api V3](#raw-port-async-api-v3)
+    * [Raw Port Async Api V2](#raw-port-async-api-v2)
+    * [Entities Async Api V3](#entities-async-api-v3)
+    * [Entities Async Api V2](#entities-async-api-v2)
+  * [Input port dependency](#input-port-dependency)
 * [Blindata credentials configurations](#blindata-credentials-configurations)
-    * [Using Api Key](#using-api-key)
-    * [Using Oauth2](#using-oauth2)
+  * [Using Api Key](#using-api-key)
+  * [Using Oauth2](#using-oauth2)
 * [Run the Project](#run-the-project)
-    * [Prerequisites](#prerequisites)
-    * [Dependencies](#dependencies)
-        * [Clone dependencies repository](#clone-dependencies-repository)
-        * [Compile dependencies](#compile-dependencies)
-    * [Run locally](#run-locally)
-        * [Clone repository](#clone-repository)
-        * [Compile project](#compile-project)
-        * [Run application](#run-application)
-    * [Run with Docker](#run-with-docker)
-        * [Clone repository](#clone-repository-1)
-        * [Compile project](#compile-project-1)
-        * [Build image](#build-image)
-        * [Run application](#run-application-1)
-        * [Stop application](#stop-application)
-    * [Run with Docker Compose](#run-with-docker-compose)
-        * [Clone repository](#clone-repository-2)
-        * [Compile project](#compile-project-2)
-        * [Build image](#build-image-1)
-        * [Run application](#run-application-2)
-        * [Stop application](#stop-application-1)
+  * [Prerequisites](#prerequisites)
+  * [Dependencies](#dependencies)
+    * [Clone dependencies repository](#clone-dependencies-repository)
+    * [Compile dependencies](#compile-dependencies)
+  * [Run locally](#run-locally)
+    * [Clone repository](#clone-repository)
+    * [Compile project](#compile-project)
+    * [Run application](#run-application)
+  * [Run with Docker](#run-with-docker)
+    * [Clone repository](#clone-repository-1)
+    * [Compile project](#compile-project-1)
+    * [Build image](#build-image)
+    * [Run application](#run-application-1)
+    * [Stop application](#stop-application)
+  * [Run with Docker Compose](#run-with-docker-compose)
+    * [Clone repository](#clone-repository-2)
+    * [Compile project](#compile-project-2)
+    * [Build image](#build-image-1)
+    * [Run application](#run-application-2)
+    * [Stop application](#stop-application-1)
 * [Test it](#test-it)
     * [REST services](#rest-services)
     * [Blindata configuration](#blindata-configuration)
     * [ODM configuration](#odm-configuration)
-
 <!-- TOC -->
 
 # Event Handling
@@ -168,6 +167,28 @@ blindata:
 ```
 
 P.A. Actions are automatically ordered based on the correct sequence of execution.
+
+# Data Product Validation
+
+The Observer includes a feature that automatically generates a Policy within the Policy Service, which is evaluated
+before creating a DataProduct or DataProductVersion.
+
+In the configuration, the policy can be set to blocking, ensuring that the data product is created only if it meets
+compliance requirements. It verifies that the data product contains all necessary elements required by Blindata and can
+be uploaded without issues.
+
+Below is an example configuration:
+
+```yaml
+blindata:
+  validator:
+    active: true
+    policyEngine:
+      name: <policy engine name>
+    policy:
+      name: <policy name>
+      blocking: true (or false)
+```
 
 # Mapping data product descriptor into Blindata
 
@@ -1150,6 +1171,7 @@ First, you need to set the URL for communicating with Blindata:
 blindata:
   url: https://app.blindata.io (an example)
 ```
+
 Next, configure the Observer with the appropriate authentication method to interact with Blindata's APIs.
 For more details, refer to the [official documentation](https://help.blindata.io/administration/authentication-methods/)
 
