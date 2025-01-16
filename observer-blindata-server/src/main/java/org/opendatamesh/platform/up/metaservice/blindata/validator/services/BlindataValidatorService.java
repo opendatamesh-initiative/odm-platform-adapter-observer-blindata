@@ -1,8 +1,5 @@
 package org.opendatamesh.platform.up.metaservice.blindata.validator.services;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,7 +17,6 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.excep
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.PolicyEvaluationRequestRes;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.PolicyEvaluationResultRes;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,11 +43,6 @@ public class BlindataValidatorService {
         PolicyEvaluationResultRes.OutputObject resultOutput = new PolicyEvaluationResultRes.OutputObject();
         evaluationResult.setOutputObject(resultOutput);
 
-
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        Logger rootLogger = context.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
-        Level currentLevel = rootLogger.getLevel();
-
         try {
             PolicyEvaluationInputObject policyEvaluationInputObject = objectMapper.treeToValue(evaluationRequest.getObjectToEvaluate(), PolicyEvaluationInputObject.class);
             DataProductVersionDPDS descriptorToValidate = objectMapper.treeToValue(policyEvaluationInputObject.getAfterState(), DataProductVersionDPDS.class);
@@ -61,8 +52,6 @@ public class BlindataValidatorService {
             event.setType("DATA_PRODUCT_VERSION_CREATED");
             event.setAfterState(policyEvaluationInputObject.getAfterState());
             eventNotification.setEvent(event);
-
-            rootLogger.setLevel(Level.ERROR);
             dataProductUploadFactory.getUseCaseDryRun(eventNotification).execute();
             if (descriptorToValidate.getInterfaceComponents() != null) {
                 dataProductPortsAndAssetsUploadFactory.getUseCaseDryRun(eventNotification).execute();
@@ -81,9 +70,8 @@ public class BlindataValidatorService {
             throw new InternalServerException(e);
         } catch (JsonProcessingException e) {
             throw new BadRequestException(e);
-        } finally {
-            rootLogger.setLevel(currentLevel);
         }
+
         return evaluationResult;
     }
 

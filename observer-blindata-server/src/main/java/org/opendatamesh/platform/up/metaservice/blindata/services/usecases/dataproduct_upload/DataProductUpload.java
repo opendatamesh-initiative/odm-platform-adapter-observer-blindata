@@ -1,6 +1,5 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload;
 
-import lombok.extern.slf4j.Slf4j;
 import org.opendatamesh.dpds.model.info.InfoDPDS;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDShortUserRes;
@@ -10,22 +9,31 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.Bl
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseIncorrectInputException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
-@Slf4j
 class DataProductUpload implements UseCase {
 
     private final String USE_CASE_PREFIX = "[DataProductUpload]";
 
     private final DataProductUploadOdmOutboundPort odmOutboundPort;
     private final DataProductUploadBlindataOutboundPort blindataOutboundPort;
+    private final Logger log;
+
+    public DataProductUpload(DataProductUploadOdmOutboundPort odmOutboundPort, DataProductUploadBlindataOutboundPort blindataOutboundPort, Logger log) {
+        this.odmOutboundPort = odmOutboundPort;
+        this.blindataOutboundPort = blindataOutboundPort;
+        this.log = log;
+    }
 
     public DataProductUpload(DataProductUploadOdmOutboundPort odmOutboundPort, DataProductUploadBlindataOutboundPort blindataOutboundPort) {
         this.odmOutboundPort = odmOutboundPort;
         this.blindataOutboundPort = blindataOutboundPort;
+        this.log = LoggerFactory.getLogger(this.getClass());
     }
 
     @Override

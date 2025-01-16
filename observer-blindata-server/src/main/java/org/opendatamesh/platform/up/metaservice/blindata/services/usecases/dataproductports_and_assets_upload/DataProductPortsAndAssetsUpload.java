@@ -3,7 +3,6 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.data
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
 import org.opendatamesh.dpds.model.interfaces.InterfaceComponentsDPDS;
 import org.opendatamesh.dpds.model.interfaces.PortDPDS;
 import org.opendatamesh.dpds.model.interfaces.PromisesDPDS;
@@ -12,6 +11,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.Bl
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseIncorrectInputException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -21,17 +22,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-@Slf4j
 class DataProductPortsAndAssetsUpload implements UseCase {
 
     private static final String USE_CASE_PREFIX = "[DataProductVersionUpload]";
 
     private final DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort;
     private final DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort;
+    private final Logger log;
+
+    public DataProductPortsAndAssetsUpload(DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort, DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort, Logger log) {
+        this.blindataOutboundPort = blindataOutboundPort;
+        this.odmOutboundPort = odmOutboundPort;
+        this.log = log;
+    }
 
     public DataProductPortsAndAssetsUpload(DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort, DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort) {
         this.blindataOutboundPort = blindataOutboundPort;
         this.odmOutboundPort = odmOutboundPort;
+        this.log = LoggerFactory.getLogger(this.getClass());
     }
 
     @Override
