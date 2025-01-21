@@ -298,22 +298,18 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     public LogicalFieldSemanticLinkRes getSemanticLinkElements(String pathString, String defaultNamespaceIdentifier)
             throws BlindataClientException {
         try {
-            String url = String.format(
-                    "%s/api/v1/logical/semanticlinking/*/resolvefield?pathString=%s&defaultNamespaceIdentifier=%s",
-                    credentials.getBlindataUrl(),
-                    pathString,
-                    defaultNamespaceIdentifier
+            final LogicalFieldSemanticLinkRes logicalFieldSemanticLinkRes = authenticatedRestUtils.get(
+                    String.format(
+                            "%s/api/v1/logical/semanticlinking/*/resolvefield?pathString=%s&defaultNamespaceIdentifier=%s",
+                            credentials.getBlindataUrl(),
+                            pathString,
+                            defaultNamespaceIdentifier
+                    ),
+                    null,
+                    null,
+                    LogicalFieldSemanticLinkRes.class
             );
-            HttpHeaders headers = null;
-            RestTemplate restTemplate = new RestTemplate();
-
-            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
-            ResponseEntity<LogicalFieldSemanticLinkRes> responseEntity = restTemplate.exchange(
-                    url, HttpMethod.GET, requestEntity, LogicalFieldSemanticLinkRes.class
-            );
-
-            return responseEntity.getBody() != null ? responseEntity.getBody() : null;
-
+            return logicalFieldSemanticLinkRes != null ? logicalFieldSemanticLinkRes : null;
         } catch (ClientException e) {
             throw new BlindataClientException(e.getCode(), e.getMessage());
         } catch (HttpClientErrorException e) {
