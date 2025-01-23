@@ -8,7 +8,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseIncorrectInputException;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableException;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -64,12 +65,12 @@ class DataProductUpload implements UseCase {
         }
         Optional<BDShortUserRes> blindataUser = blindataOutboundPort.findUser(odmOutboundPort.getDataProductInfo().getOwner().getId());
         if (blindataUser.isEmpty()) {
-            throw new UseCaseIncorrectInputException(String.format("%s Impossible to assign responsibility on data product: %s, user: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), odmOutboundPort.getDataProductInfo().getOwner().getId()));
+            UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(String.format("%s Impossible to assign responsibility on data product: %s, user: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), odmOutboundPort.getDataProductInfo().getOwner().getId())));
         }
 
         BDStewardshipRoleRes dataProductRole = blindataOutboundPort.findDataProductRole(blindataOutboundPort.getDefaultRoleUuid());
         if (dataProductRole == null) {
-            throw new UseCaseIncorrectInputException(String.format("%s Impossible to assign responsibility on data product: %s, role: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), blindataOutboundPort.getDefaultRoleUuid()));
+            UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(String.format("%s Impossible to assign responsibility on data product: %s, role: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), blindataOutboundPort.getDefaultRoleUuid())));
         }
 
         Optional<BDStewardshipResponsibilityRes> existentResponsibility = blindataOutboundPort.findDataProductResponsibilities(blindataUser.get().getUuid(), blindataDataProduct.getUuid());
@@ -127,24 +128,27 @@ class DataProductUpload implements UseCase {
 
     private void validateDataProductInfo(InfoDPDS odmDataProductInfo) {
         if (odmDataProductInfo == null) {
-            throw new UseCaseIncorrectInputException(String.format("%s Missing odm data product info", USE_CASE_PREFIX));
+            UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(String.format("%s Missing odm data product info", USE_CASE_PREFIX)));
+            return;
         }
-        Optional.ofNullable(odmDataProductInfo.getFullyQualifiedName()).filter(StringUtils::hasText)
-                .orElseThrow(() -> new UseCaseIncorrectInputException(String.format("%s Missing odm data product info fully qualified name.", USE_CASE_PREFIX)));
-        Optional.ofNullable(odmDataProductInfo.getDomain()).filter(StringUtils::hasText)
-                .orElseThrow(() -> new UseCaseIncorrectInputException(String.format("%s Missing odm data product info domain.", USE_CASE_PREFIX)));
+        if (!StringUtils.hasText(odmDataProductInfo.getFullyQualifiedName())) {
+            UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(String.format("%s Missing odm data product info fully qualified name.", USE_CASE_PREFIX)));
+        }
+        if (!StringUtils.hasText(odmDataProductInfo.getDomain())) {
+            UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(String.format("%s Missing odm data product info domain.", USE_CASE_PREFIX)));
+        }
     }
 
     private void withErrorHandling(Runnable runnable) throws UseCaseExecutionException {
         try {
             runnable.run();
-        } catch (UseCaseIncorrectInputException e) {
+        } catch (UseCaseRecoverableException e) {
             throw e;
         } catch (BlindataClientException e) {
-            if (e.getCode() != HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-                throw new UseCaseIncorrectInputException(e.getMessage(), e);
-            } else {
+            if (e.getCode() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 throw e;
+            } else {
+                UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(e.getMessage(), e));
             }
         } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);

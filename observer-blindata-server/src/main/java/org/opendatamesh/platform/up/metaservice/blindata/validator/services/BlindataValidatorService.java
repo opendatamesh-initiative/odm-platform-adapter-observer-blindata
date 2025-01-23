@@ -12,9 +12,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.OBEventNo
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.OBEventResource;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload.DataProductUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload.DataProductPortsAndAssetsUploadFactory;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseIncorrectInputException;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.*;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.PolicyEvaluationRequestRes;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.PolicyEvaluationResultRes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,36 +41,46 @@ public class BlindataValidatorService {
         PolicyEvaluationResultRes.OutputObject resultOutput = new PolicyEvaluationResultRes.OutputObject();
         evaluationResult.setOutputObject(resultOutput);
 
+        ValidatorUseCaseRecoverableExceptionThrower recoverableExceptionThrower = new ValidatorUseCaseRecoverableExceptionThrower();
+        UseCaseRecoverableExceptionThrower currentThrower = UseCaseRecoverableExceptionHandler.getExceptionThrower();
+        UseCaseRecoverableExceptionHandler.setExceptionThrower(recoverableExceptionThrower);
         try {
             PolicyEvaluationInputObject policyEvaluationInputObject = objectMapper.treeToValue(evaluationRequest.getObjectToEvaluate(), PolicyEvaluationInputObject.class);
             DataProductVersionDPDS descriptorToValidate = objectMapper.treeToValue(policyEvaluationInputObject.getAfterState(), DataProductVersionDPDS.class);
 
-            OBEventNotificationResource eventNotification = new OBEventNotificationResource();
-            OBEventResource event = new OBEventResource();
-            event.setType("DATA_PRODUCT_VERSION_CREATED");
-            event.setAfterState(policyEvaluationInputObject.getAfterState());
-            eventNotification.setEvent(event);
+            OBEventNotificationResource eventNotification = buildFakeNotificationEvent(policyEvaluationInputObject);
             dataProductUploadFactory.getUseCaseDryRun(eventNotification).execute();
             if (descriptorToValidate.getInterfaceComponents() != null) {
                 dataProductPortsAndAssetsUploadFactory.getUseCaseDryRun(eventNotification).execute();
             }
-        } catch (UseCaseIncorrectInputException e) {
-            evaluationResult.setEvaluationResult(false);
-            resultOutput.setMessage(String.format("Use case failed due to incorrect data on input: %s", e.getMessage()));
-            resultOutput.setRawError(objectMapper.valueToTree(e));
-            log.warn("[Blindata Policy Validator]: Blindata policy failed to validate data product, reason: {} .", e.getMessage());
-            return evaluationResult;
+            if (!recoverableExceptionThrower.getExceptions().isEmpty()) {
+                evaluationResult.setEvaluationResult(false);
+                resultOutput.setMessage("[Blindata Policy Validator]: Blindata policy failed to validate data product.");
+                resultOutput.setRawError(objectMapper.valueToTree(recoverableExceptionThrower.getExceptions()));
+                log.warn("[Blindata Policy Validator]: Blindata policy failed to validate data product.");
+            }
         } catch (UseCaseExecutionException e) {
-            resultOutput.setMessage(String.format("Use case failed due an error while processing the input: %s", e.getMessage()));
+            resultOutput.setMessage(String.format("Use case failed due an internal use case error: %s", e.getMessage()));
             resultOutput.setRawError(objectMapper.valueToTree(e));
-            log.warn("[Blindata Policy Validator]: Blindata policy failed to validate data product due an error while processing the input: {} .", e.getMessage());
+            log.warn("[Blindata Policy Validator]: Blindata policy failed to validate data product due an internal use case error: {} .", e.getMessage());
         } catch (UseCaseInitException e) {
             throw new InternalServerException(e);
         } catch (JsonProcessingException e) {
             throw new BadRequestException(e);
+        } finally {
+            UseCaseRecoverableExceptionHandler.setExceptionThrower(currentThrower);
         }
 
         return evaluationResult;
+    }
+
+    private OBEventNotificationResource buildFakeNotificationEvent(PolicyEvaluationInputObject policyEvaluationInputObject) {
+        OBEventNotificationResource eventNotification = new OBEventNotificationResource();
+        OBEventResource event = new OBEventResource();
+        event.setType("DATA_PRODUCT_VERSION_CREATED");
+        event.setAfterState(policyEvaluationInputObject.getAfterState());
+        eventNotification.setEvent(event);
+        return eventNotification;
     }
 
     private static class PolicyEvaluationInputObject {

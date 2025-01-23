@@ -5,7 +5,8 @@ import com.google.common.collect.Sets;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDSemanticLinkingClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.BlindataClientException;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseIncorrectInputException;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableException;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableExceptionHandler;
 import org.springframework.http.HttpStatus;
 
 import java.util.Map;
@@ -28,10 +29,14 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
             semanticLinksByPhysicalFieldName.forEach((physicalFieldName, semanticLink) -> {
 
 
-                LogicalFieldSemanticLinkRes semanticLinkObject = Optional.ofNullable(client.getSemanticLinkElements(
+                LogicalFieldSemanticLinkRes semanticLinkObject = client.getSemanticLinkElements(
                         semanticLink.getSemanticLinkString(),
                         semanticLink.getDefaultNamespaceIdentifier()
-                )).orElseThrow(() -> new UseCaseIncorrectInputException("It is not possible to resolve the semantic elements (concepts and attributes) contained in the semantic link path."));
+                );
+
+                if (semanticLinkObject == null) {
+                    UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException("It is not possible to resolve the semantic elements (concepts and attributes) contained in the semantic link path."));
+                }
 
                 addSemanticLinkToPhysicalField(physicalEntity.getPhysicalFields(), physicalFieldName, semanticLinkObject);
             });
@@ -45,17 +50,21 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
                     .orElseThrow()
                     .replaceAll("[\\[\\]]", "");
 
-            BDLogicalNamespaceRes rootNamespace = client.getLogicalNamespaceByIdentifier(defaultNamespaceIdentifier)
-                    .orElseThrow(() -> new UseCaseIncorrectInputException(String.format("Namespace: %s not found when linking physical entity to concept", defaultNamespaceIdentifier)));
+            Optional<BDLogicalNamespaceRes> rootNamespace = client.getLogicalNamespaceByIdentifier(defaultNamespaceIdentifier);
+            if (rootNamespace.isEmpty()) {
+                UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(String.format("Namespace: %s not found when linking physical entity to concept", defaultNamespaceIdentifier)));
+            }
 
             String dataCategoryName = Optional.ofNullable(((String) sContext.get("s-type")))
                     .orElseThrow()
                     .replaceAll("[\\[\\]]", "");
 
-            final BDDataCategoryRes dataCategoryRes = client.getDataCategoryByNameAndNamespaceUuid(dataCategoryName, rootNamespace.getUuid())
-                    .orElseThrow(() -> new UseCaseIncorrectInputException(String.format("Concept: %s not found when linking it to Physical Entity: %s .", dataCategoryName, physicalEntity.getName())));
-
-            physicalEntity.setDataCategories(Sets.newHashSet(dataCategoryRes));
+            Optional<BDDataCategoryRes> dataCategoryRes = client.getDataCategoryByNameAndNamespaceUuid(dataCategoryName, rootNamespace.get().getUuid());
+            if (dataCategoryRes.isEmpty()) {
+                UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(String.format("Concept: %s not found when linking it to Physical Entity: %s .", dataCategoryName, physicalEntity.getName())));
+            } else {
+                physicalEntity.setDataCategories(Sets.newHashSet(dataCategoryRes.get()));
+            }
         });
     }
 
@@ -119,10 +128,10 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
         try {
             runnable.run();
         } catch (BlindataClientException e) {
-            if (e.getCode() != HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-                throw new UseCaseIncorrectInputException(e.getMessage(), e);
-            } else {
+            if (e.getCode() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 throw e;
+            } else {
+                UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(e.getMessage(), e));
             }
         }
     }
