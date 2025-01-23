@@ -51,7 +51,7 @@ class DataProductPortsAndAssetsUpload implements UseCase {
 
             Optional<BDDataProductRes> existentDataProduct = blindataOutboundPort.findDataProduct(odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName());
             if (existentDataProduct.isEmpty()) {
-                log.warn("{} Data product: {} has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName());
+                UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(String.format("%s Data product: %s has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName())));
                 return;
             }
             List<BDDataProductPortRes> bdDataProductPorts = extractBdDataProductPorts(interfaceComponentsDPDS);
@@ -82,13 +82,14 @@ class DataProductPortsAndAssetsUpload implements UseCase {
 
     private void validateDataProductPortsAssets(List<BDDataProductPortAssetDetailRes> dataProductPortAssetsDetails) {
         for (BDDataProductPortAssetDetailRes dataProductPortAssetsDetail : dataProductPortAssetsDetails) {
-            getOrElseThrow(dataProductPortAssetsDetail::getPortIdentifier, new UseCaseRecoverableException(USE_CASE_PREFIX + "Missing port identifier on data product port asset"));
+            getOrLogWarn(dataProductPortAssetsDetail::getPortIdentifier, new UseCaseRecoverableException(USE_CASE_PREFIX + "Missing port identifier on data product port asset"));
             for (BDProductPortAssetSystemRes dataProductPortAssets : dataProductPortAssetsDetail.getAssets()) {
                 validateSystem(dataProductPortAssets.getSystem());
                 if (dataProductPortAssets.getPhysicalEntities() == null) {
                     UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(USE_CASE_PREFIX + " Missing physical entities on data product port assets"));
+                } else {
+                    dataProductPortAssets.getPhysicalEntities().forEach(this::validatePhysicalEntity);
                 }
-                dataProductPortAssets.getPhysicalEntities().forEach(this::validatePhysicalEntity);
             }
         }
     }
@@ -96,15 +97,16 @@ class DataProductPortsAndAssetsUpload implements UseCase {
     private void validateSystem(BDSystemRes system) {
         if (system == null) {
             UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(USE_CASE_PREFIX + " Missing system on data product port assets."));
+        } else {
+            getOrLogWarn(system::getName, new UseCaseRecoverableException(USE_CASE_PREFIX + " Missing name on data product port asset system."));
         }
-        getOrElseThrow(system::getName, new UseCaseRecoverableException(USE_CASE_PREFIX + " Missing name on data product port asset system."));
     }
 
     private void validatePhysicalEntity(BDPhysicalEntityRes physicalEntity) {
-        getOrElseThrow(physicalEntity::getName, new UseCaseRecoverableException(USE_CASE_PREFIX + " Missing name on data product port asset physical entity."));
+        getOrLogWarn(physicalEntity::getName, new UseCaseRecoverableException(USE_CASE_PREFIX + " Missing name on data product port asset physical entity."));
         if (physicalEntity.getPhysicalFields() != null) {
             for (BDPhysicalFieldRes physicalField : physicalEntity.getPhysicalFields()) {
-                getOrElseThrow(physicalField::getName, new UseCaseRecoverableException(USE_CASE_PREFIX + " Missing name on data product port asset physical field."));
+                getOrLogWarn(physicalField::getName, new UseCaseRecoverableException(USE_CASE_PREFIX + " Missing name on data product port asset physical field."));
             }
         }
     }
@@ -130,12 +132,12 @@ class DataProductPortsAndAssetsUpload implements UseCase {
 
     private BDDataProductPortRes odmToBlindataDataProductPort(PortDPDS odmDataProductPort, String entityType) {
         BDDataProductPortRes port = new BDDataProductPortRes();
-        port.setIdentifier(getOrElseThrow(odmDataProductPort::getFullyQualifiedName, new UseCaseRecoverableException(" Missing identifier on data product port.")));
-        port.setName(getOrElseThrow(odmDataProductPort::getName, new UseCaseRecoverableException(USE_CASE_PREFIX + " Missing name on data product port.")));
+        port.setIdentifier(getOrLogWarn(odmDataProductPort::getFullyQualifiedName, new UseCaseRecoverableException(" Missing identifier on data product port.")));
+        port.setName(getOrLogWarn(odmDataProductPort::getName, new UseCaseRecoverableException(USE_CASE_PREFIX + " Missing name on data product port.")));
         port.setDisplayName(odmDataProductPort.getDisplayName());
-        port.setVersion(getOrElseThrow(odmDataProductPort::getVersion, new UseCaseRecoverableException(USE_CASE_PREFIX + " Missing version on data product port.")));
+        port.setVersion(getOrLogWarn(odmDataProductPort::getVersion, new UseCaseRecoverableException(USE_CASE_PREFIX + " Missing version on data product port.")));
         port.setDescription(odmDataProductPort.getDescription());
-        port.setEntityType(getOrElseThrow(() -> entityType, new UseCaseRecoverableException(USE_CASE_PREFIX + " Missing type on data product port.")));
+        port.setEntityType(getOrLogWarn(() -> entityType, new UseCaseRecoverableException(USE_CASE_PREFIX + " Missing type on data product port.")));
         if (odmDataProductPort.getPromises() != null) {
             port.setServicesType(odmDataProductPort.getPromises().getServicesType());
             port.setAdditionalProperties(extractAdditionalProperties(odmDataProductPort.getPromises()));
@@ -207,7 +209,7 @@ class DataProductPortsAndAssetsUpload implements UseCase {
         return dataProductPortAssets;
     }
 
-    private String getOrElseThrow(Supplier<String> getter, UseCaseRecoverableException e) {
+    private String getOrLogWarn(Supplier<String> getter, UseCaseRecoverableException e) {
         if (!StringUtils.hasText(getter.get())) {
             UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(e);
         }

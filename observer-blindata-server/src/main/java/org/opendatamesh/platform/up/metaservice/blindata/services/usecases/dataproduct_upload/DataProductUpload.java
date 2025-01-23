@@ -66,11 +66,13 @@ class DataProductUpload implements UseCase {
         Optional<BDShortUserRes> blindataUser = blindataOutboundPort.findUser(odmOutboundPort.getDataProductInfo().getOwner().getId());
         if (blindataUser.isEmpty()) {
             UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(String.format("%s Impossible to assign responsibility on data product: %s, user: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), odmOutboundPort.getDataProductInfo().getOwner().getId())));
+            return;
         }
 
         BDStewardshipRoleRes dataProductRole = blindataOutboundPort.findDataProductRole(blindataOutboundPort.getDefaultRoleUuid());
         if (dataProductRole == null) {
             UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(String.format("%s Impossible to assign responsibility on data product: %s, role: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), blindataOutboundPort.getDefaultRoleUuid())));
+            return;
         }
 
         Optional<BDStewardshipResponsibilityRes> existentResponsibility = blindataOutboundPort.findDataProductResponsibilities(blindataUser.get().getUuid(), blindataDataProduct.getUuid());
