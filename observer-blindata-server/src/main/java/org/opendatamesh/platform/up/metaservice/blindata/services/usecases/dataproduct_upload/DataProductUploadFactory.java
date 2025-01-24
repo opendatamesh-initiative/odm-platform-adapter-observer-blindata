@@ -13,7 +13,6 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCa
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseDryRunFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableExceptionHandler;
 import org.slf4j.helpers.NOPLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -95,7 +94,6 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
                     roleUuid
             );
             DataProductUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
-            UseCaseRecoverableExceptionHandler.getExceptionThrower().setLogger(NOPLogger.NOP_LOGGER);
             return new DataProductUpload(
                     odmOutboundPort,
                     new DataProductUploadBlindataOutboundPortDryRunImpl(blindataOutboundPort),

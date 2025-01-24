@@ -10,8 +10,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinition;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionAnalyzer;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -22,13 +21,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableExceptionContext.getExceptionHandler;
+
 @Component
 public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer {
 
     private final SemanticLinkManager semanticLinkManager;
 
-
-    private static final Logger log = LoggerFactory.getLogger(PortDatastoreApiAnalyzer.class);
     private final String SPECIFICATION = "datastoreapi";
     private final String VERSION = "1.*.*";
     private final ObjectMapper objectMapper = new ObjectMapper()
@@ -52,7 +51,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         try {
             return extractSchemaPropertiesFromSchemaContent(portStandardDefinition);
         } catch (JsonProcessingException e) {
-            log.warn(e.getMessage(), e);
+            getExceptionHandler().warn(new UseCaseRecoverableException(e.getMessage(), e));
             return Collections.emptyList();
         }
     }
@@ -63,7 +62,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
 
         DataStoreApiSchema schema = dataStoreApiDefinition.getSchema();
         if (schema == null) {
-            log.warn("Missing schema, impossible to extract properties");
+            getExceptionHandler().warn(new UseCaseRecoverableException("Missing schema, impossible to extract properties"));
             return physicalEntityResList;
         }
         if (schema instanceof DataStoreApiSchemaResource) {
@@ -76,7 +75,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
                 physicalEntityResList.add(extractedEntityFromSchema);
             }
         } else {
-            log.warn("Schema is not of type DataStoreApiSchemaResource, skipping extraction.");
+            getExceptionHandler().warn(new UseCaseRecoverableException("Schema is not of type DataStoreApiSchemaResource, skipping extraction."));
         }
 
         return physicalEntityResList;
@@ -93,7 +92,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         if (!CollectionUtils.isEmpty(dataStoreApiSchemaEntity.getProperties())) {
             physicalEntityRes.setPhysicalFields(dataStoreApiSchemaEntity.getProperties().values().stream().map(this::extractPhysicalFieldsFromColumn).collect(Collectors.toSet()));
         }
-        if (dataStoreApiSchemaEntity.getsContext() != null && physicalEntityRes != null) {
+        if (dataStoreApiSchemaEntity.getsContext() != null) {
             semanticLinkManager.enrichPhysicalFieldsWithSemanticLinks(dataStoreApiSchemaEntity.getsContext(), physicalEntityRes);
             semanticLinkManager.linkPhysicalEntityToDataCategory(dataStoreApiSchemaEntity.getsContext(), physicalEntityRes);
         }

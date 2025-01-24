@@ -3,12 +3,12 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exce
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultUseCaseRecoverableExceptionThrower implements UseCaseRecoverableExceptionThrower {
+public class DefaultUseCaseRecoverableExceptionHandler implements UseCaseRecoverableExceptionHandler {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public void _throw(UseCaseRecoverableException e) {
+    public void warn(UseCaseRecoverableException e) {
         logger.warn(e.getMessage());
     }
 

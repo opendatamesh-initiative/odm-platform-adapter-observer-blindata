@@ -18,6 +18,9 @@ import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.Pol
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableExceptionContext.getExceptionHandler;
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableExceptionContext.setExceptionHandler;
+
 @Service
 @Slf4j
 public class BlindataValidatorService {
@@ -41,9 +44,9 @@ public class BlindataValidatorService {
         PolicyEvaluationResultRes.OutputObject resultOutput = new PolicyEvaluationResultRes.OutputObject();
         evaluationResult.setOutputObject(resultOutput);
 
-        ValidatorUseCaseRecoverableExceptionThrower recoverableExceptionThrower = new ValidatorUseCaseRecoverableExceptionThrower();
-        UseCaseRecoverableExceptionThrower currentThrower = UseCaseRecoverableExceptionHandler.getExceptionThrower();
-        UseCaseRecoverableExceptionHandler.setExceptionThrower(recoverableExceptionThrower);
+        ValidatorUseCaseRecoverableExceptionHandler recoverableExceptionThrower = new ValidatorUseCaseRecoverableExceptionHandler();
+        UseCaseRecoverableExceptionHandler currentThrower = getExceptionHandler();
+        setExceptionHandler(recoverableExceptionThrower);
         try {
             PolicyEvaluationInputObject policyEvaluationInputObject = objectMapper.treeToValue(evaluationRequest.getObjectToEvaluate(), PolicyEvaluationInputObject.class);
             DataProductVersionDPDS descriptorToValidate = objectMapper.treeToValue(policyEvaluationInputObject.getAfterState(), DataProductVersionDPDS.class);
@@ -68,7 +71,7 @@ public class BlindataValidatorService {
         } catch (JsonProcessingException e) {
             throw new BadRequestException(e);
         } finally {
-            UseCaseRecoverableExceptionHandler.setExceptionThrower(currentThrower);
+            setExceptionHandler(currentThrower);
         }
 
         return evaluationResult;

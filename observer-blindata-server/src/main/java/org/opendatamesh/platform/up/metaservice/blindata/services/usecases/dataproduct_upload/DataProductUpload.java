@@ -9,13 +9,14 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.Bl
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableException;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
 import java.util.Optional;
+
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableExceptionContext.getExceptionHandler;
 
 class DataProductUpload implements UseCase {
 
@@ -25,16 +26,18 @@ class DataProductUpload implements UseCase {
     private final DataProductUploadBlindataOutboundPort blindataOutboundPort;
     private final Logger log;
 
-    public DataProductUpload(DataProductUploadOdmOutboundPort odmOutboundPort, DataProductUploadBlindataOutboundPort blindataOutboundPort, Logger log) {
+    DataProductUpload(DataProductUploadOdmOutboundPort odmOutboundPort, DataProductUploadBlindataOutboundPort blindataOutboundPort, Logger log) {
         this.odmOutboundPort = odmOutboundPort;
         this.blindataOutboundPort = blindataOutboundPort;
         this.log = log;
+        getExceptionHandler().setLogger(log);
     }
 
-    public DataProductUpload(DataProductUploadOdmOutboundPort odmOutboundPort, DataProductUploadBlindataOutboundPort blindataOutboundPort) {
+    DataProductUpload(DataProductUploadOdmOutboundPort odmOutboundPort, DataProductUploadBlindataOutboundPort blindataOutboundPort) {
         this.odmOutboundPort = odmOutboundPort;
         this.blindataOutboundPort = blindataOutboundPort;
         this.log = LoggerFactory.getLogger(this.getClass());
+        getExceptionHandler().setLogger(log);
     }
 
     @Override
@@ -65,13 +68,13 @@ class DataProductUpload implements UseCase {
         }
         Optional<BDShortUserRes> blindataUser = blindataOutboundPort.findUser(odmOutboundPort.getDataProductInfo().getOwner().getId());
         if (blindataUser.isEmpty()) {
-            UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(String.format("%s Impossible to assign responsibility on data product: %s, user: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), odmOutboundPort.getDataProductInfo().getOwner().getId())));
+            getExceptionHandler().warn(new UseCaseRecoverableException(String.format("%s Impossible to assign responsibility on data product: %s, user: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), odmOutboundPort.getDataProductInfo().getOwner().getId())));
             return;
         }
 
         BDStewardshipRoleRes dataProductRole = blindataOutboundPort.findDataProductRole(blindataOutboundPort.getDefaultRoleUuid());
         if (dataProductRole == null) {
-            UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(String.format("%s Impossible to assign responsibility on data product: %s, role: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), blindataOutboundPort.getDefaultRoleUuid())));
+            getExceptionHandler().warn(new UseCaseRecoverableException(String.format("%s Impossible to assign responsibility on data product: %s, role: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), blindataOutboundPort.getDefaultRoleUuid())));
             return;
         }
 
@@ -130,14 +133,14 @@ class DataProductUpload implements UseCase {
 
     private void validateDataProductInfo(InfoDPDS odmDataProductInfo) {
         if (odmDataProductInfo == null) {
-            UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(String.format("%s Missing odm data product info", USE_CASE_PREFIX)));
+            getExceptionHandler().warn(new UseCaseRecoverableException(String.format("%s Missing odm data product info", USE_CASE_PREFIX)));
             return;
         }
         if (!StringUtils.hasText(odmDataProductInfo.getFullyQualifiedName())) {
-            UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(String.format("%s Missing odm data product info fully qualified name.", USE_CASE_PREFIX)));
+            getExceptionHandler().warn(new UseCaseRecoverableException(String.format("%s Missing odm data product info fully qualified name.", USE_CASE_PREFIX)));
         }
         if (!StringUtils.hasText(odmDataProductInfo.getDomain())) {
-            UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(String.format("%s Missing odm data product info domain.", USE_CASE_PREFIX)));
+            getExceptionHandler().warn(new UseCaseRecoverableException(String.format("%s Missing odm data product info domain.", USE_CASE_PREFIX)));
         }
     }
 
@@ -150,7 +153,7 @@ class DataProductUpload implements UseCase {
             if (e.getCode() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 throw e;
             } else {
-                UseCaseRecoverableExceptionHandler.getExceptionThrower()._throw(new UseCaseRecoverableException(e.getMessage(), e));
+                getExceptionHandler().warn(new UseCaseRecoverableException(e.getMessage(), e));
             }
         } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);

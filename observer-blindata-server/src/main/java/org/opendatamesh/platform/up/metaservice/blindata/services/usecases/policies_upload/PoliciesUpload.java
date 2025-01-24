@@ -1,6 +1,5 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload;
 
-import lombok.extern.slf4j.Slf4j;
 import org.opendatamesh.platform.pp.policy.api.resources.PolicyEvaluationResultResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPolicyEvaluationRecord;
@@ -8,34 +7,49 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDUploadResultsMessage;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableExceptionContext.getExceptionHandler;
+
 class PoliciesUpload implements UseCase {
 
     private final String USE_CASE_PREFIX = "[PoliciesUpload]";
 
     private final PoliciesUploadBlindataOutboundPort blindataOutboundPort;
     private final PoliciesUploadOdmOutboundPort odmOutboundPort;
+    private final Logger log;
 
     public PoliciesUpload(PoliciesUploadBlindataOutboundPort blindataOutboundPort, PoliciesUploadOdmOutboundPort odmOutboundPort) {
         this.blindataOutboundPort = blindataOutboundPort;
         this.odmOutboundPort = odmOutboundPort;
+        this.log = LoggerFactory.getLogger(this.getClass());
+        getExceptionHandler().setLogger(log);
     }
+
+    public PoliciesUpload(PoliciesUploadBlindataOutboundPort blindataOutboundPort, PoliciesUploadOdmOutboundPort odmOutboundPort, Logger logger) {
+        this.blindataOutboundPort = blindataOutboundPort;
+        this.odmOutboundPort = odmOutboundPort;
+        this.log = logger;
+        getExceptionHandler().setLogger(log);
+    }
+
 
     @Override
     public void execute() throws UseCaseExecutionException {
         try {
             Optional<BDDataProductRes> blindataDataProduct = blindataOutboundPort.findDataProduct(odmOutboundPort.getDataProductInfo().getFullyQualifiedName());
             if (blindataDataProduct.isEmpty()) {
-                log.warn("{} Data product: {} has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName());
+                getExceptionHandler().warn(new UseCaseRecoverableException(String.format("%s Data product: %s has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName())));
                 return;
             }
             List<PolicyEvaluationResultResource> odmPolicyEvaluationResults = odmOutboundPort.getDataProductPoliciesEvaluationResults(odmOutboundPort.getDataProductInfo());
             if (odmPolicyEvaluationResults.isEmpty()) {
-                log.warn("{} Data product: {} has not policies evaluation results.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName());
+                getExceptionHandler().warn(new UseCaseRecoverableException(String.format("%s Data product: %s has not policies evaluation results.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName())));
                 return;
             }
 

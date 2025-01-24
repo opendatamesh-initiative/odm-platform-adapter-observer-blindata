@@ -1,14 +1,11 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions;
 
-public class UseCaseRecoverableExceptionHandler {
-    private static ThreadLocal<UseCaseRecoverableExceptionThrower> exceptionThrower =
-            ThreadLocal.withInitial(DefaultUseCaseRecoverableExceptionThrower::new);
+import org.slf4j.Logger;
 
-    public static UseCaseRecoverableExceptionThrower getExceptionThrower() {
-        return exceptionThrower.get();
-    }
+public interface UseCaseRecoverableExceptionHandler {
+    void warn(UseCaseRecoverableException e);
 
-    public static void setExceptionThrower(UseCaseRecoverableExceptionThrower exceptionThrower) {
-        UseCaseRecoverableExceptionHandler.exceptionThrower.set(exceptionThrower);
-    }
+    Logger getLogger();
+
+    void setLogger(Logger logger);
 }

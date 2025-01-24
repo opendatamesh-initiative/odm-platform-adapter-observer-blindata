@@ -6,13 +6,13 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ValidatorUseCaseRecoverableExceptionThrower implements UseCaseRecoverableExceptionThrower {
+public class ValidatorUseCaseRecoverableExceptionHandler implements UseCaseRecoverableExceptionHandler {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private List<UseCaseRecoverableException> exceptions = new ArrayList<>();
 
     @Override
-    public void _throw(UseCaseRecoverableException e) {
+    public void warn(UseCaseRecoverableException e) {
         exceptions.add(e);
     }
 
