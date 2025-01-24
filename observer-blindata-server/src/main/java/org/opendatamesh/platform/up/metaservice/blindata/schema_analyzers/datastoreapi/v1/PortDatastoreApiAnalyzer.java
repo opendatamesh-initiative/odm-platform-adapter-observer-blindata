@@ -10,7 +10,6 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinition;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionAnalyzer;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -51,7 +50,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         try {
             return extractSchemaPropertiesFromSchemaContent(portStandardDefinition);
         } catch (JsonProcessingException e) {
-            getExceptionHandler().warn(new UseCaseRecoverableException(e.getMessage(), e));
+            getExceptionHandler().warn(e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -62,7 +61,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
 
         DataStoreApiSchema schema = dataStoreApiDefinition.getSchema();
         if (schema == null) {
-            getExceptionHandler().warn(new UseCaseRecoverableException("Missing schema, impossible to extract properties"));
+            getExceptionHandler().warn("Missing schema, impossible to extract properties");
             return physicalEntityResList;
         }
         if (schema instanceof DataStoreApiSchemaResource) {
@@ -75,7 +74,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
                 physicalEntityResList.add(extractedEntityFromSchema);
             }
         } else {
-            getExceptionHandler().warn(new UseCaseRecoverableException("Schema is not of type DataStoreApiSchemaResource, skipping extraction."));
+            getExceptionHandler().warn("Schema is not of type DataStoreApiSchemaResource, skipping extraction.");
         }
 
         return physicalEntityResList;

@@ -9,11 +9,16 @@ import java.util.List;
 public class ValidatorUseCaseRecoverableExceptionHandler implements UseCaseRecoverableExceptionHandler {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    private List<UseCaseRecoverableException> exceptions = new ArrayList<>();
+    private List<String> warnings = new ArrayList<>();
 
     @Override
-    public void warn(UseCaseRecoverableException e) {
-        exceptions.add(e);
+    public void warn(String message) {
+        warnings.add(message);
+    }
+
+    @Override
+    public void warn(String message, Exception e) {
+        warnings.add(message);
     }
 
     @Override
@@ -26,7 +31,7 @@ public class ValidatorUseCaseRecoverableExceptionHandler implements UseCaseRecov
         this.logger = logger;
     }
 
-    public List<UseCaseRecoverableException> getExceptions() {
-        return exceptions;
+    public List<String> getWarnings() {
+        return warnings;
     }
 }

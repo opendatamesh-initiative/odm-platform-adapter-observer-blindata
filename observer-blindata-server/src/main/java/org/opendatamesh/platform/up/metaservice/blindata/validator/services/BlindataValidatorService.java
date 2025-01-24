@@ -56,10 +56,10 @@ public class BlindataValidatorService {
             if (descriptorToValidate.getInterfaceComponents() != null) {
                 dataProductPortsAndAssetsUploadFactory.getUseCaseDryRun(eventNotification).execute();
             }
-            if (!recoverableExceptionThrower.getExceptions().isEmpty()) {
+            if (!recoverableExceptionThrower.getWarnings().isEmpty()) {
                 evaluationResult.setEvaluationResult(false);
                 resultOutput.setMessage("[Blindata Policy Validator]: Blindata policy failed to validate data product.");
-                resultOutput.setRawError(objectMapper.valueToTree(recoverableExceptionThrower.getExceptions()));
+                resultOutput.setRawError(objectMapper.valueToTree(recoverableExceptionThrower.getWarnings()));
                 log.warn("[Blindata Policy Validator]: Blindata policy failed to validate data product.");
             }
         } catch (UseCaseExecutionException e) {

@@ -6,7 +6,6 @@ import org.apache.avro.Schema.Field;
 import org.apache.avro.Schema.Parser;
 import org.apache.avro.Schema.Type;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPhysicalFieldRes;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableException;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -22,7 +21,7 @@ class AsyncApiPayloadAvroSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
 
         Schema schema = new Parser().parse(rawSchema);
         if (schema.getType() != Type.RECORD) {
-            getExceptionHandler().warn(new UseCaseRecoverableException(String.format("Avro root schema must be a RECORD instead of %s", schema.getType().getName())));
+            getExceptionHandler().warn(String.format("Avro root schema must be a RECORD instead of %s", schema.getType().getName()));
             return mappedPhysicalFieldsList;
         }
 
@@ -68,7 +67,7 @@ class AsyncApiPayloadAvroSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
         } else if (isPrimitiveSchema(avroSchema.getType())) {
             fieldType = avroSchema.getType().getName();
         } else {
-            getExceptionHandler().warn(new UseCaseRecoverableException(String.format("Avro schema %s of type %s is not supported", schemaName, avroSchema.getType().getName())));
+            getExceptionHandler().warn(String.format("Avro schema %s of type %s is not supported", schemaName, avroSchema.getType().getName()));
         }
         return new AvscField(schemaName, fieldType);
     }
@@ -110,7 +109,7 @@ class AsyncApiPayloadAvroSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
                 }
                 break;
             default:
-                getExceptionHandler().warn(new UseCaseRecoverableException(String.format("Schema %s of type %s is not supported", schemaName, avroSchema.getType().getName())));
+                getExceptionHandler().warn(String.format("Schema %s of type %s is not supported", schemaName, avroSchema.getType().getName()));
         }
 
         return new AvscField(fieldName, fieldType, nestedFields);

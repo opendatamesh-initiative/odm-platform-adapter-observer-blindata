@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.AdditionalPropertiesRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPhysicalFieldRes;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableException;
 
 import java.util.*;
 
@@ -56,7 +55,7 @@ class AsyncApiPayloadJsonSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
             } while (!propertiesToVisit.isEmpty());
             return bdPhysicalFields;
         } catch (JsonProcessingException e) {
-            getExceptionHandler().warn(new UseCaseRecoverableException(e.getMessage(), e));
+            getExceptionHandler().warn(e.getMessage(), e);
             return bdPhysicalFields;
         }
     }

@@ -9,7 +9,6 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.datap
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload.DataProductPortsAndAssetsUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload.PoliciesUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.stages_upload.StagesUploadFactory;
 import org.springframework.expression.ExpressionParser;
@@ -68,7 +67,7 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
             }
             event.setStatus(OBEventNotificationStatus.PROCESSED);
             return event;
-        } catch (UseCaseExecutionException | UseCaseRecoverableException e) {
+        } catch (UseCaseExecutionException e) {
             log.warn(e.getMessage(), e);
             event.setStatus(OBEventNotificationStatus.PROCESS_ERROR);
             event.setProcessingOutput(e.getMessage());

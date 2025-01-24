@@ -8,8 +8,13 @@ public class DefaultUseCaseRecoverableExceptionHandler implements UseCaseRecover
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public void warn(UseCaseRecoverableException e) {
-        logger.warn(e.getMessage());
+    public void warn(String message) {
+        logger.warn(message);
+    }
+
+    @Override
+    public void warn(String message, Exception e) {
+        logger.warn(message, e);
     }
 
     @Override

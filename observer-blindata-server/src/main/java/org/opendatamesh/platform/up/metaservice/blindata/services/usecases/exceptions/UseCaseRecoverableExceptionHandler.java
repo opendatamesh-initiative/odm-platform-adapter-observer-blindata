@@ -3,7 +3,9 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exce
 import org.slf4j.Logger;
 
 public interface UseCaseRecoverableExceptionHandler {
-    void warn(UseCaseRecoverableException e);
+    void warn(String message);
+
+    void warn(String message, Exception e);
 
     Logger getLogger();
 

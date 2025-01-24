@@ -8,7 +8,6 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -68,13 +67,13 @@ class DataProductUpload implements UseCase {
         }
         Optional<BDShortUserRes> blindataUser = blindataOutboundPort.findUser(odmOutboundPort.getDataProductInfo().getOwner().getId());
         if (blindataUser.isEmpty()) {
-            getExceptionHandler().warn(new UseCaseRecoverableException(String.format("%s Impossible to assign responsibility on data product: %s, user: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), odmOutboundPort.getDataProductInfo().getOwner().getId())));
+            getExceptionHandler().warn(String.format("%s Impossible to assign responsibility on data product: %s, user: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), odmOutboundPort.getDataProductInfo().getOwner().getId()));
             return;
         }
 
         BDStewardshipRoleRes dataProductRole = blindataOutboundPort.findDataProductRole(blindataOutboundPort.getDefaultRoleUuid());
         if (dataProductRole == null) {
-            getExceptionHandler().warn(new UseCaseRecoverableException(String.format("%s Impossible to assign responsibility on data product: %s, role: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), blindataOutboundPort.getDefaultRoleUuid())));
+            getExceptionHandler().warn(String.format("%s Impossible to assign responsibility on data product: %s, role: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), blindataOutboundPort.getDefaultRoleUuid()));
             return;
         }
 
@@ -133,27 +132,25 @@ class DataProductUpload implements UseCase {
 
     private void validateDataProductInfo(InfoDPDS odmDataProductInfo) {
         if (odmDataProductInfo == null) {
-            getExceptionHandler().warn(new UseCaseRecoverableException(String.format("%s Missing odm data product info", USE_CASE_PREFIX)));
+            getExceptionHandler().warn(String.format("%s Missing odm data product info", USE_CASE_PREFIX));
             return;
         }
         if (!StringUtils.hasText(odmDataProductInfo.getFullyQualifiedName())) {
-            getExceptionHandler().warn(new UseCaseRecoverableException(String.format("%s Missing odm data product info fully qualified name.", USE_CASE_PREFIX)));
+            getExceptionHandler().warn(String.format("%s Missing odm data product info fully qualified name.", USE_CASE_PREFIX));
         }
         if (!StringUtils.hasText(odmDataProductInfo.getDomain())) {
-            getExceptionHandler().warn(new UseCaseRecoverableException(String.format("%s Missing odm data product info domain.", USE_CASE_PREFIX)));
+            getExceptionHandler().warn(String.format("%s Missing odm data product info domain.", USE_CASE_PREFIX));
         }
     }
 
     private void withErrorHandling(Runnable runnable) throws UseCaseExecutionException {
         try {
             runnable.run();
-        } catch (UseCaseRecoverableException e) {
-            throw e;
         } catch (BlindataClientException e) {
             if (e.getCode() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 throw e;
             } else {
-                getExceptionHandler().warn(new UseCaseRecoverableException(e.getMessage(), e));
+                getExceptionHandler().warn(e.getMessage(), e);
             }
         } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);
