@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableExceptionContext.getExceptionHandler;
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
 
 @Component
 public class PortAsyncApi3Analyzer implements PortStandardDefinitionAnalyzer {
@@ -44,7 +44,7 @@ public class PortAsyncApi3Analyzer implements PortStandardDefinitionAnalyzer {
         try {
             return extractSchemaPropertiesFromSchemaContent(portStandardDefinition);
         } catch (JsonProcessingException e) {
-            getExceptionHandler().warn(e.getMessage(), e);
+            getUseCaseLogger().warn(e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -76,7 +76,7 @@ public class PortAsyncApi3Analyzer implements PortStandardDefinitionAnalyzer {
         extractedPhysicalFields.add(rootPhysicalField);
 
         if (message.getPayload() == null || !StringUtils.hasText(message.getPayload().getSchemaFormat())) {
-            getExceptionHandler().warn(String.format("Missing schema format on message: %s, default AsyncApi Schema Object is not supported", message.getTitle()));
+            getUseCaseLogger().warn(String.format("Missing schema format on message: %s, default AsyncApi Schema Object is not supported", message.getTitle()));
             return extractedPhysicalFields;
         }
 
@@ -86,7 +86,7 @@ public class PortAsyncApi3Analyzer implements PortStandardDefinitionAnalyzer {
             List<BDPhysicalFieldRes> avroPhysicalFields = payloadSchemaAnalyzer.payloadSchemaToBlindataPhysicalFields(payload, rootPhysicalField.getName());
             extractedPhysicalFields.addAll(avroPhysicalFields);
         } catch (UnsupportedSchemaFormatException e) {
-            getExceptionHandler().warn(e.getMessage(), e);
+            getUseCaseLogger().warn(e.getMessage(), e);
         }
 
         return extractedPhysicalFields;

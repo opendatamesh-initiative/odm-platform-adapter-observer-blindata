@@ -10,8 +10,6 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -20,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableExceptionContext.getExceptionHandler;
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
 
 class DataProductPortsAndAssetsUpload implements UseCase {
 
@@ -28,20 +26,10 @@ class DataProductPortsAndAssetsUpload implements UseCase {
 
     private final DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort;
     private final DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort;
-    private final Logger log;
-
-    DataProductPortsAndAssetsUpload(DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort, DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort, Logger log) {
-        this.blindataOutboundPort = blindataOutboundPort;
-        this.odmOutboundPort = odmOutboundPort;
-        this.log = log;
-        getExceptionHandler().setLogger(log);
-    }
 
     DataProductPortsAndAssetsUpload(DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort, DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort) {
         this.blindataOutboundPort = blindataOutboundPort;
         this.odmOutboundPort = odmOutboundPort;
-        this.log = LoggerFactory.getLogger(this.getClass());
-        getExceptionHandler().setLogger(log);
     }
 
     @Override
@@ -52,17 +40,17 @@ class DataProductPortsAndAssetsUpload implements UseCase {
 
             Optional<BDDataProductRes> existentDataProduct = blindataOutboundPort.findDataProduct(odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName());
             if (existentDataProduct.isEmpty()) {
-                getExceptionHandler().warn(String.format("%s Data product: %s has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName()));
+                getUseCaseLogger().warn(String.format("%s Data product: %s has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName()));
                 return;
             }
             List<BDDataProductPortRes> bdDataProductPorts = extractBdDataProductPorts(interfaceComponentsDPDS);
-            log.info("{} Data product: {}, Blindata ports found: {}.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), bdDataProductPorts.size());
+            getUseCaseLogger().info(String.format("%s Data product: %s, Blindata ports found: %s.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), bdDataProductPorts.size()));
             existentDataProduct.get().setPorts(bdDataProductPorts);
             blindataOutboundPort.updateDataProductPorts(existentDataProduct.get());
-            log.info("{} Data product: {}, updated ports on Blindata.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier());
+            getUseCaseLogger().info(String.format("%s Data product: %s, updated ports on Blindata.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier()));
 
             List<BDDataProductPortAssetDetailRes> dataProductPortAssets = extractBdAssetsFromDpPorts(interfaceComponentsDPDS);
-            log.info("{} Data product: {}, found {} data assets.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), dataProductPortAssets.size());
+            getUseCaseLogger().info(String.format("%s Data product: %s, found %s data assets.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), dataProductPortAssets.size()));
             validateDataProductPortsAssets(dataProductPortAssets);
             uploadAssetsOnBlindata(dataProductPortAssets);
         });
@@ -76,7 +64,7 @@ class DataProductPortsAndAssetsUpload implements UseCase {
                         CollectionUtils.isEmpty(interfaceComponentsDPDS.getInputPorts()) &&
                         CollectionUtils.isEmpty(interfaceComponentsDPDS.getDiscoveryPorts()))
         ) {
-            getExceptionHandler().warn(String.format("%s Missing interface components on data product: %s", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName()));
+            getUseCaseLogger().warn(String.format("%s Missing interface components on data product: %s", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName()));
         }
 
     }
@@ -84,13 +72,13 @@ class DataProductPortsAndAssetsUpload implements UseCase {
     private void validateDataProductPortsAssets(List<BDDataProductPortAssetDetailRes> dataProductPortAssetsDetails) {
         for (BDDataProductPortAssetDetailRes dataProductPortAssetsDetail : dataProductPortAssetsDetails) {
             if (!StringUtils.hasText(dataProductPortAssetsDetail.getPortIdentifier())) {
-                getExceptionHandler().warn(USE_CASE_PREFIX + "Missing port identifier on data product port asset");
+                getUseCaseLogger().warn(USE_CASE_PREFIX + "Missing port identifier on data product port asset");
                 break;
             }
             for (BDProductPortAssetSystemRes dataProductPortAssets : dataProductPortAssetsDetail.getAssets()) {
                 validateSystem(dataProductPortAssets.getSystem());
                 if (dataProductPortAssets.getPhysicalEntities() == null) {
-                    getExceptionHandler().warn(USE_CASE_PREFIX + " Missing physical entities on data product port assets");
+                    getUseCaseLogger().warn(USE_CASE_PREFIX + " Missing physical entities on data product port assets");
                 } else {
                     dataProductPortAssets.getPhysicalEntities().forEach(this::validatePhysicalEntity);
                 }
@@ -100,22 +88,22 @@ class DataProductPortsAndAssetsUpload implements UseCase {
 
     private void validateSystem(BDSystemRes system) {
         if (system == null) {
-            getExceptionHandler().warn(USE_CASE_PREFIX + " Missing system on data product port assets.");
+            getUseCaseLogger().warn(USE_CASE_PREFIX + " Missing system on data product port assets.");
         } else {
             if (!StringUtils.hasText(system.getName())) {
-                getExceptionHandler().warn(USE_CASE_PREFIX + " Missing name on data product port asset system.");
+                getUseCaseLogger().warn(USE_CASE_PREFIX + " Missing name on data product port asset system.");
             }
         }
     }
 
     private void validatePhysicalEntity(BDPhysicalEntityRes physicalEntity) {
         if (!StringUtils.hasText(physicalEntity.getName())) {
-            getExceptionHandler().warn(USE_CASE_PREFIX + " Missing name on data product port asset physical entity.");
+            getUseCaseLogger().warn(USE_CASE_PREFIX + " Missing name on data product port asset physical entity.");
         }
         if (physicalEntity.getPhysicalFields() != null) {
             for (BDPhysicalFieldRes physicalField : physicalEntity.getPhysicalFields()) {
                 if (!StringUtils.hasText(physicalField.getName())) {
-                    getExceptionHandler().warn(USE_CASE_PREFIX + " Missing name on data product port asset physical field.");
+                    getUseCaseLogger().warn(USE_CASE_PREFIX + " Missing name on data product port asset physical field.");
                 }
             }
         }
@@ -136,31 +124,31 @@ class DataProductPortsAndAssetsUpload implements UseCase {
             BDProductPortAssetsRes bdDataProductAssets = new BDProductPortAssetsRes();
             bdDataProductAssets.setPorts(dataProductPortAssets);
             blindataOutboundPort.createDataProductAssets(bdDataProductAssets);
-            log.info("{} Data product: {}, uploaded {} assets on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName(), dataProductPortAssets.size());
+            getUseCaseLogger().info(String.format("%s Data product: %s, uploaded %s assets on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName(), dataProductPortAssets.size()));
         }
     }
 
     private BDDataProductPortRes odmToBlindataDataProductPort(PortDPDS odmDataProductPort, String entityType) {
         BDDataProductPortRes port = new BDDataProductPortRes();
         if (!StringUtils.hasText(odmDataProductPort.getFullyQualifiedName())) {
-            getExceptionHandler().warn(" Missing identifier on data product port.");
+            getUseCaseLogger().warn(" Missing identifier on data product port.");
         }
         port.setIdentifier(odmDataProductPort.getFullyQualifiedName());
 
         if (!StringUtils.hasText(odmDataProductPort.getName())) {
-            getExceptionHandler().warn(USE_CASE_PREFIX + " Missing name on data product port.");
+            getUseCaseLogger().warn(USE_CASE_PREFIX + " Missing name on data product port.");
         }
         port.setName(odmDataProductPort.getName());
         port.setDisplayName(odmDataProductPort.getDisplayName());
 
         if (!StringUtils.hasText(odmDataProductPort.getVersion())) {
-            getExceptionHandler().warn(USE_CASE_PREFIX + " Missing version on data product port.");
+            getUseCaseLogger().warn(USE_CASE_PREFIX + " Missing version on data product port.");
         }
         port.setVersion(odmDataProductPort.getVersion());
         port.setDescription(odmDataProductPort.getDescription());
 
         if (!StringUtils.hasText(entityType)) {
-            getExceptionHandler().warn(USE_CASE_PREFIX + " Missing type on data product port.");
+            getUseCaseLogger().warn(USE_CASE_PREFIX + " Missing type on data product port.");
         }
         port.setEntityType(entityType);
 
@@ -184,7 +172,7 @@ class DataProductPortsAndAssetsUpload implements UseCase {
             String xDependsOn = Optional.ofNullable(xDependsOnNode).map(JsonNode::asText).orElse(null);
             String dependsOn = Optional.ofNullable(dependsOnNode).map(JsonNode::asText).orElse(null);
             if (xDependsOn != null && dependsOn != null) {
-                getExceptionHandler().warn(String.format("%s: Both 'x-dependsOn' and 'dependsOn' are present. 'dependsOn' will be used.", USE_CASE_PREFIX));
+                getUseCaseLogger().warn(String.format("%s: Both 'x-dependsOn' and 'dependsOn' are present. 'dependsOn' will be used.", USE_CASE_PREFIX));
             }
             // Prioritize 'dependsOn' if it exists; otherwise, use 'x-dependsOn'
             String portDependency = dependsOn != null ? dependsOn : xDependsOn;
@@ -196,7 +184,7 @@ class DataProductPortsAndAssetsUpload implements UseCase {
                         );
             }
         } catch (JsonProcessingException e) {
-            getExceptionHandler().warn(String.format("%s: %s", USE_CASE_PREFIX, e.getMessage()), e);
+            getUseCaseLogger().warn(String.format("%s: %s", USE_CASE_PREFIX, e.getMessage()), e);
         }
     }
 
@@ -242,7 +230,7 @@ class DataProductPortsAndAssetsUpload implements UseCase {
             if (e.getCode() != HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 throw e;
             } else {
-                getExceptionHandler().warn(e.getMessage(), e);
+                getUseCaseLogger().warn(e.getMessage(), e);
             }
         } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);

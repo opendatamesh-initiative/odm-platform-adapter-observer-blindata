@@ -13,7 +13,6 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCa
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseDryRunFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
-import org.slf4j.helpers.NOPLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -65,8 +64,7 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory, U
 
             return new DataProductPortsAndAssetsUpload(
                     bdOutboundPort,
-                    odmOutboundPort,
-                    NOPLogger.NOP_LOGGER
+                    odmOutboundPort
             );
         } catch (Exception e) {
             throw new UseCaseInitException("Failed to init DataProductVersionUpload use case.", e);

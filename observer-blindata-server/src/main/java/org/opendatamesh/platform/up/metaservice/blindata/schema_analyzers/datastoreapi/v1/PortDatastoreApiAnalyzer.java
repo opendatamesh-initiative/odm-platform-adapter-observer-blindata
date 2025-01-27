@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableExceptionContext.getExceptionHandler;
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
 
 @Component
 public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer {
@@ -50,7 +50,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         try {
             return extractSchemaPropertiesFromSchemaContent(portStandardDefinition);
         } catch (JsonProcessingException e) {
-            getExceptionHandler().warn(e.getMessage(), e);
+            getUseCaseLogger().warn(e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -61,7 +61,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
 
         DataStoreApiSchema schema = dataStoreApiDefinition.getSchema();
         if (schema == null) {
-            getExceptionHandler().warn("Missing schema, impossible to extract properties");
+            getUseCaseLogger().warn("Missing schema, impossible to extract properties");
             return physicalEntityResList;
         }
         if (schema instanceof DataStoreApiSchemaResource) {
@@ -74,7 +74,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
                 physicalEntityResList.add(extractedEntityFromSchema);
             }
         } else {
-            getExceptionHandler().warn("Schema is not of type DataStoreApiSchemaResource, skipping extraction.");
+            getUseCaseLogger().warn("Schema is not of type DataStoreApiSchemaResource, skipping extraction.");
         }
 
         return physicalEntityResList;

@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 
-import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableExceptionContext.getExceptionHandler;
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
 
 class SemanticLinkManagerImpl implements SemanticLinkManager {
 
@@ -33,7 +33,7 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
                         semanticLink.getDefaultNamespaceIdentifier()
                 );
                 if (semanticLinkObject == null) {
-                    getExceptionHandler().warn("It is not possible to resolve the semantic elements (concepts and attributes) contained in the semantic link path.");
+                    getUseCaseLogger().warn("It is not possible to resolve the semantic elements (concepts and attributes) contained in the semantic link path.");
                 } else {
                     addSemanticLinkToPhysicalField(physicalEntity.getPhysicalFields(), physicalFieldName, semanticLinkObject);
                 }
@@ -48,24 +48,24 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
                     .orElse("")
                     .replaceAll("[\\[\\]]", "");
             if (!StringUtils.hasText(defaultNamespaceIdentifier)) {
-                getExceptionHandler().warn("Namespace Identifier not present when linking physical entity to concept");
+                getUseCaseLogger().warn("Namespace Identifier not present when linking physical entity to concept");
                 return;
             }
             Optional<BDLogicalNamespaceRes> rootNamespace = client.getLogicalNamespaceByIdentifier(defaultNamespaceIdentifier);
             if (rootNamespace.isEmpty()) {
-                getExceptionHandler().warn(String.format("Namespace: %s not found when linking physical entity to concept", defaultNamespaceIdentifier));
+                getUseCaseLogger().warn(String.format("Namespace: %s not found when linking physical entity to concept", defaultNamespaceIdentifier));
                 return;
             }
             String dataCategoryName = Optional.ofNullable(((String) sContext.get("s-type")))
                     .orElse("")
                     .replaceAll("[\\[\\]]", "");
             if (!StringUtils.hasText(dataCategoryName)) {
-                getExceptionHandler().warn("Concept Name not present when linking physical entity to concept");
+                getUseCaseLogger().warn("Concept Name not present when linking physical entity to concept");
                 return;
             }
             Optional<BDDataCategoryRes> dataCategoryRes = client.getDataCategoryByNameAndNamespaceUuid(dataCategoryName, rootNamespace.get().getUuid());
             if (dataCategoryRes.isEmpty()) {
-                getExceptionHandler().warn(String.format("Concept: %s not found when linking it to Physical Entity: %s .", dataCategoryName, physicalEntity.getName()));
+                getUseCaseLogger().warn(String.format("Concept: %s not found when linking it to Physical Entity: %s .", dataCategoryName, physicalEntity.getName()));
                 return;
             }
             physicalEntity.setDataCategories(Sets.newHashSet(dataCategoryRes.get()));
@@ -135,7 +135,7 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
             if (e.getCode() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 throw e;
             } else {
-                getExceptionHandler().warn(e.getMessage(), e);
+                getUseCaseLogger().warn(e.getMessage(), e);
             }
         }
     }

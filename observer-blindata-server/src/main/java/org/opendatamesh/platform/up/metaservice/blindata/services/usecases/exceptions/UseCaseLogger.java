@@ -1,13 +1,11 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions;
 
-import org.slf4j.Logger;
+public interface UseCaseLogger {
+    void info(String message);
 
-public interface UseCaseRecoverableExceptionHandler {
+    void info(String message, Exception e);
+
     void warn(String message);
 
     void warn(String message, Exception e);
-
-    Logger getLogger();
-
-    void setLogger(Logger logger);
 }

@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableExceptionContext.getExceptionHandler;
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
 
 class AsyncApiPayloadAvroSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer {
 
@@ -21,7 +21,7 @@ class AsyncApiPayloadAvroSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
 
         Schema schema = new Parser().parse(rawSchema);
         if (schema.getType() != Type.RECORD) {
-            getExceptionHandler().warn(String.format("Avro root schema must be a RECORD instead of %s", schema.getType().getName()));
+            getUseCaseLogger().warn(String.format("Avro root schema must be a RECORD instead of %s", schema.getType().getName()));
             return mappedPhysicalFieldsList;
         }
 
@@ -67,7 +67,7 @@ class AsyncApiPayloadAvroSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
         } else if (isPrimitiveSchema(avroSchema.getType())) {
             fieldType = avroSchema.getType().getName();
         } else {
-            getExceptionHandler().warn(String.format("Avro schema %s of type %s is not supported", schemaName, avroSchema.getType().getName()));
+            getUseCaseLogger().warn(String.format("Avro schema %s of type %s is not supported", schemaName, avroSchema.getType().getName()));
         }
         return new AvscField(schemaName, fieldType);
     }
@@ -109,7 +109,7 @@ class AsyncApiPayloadAvroSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
                 }
                 break;
             default:
-                getExceptionHandler().warn(String.format("Schema %s of type %s is not supported", schemaName, avroSchema.getType().getName()));
+                getUseCaseLogger().warn(String.format("Schema %s of type %s is not supported", schemaName, avroSchema.getType().getName()));
         }
 
         return new AvscField(fieldName, fieldType, nestedFields);

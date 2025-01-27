@@ -10,7 +10,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 
 import java.util.*;
 
-import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseRecoverableExceptionContext.getExceptionHandler;
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
 
 class AsyncApiPayloadJsonSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer {
     private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -55,7 +55,7 @@ class AsyncApiPayloadJsonSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
             } while (!propertiesToVisit.isEmpty());
             return bdPhysicalFields;
         } catch (JsonProcessingException e) {
-            getExceptionHandler().warn(e.getMessage(), e);
+            getUseCaseLogger().warn(e.getMessage(), e);
             return bdPhysicalFields;
         }
     }
