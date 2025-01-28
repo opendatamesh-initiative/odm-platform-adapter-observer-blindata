@@ -1,16 +1,21 @@
 package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDSemanticLinkingClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.BlindataClientException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
+
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
 
 class SemanticLinkManagerImpl implements SemanticLinkManager {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final BDSemanticLinkingClient client;
 
@@ -18,58 +23,60 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
         this.client = client;
     }
 
+    @Override
     public void enrichPhysicalFieldsWithSemanticLinks(Map<String, Object> sContext, BDPhysicalEntityRes physicalEntity) {
-        if (sContext != null && physicalEntity != null) {
+        withErrorHandling(() -> {
             final Map<String, BDSemanticLink> semanticLinksByPhysicalFieldName = getSemanticLinksByPhysicalFieldName(physicalEntity.getPhysicalFields(), sContext);
-            for (Map.Entry<String, BDSemanticLink> entry : semanticLinksByPhysicalFieldName.entrySet()) {
-                String pfName = entry.getKey();
-                BDSemanticLink semanticLink = entry.getValue();
-                LogicalFieldSemanticLinkRes extractedSemanticLinkFromBlindata = resolveSemanticLinkElements(semanticLink);
-                if (extractedSemanticLinkFromBlindata != null) {
-                    enrichPhysicalFieldAndEntityWithExtractedSemanticLink(physicalEntity.getPhysicalFields(), pfName, extractedSemanticLinkFromBlindata, physicalEntity);
+            semanticLinksByPhysicalFieldName.forEach((physicalFieldName, semanticLink) -> {
+                LogicalFieldSemanticLinkRes semanticLinkObject = client.getSemanticLinkElements(
+                        semanticLink.getSemanticLinkString(),
+                        semanticLink.getDefaultNamespaceIdentifier()
+                );
+                if (semanticLinkObject == null) {
+                    getUseCaseLogger().warn("It is not possible to resolve the semantic elements (concepts and attributes) contained in the semantic link path.");
+                } else {
+                    addSemanticLinkToPhysicalField(physicalEntity.getPhysicalFields(), physicalFieldName, semanticLinkObject);
                 }
-            }
-        }
+            });
+        });
     }
 
     @Override
     public void linkPhysicalEntityToDataCategory(Map<String, Object> sContext, BDPhysicalEntityRes physicalEntity) {
-        final BDLogicalNamespaceRes rootNamespace = getRootNamespace(sContext);
-        try {
-            if (sContext != null && rootNamespace != null) {
-                String rootCategoryName = (String) sContext.get("s-type");
-                final BDDataCategoryRes dataCategoryRes = client.getDataCategoryByNameAndNamespaceUuid(rootCategoryName.replaceAll("[\\[\\]]", ""), rootNamespace.getUuid()).orElse(null);
-                Set<BDDataCategoryRes> dataCategoryResSet = new HashSet<>();
-                dataCategoryResSet.add(dataCategoryRes);
-                physicalEntity.setDataCategories(dataCategoryResSet);
+        withErrorHandling(() -> {
+            String defaultNamespaceIdentifier = Optional.ofNullable(((String) sContext.get("s-base")))
+                    .orElse("")
+                    .replaceAll("[\\[\\]]", "");
+            if (!StringUtils.hasText(defaultNamespaceIdentifier)) {
+                getUseCaseLogger().warn("Namespace Identifier not present when linking physical entity to concept");
+                return;
             }
-        } catch (BlindataClientException e) {
-            logger.warn("Error in SemanticLinkManager: Data Category not found: {}", e.getMessage());
-        }
+            Optional<BDLogicalNamespaceRes> rootNamespace = client.getLogicalNamespaceByIdentifier(defaultNamespaceIdentifier);
+            if (rootNamespace.isEmpty()) {
+                getUseCaseLogger().warn(String.format("Namespace: %s not found when linking physical entity to concept", defaultNamespaceIdentifier));
+                return;
+            }
+            String dataCategoryName = Optional.ofNullable(((String) sContext.get("s-type")))
+                    .orElse("")
+                    .replaceAll("[\\[\\]]", "");
+            if (!StringUtils.hasText(dataCategoryName)) {
+                getUseCaseLogger().warn("Concept Name not present when linking physical entity to concept");
+                return;
+            }
+            Optional<BDDataCategoryRes> dataCategoryRes = client.getDataCategoryByNameAndNamespaceUuid(dataCategoryName, rootNamespace.get().getUuid());
+            if (dataCategoryRes.isEmpty()) {
+                getUseCaseLogger().warn(String.format("Concept: %s not found when linking it to Physical Entity: %s .", dataCategoryName, physicalEntity.getName()));
+                return;
+            }
+            physicalEntity.setDataCategories(Sets.newHashSet(dataCategoryRes.get()));
+        });
     }
 
-    private BDLogicalNamespaceRes getRootNamespace(Map<String, Object> sContext) {
-        try {
-            if (sContext != null) {
-                String defaultNamespaceIdentifier = (String) sContext.get("s-base");
-                return client.getLogicalNamespaceByIdentifier(defaultNamespaceIdentifier.replaceAll("[\\[\\]]", "")).orElse(null);
-            }
-        } catch (BlindataClientException e) {
-            logger.warn("Error in get Logical Namespace : {}", e.getMessage());
-        }
-        return null;
-    }
-
-    private void enrichPhysicalFieldAndEntityWithExtractedSemanticLink(Set<BDPhysicalFieldRes> physicalFieldResList, String pfName, LogicalFieldSemanticLinkRes semanticLinkRes, BDPhysicalEntityRes physicalEntity) {
-        BDPhysicalFieldRes correspondingPhysicalField = physicalFieldResList.stream()
+    private void addSemanticLinkToPhysicalField(Set<BDPhysicalFieldRes> physicalFieldResList, String pfName, LogicalFieldSemanticLinkRes semanticLinkRes) {
+        physicalFieldResList.stream()
                 .filter(field -> pfName.equals(field.getName()))
                 .findFirst()
-                .orElse(null);
-        if (correspondingPhysicalField != null) {
-            List<LogicalFieldSemanticLinkRes> logicalFieldSemanticLinkResList = new ArrayList<>();
-            logicalFieldSemanticLinkResList.add(semanticLinkRes);
-            correspondingPhysicalField.setLogicalFields(logicalFieldSemanticLinkResList);
-        }
+                .ifPresent(physicalField -> physicalField.setLogicalFields(Lists.newArrayList(semanticLinkRes)));
     }
 
     private Map<String, BDSemanticLink> getSemanticLinksByPhysicalFieldName(Set<BDPhysicalFieldRes> physicalFieldResList, Map<String, Object> sContext) {
@@ -85,18 +92,6 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
             }
         }
         return semanticLinkMapByPhysicalFieldName;
-    }
-
-    public LogicalFieldSemanticLinkRes resolveSemanticLinkElements(BDSemanticLink semanticLink) {
-        try {
-            return client.getSemanticLinkElements(
-                    semanticLink.getSemanticLinkString(),
-                    semanticLink.getDefaultNamespaceIdentifier()
-            );
-        } catch (BlindataClientException e) {
-            logger.warn("Error in SemanticLinkManager: BlindataClientException occurred. API Message: {}", e.getMessage());
-            return null;
-        }
     }
 
     private void extractSemanticLinks(
@@ -131,5 +126,17 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
         semanticLink.setDefaultNamespaceIdentifier(namespace);
         semanticLink.setSemanticLinkString(rootCategory + "." + fieldPath);
         return semanticLink;
+    }
+
+    private void withErrorHandling(Runnable runnable) {
+        try {
+            runnable.run();
+        } catch (BlindataClientException e) {
+            if (e.getCode() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+                throw e;
+            } else {
+                getUseCaseLogger().warn(e.getMessage(), e);
+            }
+        }
     }
 }

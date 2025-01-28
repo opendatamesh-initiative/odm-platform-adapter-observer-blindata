@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
-import lombok.extern.slf4j.Slf4j;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPhysicalEntityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPhysicalFieldRes;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinition;
@@ -22,7 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
+
 @Component
 public class PortAsyncApi2Analyzer implements PortStandardDefinitionAnalyzer {
     private final String SPECIFICATION = "asyncapi";
@@ -45,7 +45,7 @@ public class PortAsyncApi2Analyzer implements PortStandardDefinitionAnalyzer {
         try {
             return extractSchemaPropertiesFromSchemaContent(portStandardDefinition);
         } catch (JsonProcessingException e) {
-            log.warn(e.getMessage(), e);
+            getUseCaseLogger().warn(e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -56,7 +56,7 @@ public class PortAsyncApi2Analyzer implements PortStandardDefinitionAnalyzer {
         List<BDPhysicalEntityRes> extractedPhysicalEntities = new ArrayList<>();
         for (Map.Entry<String, AsyncApiChannelItem> channel : asyncAPI.getChannels().entrySet()) {
             if (channel.getValue().getRef() != null) {
-                log.warn("Channel: {}, unsupported ref for AsyncApi port standard definition.", channel.getKey());
+                getUseCaseLogger().warn(String.format("Channel: %s, unsupported ref for AsyncApi port standard definition.", channel.getKey()));
             }
 
             BDPhysicalEntityRes physicalEntity = new BDPhysicalEntityRes();
@@ -89,7 +89,7 @@ public class PortAsyncApi2Analyzer implements PortStandardDefinitionAnalyzer {
         extractedPhysicalFields.add(rootPhysicalField);
 
         if (!StringUtils.hasText(message.getSchemaFormat())) {
-            log.warn("Missing schema format on message: {}, default AsyncApi Schema Object is not supported", message.getTitle());
+            getUseCaseLogger().warn(String.format("Missing schema format on message: %s, default AsyncApi Schema Object is not supported", message.getTitle()));
             return extractedPhysicalFields;
         }
 
@@ -99,7 +99,7 @@ public class PortAsyncApi2Analyzer implements PortStandardDefinitionAnalyzer {
             List<BDPhysicalFieldRes> avroPhysicalFields = payloadSchemaAnalyzer.payloadSchemaToBlindataPhysicalFields(payload, rootPhysicalField.getName());
             extractedPhysicalFields.addAll(avroPhysicalFields);
         } catch (UnsupportedSchemaFormatException | UnsupportedFileEncodingException e) {
-            log.warn(e.getMessage());
+            getUseCaseLogger().warn(e.getMessage(), e);
         }
 
         return extractedPhysicalFields;

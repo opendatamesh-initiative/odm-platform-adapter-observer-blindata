@@ -4,14 +4,10 @@
     "fullyQualifiedName": "FQN",
     "entityType": "source-aligned",
     "name": "test-dp",
-    "versionNumber": "1.0.0",
+    "version": "1.0.0",
     "displayName": "Test Dp",
     "description": "Description",
-    "domain": "Test Domain",
-    "owner": {
-      "id": "",
-      "name": "owner@email.org"
-    }
+    "domain": "Test Domain"
   },
   "existentDataProduct": null,
   "user": null,
