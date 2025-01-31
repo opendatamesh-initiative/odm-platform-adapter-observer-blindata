@@ -3,6 +3,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.data
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.odm.OdmRegistryClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.OBEventNotificationResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.eventstates.DataProductActivityEventState;
@@ -23,6 +24,8 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory, U
 
     @Autowired
     private BDDataProductClient bdDataProductClient;
+    @Autowired
+    private OdmRegistryClient registryClient;
     @Autowired
     private DataProductPortAssetAnalyzer dataProductPortAssetAnalyzer;
     @Autowired
@@ -75,7 +78,7 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory, U
         switch (EventType.valueOf(event.getEvent().getType())) {
             case DATA_PRODUCT_ACTIVITY_COMPLETED: {
                 DataProductActivityEventState afterState = objectMapper.treeToValue(event.getEvent().getAfterState(), DataProductActivityEventState.class);
-                return new DataProductPortsAndAssetsUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, afterState.getDataProductVersion());
+                return new DataProductPortsAndAssetsUploadOdmOutboundPortActivityCompletedImpl(dataProductPortAssetAnalyzer, afterState.getDataProductVersion(), registryClient);
             }
             case DATA_PRODUCT_VERSION_CREATED: {
                 DataProductVersionEventState afterState = objectMapper.treeToValue(event.getEvent().getAfterState(), DataProductVersionEventState.class);

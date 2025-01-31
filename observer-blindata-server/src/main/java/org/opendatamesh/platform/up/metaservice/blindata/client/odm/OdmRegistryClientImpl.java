@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.opendatamesh.dpds.model.DataProductVersionDPDS;
 import org.opendatamesh.platform.pp.registry.api.resources.ExternalComponentResource;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.ClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.ClientResourceMappingException;
@@ -55,5 +56,16 @@ public class OdmRegistryClientImpl implements OdmRegistryClient {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public DataProductVersionDPDS getDataProductVersion(String dataProductId, String versionNumber) {
+
+        String url = UriComponentsBuilder.fromHttpUrl(String.format("%s/api/v1/pp/registry/products/{id}/versions/{number}", baseUrl))
+                .queryParam("format", "normalized")
+                .buildAndExpand(dataProductId, versionNumber)
+                .toUriString();
+
+        return restUtils.get(url, null, null, DataProductVersionDPDS.class);
     }
 }
