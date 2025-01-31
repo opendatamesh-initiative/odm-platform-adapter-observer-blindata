@@ -7,6 +7,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDStewa
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDUserClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.OBEventNotificationResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.eventstates.DataProductActivityEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.eventstates.DataProductEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.eventstates.DataProductVersionEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
@@ -39,7 +40,8 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
 
     private final Set<String> supportedEventTypes = Set.of(
             EventType.DATA_PRODUCT_CREATED.name(),
-            EventType.DATA_PRODUCT_VERSION_CREATED.name()
+            EventType.DATA_PRODUCT_VERSION_CREATED.name(),
+            EventType.DATA_PRODUCT_ACTIVITY_COMPLETED.name()
     );
 
 
@@ -74,6 +76,10 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
             case DATA_PRODUCT_VERSION_CREATED: {
                 DataProductVersionEventState dataProductVersionEventState = objectMapper.treeToValue(event.getEvent().getAfterState(), DataProductVersionEventState.class);
                 return new DataProductUploadOdmOutboundPortImpl(dataProductVersionEventState.getDataProductVersion().getInfo());
+            }
+            case DATA_PRODUCT_ACTIVITY_COMPLETED: {
+                DataProductActivityEventState activityEventState = objectMapper.treeToValue(event.getEvent().getAfterState(), DataProductActivityEventState.class);
+                return new DataProductUploadOdmOutboundPortImpl(activityEventState.getDataProductVersion().getInfo());
             }
             default:
                 throw new UseCaseInitException("Failed to init odmOutboundPort on DataProductUpload use case.");

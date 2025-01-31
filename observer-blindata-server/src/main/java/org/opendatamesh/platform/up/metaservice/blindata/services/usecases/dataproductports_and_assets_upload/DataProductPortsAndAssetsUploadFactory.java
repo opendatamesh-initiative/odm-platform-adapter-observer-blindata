@@ -75,11 +75,11 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory, U
         switch (EventType.valueOf(event.getEvent().getType())) {
             case DATA_PRODUCT_ACTIVITY_COMPLETED: {
                 DataProductActivityEventState afterState = objectMapper.treeToValue(event.getEvent().getAfterState(), DataProductActivityEventState.class);
-                return new DataProductPortsAndAssetsUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, afterState.getDataProductVersion(), afterState.getActivity());
+                return new DataProductPortsAndAssetsUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, afterState.getDataProductVersion());
             }
             case DATA_PRODUCT_VERSION_CREATED: {
                 DataProductVersionEventState afterState = objectMapper.treeToValue(event.getEvent().getAfterState(), DataProductVersionEventState.class);
-                return new DataProductPortsAndAssetsUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, afterState.getDataProductVersion(), null);
+                return new DataProductPortsAndAssetsUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, afterState.getDataProductVersion());
             }
             default:
                 throw new UseCaseInitException("Failed to init odmOutboundPort on DataProductVersionUpload use case.");
