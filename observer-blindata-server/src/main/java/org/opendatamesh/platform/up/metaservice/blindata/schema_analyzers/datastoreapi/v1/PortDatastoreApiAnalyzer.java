@@ -150,7 +150,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         return additionalPropertiesRes;
     }
 
-    private static void extractStringValuesFromSchemaColumn(DataStoreApiSchemaColumn dataStoreApiSchemaColumn, List<AdditionalPropertiesRes> additionalPropertiesRes) {
+    private void extractStringValuesFromSchemaColumn(DataStoreApiSchemaColumn dataStoreApiSchemaColumn, List<AdditionalPropertiesRes> additionalPropertiesRes) {
         addStringPropertyIfNotEmpty(additionalPropertiesRes, "displayName", dataStoreApiSchemaColumn.getDisplayName());
         addStringPropertyIfNotEmpty(additionalPropertiesRes, "summary", dataStoreApiSchemaColumn.getSummary());
         addStringPropertyIfNotEmpty(additionalPropertiesRes, "status", dataStoreApiSchemaColumn.getStatus());
@@ -163,13 +163,13 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         addStringPropertyIfNotEmpty(additionalPropertiesRes, "contentMediaType", dataStoreApiSchemaColumn.getContentMediaType());
     }
 
-    private static void addStringPropertyIfNotEmpty(List<AdditionalPropertiesRes> properties, String key, String value) {
+    private void addStringPropertyIfNotEmpty(List<AdditionalPropertiesRes> properties, String key, String value) {
         if (StringUtils.hasText(value)) {
             properties.add(new AdditionalPropertiesRes(key, value));
         }
     }
 
-    private static void extractNumericValuesFromSchemaColumn(DataStoreApiSchemaColumn dataStoreApiSchemaColumn, List<AdditionalPropertiesRes> additionalPropertiesRes) {
+    private void extractNumericValuesFromSchemaColumn(DataStoreApiSchemaColumn dataStoreApiSchemaColumn, List<AdditionalPropertiesRes> additionalPropertiesRes) {
         addIntegerPropertyIfValid(additionalPropertiesRes, "minLength", dataStoreApiSchemaColumn.getMinLength());
         addIntegerPropertyIfValid(additionalPropertiesRes, "maxLength", dataStoreApiSchemaColumn.getMaxLength());
         addIntegerPropertyIfValid(additionalPropertiesRes, "precision", dataStoreApiSchemaColumn.getPrecision());
@@ -180,13 +180,13 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         addIntegerPropertyIfValid(additionalPropertiesRes, "clusterKeyPosition", dataStoreApiSchemaColumn.getClusterKeyPosition());
     }
 
-    private static void addIntegerPropertyIfValid(List<AdditionalPropertiesRes> properties, String key, Integer value) {
+    private void addIntegerPropertyIfValid(List<AdditionalPropertiesRes> properties, String key, Integer value) {
         Optional.ofNullable(value)
                 .filter(v -> v >= 0)
                 .ifPresent(v -> properties.add(new AdditionalPropertiesRes(key, String.valueOf(v))));
     }
 
-    private static void extractBooleanValuesFromSchemaColumn(DataStoreApiSchemaColumn dataStoreApiSchemaColumn, List<AdditionalPropertiesRes> additionalPropertiesRes) {
+    private void extractBooleanValuesFromSchemaColumn(DataStoreApiSchemaColumn dataStoreApiSchemaColumn, List<AdditionalPropertiesRes> additionalPropertiesRes) {
         addBooleanPropertyIfNotNull(additionalPropertiesRes, "isClassified", dataStoreApiSchemaColumn.getIsClassified());
         addBooleanPropertyIfNotNull(additionalPropertiesRes, "isUnique", dataStoreApiSchemaColumn.getIsUnique());
         addBooleanPropertyIfNotNull(additionalPropertiesRes, "exclusiveMinimum", dataStoreApiSchemaColumn.getExclusiveMinimum());
@@ -199,7 +199,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         addBooleanPropertyIfNotNull(additionalPropertiesRes, "isRequired", dataStoreApiSchemaColumn.getRequired());
     }
 
-    private static void addBooleanPropertyIfNotNull(List<AdditionalPropertiesRes> properties, String key, Boolean value) {
+    private void addBooleanPropertyIfNotNull(List<AdditionalPropertiesRes> properties, String key, Boolean value) {
         Optional.ofNullable(value)
                 .ifPresent(v -> properties.add(new AdditionalPropertiesRes(key, Boolean.TRUE.equals(v) ? "true" : "false")));
     }
