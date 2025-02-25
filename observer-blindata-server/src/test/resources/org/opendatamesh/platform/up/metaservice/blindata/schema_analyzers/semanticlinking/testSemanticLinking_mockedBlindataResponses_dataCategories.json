@@ -1,0 +1,26 @@
+{
+  "Movie": {
+    "namespace": {
+      "name": "FilmRentalInc",
+      "displayName": "Film Rental Inc",
+      "identifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+      "prefix": "fri",
+      "description": "Namespace for the business ontology of Film Rental Inc"
+    },
+    "name": "Movie",
+    "displayName": "Movie",
+    "description": "Movie data such as title, release year, length, rating, etc."
+  },
+  "Company": {
+    "namespace": {
+      "name": "FilmRentalInc",
+      "displayName": "Film Rental Inc",
+      "identifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+      "prefix": "fri",
+      "description": "Namespace for the business ontology of Film Rental Inc"
+    },
+    "name": "Company",
+    "displayName": "Company",
+    "description": "Represents a business entity"
+  }
+}

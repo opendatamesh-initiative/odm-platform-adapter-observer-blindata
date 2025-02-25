@@ -1,0 +1,62 @@
+{
+  "system": {
+    "name": "PostgreSQL - Film Rental Inc.",
+    "description": "The Film Rental Inc organization's operational database",
+    "technology": "PostgreSQL"
+  },
+  "schema": "demo",
+  "name": "movie",
+  "description": "Stores movie data.",
+  "tableType": "BASE_TABLE",
+  "physicalFields": [
+    {
+      "name": "movie_id",
+      "type": "serial",
+      "ordinalPosition": 1,
+      "logicalFields": []
+    },
+    {
+      "name": "director_full_name",
+      "type": "varchar",
+      "ordinalPosition": 2,
+      "logicalFields": []
+    },
+    {
+      "name": "director_country_name",
+      "type": "varchar",
+      "ordinalPosition": 3,
+      "logicalFields": []
+    },
+    {
+      "name": "actors",
+      "type": "varchar[]",
+      "ordinalPosition": 4,
+      "logicalFields": []
+    },
+    {
+      "name": "distributor",
+      "type": "serial",
+      "ordinalPosition": 5,
+      "logicalFields": []
+    },
+    {
+      "name": "copyright",
+      "type": "object",
+      "ordinalPosition": 6,
+      "logicalFields": []
+    },
+    {
+      "name": "copyright.organization_id",
+      "type": "serial",
+      "ordinalPosition": 7,
+      "logicalFields": []
+    },
+    {
+      "name": "copyright.email",
+      "type": "varchar",
+      "ordinalPosition": 8,
+      "logicalFields": []
+    }
+  ],
+  "dataCategories": []
+}

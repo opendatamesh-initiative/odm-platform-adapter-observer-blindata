@@ -1,0 +1,16 @@
+{
+  "s-base": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+
+  "s-type": "[Movie]",
+
+  "movie_id": null,
+  "director_full_name": "director[Person].fullName",
+  "director_country_name": "director[Person].country[Country].name",
+  "actors": "actor[Person].fullName",
+  "distributor": "[Company].distributes[Movie].uuid",
+  "copyright": {
+    "s-type": "copyrightHolder[Organization]",
+    "organization_id": "vatNumber",
+    "email": "contactPoint[ContactPoint].mail"
+  }
+}
