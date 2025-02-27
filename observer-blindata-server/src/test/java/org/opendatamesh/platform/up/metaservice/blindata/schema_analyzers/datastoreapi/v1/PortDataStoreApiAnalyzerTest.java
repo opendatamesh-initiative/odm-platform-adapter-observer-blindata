@@ -42,7 +42,7 @@ public class PortDataStoreApiAnalyzerTest {
         List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionAnalyzer.getBDAssetsFromPortStandardDefinition(portStandardDefinition);
         List<BDPhysicalEntityRes> expectedEntities = objectMapper.readValue(Resources.toByteArray(getClass().getResource("testDataStoreApiV0Analyzer_singleEntitySchema_expectedEntities.json")), Entities.class).physicalEntities;
 
-        Assertions.assertThat(extractedEntities).containsExactlyInAnyOrderElementsOf(expectedEntities);
+        Assertions.assertThat(extractedEntities).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expectedEntities);
     }
 
 
@@ -68,7 +68,7 @@ public class PortDataStoreApiAnalyzerTest {
         List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionAnalyzer.getBDAssetsFromPortStandardDefinition(portStandardDefinition);
         List<BDPhysicalEntityRes> expectedEntities = objectMapper.readValue(Resources.toByteArray(getClass().getResource("testDataStoreApiV0Analyzer_multipleEntitiesSchema_expectedEntities.json")), Entities.class).physicalEntities;
 
-        Assertions.assertThat(extractedEntities).containsExactlyInAnyOrderElementsOf(expectedEntities);
+        Assertions.assertThat(extractedEntities).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expectedEntities);
     }
 
     private static class Entities {
