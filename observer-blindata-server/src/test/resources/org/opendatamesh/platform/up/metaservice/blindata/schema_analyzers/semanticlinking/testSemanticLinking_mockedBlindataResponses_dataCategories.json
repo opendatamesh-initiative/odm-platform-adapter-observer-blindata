@@ -21,6 +21,30 @@
     },
     "name": "Company",
     "displayName": "Company",
-    "description": "Represents a business entity"
+    "description": "Represents a business entity."
+  },
+  "MusicAlbum": {
+    "namespace": {
+      "name": "FilmRentalInc",
+      "displayName": "Film Rental Inc",
+      "identifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+      "prefix": "fri",
+      "description": "Namespace for the business ontology of Film Rental Inc"
+    },
+    "name": "MusicAlbum",
+    "displayName": "Music Album",
+    "description": "A collection of music tracks."
+  },
+  "MusicRecording": {
+    "namespace": {
+      "name": "FilmRentalInc",
+      "displayName": "Film Rental Inc",
+      "identifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+      "prefix": "fri",
+      "description": "Namespace for the business ontology of Film Rental Inc"
+    },
+    "name": "MusicRecording",
+    "displayName": "Music Recording",
+    "description": "A music recording (track), usually a single song."
   }
 }

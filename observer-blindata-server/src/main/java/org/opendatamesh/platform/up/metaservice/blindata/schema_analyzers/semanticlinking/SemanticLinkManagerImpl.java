@@ -73,11 +73,10 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
             String defaultNamespaceIdentifier,
             String defaultDataCategoryName
     ) {
-        String fullPath = parentPath.isEmpty() ? semanticPath : parentPath + "." + semanticPath;
-        boolean isAbsolutePath = fullPath.matches("^\\[[^\\]]+\\].*");
+        String fullPath = isAbsoluteSemanticPath(semanticPath) ? semanticPath : (parentPath.isEmpty() ? semanticPath : parentPath + "." + semanticPath);
 
         Set<String> dataCategories = new HashSet<>();
-        if (isAbsolutePath) {
+        if (isAbsoluteSemanticPath(fullPath)) {
             String startingConcept = fullPath.substring(0, fullPath.indexOf("]") + 1).replaceAll("[\\[\\]]", "");
             dataCategories.add(startingConcept);
         } else {
@@ -104,9 +103,9 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
         String nestedType = (String) nestedContext.get("s-type");
         for (Map.Entry<String, Object> entry : nestedContext.entrySet()) {
             if (!"s-type".equals(entry.getKey())) {
-                String nestedField = entry.getKey();
-                String newParentPath = parentPath.isEmpty() ? nestedType : parentPath + "." + nestedType;
-                SemanticContext childContext = parseFieldContext(fieldName + "." + nestedField, entry.getValue(), newParentPath, defaultNamespaceIdentifier, defaultDataCategoryName);
+                String nestedFieldName = entry.getKey();
+                String effectiveParentPath = parentPath.isEmpty() ? nestedType : parentPath + "." + nestedType;
+                SemanticContext childContext = parseFieldContext(fieldName + "." + nestedFieldName, entry.getValue(), effectiveParentPath, defaultNamespaceIdentifier, defaultDataCategoryName);
                 semanticContext = semanticContext.merge(childContext);
             }
         }
@@ -180,16 +179,8 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
                 .collect(Collectors.toSet());
     }
 
-    private void withErrorHandling(Runnable runnable) {
-        try {
-            runnable.run();
-        } catch (BlindataClientException e) {
-            if (e.getCode() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-                throw e;
-            } else {
-                getUseCaseLogger().warn(e.getMessage(), e);
-            }
-        }
+    private boolean isAbsoluteSemanticPath(String path) {
+        return path.matches("^\\[[^\\]]+\\].*");
     }
 
     private class SemanticContext {
@@ -259,6 +250,18 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
             }
 
             return new SemanticContext(mergedNamespaceIdentifier, mergedDataCategoryName, mergedLinks, mergedCategories);
+        }
+    }
+
+    private void withErrorHandling(Runnable runnable) {
+        try {
+            runnable.run();
+        } catch (BlindataClientException e) {
+            if (e.getCode() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+                throw e;
+            } else {
+                getUseCaseLogger().warn(e.getMessage(), e);
+            }
         }
     }
 }

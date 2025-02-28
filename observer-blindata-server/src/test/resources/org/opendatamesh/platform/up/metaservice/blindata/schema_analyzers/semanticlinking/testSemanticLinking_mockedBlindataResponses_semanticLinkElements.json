@@ -214,5 +214,77 @@
         }
       ]
     }
+  },
+  "[MusicRecording].byArtist[MusicGroup].name": {
+    "semanticLink": {
+      "defaultNamespaceIdentifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+      "semanticLinkString": "[MusicRecording].byArtist[MusicGroup].name",
+      "semanticLinkElements": [
+        {
+          "sequenceId": 29,
+          "resourceType": "DATA_CATEGORY",
+          "resourceName": "MusicRecording",
+          "ordinalPosition": 0
+        },
+        {
+          "sequenceId": 30,
+          "resourceType": "LOGICAL_RELATION",
+          "resourceName": "byArtist",
+          "ordinalPosition": 1
+        },
+        {
+          "sequenceId": 31,
+          "resourceType": "DATA_CATEGORY",
+          "resourceName": "MusicGroup",
+          "ordinalPosition": 2
+        },
+        {
+          "sequenceId": 32,
+          "resourceType": "LOGICAL_FIELD",
+          "resourceName": "name",
+          "ordinalPosition": 3
+        }
+      ]
+    }
+  },
+  "[MusicRecording].duration": {
+    "semanticLink": {
+      "defaultNamespaceIdentifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+      "semanticLinkString": "[MusicRecording].duration",
+      "semanticLinkElements": [
+        {
+          "sequenceId": 33,
+          "resourceType": "DATA_CATEGORY",
+          "resourceName": "MusicRecording",
+          "ordinalPosition": 0
+        },
+        {
+          "sequenceId": 34,
+          "resourceType": "LOGICAL_FIELD",
+          "resourceName": "duration",
+          "ordinalPosition": 1
+        }
+      ]
+    }
+  },
+  "[MusicAlbum].name": {
+    "semanticLink": {
+      "defaultNamespaceIdentifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+      "semanticLinkString": "[MusicAlbum].name",
+      "semanticLinkElements": [
+        {
+          "sequenceId": 35,
+          "resourceType": "DATA_CATEGORY",
+          "resourceName": "MusicAlbum",
+          "ordinalPosition": 0
+        },
+        {
+          "sequenceId": 36,
+          "resourceType": "LOGICAL_FIELD",
+          "resourceName": "name",
+          "ordinalPosition": 1
+        }
+      ]
+    }
   }
 }

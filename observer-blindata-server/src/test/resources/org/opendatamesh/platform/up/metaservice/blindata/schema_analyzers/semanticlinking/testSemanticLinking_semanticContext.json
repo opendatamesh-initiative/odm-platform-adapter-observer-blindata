@@ -12,5 +12,11 @@
     "s-type": "copyrightHolder[Organization]",
     "organization_id": "vatNumber",
     "email": "contactPoint[ContactPoint].mail"
+  },
+  "soundtrack": {
+    "s-type": "[MusicRecording]",
+    "artist": "byArtist[MusicGroup].name",
+    "duration": "duration",
+    "album": "[MusicAlbum].name"
   }
 }
