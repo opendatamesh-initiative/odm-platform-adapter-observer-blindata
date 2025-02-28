@@ -47,7 +47,7 @@ class PortDataStoreApiAnalyzerTest {
                 portStandardDefinitionAnalyzer.getBDAssetsFromPortStandardDefinition(portStandardDefinition);
         List<BDPhysicalEntityRes> expectedEntities =
                 loadExpectedEntities("testDataStoreApiV0Analyzer_singleEntitySchema_expectedEntities.json");
-        assertThat(extractedEntities).containsExactlyInAnyOrderElementsOf(expectedEntities);
+        assertThat(extractedEntities).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expectedEntities);
     }
 
     @Test
@@ -59,7 +59,7 @@ class PortDataStoreApiAnalyzerTest {
                 portStandardDefinitionAnalyzer.getBDAssetsFromPortStandardDefinition(portStandardDefinition);
         List<BDPhysicalEntityRes> expectedEntities =
                 loadExpectedEntities("testDataStoreApiV0Analyzer_multipleEntitiesSchema_expectedEntities.json");
-        assertThat(extractedEntities).containsExactlyInAnyOrderElementsOf(expectedEntities);
+        assertThat(extractedEntities).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expectedEntities);
     }
 
     private String loadJsonResource(String resourcePath) throws IOException {
