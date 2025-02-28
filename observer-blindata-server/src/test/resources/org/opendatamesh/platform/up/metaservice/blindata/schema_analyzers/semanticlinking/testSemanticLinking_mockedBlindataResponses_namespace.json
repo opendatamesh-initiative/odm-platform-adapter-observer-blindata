@@ -1,0 +1,9 @@
+{
+  "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#": {
+    "name": "FilmRentalInc",
+    "displayName": "Film Rental Inc",
+    "identifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+    "prefix": "fri",
+    "description": "Namespace for the business ontology of Film Rental Inc"
+  }
+}

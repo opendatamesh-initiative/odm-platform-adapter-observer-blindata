@@ -1,0 +1,429 @@
+{
+  "system": {
+    "name": "PostgreSQL - Film Rental Inc.",
+    "description": "The Film Rental Inc organization's operational database",
+    "technology": "PostgreSQL"
+  },
+  "schema": "demo",
+  "name": "movie",
+  "description": "Stores movie data.",
+  "tableType": "BASE_TABLE",
+  "physicalFields": [
+    {
+      "name": "movie_id",
+      "type": "serial",
+      "ordinalPosition": 1
+    },
+    {
+      "name": "director_full_name",
+      "type": "varchar",
+      "ordinalPosition": 2,
+      "logicalFields": [
+        {
+          "semanticLink": {
+            "defaultNamespaceIdentifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+            "semanticLinkString": "[Movie].director[Person].fullName",
+            "semanticLinkElements": [
+              {
+                "sequenceId": 1,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "Movie",
+                "ordinalPosition": 0
+              },
+              {
+                "sequenceId": 2,
+                "resourceType": "LOGICAL_RELATION",
+                "resourceName": "director",
+                "ordinalPosition": 1
+              },
+              {
+                "sequenceId": 3,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "Person",
+                "ordinalPosition": 2
+              },
+              {
+                "sequenceId": 4,
+                "resourceType": "LOGICAL_FIELD",
+                "resourceName": "fullName",
+                "ordinalPosition": 3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "director_country_name",
+      "type": "varchar",
+      "ordinalPosition": 3,
+      "logicalFields": [
+        {
+          "semanticLink": {
+            "defaultNamespaceIdentifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+            "semanticLinkString": "[Movie].director[Person].country[Country].name",
+            "semanticLinkElements": [
+              {
+                "sequenceId": 5,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "Movie",
+                "ordinalPosition": 0
+              },
+              {
+                "sequenceId": 6,
+                "resourceType": "LOGICAL_RELATION",
+                "resourceName": "director",
+                "ordinalPosition": 1
+              },
+              {
+                "sequenceId": 7,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "Person",
+                "ordinalPosition": 2
+              },
+              {
+                "sequenceId": 8,
+                "resourceType": "LOGICAL_RELATION",
+                "resourceName": "country",
+                "ordinalPosition": 3
+              },
+              {
+                "sequenceId": 9,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "Country",
+                "ordinalPosition": 4
+              },
+              {
+                "sequenceId": 10,
+                "resourceType": "LOGICAL_FIELD",
+                "resourceName": "name",
+                "ordinalPosition": 5
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "actors",
+      "type": "varchar[]",
+      "ordinalPosition": 4,
+      "logicalFields": [
+        {
+          "semanticLink": {
+            "defaultNamespaceIdentifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+            "semanticLinkString": "[Movie].actor[Person].fullName",
+            "semanticLinkElements": [
+              {
+                "sequenceId": 11,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "Movie",
+                "ordinalPosition": 0
+              },
+              {
+                "sequenceId": 12,
+                "resourceType": "LOGICAL_RELATION",
+                "resourceName": "actor",
+                "ordinalPosition": 1
+              },
+              {
+                "sequenceId": 13,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "Person",
+                "ordinalPosition": 2
+              },
+              {
+                "sequenceId": 14,
+                "resourceType": "LOGICAL_FIELD",
+                "resourceName": "fullName",
+                "ordinalPosition": 3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "distributor",
+      "type": "serial",
+      "ordinalPosition": 5,
+      "logicalFields": [
+        {
+          "semanticLink": {
+            "defaultNamespaceIdentifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+            "semanticLinkString": "[Company].distributes[Movie].uuid",
+            "semanticLinkElements": [
+              {
+                "sequenceId": 15,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "Company",
+                "ordinalPosition": 0
+              },
+              {
+                "sequenceId": 16,
+                "resourceType": "LOGICAL_RELATION",
+                "resourceName": "distributes",
+                "ordinalPosition": 1
+              },
+              {
+                "sequenceId": 17,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "Movie",
+                "ordinalPosition": 2
+              },
+              {
+                "sequenceId": 18,
+                "resourceType": "LOGICAL_FIELD",
+                "resourceName": "uuid",
+                "ordinalPosition": 3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "copyright",
+      "type": "object",
+      "ordinalPosition": 6
+    },
+    {
+      "name": "copyright.organization_id",
+      "type": "serial",
+      "ordinalPosition": 7,
+      "logicalFields": [
+        {
+          "semanticLink": {
+            "defaultNamespaceIdentifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+            "semanticLinkString": "[Movie].copyrightHolder[Organization].vatNumber",
+            "semanticLinkElements": [
+              {
+                "sequenceId": 19,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "Movie",
+                "ordinalPosition": 0
+              },
+              {
+                "sequenceId": 20,
+                "resourceType": "LOGICAL_RELATION",
+                "resourceName": "copyrightHolder",
+                "ordinalPosition": 1
+              },
+              {
+                "sequenceId": 21,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "Organization",
+                "ordinalPosition": 2
+              },
+              {
+                "sequenceId": 22,
+                "resourceType": "LOGICAL_FIELD",
+                "resourceName": "vatNumber",
+                "ordinalPosition": 3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "copyright.email",
+      "type": "varchar",
+      "ordinalPosition": 8,
+      "logicalFields": [
+        {
+          "semanticLink": {
+            "defaultNamespaceIdentifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+            "semanticLinkString": "[Movie].copyrightHolder[Organization].contactPoint[ContactPoint].mail",
+            "semanticLinkElements": [
+              {
+                "sequenceId": 23,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "Movie",
+                "ordinalPosition": 0
+              },
+              {
+                "sequenceId": 24,
+                "resourceType": "LOGICAL_RELATION",
+                "resourceName": "copyrightHolder",
+                "ordinalPosition": 1
+              },
+              {
+                "sequenceId": 25,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "Organization",
+                "ordinalPosition": 2
+              },
+              {
+                "sequenceId": 26,
+                "resourceType": "LOGICAL_RELATION",
+                "resourceName": "contactPoint",
+                "ordinalPosition": 3
+              },
+              {
+                "sequenceId": 27,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "ContactPoint",
+                "ordinalPosition": 4
+              },
+              {
+                "sequenceId": 28,
+                "resourceType": "LOGICAL_FIELD",
+                "resourceName": "mail",
+                "ordinalPosition": 5
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "soundtrack",
+      "type": "object",
+      "ordinalPosition": 9
+    },
+    {
+      "name": "soundtrack.artist",
+      "type": "varchar",
+      "ordinalPosition": 10,
+      "logicalFields": [
+        {
+          "semanticLink": {
+            "defaultNamespaceIdentifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+            "semanticLinkString": "[MusicRecording].byArtist[MusicGroup].name",
+            "semanticLinkElements": [
+              {
+                "sequenceId": 29,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "MusicRecording",
+                "ordinalPosition": 0
+              },
+              {
+                "sequenceId": 30,
+                "resourceType": "LOGICAL_RELATION",
+                "resourceName": "byArtist",
+                "ordinalPosition": 1
+              },
+              {
+                "sequenceId": 31,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "MusicGroup",
+                "ordinalPosition": 2
+              },
+              {
+                "sequenceId": 32,
+                "resourceType": "LOGICAL_FIELD",
+                "resourceName": "name",
+                "ordinalPosition": 3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "soundtrack.duration",
+      "type": "long",
+      "ordinalPosition": 11,
+      "logicalFields": [
+        {
+          "semanticLink": {
+            "defaultNamespaceIdentifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+            "semanticLinkString": "[MusicRecording].duration",
+            "semanticLinkElements": [
+              {
+                "sequenceId": 33,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "MusicRecording",
+                "ordinalPosition": 0
+              },
+              {
+                "sequenceId": 34,
+                "resourceType": "LOGICAL_FIELD",
+                "resourceName": "duration",
+                "ordinalPosition": 1
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "soundtrack.album",
+      "type": "varchar",
+      "ordinalPosition": 12,
+      "logicalFields": [
+        {
+          "semanticLink": {
+            "defaultNamespaceIdentifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+            "semanticLinkString": "[MusicAlbum].name",
+            "semanticLinkElements": [
+              {
+                "sequenceId": 35,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "MusicAlbum",
+                "ordinalPosition": 0
+              },
+              {
+                "sequenceId": 36,
+                "resourceType": "LOGICAL_FIELD",
+                "resourceName": "name",
+                "ordinalPosition": 1
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "dataCategories": [
+    {
+      "namespace": {
+        "name": "FilmRentalInc",
+        "displayName": "Film Rental Inc",
+        "identifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+        "prefix": "fri",
+        "description": "Namespace for the business ontology of Film Rental Inc"
+      },
+      "name": "Movie",
+      "displayName": "Movie",
+      "description": "Movie data such as title, release year, length, rating, etc."
+    },
+    {
+      "namespace": {
+        "name": "FilmRentalInc",
+        "displayName": "Film Rental Inc",
+        "identifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+        "prefix": "fri",
+        "description": "Namespace for the business ontology of Film Rental Inc"
+      },
+      "name": "Company",
+      "displayName": "Company",
+      "description": "Represents a business entity."
+    },
+    {
+      "namespace": {
+        "name": "FilmRentalInc",
+        "displayName": "Film Rental Inc",
+        "identifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+        "prefix": "fri",
+        "description": "Namespace for the business ontology of Film Rental Inc"
+      },
+      "name": "MusicAlbum",
+      "displayName": "Music Album",
+      "description": "A collection of music tracks."
+    },
+    {
+      "namespace": {
+        "name": "FilmRentalInc",
+        "displayName": "Film Rental Inc",
+        "identifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+        "prefix": "fri",
+        "description": "Namespace for the business ontology of Film Rental Inc"
+      },
+      "name": "MusicRecording",
+      "displayName": "Music Recording",
+      "description": "A music recording (track), usually a single song."
+    }
+  ]
+}
