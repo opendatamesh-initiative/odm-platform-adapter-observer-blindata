@@ -10,8 +10,6 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class BDPhysicalFieldRes {
 
     @Schema(description = "The PhysicalField resource identifier")
@@ -40,4 +38,19 @@ public class BDPhysicalFieldRes {
 
     @Schema(description = "A list of associated logical fields with corresponding semantic link path")
     private List<LogicalFieldSemanticLinkRes> logicalFields = new ArrayList<>();
+
+    public BDPhysicalFieldRes() {
+    }
+
+    public BDPhysicalFieldRes(String uuid, String name, String type, Integer ordinalPosition, String description, Date creationDate, Date modificationDate, List<AdditionalPropertiesRes> additionalProperties, List<LogicalFieldSemanticLinkRes> logicalFields) {
+        this.uuid = uuid;
+        this.name = name;
+        this.type = type;
+        this.ordinalPosition = ordinalPosition;
+        this.description = description;
+        this.creationDate = creationDate;
+        this.modificationDate = modificationDate;
+        this.additionalProperties = additionalProperties;
+        this.logicalFields = logicalFields;
+    }
 }
