@@ -29,17 +29,11 @@ class PortDataStoreApiAnalyzerTest {
     @InjectMocks
     private PortDatastoreApiAnalyzer portStandardDefinitionAnalyzer;
 
-    private PortStandardDefinition portStandardDefinition;
-
-    @BeforeEach
-    void setup() {
-        portStandardDefinition = new PortStandardDefinition();
-        portStandardDefinition.setSpecification("datastoreapi");
-        portStandardDefinition.setSpecificationVersion("1.0.0");
-    }
-
     @Test
     void testDatastoreApiV0AnalyzerSingleEntity() throws IOException {
+        PortStandardDefinition portStandardDefinition = new PortStandardDefinition();
+        portStandardDefinition.setSpecification("datastoreapi");
+        portStandardDefinition.setSpecificationVersion("1.0.0");
         portStandardDefinition.setDefinition(loadJsonResource("testDataStoreApiV0Analyzer_singleEntitySchema_rawPortStandardDefinition.json"));
         assertThat(portStandardDefinitionAnalyzer.supportsPortStandardDefinition(portStandardDefinition)).isTrue();
 
@@ -52,6 +46,9 @@ class PortDataStoreApiAnalyzerTest {
 
     @Test
     void testDatastoreApiV0AnalyzerMultipleEntities() throws IOException {
+        PortStandardDefinition portStandardDefinition = new PortStandardDefinition();
+        portStandardDefinition.setSpecification("datastoreapi");
+        portStandardDefinition.setSpecificationVersion("1.0.0");
         portStandardDefinition.setDefinition(loadJsonResource("testDataStoreApiV0Analyzer_multipleEntitiesSchema_rawPortStandardDefinition.json"));
         assertThat(portStandardDefinitionAnalyzer.supportsPortStandardDefinition(portStandardDefinition)).isTrue();
 
