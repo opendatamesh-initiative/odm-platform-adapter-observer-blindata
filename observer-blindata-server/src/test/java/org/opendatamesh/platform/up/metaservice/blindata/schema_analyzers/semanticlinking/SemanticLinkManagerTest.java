@@ -3,7 +3,6 @@ package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.seman
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,8 +34,28 @@ class SemanticLinkManagerTest {
     @InjectMocks
     private SemanticLinkManagerImpl semanticLinkManager;
 
-    @BeforeEach
-    void setUp() throws IOException {
+    @Test
+    void testEnrichWithSemanticContext() throws IOException {
+        // set up
+        setUpMocks();
+        Map<String, Object> sContext = objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("testSemanticLinking_semanticContext.json")),
+                Map.class
+        );
+        BDPhysicalEntityRes physicalEntity = objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("testSemanticLinking_rawPhysicalEntity.json")),
+                BDPhysicalEntityRes.class
+        );
+        BDPhysicalEntityRes expectedPhysicalEntity = objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("testSemanticLinking_expectedPhysicalEntity.json")),
+                BDPhysicalEntityRes.class
+        );
+
+        semanticLinkManager.enrichWithSemanticContext(physicalEntity, sContext);
+        assertThat(physicalEntity).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expectedPhysicalEntity);
+    }
+
+    private void setUpMocks() throws IOException {
         // Load mock response data from JSON
         Map<String, BDLogicalNamespaceRes> namespaces = objectMapper.readValue(
                 Resources.toByteArray(getClass().getResource("testSemanticLinking_mockedBlindataResponses_namespace.json")),
@@ -60,25 +79,5 @@ class SemanticLinkManagerTest {
 
         lenient().when(mockSemanticLinkingClient.getSemanticLinkElements(anyString(), anyString()))
                 .thenAnswer(invocation -> semanticLinkElements.get(invocation.getArgument(0)));
-    }
-
-    @Test
-    void testEnrichWithSemanticContext() throws IOException {
-        // set up
-        Map<String, Object> sContext = objectMapper.readValue(
-                Resources.toByteArray(getClass().getResource("testSemanticLinking_semanticContext.json")),
-                Map.class
-        );
-        BDPhysicalEntityRes physicalEntity = objectMapper.readValue(
-                Resources.toByteArray(getClass().getResource("testSemanticLinking_rawPhysicalEntity.json")),
-                BDPhysicalEntityRes.class
-        );
-        BDPhysicalEntityRes expectedPhysicalEntity = objectMapper.readValue(
-                Resources.toByteArray(getClass().getResource("testSemanticLinking_expectedPhysicalEntity.json")),
-                BDPhysicalEntityRes.class
-        );
-
-        semanticLinkManager.enrichWithSemanticContext(physicalEntity, sContext);
-        assertThat(physicalEntity).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expectedPhysicalEntity);
     }
 }
