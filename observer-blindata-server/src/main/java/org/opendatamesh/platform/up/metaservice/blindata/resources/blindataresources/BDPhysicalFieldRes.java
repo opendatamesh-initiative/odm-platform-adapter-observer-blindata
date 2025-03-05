@@ -1,9 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Date;
