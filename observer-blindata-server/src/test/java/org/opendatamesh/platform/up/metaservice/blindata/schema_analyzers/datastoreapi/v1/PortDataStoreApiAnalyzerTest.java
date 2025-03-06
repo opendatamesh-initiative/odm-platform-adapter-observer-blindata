@@ -3,72 +3,74 @@ package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datas
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPhysicalEntityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinition;
-import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionAnalyzer;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
-import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkingManagerInitialState;
-import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkingManagerMockFactory;
 
 import java.io.IOException;
 import java.util.List;
 
-public class PortDataStoreApiAnalyzerTest {
+import static org.assertj.core.api.Assertions.assertThat;
+
+@ExtendWith(MockitoExtension.class)
+class PortDataStoreApiAnalyzerTest {
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    @Mock
+    private SemanticLinkManager mockSemanticLinkManager;
+
+    @InjectMocks
+    private PortDatastoreApiAnalyzer portStandardDefinitionAnalyzer;
 
     @Test
-    public void testDatastoreApiV0AnalyzerSingleEntity() throws IOException {
-        SemanticLinkingManagerMockFactory mockFactory = new SemanticLinkingManagerMockFactory();
-
-        String rawDefinition = objectMapper.readValue(
-                Resources.toByteArray(
-                        getClass().getResource("testDataStoreApiV0Analyzer_singleEntitySchema_rawPortStandardDefinition.json")
-                ),
-                JsonNode.class
-        ).toString();
-
+    void testDatastoreApiV0AnalyzerSingleEntity() throws IOException {
         PortStandardDefinition portStandardDefinition = new PortStandardDefinition();
         portStandardDefinition.setSpecification("datastoreapi");
         portStandardDefinition.setSpecificationVersion("1.0.0");
-        portStandardDefinition.setDefinition(rawDefinition);
+        portStandardDefinition.setDefinition(loadJsonResource("testDataStoreApiV0Analyzer_singleEntitySchema_rawPortStandardDefinition.json"));
+        assertThat(portStandardDefinitionAnalyzer.supportsPortStandardDefinition(portStandardDefinition)).isTrue();
 
-        final SemanticLinkManager semanticLinkManager = mockFactory.buildSemanticLinkingManagerMock(new SemanticLinkingManagerInitialState());
-        PortStandardDefinitionAnalyzer portStandardDefinitionAnalyzer = new PortDatastoreApiAnalyzer(semanticLinkManager);
-        Assertions.assertThat(portStandardDefinitionAnalyzer.supportsPortStandardDefinition(portStandardDefinition)).isTrue();
-
-        List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionAnalyzer.getBDAssetsFromPortStandardDefinition(portStandardDefinition);
-        List<BDPhysicalEntityRes> expectedEntities = objectMapper.readValue(Resources.toByteArray(getClass().getResource("testDataStoreApiV0Analyzer_singleEntitySchema_expectedEntities.json")), Entities.class).physicalEntities;
-
-        Assertions.assertThat(extractedEntities).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expectedEntities);
+        List<BDPhysicalEntityRes> extractedEntities =
+                portStandardDefinitionAnalyzer.getBDAssetsFromPortStandardDefinition(portStandardDefinition);
+        List<BDPhysicalEntityRes> expectedEntities =
+                loadExpectedEntities("testDataStoreApiV0Analyzer_singleEntitySchema_expectedEntities.json");
+        assertThat(extractedEntities).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expectedEntities);
     }
 
-
     @Test
-    public void testDatastoreApiV0AnalyzerMultipleEntities() throws IOException {
-        SemanticLinkingManagerMockFactory mockFactory = new SemanticLinkingManagerMockFactory();
-
-        String rawDefinition = objectMapper.readValue(
-                Resources.toByteArray(
-                        getClass().getResource("testDataStoreApiV0Analyzer_multipleEntitiesSchema_rawPortStandardDefinition.json")
-                ),
-                JsonNode.class
-        ).toString();
-
+    void testDatastoreApiV0AnalyzerMultipleEntities() throws IOException {
         PortStandardDefinition portStandardDefinition = new PortStandardDefinition();
         portStandardDefinition.setSpecification("datastoreapi");
         portStandardDefinition.setSpecificationVersion("1.0.0");
-        portStandardDefinition.setDefinition(rawDefinition);
+        portStandardDefinition.setDefinition(loadJsonResource("testDataStoreApiV0Analyzer_multipleEntitiesSchema_rawPortStandardDefinition.json"));
+        assertThat(portStandardDefinitionAnalyzer.supportsPortStandardDefinition(portStandardDefinition)).isTrue();
 
-        PortStandardDefinitionAnalyzer portStandardDefinitionAnalyzer = new PortDatastoreApiAnalyzer(mockFactory.buildSemanticLinkingManagerMock(null));
-        Assertions.assertThat(portStandardDefinitionAnalyzer.supportsPortStandardDefinition(portStandardDefinition)).isTrue();
+        List<BDPhysicalEntityRes> extractedEntities =
+                portStandardDefinitionAnalyzer.getBDAssetsFromPortStandardDefinition(portStandardDefinition);
+        List<BDPhysicalEntityRes> expectedEntities =
+                loadExpectedEntities("testDataStoreApiV0Analyzer_multipleEntitiesSchema_expectedEntities.json");
+        assertThat(extractedEntities).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expectedEntities);
+    }
 
-        List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionAnalyzer.getBDAssetsFromPortStandardDefinition(portStandardDefinition);
-        List<BDPhysicalEntityRes> expectedEntities = objectMapper.readValue(Resources.toByteArray(getClass().getResource("testDataStoreApiV0Analyzer_multipleEntitiesSchema_expectedEntities.json")), Entities.class).physicalEntities;
+    private String loadJsonResource(String resourcePath) throws IOException {
+        return objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource(resourcePath)),
+                JsonNode.class
+        ).toString();
+    }
 
-        Assertions.assertThat(extractedEntities).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expectedEntities);
+    private List<BDPhysicalEntityRes> loadExpectedEntities(String resourcePath) throws IOException {
+        return objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource(resourcePath)),
+                Entities.class
+        ).physicalEntities;
     }
 
     private static class Entities {
@@ -83,3 +85,4 @@ public class PortDataStoreApiAnalyzerTest {
         }
     }
 }
+

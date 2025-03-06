@@ -1,0 +1,73 @@
+{
+  "system": {
+    "name": "PostgreSQL - Film Rental Inc.",
+    "description": "The Film Rental Inc organization's operational database",
+    "technology": "PostgreSQL"
+  },
+  "schema": "demo",
+  "name": "movie",
+  "description": "Stores movie data.",
+  "tableType": "BASE_TABLE",
+  "physicalFields": [
+    {
+      "name": "movie_id",
+      "type": "serial",
+      "ordinalPosition": 1
+    },
+    {
+      "name": "director_full_name",
+      "type": "varchar",
+      "ordinalPosition": 2
+    },
+    {
+      "name": "director_country_name",
+      "type": "varchar",
+      "ordinalPosition": 3
+    },
+    {
+      "name": "actors",
+      "type": "varchar[]",
+      "ordinalPosition": 4
+    },
+    {
+      "name": "distributor",
+      "type": "serial",
+      "ordinalPosition": 5
+    },
+    {
+      "name": "copyright",
+      "type": "object",
+      "ordinalPosition": 6
+    },
+    {
+      "name": "copyright.organization_id",
+      "type": "serial",
+      "ordinalPosition": 7
+    },
+    {
+      "name": "copyright.email",
+      "type": "varchar",
+      "ordinalPosition": 8
+    },
+    {
+      "name": "soundtrack",
+      "type": "object",
+      "ordinalPosition": 9
+    },
+    {
+      "name": "soundtrack.artist",
+      "type": "varchar",
+      "ordinalPosition": 10
+    },
+    {
+      "name": "soundtrack.duration",
+      "type": "long",
+      "ordinalPosition": 11
+    },
+    {
+      "name": "soundtrack.album",
+      "type": "varchar",
+      "ordinalPosition": 12
+    }
+  ]
+}

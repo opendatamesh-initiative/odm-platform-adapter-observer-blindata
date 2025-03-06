@@ -3,10 +3,10 @@ package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.seman
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPhysicalEntityRes;
 
 import java.util.Map;
+import java.util.Set;
 
 public interface SemanticLinkManager {
 
-    void enrichPhysicalFieldsWithSemanticLinks(Map<String, Object> sContext, BDPhysicalEntityRes physicalEntity);
+    void enrichWithSemanticContext(BDPhysicalEntityRes physicalEntity, Map<String, Object> sContext);
 
-    void linkPhysicalEntityToDataCategory(Map<String, Object> sContext, BDPhysicalEntityRes physicalEntity);
 }
