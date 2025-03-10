@@ -70,7 +70,7 @@ public class BlindataValidatorService {
             evaluationResult.setEvaluationResult(false);
             resultOutput.setMessage("[Blindata Policy Validator]: Blindata policy failed to validate data product.");
             resultOutput.setRawError(objectMapper.valueToTree(validatorUseCaseLogger.getWarnings()));
-            log.warn("[Blindata Policy Validator]: Blindata policy failed to validate data product.");
+            log.info("[Blindata Policy Validator]: Blindata policy failed to validate data product: {}", resultOutput.getRawError().asText());
         }
 
         return evaluationResult;
