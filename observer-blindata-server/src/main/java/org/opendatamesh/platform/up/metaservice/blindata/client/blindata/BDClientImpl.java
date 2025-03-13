@@ -1,5 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.blindata;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.AuthenticatedRestUtils;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.ClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.ClientResourceMappingException;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URISyntaxException;
 import java.util.Optional;
 
 public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, BDUserClient, BDPolicyEvaluationResultClient, BDSemanticLinkingClient {
@@ -269,12 +271,10 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     //returns a semantic link object, which contains full Blindata elements (Logical Field/Data Category)
     public LogicalFieldSemanticLinkRes getSemanticLinkElements(String pathString, String defaultNamespaceIdentifier) throws BlindataClientException {
         try {
-            String url = String.format(
-                    "%s/api/v1/logical/semanticlinking/*/resolvefield?pathString=%s&defaultNamespaceIdentifier=%s",
-                    credentials.getBlindataUrl(),
-                    pathString,
-                    defaultNamespaceIdentifier
-            );
+            URIBuilder uriBuilder = new URIBuilder(credentials.getBlindataUrl() + "/api/v1/logical/semanticlinking/*/resolvefield");
+            uriBuilder.addParameter("pathString", pathString);
+            uriBuilder.addParameter("defaultNamespaceIdentifier", defaultNamespaceIdentifier);
+            String url = uriBuilder.build().toString();
             return authenticatedRestUtils.get(
                     url,
                     null,
@@ -283,7 +283,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
             );
         } catch (ClientException e) {
             throw new BlindataClientException(e.getCode(), e.getResponseBody());
-        } catch (ClientResourceMappingException e) {
+        } catch (ClientResourceMappingException | URISyntaxException e) {
             throw new BlindataClientResourceMappingException(e.getMessage(), e);
         }
     }
@@ -291,12 +291,10 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     @Override
     public Optional<BDDataCategoryRes> getDataCategoryByNameAndNamespaceUuid(String dataCategoryName, String namespaceUuid) {
         try {
-            String url = String.format(
-                    "%s/api/v1/datacategories?namespaceUuid=%s&search=%s",
-                    credentials.getBlindataUrl(),
-                    namespaceUuid,
-                    dataCategoryName
-            );
+            URIBuilder uriBuilder = new URIBuilder(credentials.getBlindataUrl() + "/api/v1/datacategories");
+            uriBuilder.addParameter("namespaceUuid", namespaceUuid);
+            uriBuilder.addParameter("search", dataCategoryName);
+            String url = uriBuilder.build().toString();
 
             return authenticatedRestUtils.getPage(
                     url,
@@ -307,7 +305,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
             ).stream().findFirst();
         } catch (ClientException e) {
             throw new BlindataClientException(e.getCode(), e.getResponseBody());
-        } catch (ClientResourceMappingException e) {
+        } catch (ClientResourceMappingException | URISyntaxException e) {
             throw new BlindataClientResourceMappingException(e.getMessage(), e);
         }
     }
@@ -315,11 +313,10 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     @Override
     public Optional<BDLogicalNamespaceRes> getLogicalNamespaceByIdentifier(String identifier) {
         try {
-            String url = String.format(
-                    "%s/api/v1/logical/namespaces?identifiers=%s",
-                    credentials.getBlindataUrl(),
-                    identifier
-            );
+            URIBuilder uriBuilder = new URIBuilder(credentials.getBlindataUrl() + "/api/v1/logical/namespaces");
+            uriBuilder.addParameter("identifiers", identifier);
+            String url = uriBuilder.build().toString();
+
             return authenticatedRestUtils.getPage(
                     url,
                     null,
@@ -329,6 +326,8 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
             ).stream().findFirst();
         } catch (ClientException e) {
             throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException | URISyntaxException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
         }
     }
 }
