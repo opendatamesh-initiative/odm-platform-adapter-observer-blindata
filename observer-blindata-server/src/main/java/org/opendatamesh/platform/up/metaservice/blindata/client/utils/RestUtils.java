@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -31,6 +32,8 @@ public class RestUtils {
 
     private final RestTemplate rest;
     private final ObjectMapper objectMapper;
+    private String asyncEndpointRequest;
+    private String asyncEndpointPoll;
 
     public RestUtils(RestTemplate restTemplate) {
         this.rest = restTemplate;
@@ -39,6 +42,15 @@ public class RestUtils {
         SimpleModule simpleModule = new SimpleModule()
                 .addAbstractTypeMapping(Page.class, PageUtility.class);
         objectMapper.registerModule(simpleModule);
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(ResponseEntity.class, new ResponseEntityDeserializer());
+        objectMapper.registerModule(module);
+    }
+
+    private RestUtils(RestTemplate restTemplate, String asyncEndpointRequest, String asyncEndpointPoll) {
+        this(restTemplate);
+        this.asyncEndpointRequest = asyncEndpointRequest;
+        this.asyncEndpointPoll = asyncEndpointPoll;
     }
 
     public <R, F> Page<R> getPage(String url, HttpHeaders httpHeaders, Pageable pageable, F filters, Class<R> clazz) throws ClientException, ClientResourceMappingException {
@@ -202,6 +214,21 @@ public class RestUtils {
         }
     }
 
+    public RestUtils async(String asyncEndpointRequest, String asyncEndpointPoll) {
+        return new RestUtils(this.rest, asyncEndpointRequest, asyncEndpointPoll);
+    }
+
+    private <V> V executeAsync(Callable<AsyncRestTask> callable) {
+        try {
+            AsyncRestTask asyncRestTask = callable.call();
+            String requestId = asyncRestTask.getId();
+
+        } catch (Exception e){
+          //TODO
+          throw new RuntimeException();
+        }
+    }
+
     /**
      * Retrieves data from a REST API endpoint in pages and processes each page using the provided consumer.
      * This method handles pagination automatically, retrieving data in batches until all data is processed or the maximum number of elements is reached.
@@ -210,7 +237,7 @@ public class RestUtils {
      * @param retrieveMethod A function that takes a Pageable object and returns a Page of data. This function should encapsulate the logic for retrieving data from the API.
      * @param processMethod  A consumer that accepts a List of data and performs the desired processing on it. This is called for each retrieved page.
      * @param batchSize      The number of elements to retrieve in each page.
-     * @param maxElements   The maximum number of elements to retrieve. If this limit is reached, the process stops even if there are more pages available.
+     * @param maxElements    The maximum number of elements to retrieve. If this limit is reached, the process stops even if there are more pages available.
      * @implNote This method uses a do-while loop to iterate through the pages. It is important that the {@code retrieveMethod} function correctly handles the {@code Pageable} object to ensure proper pagination.
      */
     public static <T> void retrieveAndProcessPageable(
@@ -237,7 +264,7 @@ public class RestUtils {
     private static boolean limitNotReachedYet(int maxElements, int batchSize, int pageNumber) {
         return (batchSize * pageNumber) <= maxElements;
     }
-    
+
     private String appendQueryStringFromPageable(String url, Pageable pageable) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
                 .queryParam("page", pageable.getPageNumber())
