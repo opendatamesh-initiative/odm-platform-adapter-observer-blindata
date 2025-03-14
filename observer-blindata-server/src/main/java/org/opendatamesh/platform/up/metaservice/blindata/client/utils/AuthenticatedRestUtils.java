@@ -15,7 +15,7 @@ public class AuthenticatedRestUtils extends RestUtils {
     public AuthenticatedRestUtils(RestTemplate restTemplate, Function<HttpHeaders, HttpHeaders> getAuthenticatedHeaders) {
         super(restTemplate);
         this.getAuthenticatedHeaders = getAuthenticatedHeaders;
-        if (getAuthenticatedHeaders == null){
+        if (getAuthenticatedHeaders == null) {
             throw new IllegalArgumentException("getAuthenticatedHeaders must not be null");
         }
     }
@@ -28,6 +28,11 @@ public class AuthenticatedRestUtils extends RestUtils {
     @Override
     public <R, ID> R get(String url, HttpHeaders httpHeaders, ID identifier, Class<R> clazz) throws ClientException, ClientResourceMappingException {
         return super.get(url, getAuthenticatedHeaders.apply(httpHeaders), identifier, clazz);
+    }
+
+    @Override
+    public <R, F> R genericGet(String url, HttpHeaders httpHeaders, F filters, Class<R> clazz) throws ClientException, ClientResourceMappingException {
+        return super.genericGet(url, getAuthenticatedHeaders.apply(httpHeaders), filters, clazz);
     }
 
     @Override
