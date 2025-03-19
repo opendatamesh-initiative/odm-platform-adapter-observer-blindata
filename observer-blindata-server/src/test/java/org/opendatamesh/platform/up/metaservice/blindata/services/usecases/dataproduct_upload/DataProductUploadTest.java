@@ -115,4 +115,21 @@ public class DataProductUploadTest {
         verify(blindataOutboundPort, times(0)).updateDataProduct(any());
         verify(blindataOutboundPort, times(0)).createDataProductResponsibility(any(), any(), any());
     }
+
+    @Test
+    public void testDataProductUploadWithEmptyOwner() throws IOException, UseCaseExecutionException {
+        DataProductUploadInitialState initialState = objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("initial_state_4.json")),
+                DataProductUploadInitialState.class
+        );
+
+        DataProductUploadOdmOutboundPort odmOutboundPort = new DataProductUploadOdmOutboundPortMock(initialState);
+        DataProductUploadBlindataOutboundPort blindataOutboundPort = spy(new DataProductUploadBlindataOutboundPortMock(initialState));
+
+        new DataProductUpload(odmOutboundPort, new DataProductUploadBlindataOutboundPortDryRunImpl(blindataOutboundPort)).execute();
+
+        verify(blindataOutboundPort, times(0)).createDataProduct(any());
+        verify(blindataOutboundPort, times(0)).updateDataProduct(any());
+        verify(blindataOutboundPort, times(0)).createDataProductResponsibility(any(), any(), any());
+    }
 }
