@@ -10,8 +10,6 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresou
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinition;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionAnalyzer;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -20,15 +18,16 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
 
 @Component
 public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer {
 
     private final SemanticLinkManager semanticLinkManager;
 
-
-    private static final Logger log = LoggerFactory.getLogger(PortDatastoreApiAnalyzer.class);
     private final String SPECIFICATION = "datastoreapi";
     private final String VERSION = "1.*.*";
     private final ObjectMapper objectMapper = new ObjectMapper()
@@ -52,7 +51,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         try {
             return extractSchemaPropertiesFromSchemaContent(portStandardDefinition);
         } catch (JsonProcessingException e) {
-            log.warn(e.getMessage(), e);
+            getUseCaseLogger().warn(e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -63,7 +62,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
 
         DataStoreApiSchema schema = dataStoreApiDefinition.getSchema();
         if (schema == null) {
-            log.warn("Missing schema, impossible to extract properties");
+            getUseCaseLogger().warn("Missing schema, impossible to extract properties");
             return physicalEntityResList;
         }
         if (schema instanceof DataStoreApiSchemaResource) {
@@ -76,7 +75,7 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
                 physicalEntityResList.add(extractedEntityFromSchema);
             }
         } else {
-            log.warn("Schema is not of type DataStoreApiSchemaResource, skipping extraction.");
+            getUseCaseLogger().warn("Schema is not of type DataStoreApiSchemaResource, skipping extraction.");
         }
 
         return physicalEntityResList;
@@ -93,8 +92,9 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         if (!CollectionUtils.isEmpty(dataStoreApiSchemaEntity.getProperties())) {
             physicalEntityRes.setPhysicalFields(dataStoreApiSchemaEntity.getProperties().values().stream().map(this::extractPhysicalFieldsFromColumn).collect(Collectors.toSet()));
         }
-        semanticLinkManager.enrichPhysicalFieldsWithSemanticLinks(dataStoreApiSchemaEntity.getsContext(), physicalEntityRes);
-        semanticLinkManager.linkPhysicalEntityToDataCategory(dataStoreApiSchemaEntity.getsContext(), physicalEntityRes);
+        if (dataStoreApiSchemaEntity.getsContext() != null) {
+            semanticLinkManager.enrichWithSemanticContext(physicalEntityRes, dataStoreApiSchemaEntity.getsContext());
+        }
         physicalEntityRes.setAdditionalProperties(getExtractAdditionalPropertiesForEntities(dataStoreApiSchemaEntity));
         return physicalEntityRes;
     }
@@ -127,89 +127,79 @@ public class PortDatastoreApiAnalyzer implements PortStandardDefinitionAnalyzer 
         fieldRes.setName(schema.getName());
         fieldRes.setType(schema.getPhysicalType());
         fieldRes.setDescription(StringUtils.hasText(schema.getDescription()) ? schema.getDescription() : null);
+        fieldRes.setOrdinalPosition(schema.getOrdinalPosition());
         fieldRes.setAdditionalProperties(extractAdditionalPropertiesForFields(schema));
         return fieldRes;
     }
 
     private List<AdditionalPropertiesRes> extractAdditionalPropertiesForFields(DataStoreApiSchemaColumn dataStoreApiSchemaColumn) {
         List<AdditionalPropertiesRes> additionalPropertiesRes = new ArrayList<>();
-        if (StringUtils.hasText(dataStoreApiSchemaColumn.getDisplayName())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("displayName", dataStoreApiSchemaColumn.getDisplayName()));
-        }
-        if (StringUtils.hasText(dataStoreApiSchemaColumn.getSummary())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("summary", dataStoreApiSchemaColumn.getSummary()));
-        }
-        if (StringUtils.hasText(dataStoreApiSchemaColumn.getStatus())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("status", dataStoreApiSchemaColumn.getStatus()));
-        }
+
+        extractStringValuesFromSchemaColumn(dataStoreApiSchemaColumn, additionalPropertiesRes);
+        extractNumericValuesFromSchemaColumn(dataStoreApiSchemaColumn, additionalPropertiesRes);
+        extractBooleanValuesFromSchemaColumn(dataStoreApiSchemaColumn, additionalPropertiesRes);
+
         if (!CollectionUtils.isEmpty(dataStoreApiSchemaColumn.getTags())) {
             dataStoreApiSchemaColumn.getTags().forEach(tag -> additionalPropertiesRes.add(new AdditionalPropertiesRes("tags", tag)));
         }
         if (!CollectionUtils.isEmpty(dataStoreApiSchemaColumn.getEnumValues())) {
             dataStoreApiSchemaColumn.getEnumValues().forEach(tag -> additionalPropertiesRes.add(new AdditionalPropertiesRes("enum", tag)));
         }
-        if (StringUtils.hasText(dataStoreApiSchemaColumn.getExternalDocs())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("externalDocs", dataStoreApiSchemaColumn.getExternalDocs()));
-        }
-        if (StringUtils.hasText(dataStoreApiSchemaColumn.getClassificationLevel())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("classificationLevel", dataStoreApiSchemaColumn.getClassificationLevel()));
-        }
-        if (StringUtils.hasText(dataStoreApiSchemaColumn.getPattern())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("pattern", dataStoreApiSchemaColumn.getPattern()));
-        }
-        if (StringUtils.hasText(dataStoreApiSchemaColumn.getFormat())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("format", dataStoreApiSchemaColumn.getFormat()));
-        }
-        if (StringUtils.hasText(dataStoreApiSchemaColumn.getDefaultValue())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("default", dataStoreApiSchemaColumn.getDefaultValue()));
-        }
-        if (dataStoreApiSchemaColumn.getMinLength() >= 0) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("minLength", String.valueOf(dataStoreApiSchemaColumn.getMinLength())));
-        }
-        if (dataStoreApiSchemaColumn.getMaxLength() >= 0) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("maxLength", String.valueOf(dataStoreApiSchemaColumn.getMaxLength())));
-        }
-        if (StringUtils.hasText(dataStoreApiSchemaColumn.getContentEncoding())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("contentEncoding", dataStoreApiSchemaColumn.getContentEncoding()));
-        }
-        if (StringUtils.hasText(dataStoreApiSchemaColumn.getContentMediaType())) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("contentMediaType", dataStoreApiSchemaColumn.getContentMediaType()));
-        }
-        if (dataStoreApiSchemaColumn.getPrecision() >= 0) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("precision", String.valueOf(dataStoreApiSchemaColumn.getPrecision())));
-        }
-        if (dataStoreApiSchemaColumn.getScale() >= 0) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("scale", String.valueOf(dataStoreApiSchemaColumn.getScale())));
-        }
-        if (dataStoreApiSchemaColumn.getMinimum() >= 0) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("minimum", String.valueOf(dataStoreApiSchemaColumn.getMinimum())));
-        }
-        if (dataStoreApiSchemaColumn.getMaximum() >= 0) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("maximum", String.valueOf(dataStoreApiSchemaColumn.getMaximum())));
-        }
-        if (dataStoreApiSchemaColumn.getPartitionKeyPosition() >= 0) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("partitionKeyPosition", String.valueOf(dataStoreApiSchemaColumn.getMaximum())));
-        }
-
-        if (dataStoreApiSchemaColumn.getClusterKeyPosition() >= 0) {
-            additionalPropertiesRes.add(new AdditionalPropertiesRes("clusterKeyPosition", String.valueOf(dataStoreApiSchemaColumn.getClusterKeyPosition())));
-        }
-
-        extractBooleanValuesFromSchemaColumn(dataStoreApiSchemaColumn, additionalPropertiesRes);
 
         return additionalPropertiesRes;
     }
 
-    private static void extractBooleanValuesFromSchemaColumn(DataStoreApiSchemaColumn dataStoreApiSchemaColumn, List<AdditionalPropertiesRes> additionalPropertiesRes) {
-        additionalPropertiesRes.add(new AdditionalPropertiesRes("isClassified", dataStoreApiSchemaColumn.isClassified() ? "true" : "false"));
-        additionalPropertiesRes.add(new AdditionalPropertiesRes("isUnique", dataStoreApiSchemaColumn.isUnique() ? "true" : "false"));
-        additionalPropertiesRes.add(new AdditionalPropertiesRes("exclusiveMinimum", dataStoreApiSchemaColumn.isExclusiveMinimum() ? "true" : "false"));
-        additionalPropertiesRes.add(new AdditionalPropertiesRes("exclusiveMaximum", dataStoreApiSchemaColumn.isExclusiveMaximum() ? "true" : "false"));
-        additionalPropertiesRes.add(new AdditionalPropertiesRes("readOnly", dataStoreApiSchemaColumn.isReadOnly() ? "true" : "false"));
-        additionalPropertiesRes.add(new AdditionalPropertiesRes("writeOnly", dataStoreApiSchemaColumn.isWriteOnly() ? "true" : "false"));
-        additionalPropertiesRes.add(new AdditionalPropertiesRes("isNullable", dataStoreApiSchemaColumn.isNullable() ? "true" : "false"));
-        additionalPropertiesRes.add(new AdditionalPropertiesRes("isPartitionStatus", dataStoreApiSchemaColumn.isPartitionStatus() ? "true" : "false"));
-        additionalPropertiesRes.add(new AdditionalPropertiesRes("isClusterStatus", dataStoreApiSchemaColumn.isClusterStatus() ? "true" : "false"));
-        additionalPropertiesRes.add(new AdditionalPropertiesRes("isRequired", dataStoreApiSchemaColumn.isRequired() ? "true" : "false"));
+    private void extractStringValuesFromSchemaColumn(DataStoreApiSchemaColumn dataStoreApiSchemaColumn, List<AdditionalPropertiesRes> additionalPropertiesRes) {
+        addStringPropertyIfNotEmpty(additionalPropertiesRes, "displayName", dataStoreApiSchemaColumn.getDisplayName());
+        addStringPropertyIfNotEmpty(additionalPropertiesRes, "summary", dataStoreApiSchemaColumn.getSummary());
+        addStringPropertyIfNotEmpty(additionalPropertiesRes, "status", dataStoreApiSchemaColumn.getStatus());
+        addStringPropertyIfNotEmpty(additionalPropertiesRes, "externalDocs", dataStoreApiSchemaColumn.getExternalDocs());
+        addStringPropertyIfNotEmpty(additionalPropertiesRes, "classificationLevel", dataStoreApiSchemaColumn.getClassificationLevel());
+        addStringPropertyIfNotEmpty(additionalPropertiesRes, "pattern", dataStoreApiSchemaColumn.getPattern());
+        addStringPropertyIfNotEmpty(additionalPropertiesRes, "format", dataStoreApiSchemaColumn.getFormat());
+        addStringPropertyIfNotEmpty(additionalPropertiesRes, "default", dataStoreApiSchemaColumn.getDefaultValue());
+        addStringPropertyIfNotEmpty(additionalPropertiesRes, "contentEncoding", dataStoreApiSchemaColumn.getContentEncoding());
+        addStringPropertyIfNotEmpty(additionalPropertiesRes, "contentMediaType", dataStoreApiSchemaColumn.getContentMediaType());
+    }
+
+    private void addStringPropertyIfNotEmpty(List<AdditionalPropertiesRes> properties, String key, String value) {
+        if (StringUtils.hasText(value)) {
+            properties.add(new AdditionalPropertiesRes(key, value));
+        }
+    }
+
+    private void extractNumericValuesFromSchemaColumn(DataStoreApiSchemaColumn dataStoreApiSchemaColumn, List<AdditionalPropertiesRes> additionalPropertiesRes) {
+        addIntegerPropertyIfValid(additionalPropertiesRes, "minLength", dataStoreApiSchemaColumn.getMinLength());
+        addIntegerPropertyIfValid(additionalPropertiesRes, "maxLength", dataStoreApiSchemaColumn.getMaxLength());
+        addIntegerPropertyIfValid(additionalPropertiesRes, "precision", dataStoreApiSchemaColumn.getPrecision());
+        addIntegerPropertyIfValid(additionalPropertiesRes, "scale", dataStoreApiSchemaColumn.getScale());
+        addIntegerPropertyIfValid(additionalPropertiesRes, "minimum", dataStoreApiSchemaColumn.getMinimum());
+        addIntegerPropertyIfValid(additionalPropertiesRes, "maximum", dataStoreApiSchemaColumn.getMaximum());
+        addIntegerPropertyIfValid(additionalPropertiesRes, "partitionKeyPosition", dataStoreApiSchemaColumn.getPartitionKeyPosition());
+        addIntegerPropertyIfValid(additionalPropertiesRes, "clusterKeyPosition", dataStoreApiSchemaColumn.getClusterKeyPosition());
+    }
+
+    private void addIntegerPropertyIfValid(List<AdditionalPropertiesRes> properties, String key, Integer value) {
+        Optional.ofNullable(value)
+                .filter(v -> v >= 0)
+                .ifPresent(v -> properties.add(new AdditionalPropertiesRes(key, String.valueOf(v))));
+    }
+
+    private void extractBooleanValuesFromSchemaColumn(DataStoreApiSchemaColumn dataStoreApiSchemaColumn, List<AdditionalPropertiesRes> additionalPropertiesRes) {
+        addBooleanPropertyIfNotNull(additionalPropertiesRes, "isClassified", dataStoreApiSchemaColumn.getIsClassified());
+        addBooleanPropertyIfNotNull(additionalPropertiesRes, "isUnique", dataStoreApiSchemaColumn.getIsUnique());
+        addBooleanPropertyIfNotNull(additionalPropertiesRes, "exclusiveMinimum", dataStoreApiSchemaColumn.getExclusiveMinimum());
+        addBooleanPropertyIfNotNull(additionalPropertiesRes, "exclusiveMaximum", dataStoreApiSchemaColumn.getExclusiveMaximum());
+        addBooleanPropertyIfNotNull(additionalPropertiesRes, "readOnly", dataStoreApiSchemaColumn.getReadOnly());
+        addBooleanPropertyIfNotNull(additionalPropertiesRes, "writeOnly", dataStoreApiSchemaColumn.getWriteOnly());
+        addBooleanPropertyIfNotNull(additionalPropertiesRes, "isNullable", dataStoreApiSchemaColumn.getIsNullable());
+        addBooleanPropertyIfNotNull(additionalPropertiesRes, "isPartitionStatus", dataStoreApiSchemaColumn.getPartitionStatus());
+        addBooleanPropertyIfNotNull(additionalPropertiesRes, "isClusterStatus", dataStoreApiSchemaColumn.getClusterStatus());
+        addBooleanPropertyIfNotNull(additionalPropertiesRes, "isRequired", dataStoreApiSchemaColumn.getRequired());
+    }
+
+    private void addBooleanPropertyIfNotNull(List<AdditionalPropertiesRes> properties, String key, Boolean value) {
+        Optional.ofNullable(value)
+                .ifPresent(v -> properties.add(new AdditionalPropertiesRes(key, Boolean.TRUE.equals(v) ? "true" : "false")));
     }
 }

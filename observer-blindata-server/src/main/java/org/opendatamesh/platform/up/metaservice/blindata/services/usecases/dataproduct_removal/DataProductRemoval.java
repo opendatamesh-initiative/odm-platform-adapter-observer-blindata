@@ -1,10 +1,11 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_removal;
 
-import lombok.extern.slf4j.Slf4j;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 
-@Slf4j
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
+
+
 class DataProductRemoval implements UseCase {
 
     private final String USE_CASE_PREFIX = "[DataProductRemoval]";
@@ -12,7 +13,7 @@ class DataProductRemoval implements UseCase {
     private final DataProductRemovalOdmOutboundPort odmOutboundPort;
     private final DataProductRemovalBlindataOutboundPort blindataOutboundPort;
 
-    public DataProductRemoval(DataProductRemovalOdmOutboundPort odmOutboundPort, DataProductRemovalBlindataOutboundPort blindataOutboundPort) {
+    DataProductRemoval(DataProductRemovalOdmOutboundPort odmOutboundPort, DataProductRemovalBlindataOutboundPort blindataOutboundPort) {
         this.odmOutboundPort = odmOutboundPort;
         this.blindataOutboundPort = blindataOutboundPort;
     }
@@ -20,8 +21,7 @@ class DataProductRemoval implements UseCase {
     @Override
     public void execute() throws UseCaseExecutionException {
         String fullyQualifiedName = odmOutboundPort.getDataProductFullyQualifiedName();
-
-        log.info("{} Deleting data product {} on Blindata.", USE_CASE_PREFIX, fullyQualifiedName);
+        getUseCaseLogger().info(String.format("%s Deleting data product %s on Blindata.", USE_CASE_PREFIX, fullyQualifiedName));
         blindataOutboundPort.deleteDataProduct(fullyQualifiedName);
     }
 }

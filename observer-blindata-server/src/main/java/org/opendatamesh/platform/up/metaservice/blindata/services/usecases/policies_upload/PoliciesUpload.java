@@ -1,6 +1,5 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload;
 
-import lombok.extern.slf4j.Slf4j;
 import org.opendatamesh.platform.pp.policy.api.resources.PolicyEvaluationResultResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDPolicyEvaluationRecord;
@@ -12,7 +11,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.excep
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
+
 class PoliciesUpload implements UseCase {
 
     private final String USE_CASE_PREFIX = "[PoliciesUpload]";
@@ -25,21 +25,22 @@ class PoliciesUpload implements UseCase {
         this.odmOutboundPort = odmOutboundPort;
     }
 
+
     @Override
     public void execute() throws UseCaseExecutionException {
         try {
             Optional<BDDataProductRes> blindataDataProduct = blindataOutboundPort.findDataProduct(odmOutboundPort.getDataProductInfo().getFullyQualifiedName());
             if (blindataDataProduct.isEmpty()) {
-                log.warn("{} Data product: {} has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName());
+                getUseCaseLogger().warn(String.format("%s Data product: %s has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName()));
                 return;
             }
             List<PolicyEvaluationResultResource> odmPolicyEvaluationResults = odmOutboundPort.getDataProductPoliciesEvaluationResults(odmOutboundPort.getDataProductInfo());
             if (odmPolicyEvaluationResults.isEmpty()) {
-                log.warn("{} Data product: {} has not policies evaluation results.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName());
+                getUseCaseLogger().warn(String.format("%s Data product: %s has not policies evaluation results.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName()));
                 return;
             }
 
-            log.info("{} Data product: {} found {} policies results.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), odmPolicyEvaluationResults.size());
+            getUseCaseLogger().info(String.format("%s Data product: %s found %s policies results.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), odmPolicyEvaluationResults.size()));
             BDPolicyEvaluationRecords bdPolicyEvaluationRecords = new BDPolicyEvaluationRecords();
             for (PolicyEvaluationResultResource odmPolicyEvaluationResult : odmPolicyEvaluationResults) {
                 BDPolicyEvaluationRecord bdPolicyEvaluationRecord = odmEvaluationResultToBlindataEvaluationRecord(blindataDataProduct.get().getUuid(), odmPolicyEvaluationResult);
@@ -47,7 +48,7 @@ class PoliciesUpload implements UseCase {
             }
 
             BDUploadResultsMessage uploadResultsMessage = blindataOutboundPort.createPolicyEvaluationRecords(bdPolicyEvaluationRecords);
-            log.info("{} Data product: {} uploaded {} policies results on Blindata, discarded {}.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), uploadResultsMessage.getRowCreated(), uploadResultsMessage.getRowDiscarded());
+            getUseCaseLogger().info(String.format("%s Data product: %s uploaded %s policies results on Blindata, discarded %s.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), uploadResultsMessage.getRowCreated(), uploadResultsMessage.getRowDiscarded()));
         } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);
         }

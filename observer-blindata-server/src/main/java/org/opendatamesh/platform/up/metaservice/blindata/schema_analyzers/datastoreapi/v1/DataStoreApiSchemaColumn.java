@@ -18,7 +18,7 @@ class DataStoreApiSchemaColumn {
     private String description;
     private String name;
     private String kind;
-    private boolean required;
+    private Boolean required;
     private String displayName;
     private String summary;
     private String comments;
@@ -27,30 +27,31 @@ class DataStoreApiSchemaColumn {
     private List<String> tags;
     private String externalDocs;
     private String defaultValue;
-    private boolean isClassified;
+    private Boolean isClassified;
     private String classificationLevel;
-    private boolean isUnique;
-    private boolean isNullable;
+    private Boolean isUnique;
+    private Boolean isNullable;
     private String pattern;
     private String format;
     private List<String> enumValues;
-    private int minLength;
-    private int maxLength;
+    private Integer minLength;
+    private Integer maxLength;
     private String contentEncoding;
     private String contentMediaType;
-    private int precision;
-    private int scale;
-    private int minimum;
-    private boolean exclusiveMinimum;
-    private int maximum;
-    private boolean exclusiveMaximum;
-    private boolean readOnly;
-    private boolean writeOnly;
+    private Integer precision;
+    private Integer scale;
+    private Integer minimum;
+    private Boolean exclusiveMinimum;
+    private Integer maximum;
+    private Boolean exclusiveMaximum;
+    private Boolean readOnly;
+    private Boolean writeOnly;
     private String physicalType;
-    private boolean partitionStatus;
-    private int partitionKeyPosition;
-    private boolean clusterStatus;
-    private int clusterKeyPosition;
+    private Boolean partitionStatus;
+    private Integer partitionKeyPosition;
+    private Boolean clusterStatus;
+    private Integer clusterKeyPosition;
+    private Integer ordinalPosition;
 
     @JsonCreator
     public DataStoreApiSchemaColumn(
@@ -58,7 +59,7 @@ class DataStoreApiSchemaColumn {
             @JsonProperty("description") String description,
             @JsonProperty("name") String name,
             @JsonProperty("kind") String kind,
-            @JsonProperty("required") boolean required,
+            @JsonProperty("required") Boolean required,
             @JsonProperty("displayName") String displayName,
             @JsonProperty("summary") String summary,
             @JsonProperty("comments") String comments,
@@ -67,30 +68,31 @@ class DataStoreApiSchemaColumn {
             @JsonProperty("tags") List<String> tags,
             @JsonProperty("externalDocs") String externalDocs,
             @JsonProperty("default") String defaultValue,
-            @JsonProperty("isClassified") boolean isClassified,
+            @JsonProperty("isClassified") Boolean isClassified,
             @JsonProperty("classificationLevel") String classificationLevel,
-            @JsonProperty("isUnique") boolean isUnique,
-            @JsonProperty("isNullable") boolean isNullable,
+            @JsonProperty("isUnique") Boolean isUnique,
+            @JsonProperty("isNullable") Boolean isNullable,
             @JsonProperty("pattern") String pattern,
             @JsonProperty("format") String format,
             @JsonProperty("enum") List<String> enumValues,
-            @JsonProperty("minLength") int minLength,
-            @JsonProperty("maxLength") int maxLength,
+            @JsonProperty("minLength") Integer minLength,
+            @JsonProperty("maxLength") Integer maxLength,
             @JsonProperty("contentEncoding") String contentEncoding,
             @JsonProperty("contentMediaType") String contentMediaType,
-            @JsonProperty("precision") int precision,
-            @JsonProperty("scale") int scale,
-            @JsonProperty("minimum") int minimum,
-            @JsonProperty("exclusiveMinimum") boolean exclusiveMinimum,
-            @JsonProperty("maximum") int maximum,
-            @JsonProperty("exclusiveMaximum") boolean exclusiveMaximum,
-            @JsonProperty("readOnly") boolean readOnly,
-            @JsonProperty("writeOnly") boolean writeOnly,
+            @JsonProperty("precision") Integer precision,
+            @JsonProperty("scale") Integer scale,
+            @JsonProperty("minimum") Integer minimum,
+            @JsonProperty("exclusiveMinimum") Boolean exclusiveMinimum,
+            @JsonProperty("maximum") Integer maximum,
+            @JsonProperty("exclusiveMaximum") Boolean exclusiveMaximum,
+            @JsonProperty("readOnly") Boolean readOnly,
+            @JsonProperty("writeOnly") Boolean writeOnly,
             @JsonProperty("physicalType") String physicalType,
-            @JsonProperty("partitionStatus") boolean partitionStatus,
-            @JsonProperty("partitionKeyPosition") int partitionKeyPosition,
-            @JsonProperty("clusterStatus") boolean clusterStatus,
-            @JsonProperty("clusterKeyPosition") int clusterKeyPosition) {
+            @JsonProperty("partitionStatus") Boolean partitionStatus,
+            @JsonProperty("partitionKeyPosition") Integer partitionKeyPosition,
+            @JsonProperty("clusterStatus") Boolean clusterStatus,
+            @JsonProperty("clusterKeyPosition") Integer clusterKeyPosition,
+            @JsonProperty("ordinalPosition") Integer ordinalPosition) {
         this.type = type;
         this.description = description;
         this.name = name;
@@ -128,6 +130,7 @@ class DataStoreApiSchemaColumn {
         this.partitionKeyPosition = partitionKeyPosition;
         this.clusterStatus = clusterStatus;
         this.clusterKeyPosition = clusterKeyPosition;
+        this.ordinalPosition = ordinalPosition;
     }
 
 

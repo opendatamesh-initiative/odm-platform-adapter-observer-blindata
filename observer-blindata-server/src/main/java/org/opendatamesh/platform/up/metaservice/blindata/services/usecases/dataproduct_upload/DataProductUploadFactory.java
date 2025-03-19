@@ -7,9 +7,11 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDStewa
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDUserClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.OBEventNotificationResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.eventstates.DataProductActivityEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.eventstates.DataProductEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.eventstates.DataProductVersionEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseDryRunFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,7 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 
 @Component
-public class DataProductUploadFactory implements UseCaseFactory {
+public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFactory {
 
     @Autowired
     private BDUserClient bdUserClient;
@@ -38,7 +40,8 @@ public class DataProductUploadFactory implements UseCaseFactory {
 
     private final Set<String> supportedEventTypes = Set.of(
             EventType.DATA_PRODUCT_CREATED.name(),
-            EventType.DATA_PRODUCT_VERSION_CREATED.name()
+            EventType.DATA_PRODUCT_VERSION_CREATED.name(),
+            EventType.DATA_PRODUCT_ACTIVITY_COMPLETED.name()
     );
 
 
@@ -74,8 +77,34 @@ public class DataProductUploadFactory implements UseCaseFactory {
                 DataProductVersionEventState dataProductVersionEventState = objectMapper.treeToValue(event.getEvent().getAfterState(), DataProductVersionEventState.class);
                 return new DataProductUploadOdmOutboundPortImpl(dataProductVersionEventState.getDataProductVersion().getInfo());
             }
+            case DATA_PRODUCT_ACTIVITY_COMPLETED: {
+                DataProductActivityEventState activityEventState = objectMapper.treeToValue(event.getEvent().getAfterState(), DataProductActivityEventState.class);
+                return new DataProductUploadOdmOutboundPortImpl(activityEventState.getDataProductVersion().getInfo());
+            }
             default:
                 throw new UseCaseInitException("Failed to init odmOutboundPort on DataProductUpload use case.");
+        }
+    }
+
+    @Override
+    public UseCase getUseCaseDryRun(OBEventNotificationResource event) throws UseCaseInitException {
+        if (!supportedEventTypes.contains(event.getEvent().getType().toUpperCase())) {
+            throw new UseCaseInitException("Failed to init DataProductUpload use case, unsupported event type: " + event.getEvent().getType());
+        }
+        try {
+            DataProductUploadBlindataOutboundPort blindataOutboundPort = new DataProductUploadBlindataOutboundPortImpl(
+                    bdUserClient,
+                    bdDataProductClient,
+                    bdStewardshipClient,
+                    roleUuid
+            );
+            DataProductUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
+            return new DataProductUpload(
+                    odmOutboundPort,
+                    new DataProductUploadBlindataOutboundPortDryRunImpl(blindataOutboundPort)
+            );
+        } catch (Exception e) {
+            throw new UseCaseInitException("Failed to init DataProductUpload use case." + e.getMessage(), e);
         }
     }
 }

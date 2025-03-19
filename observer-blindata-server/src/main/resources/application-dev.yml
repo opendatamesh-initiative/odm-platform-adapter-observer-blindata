@@ -7,7 +7,13 @@ blindata:
   password: ""
   tenantUUID: ""
   roleUuid: ""
-
+  validator:
+    active: true
+    policyEngine:
+      name: blindata_observer_validator
+    policy:
+      name: blindata_observer_validator_policy
+      blocking: true
 #############################
 # ODM projects configurations
 #############################

@@ -1,22 +1,14 @@
 {
   "physicalEntities": [
     {
-      "uuid": null,
       "schema": "dwh",
       "name": "Customer",
-      "description": null,
-      "dataSet": null,
-      "creationDate": null,
-      "modificationDate": null,
       "physicalFields": [
         {
-          "uuid": null,
           "name": "ID",
           "type": "VARCHAR",
-          "ordinalPosition": null,
+          "ordinalPosition": 0,
           "description": "The customer identifier.",
-          "creationDate": null,
-          "modificationDate": null,
           "additionalProperties": [
             {
               "name": "displayName",
@@ -96,7 +88,7 @@
             },
             {
               "name": "partitionKeyPosition",
-              "value": "10000"
+              "value": "2"
             },
             {
               "name": "clusterKeyPosition",
@@ -145,29 +137,17 @@
           ]
         }
       ],
-      "system": null,
-      "isConsentView": null,
-      "isHidden": null,
-      "tableType": null,
       "additionalProperties": []
     },
     {
-      "uuid": null,
       "schema": "dwh",
       "name": "Payment",
-      "description": null,
-      "dataSet": null,
-      "creationDate": null,
-      "modificationDate": null,
       "physicalFields": [
         {
-          "uuid": null,
           "name": "ID",
           "type": "VARCHAR",
-          "ordinalPosition": null,
+          "ordinalPosition": 0,
           "description": "The customer identifier.",
-          "creationDate": null,
-          "modificationDate": null,
           "additionalProperties": [
             {
               "name": "displayName",
@@ -247,7 +227,7 @@
             },
             {
               "name": "partitionKeyPosition",
-              "value": "10000"
+              "value": "2"
             },
             {
               "name": "clusterKeyPosition",
@@ -296,10 +276,6 @@
           ]
         }
       ],
-      "system": null,
-      "isConsentView": null,
-      "isHidden": null,
-      "tableType": null,
       "additionalProperties": []
     }
   ]

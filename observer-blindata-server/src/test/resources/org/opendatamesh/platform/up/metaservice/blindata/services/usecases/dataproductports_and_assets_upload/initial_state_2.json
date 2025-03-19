@@ -471,7 +471,8 @@
       "assets": [
         {
           "system": {
-            "uuid": "systemUuid"
+            "uuid": "systemUuid",
+            "name": "systemName"
           },
           "physicalEntities": [
             {
