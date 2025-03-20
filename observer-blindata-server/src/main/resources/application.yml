@@ -38,3 +38,4 @@ blindata:
         - STAGES_UPLOAD
         - POLICIES_UPLOAD
 
+logging.level.org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG

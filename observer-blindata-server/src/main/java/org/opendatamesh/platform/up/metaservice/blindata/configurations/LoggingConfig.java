@@ -9,13 +9,12 @@ public class LoggingConfig {
 
     @Bean
     public CommonsRequestLoggingFilter requestLoggingFilter() {
-        CommonsRequestLoggingFilter loggingFilter = new CommonsRequestLoggingFilter();
-        loggingFilter.setIncludeClientInfo(true); // Log IP client and session ID
-        loggingFilter.setIncludeQueryString(true); // Log query params
-        loggingFilter.setIncludePayload(true); // Log request payload
-        loggingFilter.setMaxPayloadLength(10000); // request payload length
-        loggingFilter.setIncludeHeaders(true); // Log headers
-        return loggingFilter;
+        CommonsRequestLoggingFilter commonRequestLoggingFilter = new CommonsRequestLoggingFilter();
+        commonRequestLoggingFilter.setIncludeClientInfo(true);
+        commonRequestLoggingFilter.setIncludeQueryString(true);
+        commonRequestLoggingFilter.setIncludePayload(false);
+        commonRequestLoggingFilter.setMaxPayloadLength(10000);
+        return commonRequestLoggingFilter;
     }
 
 }
