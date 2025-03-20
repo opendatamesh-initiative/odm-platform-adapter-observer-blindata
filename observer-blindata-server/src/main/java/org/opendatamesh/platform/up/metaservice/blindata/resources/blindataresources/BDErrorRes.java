@@ -2,14 +2,14 @@ package org.opendatamesh.platform.up.metaservice.blindata.resources.blindatareso
 
 import lombok.Data;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 @Data
 public class BDErrorRes {
 
     String status;
 
-    Timestamp timestamp;
+    long timestamp = new Date().getTime();
 
     String error;
 
