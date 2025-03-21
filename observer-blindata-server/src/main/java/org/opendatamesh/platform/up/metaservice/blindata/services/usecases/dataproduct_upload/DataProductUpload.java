@@ -53,6 +53,10 @@ class DataProductUpload implements UseCase {
             getUseCaseLogger().info(String.format("%s Data product: %s owner not defined, skipping responsibilities assignment.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName()));
             return;
         }
+        if (!StringUtils.hasText(odmOutboundPort.getDataProductInfo().getOwner().getId())) {
+            getUseCaseLogger().info(String.format("%s Data product: %s owner identifier not defined, skipping responsibilities assignment.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName()));
+            return;
+        }
         Optional<BDShortUserRes> blindataUser = blindataOutboundPort.findUser(odmOutboundPort.getDataProductInfo().getOwner().getId());
         if (blindataUser.isEmpty()) {
             getUseCaseLogger().warn(String.format("%s Impossible to assign responsibility on data product: %s, user: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), odmOutboundPort.getDataProductInfo().getOwner().getId()));

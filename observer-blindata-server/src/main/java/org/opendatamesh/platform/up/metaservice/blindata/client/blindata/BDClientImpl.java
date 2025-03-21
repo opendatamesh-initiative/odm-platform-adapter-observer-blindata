@@ -245,6 +245,9 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
 
     @Override
     public Optional<BDShortUserRes> getBlindataUser(String username) throws BlindataClientException, BlindataClientResourceMappingException {
+        if (StringUtils.hasText(username)) {
+            return Optional.empty();
+        }
         try {
             BDUserSearchOptions filters = new BDUserSearchOptions();
             filters.setTenantUuid(credentials.getBlindataTenantUuid());
