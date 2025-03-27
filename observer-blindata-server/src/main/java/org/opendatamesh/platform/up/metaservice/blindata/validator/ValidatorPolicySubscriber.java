@@ -7,6 +7,7 @@ import org.opendatamesh.platform.pp.policy.api.clients.PolicyClientImpl;
 import org.opendatamesh.platform.pp.policy.api.clients.PolicyEngineClient;
 import org.opendatamesh.platform.pp.policy.api.resources.*;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtils;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtilsFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
@@ -39,7 +40,9 @@ public class ValidatorPolicySubscriber {
         if (!validatorIsActive) {
             return;
         }
-        PolicyEngineClient policyEngineClient = new PolicyEngineClientImpl(new RestUtils(new RestTemplate()), policyServiceBaseUrl);
+        PolicyEngineClient policyEngineClient = new PolicyEngineClientImpl(
+                RestUtilsFactory.getRestUtils(new RestTemplate()),
+                policyServiceBaseUrl);
         PolicyClient policyClient = new PolicyClientImpl(policyServiceBaseUrl, new ObjectMapper());
 
         Optional<PolicyEngineResource> existingEngine = findPolicyEngine(policyEngineClient);
