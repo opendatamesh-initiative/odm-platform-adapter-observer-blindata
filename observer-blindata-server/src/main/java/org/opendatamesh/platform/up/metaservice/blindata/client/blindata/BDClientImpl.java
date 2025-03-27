@@ -1,40 +1,30 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.blindata;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import org.apache.http.client.utils.URIBuilder;
-import org.opendatamesh.platform.core.commons.servers.exceptions.InternalServerException;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.AuthenticatedRestUtils;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.ClientException;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.ClientResourceMappingException;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtils;
+import com.google.common.collect.Lists;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.*;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpHeader;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.Oauth2;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientException;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientResourceMappingException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.BlindataClientResourceMappingException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.ByteArrayInputStream;
-import java.net.URISyntaxException;
-import java.security.KeyFactory;
-import java.security.MessageDigest;
-import java.security.cert.CertificateFactory;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.time.Instant;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, BDUserClient, BDPolicyEvaluationResultClient, BDSemanticLinkingClient {
 
     private final BDCredentials credentials;
     private final BDDataProductClientConfig dataProductClientConfig;
-    private final RestUtils authenticatedRestUtils;
+    private final RestUtils restUtils;
+    private final RestUtils asyncRestUtils;
 
     public BDClientImpl(
             BDCredentials bdCredentials,
@@ -43,14 +33,42 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     ) {
         this.credentials = bdCredentials;
         this.dataProductClientConfig = dataProductClientConfig;
-        BDClientAuthUtils bdClientAuthUtils = new BDClientAuthUtils(credentials);
-        this.authenticatedRestUtils = new AuthenticatedRestUtils(restTemplate, bdClientAuthUtils::getAuthenticatedHttpHeaders);
+
+        List<HttpHeader> authenticatedHeaders = new ArrayList<>();
+        authenticatedHeaders.add(new HttpHeader("X-BD-Tenant", credentials.getBlindataTenantUuid()));
+        if (credentials.apiKeyIsConfigured()) {
+            authenticatedHeaders.add(new HttpHeader("X-BD-User", credentials.getBlindataUsername()));
+            authenticatedHeaders.add(new HttpHeader("X-BD-ApiKey", credentials.getBlindataPass()));
+        }
+        Oauth2 oauth2 = null;
+        if (StringUtils.hasText(credentials.getOauth2Url())) {
+            oauth2 = new Oauth2();
+            oauth2.setUrl(credentials.getOauth2Url());
+            oauth2.setGrantType(credentials.getOauth2GrantType());
+            oauth2.setScope(credentials.getOauth2Scope());
+            oauth2.setClientId(credentials.getOauth2ClientId());
+            oauth2.setClientSecret(credentials.getOauth2ClientSecret());
+            oauth2.setClientCertificate(credentials.getOauth2ClientCertificate());
+            oauth2.setClientCertificatePrivateKey(credentials.getOauth2ClientCertificatePrivateKey());
+        }
+        this.restUtils = RestUtilsFactory.getAuthenticatedRestUtils(
+                restTemplate,
+                authenticatedHeaders,
+                oauth2
+        );
+        this.asyncRestUtils = RestUtilsFactory.getAuthenticatedAsyncRestUtils(
+                restTemplate,
+                authenticatedHeaders,
+                oauth2,
+                "/api/v1/settings/async/request",
+                "/api/v1/settings/async/poll/{requestId}"
+        );
     }
 
     @Override
     public BDDataProductRes createDataProduct(BDDataProductRes dataProduct) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
-            return authenticatedRestUtils.create(
+            return restUtils.create(
                     String.format("%s/api/v1/dataproducts", credentials.getBlindataUrl()),
                     null,
                     dataProduct,
@@ -66,7 +84,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     @Override
     public BDDataProductRes putDataProduct(BDDataProductRes dataProduct) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
-            return authenticatedRestUtils.put(
+            return restUtils.put(
                     String.format("%s/api/v1/dataproducts/{id}", credentials.getBlindataUrl()),
                     null,
                     dataProduct.getUuid(),
@@ -83,7 +101,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     @Override
     public BDDataProductRes patchDataProduct(BDDataProductRes dataProduct) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
-            return authenticatedRestUtils.patch(
+            return restUtils.patch(
                     String.format("%s/api/v1/dataproducts/{id}%s",
                             credentials.getBlindataUrl(),
                             dataProductClientConfig.isAssetsCleanup() ? "?assetsCleanup=true" : ""
@@ -103,7 +121,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     @Override
     public Page<BDDataProductRes> getDataProducts(Pageable pageable, BDDataProductSearchOptions filters) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
-            return authenticatedRestUtils.getPage(
+            return restUtils.getPage(
                     String.format("%s/api/v1/dataproducts", credentials.getBlindataUrl()),
                     null,
                     pageable,
@@ -122,7 +140,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
         try {
             BDDataProductSearchOptions filters = new BDDataProductSearchOptions();
             filters.setIdentifier(identifier);
-            return authenticatedRestUtils.getPage(
+            return restUtils.getPage(
                     String.format("%s/api/v1/dataproducts", credentials.getBlindataUrl()),
                     null,
                     PageRequest.ofSize(1),
@@ -140,7 +158,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     @Override
     public void deleteDataProduct(String dataProductIdentifier) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
-            authenticatedRestUtils.delete(
+            restUtils.delete(
                     String.format("%s/api/v1/dataproducts/{id}", credentials.getBlindataUrl()),
                     null,
                     dataProductIdentifier
@@ -155,7 +173,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     @Override
     public BDProductPortAssetsRes createDataProductAssets(BDProductPortAssetsRes dataProductPortAssets) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
-            return authenticatedRestUtils.patch(
+            return asyncRestUtils.patch(
                     String.format("%s/api/v1/dataproducts/*/port-assets%s",
                             credentials.getBlindataUrl(),
                             dataProductClientConfig.isAssetsCleanup() ? "?assetsCleanup=true" : ""
@@ -175,7 +193,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     @Override
     public void uploadStages(BDDataProductStagesUploadRes stagesUploadRes) {
         try {
-            authenticatedRestUtils.genericPost(
+            restUtils.genericPost(
                     String.format("%s/api/v1/dataproducts/*/stages/*/upload", credentials.getBlindataUrl()),
                     null,
                     stagesUploadRes,
@@ -197,7 +215,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
             filters.setRoleUuid(credentials.getRoleUuid());
             filters.setEndDateIsNull(true);
 
-            return authenticatedRestUtils.getPage(
+            return restUtils.getPage(
                     String.format("%s/api/v1/stewardship/responsibilities", credentials.getBlindataUrl()),
                     null,
                     PageRequest.ofSize(1),
@@ -214,7 +232,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     @Override
     public BDStewardshipResponsibilityRes createResponsibility(BDStewardshipResponsibilityRes responsibilityRes) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
-            return authenticatedRestUtils.create(
+            return restUtils.create(
                     String.format("%s/api/v1/stewardship/responsibilities", credentials.getBlindataUrl()),
                     null,
                     responsibilityRes,
@@ -230,7 +248,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     @Override
     public BDStewardshipRoleRes getRole(String roleUuid) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
-            return authenticatedRestUtils.get(
+            return restUtils.get(
                     String.format("%s/api/v1/stewardship/roles/{id}", credentials.getBlindataUrl()),
                     null,
                     roleUuid,
@@ -252,7 +270,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
             BDUserSearchOptions filters = new BDUserSearchOptions();
             filters.setTenantUuid(credentials.getBlindataTenantUuid());
             filters.setSearch(username);
-            return authenticatedRestUtils.getPage(
+            return restUtils.getPage(
                     String.format("%s/api/v1/users", credentials.getBlindataUrl()),
                     null,
                     PageRequest.ofSize(1),
@@ -269,7 +287,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     @Override
     public BDUploadResultsMessage createPolicyEvaluationRecords(BDPolicyEvaluationRecords evaluationRecords) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
-            return authenticatedRestUtils.genericPost(
+            return restUtils.genericPost(
                     String.format("%s/api/v1/governance-policies/policy-evaluations/*/upload", credentials.getBlindataUrl()),
                     null,
                     evaluationRecords,
@@ -292,7 +310,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
             options.setPathString(pathString);
             options.setDefaultNamespaceIdentifier(defaultNamespaceIdentifier);
 
-            return authenticatedRestUtils.genericGet(
+            return restUtils.genericGet(
                     credentials.getBlindataUrl() + "/api/v1/logical/semanticlinking/*/resolvefield",
                     null,
                     options,
@@ -312,7 +330,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
             filters.setNamespaceUuid(Lists.newArrayList(namespaceUuid));
             filters.setSearch(dataCategoryName);
 
-            return authenticatedRestUtils.getPage(
+            return restUtils.getPage(
                     credentials.getBlindataUrl() + "/api/v1/datacategories",
                     null,
                     PageRequest.ofSize(1),
@@ -331,7 +349,7 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
         try {
             BDNamespaceSearchOptions filters = new BDNamespaceSearchOptions();
             filters.setIdentifiers(Lists.newArrayList(identifier));
-            return authenticatedRestUtils.getPage(
+            return restUtils.getPage(
                     credentials.getBlindataUrl() + "/api/v1/logical/namespaces",
                     null,
                     PageRequest.ofSize(1),
