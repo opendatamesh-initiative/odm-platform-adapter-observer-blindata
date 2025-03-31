@@ -7,7 +7,6 @@ import java.util.Map;
 class AsyncRestTask {
     private String id;
     private Status status;
-    private int retryAfterSeconds;
     private int responseHttpStatus;
     private Map<String, List<String>> responseHeaders;
     private byte[] responseBody;
@@ -26,14 +25,6 @@ class AsyncRestTask {
 
     public void setStatus(Status status) {
         this.status = status;
-    }
-
-    public int getRetryAfterSeconds() {
-        return retryAfterSeconds;
-    }
-
-    public void setRetryAfterSeconds(int retryAfterSeconds) {
-        this.retryAfterSeconds = retryAfterSeconds;
     }
 
     public int getResponseHttpStatus() {

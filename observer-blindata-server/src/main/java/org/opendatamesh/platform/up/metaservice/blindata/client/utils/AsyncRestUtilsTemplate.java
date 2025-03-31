@@ -26,7 +26,8 @@ import java.util.Map;
 class AsyncRestUtilsTemplate implements RestUtilsTemplate {
 
     private final int MAX_POLL_ATTEMPTS = 100;
-    private final int MIN_POLL_WAIT_SECOND = 1;
+    private final long INITIAL_POLL_WAIT_MILLIS = 500;
+    private final long MAX_POLL_WAIT_MILLIS = 60000;
 
     private final RestUtilsTemplate wrappedInstance;
     private final String asyncEndpointRequest;
@@ -46,8 +47,10 @@ class AsyncRestUtilsTemplate implements RestUtilsTemplate {
 
 
     private AsyncRestTask pollResult(String url, List<HttpHeader> requestHeaders, AsyncRestTask task) throws ClientException {
-        int counter = 0;
-        while (true) {
+        int attempt = 0;
+        long waitTime = INITIAL_POLL_WAIT_MILLIS;
+
+        while (attempt < MAX_POLL_ATTEMPTS) {
             AsyncRestTask pollResponse = wrappedInstance.exchange(
                     buildPollUrl(url),
                     HttpMethod.GET,
@@ -57,13 +60,16 @@ class AsyncRestUtilsTemplate implements RestUtilsTemplate {
             );
 
             if (pollResponse.getStatus() == null) {
-                throw new IllegalStateException("Async Task status should never be null: " + pollResponse.toString());
+                throw new IllegalStateException("Async Task status should never be null: " + pollResponse);
             }
+
             switch (pollResponse.getStatus()) {
                 case IN_PROGRESS:
                     try {
-                        Thread.sleep(Math.max(pollResponse.getRetryAfterSeconds(), MIN_POLL_WAIT_SECOND) * 1000L);
+                        Thread.sleep(waitTime);
+                        waitTime = Math.min(waitTime * 2, MAX_POLL_WAIT_MILLIS);
                     } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                         throw new InternalServerException(e);
                     }
                     break;
@@ -76,12 +82,12 @@ class AsyncRestUtilsTemplate implements RestUtilsTemplate {
                 default:
                     throw new ClientException(500, "Unknown async task status: " + pollResponse.getStatus());
             }
-            counter++;
-            if (counter > MAX_POLL_ATTEMPTS) {
-                throw new ClientException(500, "Async task polling exceeded maximum attempts");
-            }
+
+            attempt++;
         }
+        throw new ClientException(500, "Async task polling exceeded maximum attempts");
     }
+
 
     @Override
     public <T> T exchange(String url, HttpMethod method, HttpEntity<?> requestEntity, Class<T> responseType, Object... uriVariables) throws ClientException {

@@ -15,8 +15,6 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpM
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.jackson.PageUtility;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.File;
@@ -81,8 +79,6 @@ class BaseRestUtils implements RestUtils {
 
             JavaType type = objectMapper.getTypeFactory().constructParametricType(Page.class, clazz);
             return objectMapper.treeToValue(response, type);
-        } catch (HttpClientErrorException e) {
-            throw new ClientException(e.getRawStatusCode(), e.getResponseBodyAsString());
         } catch (JsonProcessingException e) {
             throw new ClientResourceMappingException(e.getMessage(), e);
         }
@@ -118,8 +114,6 @@ class BaseRestUtils implements RestUtils {
             );
 
             return objectMapper.treeToValue(response, clazz);
-        } catch (HttpClientErrorException e) {
-            throw new ClientException(e.getRawStatusCode(), e.getResponseBodyAsString());
         } catch (JsonProcessingException e) {
             throw new ClientResourceMappingException(e.getMessage(), e);
         }
@@ -150,8 +144,6 @@ class BaseRestUtils implements RestUtils {
             );
 
             return objectMapper.treeToValue(response, clazz);
-        } catch (HttpClientErrorException e) {
-            throw new ClientException(e.getRawStatusCode(), e.getResponseBodyAsString());
         } catch (JsonProcessingException e) {
             throw new ClientResourceMappingException(e.getMessage(), e);
         }
@@ -179,8 +171,6 @@ class BaseRestUtils implements RestUtils {
                     JsonNode.class
             );
             return objectMapper.treeToValue(response, clazz);
-        } catch (HttpClientErrorException e) {
-            throw new ClientException(e.getRawStatusCode(), e.getResponseBodyAsString());
         } catch (JsonProcessingException e) {
             throw new ClientResourceMappingException(e.getMessage(), e);
         }
@@ -212,8 +202,6 @@ class BaseRestUtils implements RestUtils {
             );
 
             return objectMapper.treeToValue(response, clazz);
-        } catch (HttpClientErrorException e) {
-            throw new ClientException(e.getRawStatusCode(), e.getResponseBodyAsString());
         } catch (JsonProcessingException e) {
             throw new ClientResourceMappingException(e.getMessage(), e);
         }
@@ -245,8 +233,6 @@ class BaseRestUtils implements RestUtils {
             );
 
             return objectMapper.treeToValue(response, clazz);
-        } catch (HttpClientErrorException e) {
-            throw new ClientException(e.getRawStatusCode(), e.getResponseBodyAsString());
         } catch (JsonProcessingException e) {
             throw new ClientResourceMappingException(e.getMessage(), e);
         }
@@ -263,17 +249,13 @@ class BaseRestUtils implements RestUtils {
      */
     @Override
     public <ID> void delete(String url, List<HttpHeader> httpHeaders, ID identifier) throws ClientException {
-        try {
-            rest.exchange(
-                    url,
-                    HttpMethod.DELETE,
-                    new HttpEntity<>(httpHeaders),
-                    JsonNode.class,
-                    identifier
-            );
-        } catch (HttpClientErrorException e) {
-            throw new ClientException(e.getRawStatusCode(), e.getResponseBodyAsString());
-        }
+        rest.exchange(
+                url,
+                HttpMethod.DELETE,
+                new HttpEntity<>(httpHeaders),
+                JsonNode.class,
+                identifier
+        );
     }
 
     /**
@@ -300,8 +282,6 @@ class BaseRestUtils implements RestUtils {
             );
 
             return objectMapper.treeToValue(response, clazz);
-        } catch (HttpClientErrorException e) {
-            throw new ClientException(e.getRawStatusCode(), e.getResponseBodyAsString());
         } catch (JsonProcessingException e) {
             throw new ClientResourceMappingException(e.getMessage(), e);
         }
@@ -322,11 +302,7 @@ class BaseRestUtils implements RestUtils {
     @Override
     public File download(String url, List<HttpHeader> httpHeaders, Object resource, File storeLocation)
             throws ClientException, ClientResourceMappingException {
-        try {
-            return rest.download(url, httpHeaders, resource, storeLocation);
-        } catch (RestClientResponseException e) {
-            throw new ClientException(e.getRawStatusCode(), e.getResponseBodyAsString());
-        }
+        return rest.download(url, httpHeaders, resource, storeLocation);
     }
 
     /**
