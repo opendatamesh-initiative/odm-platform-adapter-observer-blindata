@@ -19,11 +19,15 @@ public class OdmNotificationClientConfigs {
     @Value("${odm.productPlane.notificationService.address}")
     private String address;
 
+    @Value("${odm.productPlane.notificationService.subscribeWithName:BLINDATA}")
+    private String subscribeWithName;
+
     @Value("${odm.productPlane.notificationService.active}")
     private boolean active;
 
     @Value("${server.baseUrl}")
     private String serverBaseUrl;
+
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -45,8 +49,8 @@ public class OdmNotificationClientConfigs {
 
     private void registerObserver(ObserverClient observerClient) {
         ObserverResource observerResource = new ObserverResource();
-        observerResource.setName("BLINDATA");
-        observerResource.setDisplayName("Blindata");
+        observerResource.setName(subscribeWithName);
+        observerResource.setDisplayName(subscribeWithName);
         observerResource.setObserverServerBaseUrl(serverBaseUrl);
 
         observerClient.addObserver(observerResource);
