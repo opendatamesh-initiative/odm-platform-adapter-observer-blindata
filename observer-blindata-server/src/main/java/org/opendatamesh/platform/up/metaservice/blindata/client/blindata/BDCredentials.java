@@ -6,6 +6,9 @@ import org.springframework.util.StringUtils;
 
 @Component
 public class BDCredentials {
+    @Value("${blindata.enableAsync:false}")
+    private boolean enableAsync;
+
     @Value("${blindata.url}")
     private String blindataUrl;
     @Value("${blindata.roleUuid}")
@@ -92,5 +95,9 @@ public class BDCredentials {
                 StringUtils.hasText(this.oauth2ClientId) &&
                 (StringUtils.hasText(this.oauth2ClientSecret) || (StringUtils.hasText(this.oauth2ClientCertificate) && StringUtils.hasText(this.oauth2ClientCertificatePrivateKey))) &&
                 StringUtils.hasText(blindataTenantUuid);
+    }
+
+    public boolean getEnableAsync() {
+        return enableAsync;
     }
 }

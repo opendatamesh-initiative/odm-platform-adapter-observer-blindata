@@ -1,11 +1,12 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.blindata;
 
 import com.google.common.collect.Lists;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.*;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpHeader;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.Oauth2;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtils;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtilsFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientResourceMappingException;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpHeader;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.Oauth2;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.exceptions.BlindataClientResourceMappingException;
@@ -173,7 +174,8 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     @Override
     public BDProductPortAssetsRes createDataProductAssets(BDProductPortAssetsRes dataProductPortAssets) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
-            return asyncRestUtils.patch(
+            RestUtils rest = credentials.getEnableAsync() ? asyncRestUtils : restUtils;
+            return rest.patch(
                     String.format("%s/api/v1/dataproducts/*/port-assets%s",
                             credentials.getBlindataUrl(),
                             dataProductClientConfig.isAssetsCleanup() ? "?assetsCleanup=true" : ""
