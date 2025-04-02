@@ -48,9 +48,16 @@ public class DataProductRemovalFactory implements UseCaseFactory {
         }
     }
 
-    private DataProductRemovalOdmOutboundPort initOdmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException {
+    private DataProductRemovalOdmOutboundPort initOdmOutboundPort(OBEventNotificationResource event) throws JsonProcessingException, UseCaseInitException {
         DataProductEventState dataProductEventState = objectMapper.treeToValue(event.getEvent().getBeforeState(), DataProductEventState.class);
-        String fullyQualifiedName = dataProductEventState.getDataProduct().getFullyQualifiedName();
+        String fullyQualifiedName;
+        if (dataProductEventState.getDataProduct() != null) {
+            fullyQualifiedName = dataProductEventState.getDataProduct().getFullyQualifiedName();
+        } else if (dataProductEventState.getDataProductVersion() != null) {
+            fullyQualifiedName = dataProductEventState.getDataProductVersion().getInfo().getFullyQualifiedName();
+        } else {
+            throw new UseCaseInitException("Impossible to retrieve fullyQualifiedName on DATA_PRODUCT_DELETE event: " + objectMapper.writeValueAsString(event.getEvent()));
+        }
         return new DataProductRemovalOdmOutboundPortImpl(fullyQualifiedName);
     }
 }
