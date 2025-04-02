@@ -157,12 +157,12 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
 
 
     @Override
-    public void deleteDataProduct(String dataProductIdentifier) throws BlindataClientException, BlindataClientResourceMappingException {
+    public void deleteDataProduct(String dataProductUuid) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
             restUtils.delete(
                     String.format("%s/api/v1/dataproducts/{id}", credentials.getBlindataUrl()),
                     null,
-                    dataProductIdentifier
+                    dataProductUuid
             );
         } catch (ClientException e) {
             throw new BlindataClientException(e.getCode(), e.getResponseBody());
