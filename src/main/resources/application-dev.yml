@@ -1,0 +1,55 @@
+spring:
+  profile: dev
+
+blindata:
+  url: http://localhost:3000
+  user: "owner@default.blindata.io"
+  password: "owner123"
+  tenantUUID: "83471577-3921-48ed-bd8f-fde278aa0449"
+  roleUuid: "bcb001b7-58ea-43df-8ac4-db28f4b6c262"
+  validator:
+    active: true
+    policyEngine:
+      name: blindata_observer_validator
+    policy:
+      name: blindata_observer_validator_policy
+      blocking: true
+  eventHandlers:
+    - eventType: DATA_PRODUCT_CREATED
+      filter: ""
+      activeUseCases:
+        - DATA_PRODUCT_UPLOAD
+    - eventType: DATA_PRODUCT_VERSION_CREATED
+      filter: ""
+      activeUseCases:
+        - DATA_PRODUCT_UPLOAD
+        - STAGES_UPLOAD
+    - eventType: DATA_PRODUCT_ACTIVITY_COMPLETED
+      filter: "#root['afterState']['activity']['stage'] == 'dev'"
+      activeUseCases:
+        - STAGES_UPLOAD
+        - POLICIES_UPLOAD
+    - eventType: DATA_PRODUCT_ACTIVITY_COMPLETED
+      filter: "#root['afterState']['activity']['stage'] == 'prod'"
+      activeUseCases:
+        - DATA_PRODUCT_UPLOAD
+        - DATA_PRODUCT_VERSION_UPLOAD
+        - STAGES_UPLOAD
+        - POLICIES_UPLOAD
+
+#############################
+# ODM projects configurations
+#############################
+odm:
+  productPlane:
+    registryService:
+      active: true
+      address: http://localhost:8001
+    policyService:
+      active: true
+      address: http://localhost:8005
+    notificationService:
+      active: true
+      address: http://localhost:8006
+      subscribeWithName: BLINDATA
+
