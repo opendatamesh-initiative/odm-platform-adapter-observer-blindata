@@ -22,7 +22,7 @@ public interface BDDataProductClient {
 
     Page<BDDataProductRes> getDataProducts(Pageable pageable, BDDataProductSearchOptions filters) throws BlindataClientException, BlindataClientResourceMappingException;
 
-    void deleteDataProduct(String dataProductIdentifier) throws BlindataClientException, BlindataClientResourceMappingException;
+    void deleteDataProduct(String dataProductUuid) throws BlindataClientException, BlindataClientResourceMappingException;
 
     BDProductPortAssetsRes createDataProductAssets(BDProductPortAssetsRes dataProductPortAssets) throws BlindataClientException, BlindataClientResourceMappingException;
 

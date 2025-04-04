@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtils;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtilsFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyEvaluationResultResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyEvaluationResultSearchOptions;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ public class OdmPolicyEvaluationResultClientConfigs {
         if (active) {
             return new OdmPolicyEvaluationResultClientImpl(
                     address,
-                    new RestUtils(restTemplate)
+                    RestUtilsFactory.getRestUtils(restTemplate)
             );
         } else {
             log.warn("ODM Policy Client is not enabled in the configuration.");

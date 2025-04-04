@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.client.utils;
+package org.opendatamesh.platform.up.metaservice.blindata.client.utils.jackson;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

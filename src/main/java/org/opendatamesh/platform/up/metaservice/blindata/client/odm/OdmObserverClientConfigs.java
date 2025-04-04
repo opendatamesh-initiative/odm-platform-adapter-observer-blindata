@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtils;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtilsFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.OdmObserverResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.OdmObserverSearchOptions;
 import org.slf4j.Logger;
@@ -16,6 +16,9 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class OdmObserverClientConfigs {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    @Value("${odm.productPlane.notificationService.subscribeWithName:BLINDATA}")
+    private String subscribeWithName;
 
     @Value("${odm.productPlane.notificationService.address}")
     private String address;
@@ -34,7 +37,7 @@ public class OdmObserverClientConfigs {
         if (active) {
             OdmObserverClient observerClient = new OdmObserverClientImpl(
                     address,
-                    new RestUtils(restTemplate)
+                    RestUtilsFactory.getRestUtils(restTemplate)
             );
             registerObserver(observerClient);
             return observerClient;
@@ -76,8 +79,8 @@ public class OdmObserverClientConfigs {
 
     private void registerObserver(OdmObserverClient observerClient) {
         OdmObserverResource observerResource = new OdmObserverResource();
-        observerResource.setName("BLINDATA");
-        observerResource.setDisplayName("Blindata");
+        observerResource.setName(subscribeWithName);
+        observerResource.setDisplayName(subscribeWithName);
         observerResource.setObserverServerBaseUrl(serverBaseUrl);
 
         observerClient.addObserver(observerResource);

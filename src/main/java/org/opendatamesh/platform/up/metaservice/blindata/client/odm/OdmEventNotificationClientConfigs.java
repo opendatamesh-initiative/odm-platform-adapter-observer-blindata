@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtils;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtilsFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.OdmEventNotificationResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.OdmEventNotificationSearchOptions;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class OdmEventNotificationClientConfigs {
     @Bean
     public OdmEventNotificationClient eventNotificationClient() {
         if (active) {
-            return new OdmEventNotificationClientImpl(address, new RestUtils(restTemplate));
+            return new OdmEventNotificationClientImpl(address, RestUtilsFactory.getRestUtils(restTemplate));
         } else {
             log.warn("ODM Event Notification Client is not enabled in the configuration.");
             return new OdmEventNotificationClient() {

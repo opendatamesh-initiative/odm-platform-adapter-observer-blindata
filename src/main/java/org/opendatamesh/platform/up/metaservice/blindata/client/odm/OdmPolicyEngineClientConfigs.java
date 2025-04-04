@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtils;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtilsFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyEngineResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyEngineSearchOptions;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class OdmPolicyEngineClientConfigs {
     @Bean
     public OdmPolicyEngineClient policyEngineClient() {
         if (active) {
-            return new OdmPolicyEngineClientImpl(new RestUtils(restTemplate), policyServiceBaseUrl);
+            return new OdmPolicyEngineClientImpl(RestUtilsFactory.getRestUtils(restTemplate), policyServiceBaseUrl);
         } else {
             log.warn("ODM Policy Engine Client is not enabled in the configuration.");
             return new OdmPolicyEngineClient() {

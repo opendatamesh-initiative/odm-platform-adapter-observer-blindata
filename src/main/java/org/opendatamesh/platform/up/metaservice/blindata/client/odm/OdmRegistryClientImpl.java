@@ -6,9 +6,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opendatamesh.dpds.model.DataProductVersionDPDS;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.ClientException;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.ClientResourceMappingException;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientException;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientResourceMappingException;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtils;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtilsFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.OdmExternalComponentResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -24,7 +25,7 @@ class OdmRegistryClientImpl implements OdmRegistryClient {
     private final RestTemplate restTemplate;
 
     OdmRegistryClientImpl(RestTemplate restTemplate, String baseUrl) {
-        this.restUtils = new RestUtils(restTemplate);
+        this.restUtils = RestUtilsFactory.getRestUtils(restTemplate);
         this.baseUrl = baseUrl;
         this.restTemplate = restTemplate;
     }

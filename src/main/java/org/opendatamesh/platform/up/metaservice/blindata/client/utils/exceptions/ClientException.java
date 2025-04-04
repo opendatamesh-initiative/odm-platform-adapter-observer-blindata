@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.client.utils;
+package org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions;
 
 public class ClientException extends RuntimeException {
     private int code;
