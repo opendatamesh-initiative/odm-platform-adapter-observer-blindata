@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload;
 
-import org.opendatamesh.dpds.model.info.InfoDPDS;
+import org.opendatamesh.dpds.model.info.Info;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyEvaluationResultResource;
 
@@ -8,7 +8,7 @@ import java.util.List;
 
 public class PoliciesUploadInitialState {
     private BDDataProductRes existentDataProduct;
-    private InfoDPDS dataProductInfo;
+    private Info dataProductInfo;
     private List<OdmPolicyEvaluationResultResource> policiesResults;
 
     public PoliciesUploadInitialState() {
@@ -18,7 +18,7 @@ public class PoliciesUploadInitialState {
         return this.existentDataProduct;
     }
 
-    public InfoDPDS getDataProductInfo() {
+    public Info getDataProductInfo() {
         return this.dataProductInfo;
     }
 
@@ -30,7 +30,7 @@ public class PoliciesUploadInitialState {
         this.existentDataProduct = existentDataProduct;
     }
 
-    public void setDataProductInfo(InfoDPDS dataProductInfo) {
+    public void setDataProductInfo(Info dataProductInfo) {
         this.dataProductInfo = dataProductInfo;
     }
 

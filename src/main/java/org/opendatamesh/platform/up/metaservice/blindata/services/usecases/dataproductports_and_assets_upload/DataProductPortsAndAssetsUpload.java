@@ -1,13 +1,11 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.opendatamesh.dpds.model.interfaces.InterfaceComponentsDPDS;
-import org.opendatamesh.dpds.model.interfaces.PortDPDS;
-import org.opendatamesh.dpds.model.interfaces.PromisesDPDS;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.*;
+import org.opendatamesh.dpds.model.interfaces.InterfaceComponents;
+import org.opendatamesh.dpds.model.interfaces.Port;
+import org.opendatamesh.dpds.model.interfaces.Promises;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.*;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.springframework.http.HttpStatus;
@@ -35,34 +33,34 @@ class DataProductPortsAndAssetsUpload implements UseCase {
     @Override
     public void execute() throws UseCaseExecutionException {
         withErrorHandling(() -> {
-            InterfaceComponentsDPDS interfaceComponentsDPDS = odmOutboundPort.getDataProductVersion().getInterfaceComponents();
-            validateDataProductDescriptorPorts(interfaceComponentsDPDS);
+            InterfaceComponents interfaceComponents = odmOutboundPort.getDataProductVersion().getInterfaceComponents();
+            validateDataProductDescriptorPorts(interfaceComponents);
 
             Optional<BDDataProductRes> existentDataProduct = blindataOutboundPort.findDataProduct(odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName());
             if (existentDataProduct.isEmpty()) {
                 getUseCaseLogger().warn(String.format("%s Data product: %s has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName()));
                 return;
             }
-            List<BDDataProductPortRes> bdDataProductPorts = extractBdDataProductPorts(interfaceComponentsDPDS);
+            List<BDDataProductPortRes> bdDataProductPorts = extractBdDataProductPorts(interfaceComponents);
             getUseCaseLogger().info(String.format("%s Data product: %s, Blindata ports found: %s.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), bdDataProductPorts.size()));
             existentDataProduct.get().setPorts(bdDataProductPorts);
             blindataOutboundPort.updateDataProductPorts(existentDataProduct.get());
             getUseCaseLogger().info(String.format("%s Data product: %s, updated ports on Blindata.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier()));
 
-            List<BDDataProductPortAssetDetailRes> dataProductPortAssets = extractBdAssetsFromDpPorts(interfaceComponentsDPDS);
+            List<BDDataProductPortAssetDetailRes> dataProductPortAssets = extractBdAssetsFromDpPorts(interfaceComponents);
             getUseCaseLogger().info(String.format("%s Data product: %s, found %s data assets.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), dataProductPortAssets.size()));
             validateDataProductPortsAssets(dataProductPortAssets);
             uploadAssetsOnBlindata(dataProductPortAssets);
         });
     }
 
-    private void validateDataProductDescriptorPorts(InterfaceComponentsDPDS interfaceComponentsDPDS) {
-        if (interfaceComponentsDPDS == null ||
-                (CollectionUtils.isEmpty(interfaceComponentsDPDS.getControlPorts()) &&
-                        CollectionUtils.isEmpty(interfaceComponentsDPDS.getOutputPorts()) &&
-                        CollectionUtils.isEmpty(interfaceComponentsDPDS.getObservabilityPorts()) &&
-                        CollectionUtils.isEmpty(interfaceComponentsDPDS.getInputPorts()) &&
-                        CollectionUtils.isEmpty(interfaceComponentsDPDS.getDiscoveryPorts()))
+    private void validateDataProductDescriptorPorts(InterfaceComponents interfaceComponents) {
+        if (interfaceComponents == null ||
+                (CollectionUtils.isEmpty(interfaceComponents.getControlPorts()) &&
+                        CollectionUtils.isEmpty(interfaceComponents.getOutputPorts()) &&
+                        CollectionUtils.isEmpty(interfaceComponents.getObservabilityPorts()) &&
+                        CollectionUtils.isEmpty(interfaceComponents.getInputPorts()) &&
+                        CollectionUtils.isEmpty(interfaceComponents.getDiscoveryPorts()))
         ) {
             getUseCaseLogger().warn(String.format("%s Missing interface components on data product: %s", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName()));
         }
@@ -109,13 +107,13 @@ class DataProductPortsAndAssetsUpload implements UseCase {
         }
     }
 
-    private List<BDDataProductPortRes> extractBdDataProductPorts(InterfaceComponentsDPDS interfaceComponentsDPDS) {
+    private List<BDDataProductPortRes> extractBdDataProductPorts(InterfaceComponents interfaceComponents) {
         List<BDDataProductPortRes> bdDataProductPorts = new ArrayList<>();
-        interfaceComponentsDPDS.getInputPorts().forEach(portResource -> bdDataProductPorts.add(odmToBlindataDataProductPort(portResource, "inputPorts")));
-        interfaceComponentsDPDS.getOutputPorts().forEach(portResource -> bdDataProductPorts.add(odmToBlindataDataProductPort(portResource, "outputPorts")));
-        interfaceComponentsDPDS.getObservabilityPorts().forEach(portResource -> bdDataProductPorts.add(odmToBlindataDataProductPort(portResource, "observabilityPorts")));
-        interfaceComponentsDPDS.getDiscoveryPorts().forEach(portResource -> bdDataProductPorts.add(odmToBlindataDataProductPort(portResource, "discoveryPorts")));
-        interfaceComponentsDPDS.getControlPorts().forEach(portResource -> bdDataProductPorts.add(odmToBlindataDataProductPort(portResource, "controlPorts")));
+        interfaceComponents.getInputPorts().forEach(portResource -> bdDataProductPorts.add(odmToBlindataDataProductPort(portResource, "inputPorts")));
+        interfaceComponents.getOutputPorts().forEach(portResource -> bdDataProductPorts.add(odmToBlindataDataProductPort(portResource, "outputPorts")));
+        interfaceComponents.getObservabilityPorts().forEach(portResource -> bdDataProductPorts.add(odmToBlindataDataProductPort(portResource, "observabilityPorts")));
+        interfaceComponents.getDiscoveryPorts().forEach(portResource -> bdDataProductPorts.add(odmToBlindataDataProductPort(portResource, "discoveryPorts")));
+        interfaceComponents.getControlPorts().forEach(portResource -> bdDataProductPorts.add(odmToBlindataDataProductPort(portResource, "controlPorts")));
         return bdDataProductPorts;
     }
 
@@ -128,7 +126,7 @@ class DataProductPortsAndAssetsUpload implements UseCase {
         }
     }
 
-    private BDDataProductPortRes odmToBlindataDataProductPort(PortDPDS odmDataProductPort, String entityType) {
+    private BDDataProductPortRes odmToBlindataDataProductPort(Port odmDataProductPort, String entityType) {
         BDDataProductPortRes port = new BDDataProductPortRes();
         if (!StringUtils.hasText(odmDataProductPort.getFullyQualifiedName())) {
             getUseCaseLogger().warn(" Missing identifier on data product port.");
@@ -161,34 +159,27 @@ class DataProductPortsAndAssetsUpload implements UseCase {
 
     }
 
-    private void addDependsOnIfPresent(PortDPDS odmDataProductPort, BDDataProductPortRes port) {
-        if (!StringUtils.hasText(odmDataProductPort.getRawContent())) {
-            return;
+    private void addDependsOnIfPresent(Port odmDataProductPort, BDDataProductPortRes port) {
+        JsonNode xDependsOnNode = odmDataProductPort.getAdditionalProperties().get("x-dependsOn");
+        JsonNode dependsOnNode = odmDataProductPort.getAdditionalProperties().get("dependsOn");
+        String xDependsOn = Optional.ofNullable(xDependsOnNode).map(JsonNode::asText).orElse(null);
+        String dependsOn = Optional.ofNullable(dependsOnNode).map(JsonNode::asText).orElse(null);
+        if (xDependsOn != null && dependsOn != null) {
+            getUseCaseLogger().warn(String.format("%s: Both 'x-dependsOn' and 'dependsOn' are present. 'dependsOn' will be used.", USE_CASE_PREFIX));
         }
-        try {
-            JsonNode portRawContent = new ObjectMapper().readValue(odmDataProductPort.getRawContent(), JsonNode.class);
-            JsonNode xDependsOnNode = portRawContent.get("x-dependsOn");
-            JsonNode dependsOnNode = portRawContent.get("dependsOn");
-            String xDependsOn = Optional.ofNullable(xDependsOnNode).map(JsonNode::asText).orElse(null);
-            String dependsOn = Optional.ofNullable(dependsOnNode).map(JsonNode::asText).orElse(null);
-            if (xDependsOn != null && dependsOn != null) {
-                getUseCaseLogger().warn(String.format("%s: Both 'x-dependsOn' and 'dependsOn' are present. 'dependsOn' will be used.", USE_CASE_PREFIX));
-            }
-            // Prioritize 'dependsOn' if it exists; otherwise, use 'x-dependsOn'
-            String portDependency = dependsOn != null ? dependsOn : xDependsOn;
-            if (StringUtils.hasText(portDependency)) {
-                blindataOutboundPort.getSystemDependency(portDependency)
-                        .ifPresentOrElse(
-                                port::setDependsOnSystem,
-                                () -> port.setDependsOnIdentifier(portDependency)
-                        );
-            }
-        } catch (JsonProcessingException e) {
-            getUseCaseLogger().warn(String.format("%s: %s", USE_CASE_PREFIX, e.getMessage()), e);
+        // Prioritize 'dependsOn' if it exists; otherwise, use 'x-dependsOn'
+        String portDependency = dependsOn != null ? dependsOn : xDependsOn;
+        if (StringUtils.hasText(portDependency)) {
+            blindataOutboundPort.getSystemDependency(portDependency)
+                    .ifPresentOrElse(
+                            port::setDependsOnSystem,
+                            () -> port.setDependsOnIdentifier(portDependency)
+                    );
         }
+
     }
 
-    private List<BDAdditionalPropertiesRes> extractAdditionalProperties(PromisesDPDS promises) {
+    private List<BDAdditionalPropertiesRes> extractAdditionalProperties(Promises promises) {
         List<BDAdditionalPropertiesRes> additionalPropertiesRes = new ArrayList<>();
         if (promises.getSlo() != null && StringUtils.hasText(promises.getSlo().getDescription())) {
             additionalPropertiesRes.add(new BDAdditionalPropertiesRes("sloDescription", promises.getSlo().getDescription()));
@@ -199,25 +190,25 @@ class DataProductPortsAndAssetsUpload implements UseCase {
         return additionalPropertiesRes;
     }
 
-    private List<BDDataProductPortAssetDetailRes> extractBdAssetsFromDpPorts(InterfaceComponentsDPDS interfaceComponentsDPDS) {
+    private List<BDDataProductPortAssetDetailRes> extractBdAssetsFromDpPorts(InterfaceComponents interfaceComponents) {
         List<BDDataProductPortAssetDetailRes> dataProductPortAssets = new ArrayList<>();
-        Optional.ofNullable(interfaceComponentsDPDS.getInputPorts())
+        Optional.ofNullable(interfaceComponents.getInputPorts())
                 .map(odmOutboundPort::extractBDAssetsFromPorts)
                 .ifPresent(dataProductPortAssets::addAll);
 
-        Optional.ofNullable(interfaceComponentsDPDS.getOutputPorts())
+        Optional.ofNullable(interfaceComponents.getOutputPorts())
                 .map(odmOutboundPort::extractBDAssetsFromPorts)
                 .ifPresent(dataProductPortAssets::addAll);
 
-        Optional.ofNullable(interfaceComponentsDPDS.getControlPorts())
+        Optional.ofNullable(interfaceComponents.getControlPorts())
                 .map(odmOutboundPort::extractBDAssetsFromPorts)
                 .ifPresent(dataProductPortAssets::addAll);
 
-        Optional.ofNullable(interfaceComponentsDPDS.getDiscoveryPorts())
+        Optional.ofNullable(interfaceComponents.getDiscoveryPorts())
                 .map(odmOutboundPort::extractBDAssetsFromPorts)
                 .ifPresent(dataProductPortAssets::addAll);
 
-        Optional.ofNullable(interfaceComponentsDPDS.getObservabilityPorts())
+        Optional.ofNullable(interfaceComponents.getObservabilityPorts())
                 .map(odmOutboundPort::extractBDAssetsFromPorts)
                 .ifPresent(dataProductPortAssets::addAll);
         return dataProductPortAssets;

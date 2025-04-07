@@ -1,10 +1,10 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.notificationevents;
 
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.OdmEventNotificationResource;
+import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 
 public interface NotificationEventHandler {
 
-    OdmEventNotificationResource handle(OdmEventNotificationResource event);
+    Event handle(Event event);
 
-    boolean isSubscribedTo(OdmEventNotificationResource event);
+    boolean isSubscribedTo(Event event);
 }

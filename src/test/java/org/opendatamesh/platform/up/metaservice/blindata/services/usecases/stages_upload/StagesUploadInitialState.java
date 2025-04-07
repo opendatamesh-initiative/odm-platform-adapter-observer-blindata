@@ -1,21 +1,25 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.stages_upload;
 
-import org.opendatamesh.dpds.model.DataProductVersionDPDS;
+import org.opendatamesh.dpds.model.DataProductVersion;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductStageRes;
 
 import java.util.List;
 
 public class StagesUploadInitialState {
-    private DataProductVersionDPDS dataProductDescriptor;
+    private DataProductVersion dataProductDescriptor;
     private BDDataProductRes existentDataProduct;
     private List<BDDataProductStageRes> dataProductVersionStages;
 
     public StagesUploadInitialState() {
     }
 
-    public DataProductVersionDPDS getDataProductDescriptor() {
-        return this.dataProductDescriptor;
+    public DataProductVersion getDataProductDescriptor() {
+        return dataProductDescriptor;
+    }
+
+    public void setDataProductDescriptor(DataProductVersion dataProductDescriptor) {
+        this.dataProductDescriptor = dataProductDescriptor;
     }
 
     public BDDataProductRes getExistentDataProduct() {
@@ -24,10 +28,6 @@ public class StagesUploadInitialState {
 
     public List<BDDataProductStageRes> getDataProductVersionStages() {
         return this.dataProductVersionStages;
-    }
-
-    public void setDataProductDescriptor(DataProductVersionDPDS dataProductDescriptor) {
-        this.dataProductDescriptor = dataProductDescriptor;
     }
 
     public void setExistentDataProduct(BDDataProductRes existentDataProduct) {

@@ -1,16 +1,16 @@
 package org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.eventstates;
 
-import org.opendatamesh.dpds.model.DataProductVersionDPDS;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.devops.OdmActivityResource;
 
-public class DataProductActivityEventState {
+public class OdmDataProductActivityEventState {
     private OdmActivityResource activity;
-    private DataProductVersionDPDS dataProductVersion;
+    private JsonNode dataProductVersion;
 
-    public DataProductActivityEventState() {
+    public OdmDataProductActivityEventState() {
     }
 
-    public DataProductActivityEventState(OdmActivityResource activity, DataProductVersionDPDS dataProductVersion) {
+    public OdmDataProductActivityEventState(OdmActivityResource activity, JsonNode dataProductVersion) {
         this.activity = activity;
         this.dataProductVersion = dataProductVersion;
     }
@@ -23,11 +23,11 @@ public class DataProductActivityEventState {
         this.activity = activity;
     }
 
-    public DataProductVersionDPDS getDataProductVersion() {
+    public JsonNode getDataProductVersion() {
         return dataProductVersion;
     }
 
-    public void setDataProductVersion(DataProductVersionDPDS dataProductVersion) {
+    public void setDataProductVersion(JsonNode dataProductVersion) {
         this.dataProductVersion = dataProductVersion;
     }
 }

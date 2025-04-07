@@ -1,12 +1,12 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload;
 
-import org.opendatamesh.dpds.model.info.InfoDPDS;
+import org.opendatamesh.dpds.model.info.Info;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyEvaluationResultResource;
 
 import java.util.List;
 
 interface PoliciesUploadOdmOutboundPort {
-    InfoDPDS getDataProductInfo();
+    Info getDataProductInfo();
 
-    List<OdmPolicyEvaluationResultResource> getDataProductPoliciesEvaluationResults(InfoDPDS infoDPDS);
+    List<OdmPolicyEvaluationResultResource> getDataProductPoliciesEvaluationResults(Info info);
 }

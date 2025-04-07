@@ -4,12 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.opendatamesh.dpds.model.DataProductVersionDPDS;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientException;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientResourceMappingException;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtils;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtilsFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientException;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientResourceMappingException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.OdmExternalComponentResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
+import java.util.Optional;
 
 class OdmRegistryClientImpl implements OdmRegistryClient {
     private final String baseUrl;
@@ -31,7 +32,7 @@ class OdmRegistryClientImpl implements OdmRegistryClient {
     }
 
     @Override
-    public List<OdmExternalComponentResource> getApi(String apiName, String apiVersion) {
+    public List<OdmExternalComponentResource> getApis(String apiName, String apiVersion) {
         try {
             String url = UriComponentsBuilder.fromHttpUrl(String.format("%s/api/v1/pp/registry/apis", baseUrl))
                     .queryParam("name", apiName)
@@ -51,7 +52,7 @@ class OdmRegistryClientImpl implements OdmRegistryClient {
                     });
 
         } catch (ClientException | ClientResourceMappingException e) {
-            throw new RuntimeException(e); //TODO
+            throw new RuntimeException(e);
         } catch (JsonMappingException e) {
             throw new RuntimeException(e);
         } catch (JsonProcessingException e) {
@@ -60,13 +61,21 @@ class OdmRegistryClientImpl implements OdmRegistryClient {
     }
 
     @Override
-    public DataProductVersionDPDS getDataProductVersion(String dataProductId, String versionNumber) {
+    public Optional<OdmExternalComponentResource> getApi(String identifier) {
+        String url = String.format("%s/api/v1/pp/registry/apis/{id}", baseUrl);
+
+        OdmExternalComponentResource api = restUtils.get(url, null, identifier, OdmExternalComponentResource.class);
+        return Optional.ofNullable(api);
+    }
+
+    @Override
+    public JsonNode getDataProductVersion(String dataProductId, String versionNumber) {
 
         String url = UriComponentsBuilder.fromHttpUrl(String.format("%s/api/v1/pp/registry/products/{id}/versions/{number}", baseUrl))
                 .queryParam("format", "normalized")
                 .buildAndExpand(dataProductId, versionNumber)
                 .toUriString();
 
-        return restUtils.get(url, null, null, DataProductVersionDPDS.class);
+        return restUtils.get(url, null, null, JsonNode.class);
     }
 }

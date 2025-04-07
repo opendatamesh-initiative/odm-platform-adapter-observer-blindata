@@ -9,6 +9,15 @@ public class OdmObserverResource {
     public OdmObserverResource() {
     }
 
+    public OdmObserverResource(OdmObserverResource other) {
+        if (other == null) return;
+
+        this.id = other.id;
+        this.name = other.name;
+        this.displayName = other.displayName;
+        this.observerServerBaseUrl = other.observerServerBaseUrl;
+    }
+
     public Long getId() {
         return id;
     }
@@ -39,5 +48,15 @@ public class OdmObserverResource {
 
     public void setObserverServerBaseUrl(String observerServerBaseUrl) {
         this.observerServerBaseUrl = observerServerBaseUrl;
+    }
+
+    @Override
+    public String toString() {
+        return "OdmObserverResource{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", observerServerBaseUrl='" + observerServerBaseUrl + '\'' +
+                '}';
     }
 }

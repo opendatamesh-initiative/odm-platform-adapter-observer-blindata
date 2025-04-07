@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload;
 
-import org.opendatamesh.dpds.model.DataProductVersionDPDS;
+import org.opendatamesh.dpds.model.DataProductVersion;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductPortAssetDetailRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductRes;
 
@@ -8,18 +8,23 @@ import java.util.List;
 
 public class DataProductVersionUploadInitialState {
     private BDDataProductRes existentDataProduct;
-    private DataProductVersionDPDS dataProductDescriptor;
+    private DataProductVersion dataProductDescriptor;
     private List<BDDataProductPortAssetDetailRes> extractedAssets;
 
     public DataProductVersionUploadInitialState() {
+        //DO NOTHING
     }
 
     public BDDataProductRes getExistentDataProduct() {
         return this.existentDataProduct;
     }
 
-    public DataProductVersionDPDS getDataProductDescriptor() {
-        return this.dataProductDescriptor;
+    public DataProductVersion getDataProductDescriptor() {
+        return dataProductDescriptor;
+    }
+
+    public void setDataProductDescriptor(DataProductVersion dataProductDescriptor) {
+        this.dataProductDescriptor = dataProductDescriptor;
     }
 
     public List<BDDataProductPortAssetDetailRes> getExtractedAssets() {
@@ -28,10 +33,6 @@ public class DataProductVersionUploadInitialState {
 
     public void setExistentDataProduct(BDDataProductRes existentDataProduct) {
         this.existentDataProduct = existentDataProduct;
-    }
-
-    public void setDataProductDescriptor(DataProductVersionDPDS dataProductDescriptor) {
-        this.dataProductDescriptor = dataProductDescriptor;
     }
 
     public void setExtractedAssets(List<BDDataProductPortAssetDetailRes> extractedAssets) {

@@ -1,11 +1,11 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload;
 
-import org.opendatamesh.dpds.model.info.InfoDPDS;
+import org.opendatamesh.dpds.model.info.Info;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDStewardshipResponsibilityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDStewardshipRoleRes;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.springframework.http.HttpStatus;
@@ -30,7 +30,7 @@ class DataProductUpload implements UseCase {
     @Override
     public void execute() throws UseCaseExecutionException {
         withErrorHandling(() -> {
-            InfoDPDS odmDataProductInfo = odmOutboundPort.getDataProductInfo();
+            Info odmDataProductInfo = odmOutboundPort.getDataProductInfo();
             validateDataProductInfo(odmDataProductInfo);
             Optional<BDDataProductRes> blindataDataProduct = blindataOutboundPort.findDataProduct(odmDataProductInfo.getFullyQualifiedName());
             if (blindataDataProduct.isEmpty()) {
@@ -78,13 +78,13 @@ class DataProductUpload implements UseCase {
         }
     }
 
-    private BDDataProductRes odmToBlindataDataProduct(InfoDPDS odmDataProduct) {
+    private BDDataProductRes odmToBlindataDataProduct(Info odmDataProduct) {
         BDDataProductRes blindataDataProduct = new BDDataProductRes();
         blindataDataProduct.setName(odmDataProduct.getName());
         blindataDataProduct.setDisplayName(odmDataProduct.getDisplayName());
         blindataDataProduct.setDomain(odmDataProduct.getDomain());
         blindataDataProduct.setIdentifier(odmDataProduct.getFullyQualifiedName());
-        blindataDataProduct.setVersion(odmDataProduct.getVersionNumber());
+        blindataDataProduct.setVersion(odmDataProduct.getVersion());
         blindataDataProduct.setDescription(odmDataProduct.getDescription());
 
         if (!StringUtils.hasText(odmDataProduct.getName())) {
@@ -93,7 +93,7 @@ class DataProductUpload implements UseCase {
             blindataDataProduct.setDisplayName(name);
         }
 
-        if (!StringUtils.hasText(odmDataProduct.getVersionNumber())) {
+        if (!StringUtils.hasText(odmDataProduct.getVersion())) {
             blindataDataProduct.setVersion("0.0.0");
             blindataDataProduct.setProductStatus("DRAFT");
         }
@@ -122,7 +122,7 @@ class DataProductUpload implements UseCase {
         }
     }
 
-    private void validateDataProductInfo(InfoDPDS odmDataProductInfo) {
+    private void validateDataProductInfo(Info odmDataProductInfo) {
         if (odmDataProductInfo == null) {
             getUseCaseLogger().warn(String.format("%s Missing odm data product info", USE_CASE_PREFIX));
             return;

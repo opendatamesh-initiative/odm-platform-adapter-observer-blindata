@@ -1,13 +1,16 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
-import org.opendatamesh.dpds.model.DataProductVersionDPDS;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.OdmExternalComponentResource;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OdmRegistryClient {
 
-    List<OdmExternalComponentResource> getApi(String apiName, String apiVersion);
+    List<OdmExternalComponentResource> getApis(String apiName, String apiVersion);
 
-    DataProductVersionDPDS getDataProductVersion(String dataProductId, String versionNumber);
+    Optional<OdmExternalComponentResource> getApi(String identifier);
+
+    JsonNode getDataProductVersion(String dataProductId, String versionNumber);
 }

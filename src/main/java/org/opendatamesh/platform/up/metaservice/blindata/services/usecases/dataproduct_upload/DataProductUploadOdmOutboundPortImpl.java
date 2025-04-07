@@ -1,26 +1,26 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload;
 
-import org.opendatamesh.dpds.model.info.InfoDPDS;
+import org.opendatamesh.dpds.model.info.Info;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.OdmDataProductResource;
 
 class DataProductUploadOdmOutboundPortImpl implements DataProductUploadOdmOutboundPort {
 
-    private final InfoDPDS dataProductInfo;
+    private final Info dataProductInfo;
 
-    public DataProductUploadOdmOutboundPortImpl(InfoDPDS dataProductInfo) {
+    public DataProductUploadOdmOutboundPortImpl(Info dataProductInfo) {
         this.dataProductInfo = dataProductInfo;
     }
 
     public DataProductUploadOdmOutboundPortImpl(OdmDataProductResource odmDataProduct) {
-        InfoDPDS infoDPDS = new InfoDPDS();
-        infoDPDS.setDomain(odmDataProduct.getDomain());
-        infoDPDS.setFullyQualifiedName(odmDataProduct.getFullyQualifiedName());
-        infoDPDS.setDescription(odmDataProduct.getDescription());
-        this.dataProductInfo = infoDPDS;
+        Info info = new Info();
+        info.setDomain(odmDataProduct.getDomain());
+        info.setFullyQualifiedName(odmDataProduct.getFullyQualifiedName());
+        info.setDescription(odmDataProduct.getDescription());
+        this.dataProductInfo = info;
     }
 
     @Override
-    public InfoDPDS getDataProductInfo() {
+    public Info getDataProductInfo() {
         return dataProductInfo;
     }
 }

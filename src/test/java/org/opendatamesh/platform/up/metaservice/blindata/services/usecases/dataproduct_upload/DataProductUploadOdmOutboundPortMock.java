@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload;
 
-import org.opendatamesh.dpds.model.info.InfoDPDS;
+import org.opendatamesh.dpds.model.info.Info;
 
 public class DataProductUploadOdmOutboundPortMock implements DataProductUploadOdmOutboundPort {
 
@@ -11,7 +11,7 @@ public class DataProductUploadOdmOutboundPortMock implements DataProductUploadOd
     }
 
     @Override
-    public InfoDPDS getDataProductInfo() {
+    public Info getDataProductInfo() {
         return initialState.getDataProductInfo();
     }
 }

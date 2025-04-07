@@ -1,6 +1,8 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload;
 
+import org.opendatamesh.dpds.model.DataProductVersion;
 import org.opendatamesh.dpds.model.DataProductVersionDPDS;
+import org.opendatamesh.dpds.model.interfaces.Port;
 import org.opendatamesh.dpds.model.interfaces.PortDPDS;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductPortAssetDetailRes;
 
@@ -15,12 +17,12 @@ public class DataProductPortsAndAssetsUploadOdmOutboundPortMock implements DataP
     }
 
     @Override
-    public DataProductVersionDPDS getDataProductVersion() {
+    public DataProductVersion getDataProductVersion() {
         return initialState.getDataProductDescriptor();
     }
 
     @Override
-    public List<BDDataProductPortAssetDetailRes> extractBDAssetsFromPorts(List<PortDPDS> ports) {
+    public List<BDDataProductPortAssetDetailRes> extractBDAssetsFromPorts(List<Port> ports) {
         return initialState.getExtractedAssets();
     }
 }

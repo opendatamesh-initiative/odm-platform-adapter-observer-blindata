@@ -2,13 +2,13 @@ package org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notifica
 
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.devops.OdmTaskResource;
 
-public class DataProductTaskEventState {
+public class OdmDataProductTaskEventState {
     private OdmTaskResource task;
 
-    public DataProductTaskEventState() {
+    public OdmDataProductTaskEventState() {
     }
 
-    public DataProductTaskEventState(OdmTaskResource task) {
+    public OdmDataProductTaskEventState(OdmTaskResource task) {
         this.task = task;
     }
 

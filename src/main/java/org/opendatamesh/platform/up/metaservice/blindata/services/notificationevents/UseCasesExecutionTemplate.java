@@ -1,8 +1,8 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.notificationevents;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.OdmEventNotificationResource;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.OdmEventNotificationStatus;
+import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
+import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventStatus;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_removal.DataProductRemovalFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload.DataProductUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload.DataProductPortsAndAssetsUploadFactory;
@@ -51,7 +51,7 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
     }
 
     @Override
-    public OdmEventNotificationResource handle(OdmEventNotificationResource event) {
+    public Event handle(Event event) {
         try {
             if (dataProductCreation.isPresent()) {
                 dataProductCreation.get().getUseCase(event).execute();
@@ -68,24 +68,24 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
             if (dataProductDeletion.isPresent()) {
                 dataProductDeletion.get().getUseCase(event).execute();
             }
-            event.setStatus(OdmEventNotificationStatus.PROCESSED);
+            event.setEventStatus(EventStatus.PROCESSED);
             return event;
         } catch (UseCaseExecutionException e) {
             log.warn(e.getMessage(), e);
-            event.setStatus(OdmEventNotificationStatus.PROCESS_ERROR);
-            event.setProcessingOutput(e.getMessage());
+            event.setEventStatus(EventStatus.PROCESS_ERROR);
+            event.setProcessingOutput(new ObjectMapper().valueToTree(e));
             return event;
         } catch (UseCaseInitException e) {
             log.warn(e.getMessage(), e);
-            event.setStatus(OdmEventNotificationStatus.UNPROCESSABLE);
-            event.setProcessingOutput(e.getMessage());
+            event.setEventStatus(EventStatus.UNPROCESSABLE);
+            event.setProcessingOutput(new ObjectMapper().valueToTree(e));
             return event;
         }
     }
 
     @Override
-    public boolean isSubscribedTo(OdmEventNotificationResource event) {
-        if (!eventType.equalsIgnoreCase(event.getEvent().getType())) {
+    public boolean isSubscribedTo(Event event) {
+        if (!eventType.equalsIgnoreCase(event.getEventType().toString())) {
             return false;
         }
         if (!StringUtils.hasText(filter)) {
@@ -93,7 +93,7 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
         }
         try {
             ExpressionParser parser = new SpelExpressionParser();
-            String stringifyEvent = new ObjectMapper().writeValueAsString(event.getEvent());
+            String stringifyEvent = new ObjectMapper().writeValueAsString(event);
             Object objectNode = new ObjectMapper().readValue(stringifyEvent, Object.class);
             StandardEvaluationContext standardEvaluationContext = new StandardEvaluationContext(objectNode);
             return Boolean.TRUE.equals(parser.parseExpression(filter).getValue(standardEvaluationContext, Boolean.class));

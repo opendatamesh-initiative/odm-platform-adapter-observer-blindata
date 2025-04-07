@@ -15,6 +15,20 @@ public class OdmEventNotificationResource {
     public OdmEventNotificationResource() {
     }
 
+    public OdmEventNotificationResource(OdmEventNotificationResource other) {
+        if (other == null) return;
+
+        this.id = other.id;
+        this.status = other.status;
+        this.processingOutput = other.processingOutput;
+
+        this.receivedAt = (other.receivedAt != null) ? new Date(other.receivedAt.getTime()) : null;
+        this.processedAt = (other.processedAt != null) ? new Date(other.processedAt.getTime()) : null;
+
+        this.event = (other.event != null) ? new OdmEventResource(other.event) : null;
+        this.observer = (other.observer != null) ? new OdmObserverResource(other.observer) : null;
+    }
+
     public Long getId() {
         return id;
     }
@@ -69,5 +83,18 @@ public class OdmEventNotificationResource {
 
     public void setProcessedAt(Date processedAt) {
         this.processedAt = processedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "OdmEventNotificationResource{" +
+                "id=" + id +
+                ", event=" + event +
+                ", status=" + status +
+                ", processingOutput='" + processingOutput + '\'' +
+                ", observer=" + observer +
+                ", receivedAt=" + receivedAt +
+                ", processedAt=" + processedAt +
+                '}';
     }
 }

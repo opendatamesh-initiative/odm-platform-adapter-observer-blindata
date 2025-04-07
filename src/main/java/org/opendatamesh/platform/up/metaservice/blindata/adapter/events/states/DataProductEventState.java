@@ -1,12 +1,12 @@
-package org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.eventstates;
+package org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states;
 
-import org.opendatamesh.dpds.model.DataProductVersionDPDS;
+import org.opendatamesh.dpds.model.DataProductVersion;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.OdmDataProductResource;
 
-public class DataProductEventState {
+public class DataProductEventState implements EventState {
 
     private OdmDataProductResource dataProduct;
-    private DataProductVersionDPDS dataProductVersion;
+    private DataProductVersion dataProductVersion;
 
     public DataProductEventState() {
     }
@@ -23,11 +23,11 @@ public class DataProductEventState {
         this.dataProduct = dataProduct;
     }
 
-    public DataProductVersionDPDS getDataProductVersion() {
+    public DataProductVersion getDataProductVersion() {
         return dataProductVersion;
     }
 
-    public void setDataProductVersion(DataProductVersionDPDS dataProductVersion) {
+    public void setDataProductVersion(DataProductVersion dataProductVersion) {
         this.dataProductVersion = dataProductVersion;
     }
 }

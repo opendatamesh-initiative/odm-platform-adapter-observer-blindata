@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload;
 
-import org.opendatamesh.dpds.model.info.InfoDPDS;
+import org.opendatamesh.dpds.model.info.Info;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyEvaluationResultResource;
 
 import java.util.List;
@@ -14,12 +14,12 @@ public class PoliciesUploadOdmOutboundPortMock implements PoliciesUploadOdmOutbo
     }
 
     @Override
-    public InfoDPDS getDataProductInfo() {
+    public Info getDataProductInfo() {
         return initialState.getDataProductInfo();
     }
 
     @Override
-    public List<OdmPolicyEvaluationResultResource> getDataProductPoliciesEvaluationResults(InfoDPDS infoDPDS) {
+    public List<OdmPolicyEvaluationResultResource> getDataProductPoliciesEvaluationResults(Info info) {
         return initialState.getPoliciesResults();
     }
 }

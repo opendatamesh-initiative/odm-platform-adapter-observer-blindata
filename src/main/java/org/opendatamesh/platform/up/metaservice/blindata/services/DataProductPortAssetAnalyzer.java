@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import org.opendatamesh.dpds.model.interfaces.PortDPDS;
+import org.opendatamesh.dpds.model.interfaces.Port;
 import org.opendatamesh.platform.up.metaservice.blindata.client.odm.OdmRegistryClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductPortAssetDetailRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDPhysicalEntityRes;
@@ -50,17 +50,17 @@ public class DataProductPortAssetAnalyzer {
     private static final Logger logger = LoggerFactory.getLogger(DataProductPortAssetAnalyzer.class);
 
 
-    public List<BDDataProductPortAssetDetailRes> extractPhysicalResourcesFromPorts(List<PortDPDS> portDPDS) {
+    public List<BDDataProductPortAssetDetailRes> extractPhysicalResourcesFromPorts(List<Port> ports) {
         List<BDDataProductPortAssetDetailRes> dataProductPortAssetDetailRes = new ArrayList<>();
         try {
-            for (PortDPDS port : portDPDS) {
+            for (Port port : ports) {
                 logger.info("Analyzing data assets for port {}", port.getFullyQualifiedName());
                 if (port.getPromises() == null || port.getPromises().getApi() == null) {
                     logger.info("Data product port: {} has empty Api", port.getFullyQualifiedName());
                     continue;
                 }
 
-                Optional<OdmExternalComponentResource> externalComponentResources = registryClient.getApi(port.getPromises().getApi().getName(), port.getPromises().getApi().getVersion()).stream().findFirst();
+                Optional<OdmExternalComponentResource> externalComponentResources = registryClient.getApi(port.getPromises().getApi().getId());
                 if (externalComponentResources.isEmpty()) {
                     logger.info("No definition found for the data product port: {}", port.getFullyQualifiedName());
                     continue;
@@ -103,7 +103,7 @@ public class DataProductPortAssetAnalyzer {
         }
     }
 
-    private boolean portIsNotValid(PortDPDS port, PortStandardDefinition portStandardDefinition) {
+    private boolean portIsNotValid(Port port, PortStandardDefinition portStandardDefinition) {
         if (!StringUtils.hasText(portStandardDefinition.getSpecification())) {
             logger.warn("Missing specification on port: {}", port.getFullyQualifiedName());
             return true;
@@ -115,7 +115,7 @@ public class DataProductPortAssetAnalyzer {
         return false;
     }
 
-    private BDDataProductPortAssetDetailRes buildDataProductPortAssetDetail(PortDPDS port, BDSystemRes platformSystem, List<BDPhysicalEntityRes> extractedEntities) {
+    private BDDataProductPortAssetDetailRes buildDataProductPortAssetDetail(Port port, BDSystemRes platformSystem, List<BDPhysicalEntityRes> extractedEntities) {
         BDProductPortAssetSystemRes bdDataProductPortAssetSystem = new BDProductPortAssetSystemRes();
         bdDataProductPortAssetSystem.setSystem(platformSystem);
         bdDataProductPortAssetSystem.setPhysicalEntities(extractedEntities);
@@ -146,7 +146,7 @@ public class DataProductPortAssetAnalyzer {
                 .findFirst();
     }
 
-    private BDSystemRes getSystem(PortDPDS port) {
+    private BDSystemRes getSystem(Port port) {
         BDSystemRes systemRes = new BDSystemRes();
         String platform = port.getPromises().getPlatform();
         systemRes.setName(extractSystemName(platform));

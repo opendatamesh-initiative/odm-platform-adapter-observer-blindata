@@ -1,24 +1,19 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.stages_upload;
 
 import com.google.common.collect.Lists;
-import org.opendatamesh.dpds.model.DataProductVersionDPDS;
-import org.opendatamesh.dpds.model.internals.InternalComponentsDPDS;
-import org.opendatamesh.dpds.model.internals.LifecycleInfoDPDS;
+import org.opendatamesh.dpds.model.DataProductVersion;
+import org.opendatamesh.dpds.model.internals.InternalComponents;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductStageRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.devops.OdmActivityResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.devops.OdmActivityStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 class StagesUploadOdmOutboundPortImpl implements StagesUploadOdmOutboundPort {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-    private final DataProductVersionDPDS dataProductVersion;
+    private final DataProductVersion dataProductVersion;
     private final OdmActivityResource activityResource;
 
-    StagesUploadOdmOutboundPortImpl(DataProductVersionDPDS dataProductVersion, OdmActivityResource activityResource) {
+    StagesUploadOdmOutboundPortImpl(DataProductVersion dataProductVersion, OdmActivityResource activityResource) {
         this.dataProductVersion = dataProductVersion;
         this.activityResource = activityResource;
     }
@@ -29,7 +24,7 @@ class StagesUploadOdmOutboundPortImpl implements StagesUploadOdmOutboundPort {
             if (isACompletedActivity()) {
                 BDDataProductStageRes stage = new BDDataProductStageRes();
                 stage.setName(activityResource.getStage());
-                stage.setVersion(dataProductVersion.getInfo().getVersionNumber());
+                stage.setVersion(dataProductVersion.getInfo().getVersion());
                 return Lists.newArrayList(stage);
             }
             return Collections.emptyList();
@@ -40,7 +35,7 @@ class StagesUploadOdmOutboundPortImpl implements StagesUploadOdmOutboundPort {
     }
 
     @Override
-    public DataProductVersionDPDS getDataProductVersion() {
+    public DataProductVersion getDataProductVersion() {
         return dataProductVersion;
     }
 
@@ -59,9 +54,12 @@ class StagesUploadOdmOutboundPortImpl implements StagesUploadOdmOutboundPort {
 
     private SortedSet<String> extractStageNamesFromDescriptor() {
         return Optional.ofNullable(dataProductVersion.getInternalComponents())
-                .map(InternalComponentsDPDS::getLifecycleInfo)
-                .map(LifecycleInfoDPDS::getStageNames).orElse(Collections.emptySortedSet());
+                .map(InternalComponents::getLifecycleInfo) // This should be a LinkedHashMap (Jackson default)
+                .map(Map::keySet)
+                .map(TreeSet::new)
+                .orElseGet(TreeSet::new);
     }
+
 
     private boolean isACompletedActivity() {
         return OdmActivityStatus.PROCESSED.equals(activityResource.getStatus());

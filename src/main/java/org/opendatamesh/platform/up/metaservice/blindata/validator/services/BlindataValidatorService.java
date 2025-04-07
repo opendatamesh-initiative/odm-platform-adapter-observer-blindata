@@ -4,7 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.opendatamesh.dpds.model.DataProductVersionDPDS;
+import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
+import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventAdapter;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.exceptions.OdmPlatformBadRequestException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.exceptions.OdmPlatformInternalServerException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.OdmEventNotificationResource;
@@ -22,17 +23,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType.DATA_PRODUCT_VERSION_CREATED;
+
 @Service
 public class BlindataValidatorService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final DataProductUploadFactory dataProductUploadFactory;
     private final DataProductPortsAndAssetsUploadFactory dataProductPortsAndAssetsUploadFactory;
+    private final EventAdapter eventAdapter;
 
     @Autowired
-    public BlindataValidatorService(DataProductUploadFactory dataProductUploadFactory, DataProductPortsAndAssetsUploadFactory dataProductPortsAndAssetsUploadFactory) {
+    public BlindataValidatorService(
+            DataProductUploadFactory dataProductUploadFactory,
+            DataProductPortsAndAssetsUploadFactory dataProductPortsAndAssetsUploadFactory,
+            EventAdapter eventAdapter
+    ) {
         this.dataProductUploadFactory = dataProductUploadFactory;
         this.dataProductPortsAndAssetsUploadFactory = dataProductPortsAndAssetsUploadFactory;
+        this.eventAdapter = eventAdapter;
     }
 
     private ObjectMapper objectMapper = new ObjectMapper()
@@ -50,10 +59,13 @@ public class BlindataValidatorService {
         new RunWithUseCaseLogger(validatorUseCaseLogger, () -> {
             try {
                 PolicyEvaluationInputObject policyEvaluationInputObject = objectMapper.treeToValue(evaluationRequest.getObjectToEvaluate(), PolicyEvaluationInputObject.class);
-                DataProductVersionDPDS descriptorToValidate = objectMapper.treeToValue(policyEvaluationInputObject.getAfterState(), DataProductVersionDPDS.class);
-                OdmEventNotificationResource eventNotification = buildFakeNotificationEvent(policyEvaluationInputObject);
+                OdmEventNotificationResource odmEventNotification = buildFakeNotificationEvent(policyEvaluationInputObject);
+
+                Event eventNotification = eventAdapter.odmToInternalEvent(odmEventNotification)
+                        .orElseThrow(() -> new IllegalStateException("Impossible to convert Odm Event to Internal Event."));
+
                 dataProductUploadFactory.getUseCaseDryRun(eventNotification).execute();
-                if (descriptorToValidate.getInterfaceComponents() != null) {
+                if (policyEvaluationInputObject.getAfterState().has("interfaceComponents")) {
                     dataProductPortsAndAssetsUploadFactory.getUseCaseDryRun(eventNotification).execute();
                 }
             } catch (UseCaseExecutionException e) {
@@ -84,7 +96,7 @@ public class BlindataValidatorService {
     private OdmEventNotificationResource buildFakeNotificationEvent(PolicyEvaluationInputObject policyEvaluationInputObject) {
         OdmEventNotificationResource eventNotification = new OdmEventNotificationResource();
         OdmEventResource event = new OdmEventResource();
-        event.setType("DATA_PRODUCT_VERSION_CREATED");
+        event.setType(DATA_PRODUCT_VERSION_CREATED.name());
         event.setAfterState(policyEvaluationInputObject.getAfterState());
         eventNotification.setEvent(event);
         return eventNotification;

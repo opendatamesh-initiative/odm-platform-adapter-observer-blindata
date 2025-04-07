@@ -3,10 +3,10 @@ spring:
 
 blindata:
   url: http://localhost:3000
-  user: ""
-  password: ""
-  tenantUUID: ""
-  roleUuid: ""
+  user: "owner@default.blindata.io"
+  password: "owner123"
+  tenantUUID: "83471577-3921-48ed-bd8f-fde278aa0449"
+  roleUuid: "bcb001b7-58ea-43df-8ac4-db28f4b6c262"
   validator:
     active: true
     policyEngine:
@@ -23,7 +23,9 @@ blindata:
       filter: ""
       activeUseCases:
         - DATA_PRODUCT_UPLOAD
+        - DATA_PRODUCT_VERSION_UPLOAD
         - STAGES_UPLOAD
+        - POLICIES_UPLOAD
     - eventType: DATA_PRODUCT_ACTIVITY_COMPLETED
       filter: "#root['afterState']['activity']['stage'] == 'dev'"
       activeUseCases:

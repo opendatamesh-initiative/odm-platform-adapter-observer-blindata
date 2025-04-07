@@ -1,7 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_removal;
 
 import org.junit.jupiter.api.Test;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindataresources.BDDataProductRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 
 import java.util.Optional;
