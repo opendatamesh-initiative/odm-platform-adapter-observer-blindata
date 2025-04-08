@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states;
+package org.opendatamesh.platform.up.metaservice.blindata.adapter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,10 +13,34 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+
+/**
+ * Utility class for converting the legacy {@code DataProductDescriptorDPDS} model
+ * into the updated {@code DataProductDescriptor} model.
+ * <p>
+ * Key conversion logics include:
+ * <ul>
+ *   <li><strong>rawContent field:</strong> Properties from this field are migrated to
+ *       the {@code additionalProperties} field in the new model by default.</li>
+ *   <li><strong>LifecycleInfo:</strong> The legacy structure is incompatible with the
+ *       Open Data Mesh specification and requires adaptation.</li>
+ * </ul>
+ */
+
 public abstract class DataProductConverter {
     private static final Logger log = LoggerFactory.getLogger(DataProductConverter.class);
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * Converts a legacy serialized DataProductVersion JSON string into a new {@link DataProductVersion} object.
+     * <p>
+     * This method flattens embedded {@code rawContent} structures and refactors the {@code lifecycleInfo}
+     * to conform to the Open Data Mesh specification.
+     *
+     * @param oldVersion The JSON string representing the legacy DataProductVersion object.
+     * @return A {@link DataProductVersion} instance compatible with the updated model.
+     * @throws RuntimeException if JSON parsing or mapping fails.
+     */
     public static DataProductVersion oldToNewVersion(String oldVersion) {
         try {
             JsonNode raw = mapper.readTree(oldVersion);

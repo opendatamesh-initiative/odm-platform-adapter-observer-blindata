@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
+import org.opendatamesh.platform.up.metaservice.blindata.adapter.DataProductConverter;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventStatus;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType;
@@ -20,7 +21,6 @@ import static org.opendatamesh.platform.up.metaservice.blindata.adapter.events.E
 public class DataProductVersionEventStateConverter implements EventStateConverter {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public boolean accepts(EventType eventType) {
