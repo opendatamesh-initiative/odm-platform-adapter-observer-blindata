@@ -1456,6 +1456,8 @@ blindata:
   roleUuid: A possible role identifier. You need this identifier to create or update responsibilities in Blindata (value optional)
   systemNameRegex: optional regex to extract system name from schema (value optional)
   systemTechnologyRegex: optional regex to extract system technology from schema (value optional)
+  enableAsync: (true/false, default false) If enabled, the observer will use the asynchronous endpoints of Blindata API. This allows
+    to process big data product descriptors without failing due to connection timeouts.
   dataProducts:
     assetsCleanup: (true/false, default true) the option to enable/disable the cleanup of deprecated assets associated to data products ports
 ```
@@ -1478,5 +1480,6 @@ odm:
     notificationService:
       active: Whether the ODM Notification Service is active or not
       address: The address of ODM Notification Service
+      subscribeWithName: (default "BLINDATA") The name used by the observer to subscribe itself on the Notification Service.       
 ```
 
