@@ -15,29 +15,24 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-        with:
-          ssh-key: ${{secrets.SSH_KEY}}
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_KEY }}
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
-      - name: Clone and build odm-platform
+      - name: Set up Maven settings
         run: |
-          git config user.name "github-workflows-cloner"
-          git config user.email "<>"
-          git clone https://github.com/opendatamesh-initiative/odm-platform.git
-          cd odm-platform
-          mvn -B clean install -DskipTests --file pom.xml
-          cd ..
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          mkdir -p ~/.m2
+          echo "<settings>
+            <servers>
+              <server>
+                <id>odm-spec-parser-repo</id>
+                <username>your-github-username</username>
+                <password>${{ secrets.GITHUB_TOKEN }}</password>
+              </server>
+            </servers>
+          </settings>" > ~/.m2/settings.xml
       - name: Execute tests with Maven
         run: mvn -B test -Dspring.profiles.active=test
         env:

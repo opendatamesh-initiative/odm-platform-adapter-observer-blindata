@@ -36,6 +36,18 @@ jobs:
             echo "Git tag (${{ env.TAG_VERSION }}) does not match POM version (${{ env.MAVEN_VERSION }})"
             exit 1
           fi
+      - name: Set up Maven settings
+        run: |
+          mkdir -p ~/.m2
+          echo "<settings>
+            <servers>
+              <server>
+                <id>odm-spec-parser-repo</id>
+                <username>your-github-username</username>
+                <password>${{ secrets.GITHUB_TOKEN }}</password>
+              </server>
+            </servers>
+          </settings>" > ~/.m2/settings.xml
       - name: Execute tests with Maven
         run: mvn -B test -Dspring.profiles.active=test
         env:
