@@ -10,7 +10,7 @@ public interface OdmRegistryClient {
 
     List<OdmExternalComponentResource> getApis(String apiName, String apiVersion);
 
-    Optional<OdmExternalComponentResource> getApi(String identifier);
+    Optional<JsonNode> getApi(String identifier);
 
     JsonNode getDataProductVersion(String dataProductId, String versionNumber);
 }

@@ -1,8 +1,12 @@
 package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking;
 
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDSemanticLinkingClient;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.*;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDDataCategoryRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalFieldSemanticLinkRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalNamespaceRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalFieldRes;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 

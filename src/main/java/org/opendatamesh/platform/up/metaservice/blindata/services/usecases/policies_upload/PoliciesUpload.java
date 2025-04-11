@@ -1,8 +1,8 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload;
 
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDPolicyEvaluationRecord;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDPolicyEvaluationRecords;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDPolicyEvaluationRecord;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDPolicyEvaluationRecords;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDUploadResultsMessage;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyEvaluationResultResource;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;

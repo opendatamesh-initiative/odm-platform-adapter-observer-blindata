@@ -3,7 +3,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.stag
 import com.google.common.collect.Lists;
 import org.opendatamesh.dpds.model.DataProductVersion;
 import org.opendatamesh.dpds.model.internals.InternalComponents;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductStageRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductStageRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.devops.OdmActivityResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.devops.OdmActivityStatus;
 

@@ -1,15 +1,15 @@
 package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDPhysicalEntityRes;
-import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinition;
-import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionAnalyzer;
-import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.v2.PortAsyncApi2Analyzer;
-import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.v3.PortAsyncApi3Analyzer;
+import org.opendatamesh.dpds.model.core.ComponentBase;
+import org.opendatamesh.dpds.model.core.StandardDefinition;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionEntitiesExtractor;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.v2.PortAsyncApi2EntitiesExtractor;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.asyncapi.v3.PortAsyncApi3EntitiesExtractor;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,22 +20,22 @@ public class PortAsyncApiAnalyzerTest {
 
     @Test
     public void testAsyncApiV2AvroAnalyzer() throws IOException {
-        String rawDefinition = objectMapper.readValue(
+        ComponentBase rawDefinition = objectMapper.readValue(
                 Resources.toByteArray(
                         getClass().getResource("testAsyncApiV2_Avro_Analyzer_rawPortStandardDefinition.json")
                 ),
-                JsonNode.class
-        ).toString();
+                ComponentBase.class
+        );
 
-        PortStandardDefinition portStandardDefinition = new PortStandardDefinition();
+        StandardDefinition portStandardDefinition = new StandardDefinition();
         portStandardDefinition.setSpecification("asyncapi");
         portStandardDefinition.setSpecificationVersion("2.5.0");
         portStandardDefinition.setDefinition(rawDefinition);
 
-        PortStandardDefinitionAnalyzer portStandardDefinitionAnalyzer = new PortAsyncApi2Analyzer();
-        Assertions.assertThat(portStandardDefinitionAnalyzer.supportsPortStandardDefinition(portStandardDefinition)).isTrue();
+        PortStandardDefinitionEntitiesExtractor portStandardDefinitionEntitiesExtractor = new PortAsyncApi2EntitiesExtractor();
+        Assertions.assertThat(portStandardDefinitionEntitiesExtractor.supports(portStandardDefinition)).isTrue();
 
-        List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionAnalyzer.getBDAssetsFromPortStandardDefinition(portStandardDefinition);
+        List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionEntitiesExtractor.extractEntities(portStandardDefinition);
         List<BDPhysicalEntityRes> expectedEntities = objectMapper.readValue(Resources.toByteArray(getClass().getResource("testAsyncApiV2_Avro_Analyzer_expectedEntities.json")), Entities.class).physicalEntities;
 
         Assertions.assertThat(extractedEntities).containsExactlyInAnyOrderElementsOf(expectedEntities);
@@ -43,22 +43,22 @@ public class PortAsyncApiAnalyzerTest {
 
     @Test
     public void testAsyncApiV2JsonAnalyzer() throws IOException {
-        String rawDefinition = objectMapper.readValue(
+        ComponentBase rawDefinition = objectMapper.readValue(
                 Resources.toByteArray(
                         getClass().getResource("testAsyncApiV2_Json_Analyzer_rawPortStandardDefinition.json")
                 ),
-                JsonNode.class
-        ).toString();
+                ComponentBase.class
+        );
 
-        PortStandardDefinition portStandardDefinition = new PortStandardDefinition();
+        StandardDefinition portStandardDefinition = new StandardDefinition();
         portStandardDefinition.setSpecification("asyncapi");
         portStandardDefinition.setSpecificationVersion("2.5.0");
         portStandardDefinition.setDefinition(rawDefinition);
 
-        PortStandardDefinitionAnalyzer portStandardDefinitionAnalyzer = new PortAsyncApi2Analyzer();
-        Assertions.assertThat(portStandardDefinitionAnalyzer.supportsPortStandardDefinition(portStandardDefinition)).isTrue();
+        PortStandardDefinitionEntitiesExtractor portStandardDefinitionEntitiesExtractor = new PortAsyncApi2EntitiesExtractor();
+        Assertions.assertThat(portStandardDefinitionEntitiesExtractor.supports(portStandardDefinition)).isTrue();
 
-        List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionAnalyzer.getBDAssetsFromPortStandardDefinition(portStandardDefinition);
+        List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionEntitiesExtractor.extractEntities(portStandardDefinition);
         List<BDPhysicalEntityRes> expectedEntities = objectMapper.readValue(Resources.toByteArray(getClass().getResource("testAsyncApiV2_Json_Analyzer_expectedEntities.json")), Entities.class).physicalEntities;
 
         Assertions.assertThat(extractedEntities).containsExactlyInAnyOrderElementsOf(expectedEntities);
@@ -67,21 +67,21 @@ public class PortAsyncApiAnalyzerTest {
     @Test
     public void testAsyncApiV3AvroAnalyzer() throws IOException {
 
-        String rawDefinition = objectMapper.readValue(
+        ComponentBase rawDefinition = objectMapper.readValue(
                 Resources.toByteArray(
                         getClass().getResource("testAsyncApiV3_Avro_Analyzer_rawPortStandardDefinition.json")
                 ),
-                JsonNode.class
-        ).toString();
-        PortStandardDefinition portStandardDefinition = new PortStandardDefinition();
+                ComponentBase.class
+        );
+        StandardDefinition portStandardDefinition = new StandardDefinition();
         portStandardDefinition.setSpecification("asyncapi");
         portStandardDefinition.setSpecificationVersion("3.0.0");
         portStandardDefinition.setDefinition(rawDefinition);
 
-        PortStandardDefinitionAnalyzer portStandardDefinitionAnalyzer = new PortAsyncApi3Analyzer();
-        Assertions.assertThat(portStandardDefinitionAnalyzer.supportsPortStandardDefinition(portStandardDefinition)).isTrue();
+        PortStandardDefinitionEntitiesExtractor portStandardDefinitionEntitiesExtractor = new PortAsyncApi3EntitiesExtractor();
+        Assertions.assertThat(portStandardDefinitionEntitiesExtractor.supports(portStandardDefinition)).isTrue();
 
-        List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionAnalyzer.getBDAssetsFromPortStandardDefinition(portStandardDefinition);
+        List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionEntitiesExtractor.extractEntities(portStandardDefinition);
         List<BDPhysicalEntityRes> expectedEntities = objectMapper.readValue(Resources.toByteArray(getClass().getResource("testAsyncApiV3_Avro_Analyzer_expectedEntities.json")), Entities.class).physicalEntities;
 
         Assertions.assertThat(extractedEntities).containsExactlyInAnyOrderElementsOf(expectedEntities);
@@ -89,22 +89,22 @@ public class PortAsyncApiAnalyzerTest {
 
     @Test
     public void testAsyncApiV3JsonAnalyzer() throws IOException {
-        String rawDefinition = objectMapper.readValue(
+        ComponentBase rawDefinition = objectMapper.readValue(
                 Resources.toByteArray(
                         getClass().getResource("testAsyncApiV3_Json_Analyzer_rawPortStandardDefinition.json")
                 ),
-                JsonNode.class
-        ).toString();
+                ComponentBase.class
+        );
 
-        PortStandardDefinition portStandardDefinition = new PortStandardDefinition();
+        StandardDefinition portStandardDefinition = new StandardDefinition();
         portStandardDefinition.setSpecification("asyncapi");
         portStandardDefinition.setSpecificationVersion("3.0.0");
         portStandardDefinition.setDefinition(rawDefinition);
 
-        PortStandardDefinitionAnalyzer portStandardDefinitionAnalyzer = new PortAsyncApi3Analyzer();
-        Assertions.assertThat(portStandardDefinitionAnalyzer.supportsPortStandardDefinition(portStandardDefinition)).isTrue();
+        PortStandardDefinitionEntitiesExtractor portStandardDefinitionEntitiesExtractor = new PortAsyncApi3EntitiesExtractor();
+        Assertions.assertThat(portStandardDefinitionEntitiesExtractor.supports(portStandardDefinition)).isTrue();
 
-        List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionAnalyzer.getBDAssetsFromPortStandardDefinition(portStandardDefinition);
+        List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionEntitiesExtractor.extractEntities(portStandardDefinition);
         List<BDPhysicalEntityRes> expectedEntities = objectMapper.readValue(Resources.toByteArray(getClass().getResource("testAsyncApiV3_Json_Analyzer_expectedEntities.json")), Entities.class).physicalEntities;
 
         Assertions.assertThat(extractedEntities).containsExactlyInAnyOrderElementsOf(expectedEntities);

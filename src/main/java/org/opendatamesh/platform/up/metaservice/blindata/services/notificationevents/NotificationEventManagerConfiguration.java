@@ -1,10 +1,10 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.notificationevents;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_removal.DataProductRemovalFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload.DataProductUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload.DataProductPortsAndAssetsUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload.PoliciesUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload.QualityUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.stages_upload.StagesUploadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +28,8 @@ public class NotificationEventManagerConfiguration {
     @Autowired
     private DataProductPortsAndAssetsUploadFactory dataProductPortsAndAssetsUploadFactory;
     @Autowired
+    private QualityUploadFactory qualityUploadFactory;
+    @Autowired
     private PoliciesUploadFactory policiesUploadFactory;
     @Autowired
     private DataProductRemovalFactory dataProductRemovalFactory;
@@ -41,7 +43,7 @@ public class NotificationEventManagerConfiguration {
     }
 
     @Bean
-    public NotificationEventManager eventManager() throws JsonProcessingException {
+    public NotificationEventManager eventManager() {
         List<NotificationEventHandler> eventHandlers = new ArrayList<>();
 
         for (BlindataProperties.EventHandler eventHandler : blindataProperties.getEventHandlers()) {
@@ -49,13 +51,14 @@ public class NotificationEventManagerConfiguration {
             eventHandlers.add(new UseCasesExecutionTemplate(
                     eventHandler.getActiveUseCases().contains("DATA_PRODUCT_UPLOAD") ? dataProductUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("DATA_PRODUCT_VERSION_UPLOAD") ? dataProductPortsAndAssetsUploadFactory : null,
+                    eventHandler.getActiveUseCases().contains("QUALITY_UPLOAD") ? qualityUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("STAGES_UPLOAD") ? stagesUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("POLICIES_UPLOAD") ? policiesUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("DATA_PRODUCT_REMOVAL") ? dataProductRemovalFactory : null,
                     eventHandler.getEventType(),
                     eventHandler.getFilter()
             ));
-            log.info("Activated event handler with the following configuration: \n{}", eventHandler.toString());
+            log.info("Activated event handler with the following configuration: \n{}", eventHandler);
         }
         return new NotificationEventManager(eventHandlers);
     }

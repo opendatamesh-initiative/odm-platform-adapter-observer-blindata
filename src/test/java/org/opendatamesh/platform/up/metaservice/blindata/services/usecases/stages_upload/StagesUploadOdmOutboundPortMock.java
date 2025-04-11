@@ -1,8 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.stages_upload;
 
 import org.opendatamesh.dpds.model.DataProductVersion;
-import org.opendatamesh.dpds.model.DataProductVersionDPDS;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductStageRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductStageRes;
 
 import java.util.List;
 

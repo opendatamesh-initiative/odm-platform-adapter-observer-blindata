@@ -16,6 +16,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.excep
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.ValidatorUseCaseLogger;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload.QualityUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.OdmValidatorPolicyEvaluationRequestRes;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.OdmValidatorPolicyEvaluationResultRes;
 import org.slf4j.Logger;
@@ -31,16 +32,18 @@ public class BlindataValidatorService {
 
     private final DataProductUploadFactory dataProductUploadFactory;
     private final DataProductPortsAndAssetsUploadFactory dataProductPortsAndAssetsUploadFactory;
+    private final QualityUploadFactory qualityUploadFactory;
     private final EventAdapter eventAdapter;
 
     @Autowired
     public BlindataValidatorService(
             DataProductUploadFactory dataProductUploadFactory,
-            DataProductPortsAndAssetsUploadFactory dataProductPortsAndAssetsUploadFactory,
+            DataProductPortsAndAssetsUploadFactory dataProductPortsAndAssetsUploadFactory, QualityUploadFactory qualityUploadFactory,
             EventAdapter eventAdapter
     ) {
         this.dataProductUploadFactory = dataProductUploadFactory;
         this.dataProductPortsAndAssetsUploadFactory = dataProductPortsAndAssetsUploadFactory;
+        this.qualityUploadFactory = qualityUploadFactory;
         this.eventAdapter = eventAdapter;
     }
 
@@ -67,6 +70,7 @@ public class BlindataValidatorService {
                 dataProductUploadFactory.getUseCaseDryRun(eventNotification).execute();
                 if (policyEvaluationInputObject.getAfterState().has("interfaceComponents")) {
                     dataProductPortsAndAssetsUploadFactory.getUseCaseDryRun(eventNotification).execute();
+                    qualityUploadFactory.getUseCaseDryRun(eventNotification).execute();
                 }
             } catch (UseCaseExecutionException e) {
                 resultOutput.setMessage(String.format("Use case failed due an internal use case error: %s", e.getMessage()));

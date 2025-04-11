@@ -9,7 +9,11 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientResourceMappingException;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpHeader;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.Oauth2;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.*;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDUploadResultsMessage;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.*;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.*;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.*;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadRes;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, BDUserClient, BDPolicyEvaluationResultClient, BDSemanticLinkingClient {
+public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, BDUserClient, BDPolicyEvaluationResultClient, BDSemanticLinkingClient, BDQualityClient {
 
     private final BDCredentials credentials;
     private final BDDataProductClientConfig dataProductClientConfig;
@@ -358,6 +362,22 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
                     filters,
                     BDLogicalNamespaceRes.class
             ).stream().findFirst();
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public BDUploadResultsMessage uploadQualityChecks(BDQualityUploadRes qualityUpload) {
+        try {
+            return restUtils.genericPost(
+                    String.format("%s/api/v1/data-quality/suites/*/import-objects%s", credentials.getBlindataUrl(), dataProductClientConfig.isAssetsCleanup() ? "?cleanup=true" : ""),
+                    null,
+                    qualityUpload,
+                    BDUploadResultsMessage.class
+            );
         } catch (ClientException e) {
             throw new BlindataClientException(e.getCode(), e.getResponseBody());
         } catch (ClientResourceMappingException e) {

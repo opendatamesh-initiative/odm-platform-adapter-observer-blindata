@@ -20,6 +20,11 @@ public class BDClientConfigs {
     }
 
     @Bean
+    public BDQualityClient bdQualityClient() {
+        return new BDClientImpl(bdCredentials, bdDataProductClientConfig, restTemplate);
+    }
+
+    @Bean
     public BDUserClient bdUserClient() {
         return new BDClientImpl(bdCredentials, bdDataProductClientConfig, restTemplate);
     }

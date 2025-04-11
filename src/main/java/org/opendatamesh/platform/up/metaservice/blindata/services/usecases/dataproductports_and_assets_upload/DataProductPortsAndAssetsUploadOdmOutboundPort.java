@@ -2,7 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.data
 
 import org.opendatamesh.dpds.model.DataProductVersion;
 import org.opendatamesh.dpds.model.interfaces.Port;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductPortAssetDetailRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductPortAssetDetailRes;
 
 import java.util.List;
 

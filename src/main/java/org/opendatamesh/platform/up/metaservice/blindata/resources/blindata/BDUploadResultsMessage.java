@@ -1,5 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.resources.blindata;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BDUploadResultsMessage {
@@ -7,7 +8,8 @@ public class BDUploadResultsMessage {
     private int rowCreated;
     private int rowUpdated;
     private int rowDiscarded;
-    private List<Object> errors;
+    private String qualitySuiteUuid;
+    private List<String> qualityChecksUuids = new ArrayList<>();
 
     public String getMessage() {
         return message;
@@ -41,22 +43,19 @@ public class BDUploadResultsMessage {
         this.rowDiscarded = rowDiscarded;
     }
 
-    public List<Object> getErrors() {
-        return errors;
+    public String getQualitySuiteUuid() {
+        return qualitySuiteUuid;
     }
 
-    public void setErrors(List<Object> errors) {
-        this.errors = errors;
+    public void setQualitySuiteUuid(String qualitySuiteUuid) {
+        this.qualitySuiteUuid = qualitySuiteUuid;
     }
 
-    @Override
-    public String toString() {
-        return "{" +
-                "message='" + message + '\'' +
-                ", rowCreated=" + rowCreated +
-                ", rowUpdated=" + rowUpdated +
-                ", rowDiscarded=" + rowDiscarded +
-                ", errors=" + errors +
-                '}';
+    public List<String> getQualityChecksUuids() {
+        return qualityChecksUuids;
+    }
+
+    public void setQualityChecksUuids(List<String> qualityChecksUuids) {
+        this.qualityChecksUuids = qualityChecksUuids;
     }
 }

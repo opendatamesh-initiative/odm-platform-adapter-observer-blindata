@@ -1,9 +1,9 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.blindata;
 
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductSearchOptions;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductStagesUploadRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDProductPortAssetsRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductSearchOptions;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductStagesUploadRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDProductPortAssetsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientResourceMappingException;
 import org.springframework.data.domain.Page;

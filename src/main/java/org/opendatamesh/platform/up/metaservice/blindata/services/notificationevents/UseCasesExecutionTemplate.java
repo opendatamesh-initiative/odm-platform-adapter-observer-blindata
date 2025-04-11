@@ -9,6 +9,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.datap
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload.PoliciesUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload.QualityUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.stages_upload.StagesUploadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
 
     private final Optional<DataProductUploadFactory> dataProductCreation;
     private final Optional<DataProductPortsAndAssetsUploadFactory> dataProductVersionCreation;
+    private final Optional<QualityUploadFactory> qualityUpload;
     private final Optional<StagesUploadFactory> stagesUploadFactory;
     private final Optional<PoliciesUploadFactory> policiesCreation;
     private final Optional<DataProductRemovalFactory> dataProductDeletion;
@@ -36,6 +38,7 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
     public UseCasesExecutionTemplate(
             DataProductUploadFactory dataProductCreation,
             DataProductPortsAndAssetsUploadFactory dataProductVersionCreation,
+            QualityUploadFactory qualityUpload,
             StagesUploadFactory stagesUploadFactory,
             PoliciesUploadFactory policiesCreation,
             DataProductRemovalFactory dataProductDeletion,
@@ -43,6 +46,7 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
             String filter) {
         this.dataProductCreation = Optional.ofNullable(dataProductCreation);
         this.dataProductVersionCreation = Optional.ofNullable(dataProductVersionCreation);
+        this.qualityUpload = Optional.ofNullable(qualityUpload);
         this.stagesUploadFactory = Optional.ofNullable(stagesUploadFactory);
         this.policiesCreation = Optional.ofNullable(policiesCreation);
         this.dataProductDeletion = Optional.ofNullable(dataProductDeletion);
@@ -58,6 +62,9 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
             }
             if (dataProductVersionCreation.isPresent()) {
                 dataProductVersionCreation.get().getUseCase(event).execute();
+            }
+            if (qualityUpload.isPresent()) {
+                qualityUpload.get().getUseCase(event).execute();
             }
             if (stagesUploadFactory.isPresent()) {
                 stagesUploadFactory.get().getUseCase(event).execute();

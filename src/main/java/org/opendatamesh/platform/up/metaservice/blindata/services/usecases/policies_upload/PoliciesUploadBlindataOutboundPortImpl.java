@@ -2,8 +2,8 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.poli
 
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDPolicyEvaluationResultClient;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDPolicyEvaluationRecords;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDPolicyEvaluationRecords;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDUploadResultsMessage;
 
 import java.util.Optional;

@@ -1,8 +1,8 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.blindata;
 
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataCategoryRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDLogicalNamespaceRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDLogicalFieldSemanticLinkRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDDataCategoryRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalNamespaceRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalFieldSemanticLinkRes;
 
 import java.util.Optional;
 

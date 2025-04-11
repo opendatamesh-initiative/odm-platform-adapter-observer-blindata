@@ -1,0 +1,76 @@
+{
+  "qualityChecks": [
+    {
+      "code": "Macrozona ExpectColumnValuesToBeInSet",
+      "name": "Macrozona ExpectColumnValuesToBeInSet",
+      "description": "PLACEHOLDER",
+      "warningThreshold": 95.0,
+      "successThreshold": 100.0,
+      "scoreStrategy": "PERCENTAGE",
+      "isEnabled": true,
+      "physicalEntities": [
+        {
+          "schema": "dwh",
+          "name": "Customer",
+          "additionalProperties": []
+        }
+      ],
+      "physicalFields": [],
+      "additionalProperties": [
+        {
+          "name": "dimension",
+          "value": "Validity"
+        },
+        {
+          "name": "unit",
+          "value": "percent"
+        },
+        {
+          "name": "constraint_type",
+          "value": "custom"
+        },
+        {
+          "name": "quality_engine",
+          "value": "greatExpectations"
+        }
+      ],
+      "reference": false
+    },
+    {
+      "code": "ScambiMWh ExpectColumnValuesToBeBetween",
+      "name": "ScambiMWh ExpectColumnValuesToBeBetween",
+      "description": "",
+      "warningThreshold": 95.0,
+      "successThreshold": 100.0,
+      "scoreStrategy": "PERCENTAGE",
+      "isEnabled": true,
+      "physicalEntities": [
+        {
+          "schema": "dwh",
+          "name": "Customer",
+          "additionalProperties": []
+        }
+      ],
+      "physicalFields": [],
+      "additionalProperties": [
+        {
+          "name": "dimension",
+          "value": "Consistency"
+        },
+        {
+          "name": "unit",
+          "value": "percent"
+        },
+        {
+          "name": "constraint_type",
+          "value": "custom"
+        },
+        {
+          "name": "quality_engine",
+          "value": "greatExpectations"
+        }
+      ],
+      "reference": false
+    }
+  ]
+}
