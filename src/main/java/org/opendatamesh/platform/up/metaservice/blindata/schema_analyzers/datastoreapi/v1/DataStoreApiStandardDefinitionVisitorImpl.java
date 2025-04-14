@@ -147,7 +147,7 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
                 qualityCheck.setSuccessThreshold(BigDecimal.valueOf(successThreshold));
             }
             boolean isCheckEnabled = quality.getCustomProperties().getCheckEnabled();
-            qualityCheck.setEnabled(isCheckEnabled);
+            qualityCheck.setIsEnabled(isCheckEnabled);
         }
 
         //Additional Properties

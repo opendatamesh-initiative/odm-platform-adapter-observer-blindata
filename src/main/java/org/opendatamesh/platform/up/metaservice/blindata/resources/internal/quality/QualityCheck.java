@@ -88,11 +88,11 @@ public class QualityCheck {
         this.successThreshold = successThreshold;
     }
 
-    public Boolean getEnabled() {
+    public Boolean getIsEnabled() {
         return isEnabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setIsEnabled(Boolean enabled) {
         isEnabled = enabled;
     }
 
