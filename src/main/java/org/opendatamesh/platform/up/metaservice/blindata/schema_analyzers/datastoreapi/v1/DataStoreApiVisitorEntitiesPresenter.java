@@ -2,8 +2,6 @@ package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datas
 
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
 
-import java.util.List;
-
 interface DataStoreApiVisitorEntitiesPresenter {
-    void presentPhysicalEntities(List<BDPhysicalEntityRes> physicalEntities);
+    void presentPhysicalEntity(BDPhysicalEntityRes physicalEntity);
 }

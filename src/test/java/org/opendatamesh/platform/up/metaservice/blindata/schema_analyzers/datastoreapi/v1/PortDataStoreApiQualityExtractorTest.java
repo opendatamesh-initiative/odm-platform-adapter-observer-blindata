@@ -9,12 +9,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opendatamesh.dpds.model.core.ComponentBase;
 import org.opendatamesh.dpds.model.core.StandardDefinition;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssuePolicyRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.quality.QualityCheck;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -81,6 +83,34 @@ class PortDataStoreApiQualityExtractorTest {
                 .ignoringFields("physicalFields.physicalEntity.physicalFields")
                 .ignoringFields("physicalEntities.physicalFields")
                 .isEqualTo(expectedQualityChecks.getQualityChecks());
+    }
+
+    @Test
+    void testDatastoreApiV1QualityExtractorWithIssuePolicies() throws IOException {
+        StandardDefinition portStandardDefinition = new StandardDefinition();
+        portStandardDefinition.setSpecification("datastoreapi");
+        portStandardDefinition.setSpecificationVersion("1.0.0");
+        portStandardDefinition.setDefinition(objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("testDataStoreApiV1QualityExtractor_rawPortStandardDefinition_issue_policies.json")),
+                ComponentBase.class
+        ));
+        assertThat(portStandardDefinitionAnalyzer.supports(portStandardDefinition)).isTrue();
+
+        List<QualityCheck> extractedQualityChecks = portStandardDefinitionAnalyzer.extractQualityChecks(portStandardDefinition);
+
+        ExpectedQualityChecks expectedQualityChecks = objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("testDataStoreApiV1QualityExtractor_expected_results_issue_policies.json")),
+                ExpectedQualityChecks.class
+        );
+
+        List<BDIssuePolicyRes> issuePolicies = extractedQualityChecks.stream().flatMap(qualityCheck -> qualityCheck.getIssuePolicies().stream()).collect(Collectors.toList());
+        List<BDIssuePolicyRes> expectedIssuePolicies = expectedQualityChecks.getQualityChecks().stream().flatMap(qualityCheck -> qualityCheck.getIssuePolicies().stream()).collect(Collectors.toList());
+
+        assertThat(issuePolicies)
+                .usingRecursiveComparison()
+                .ignoringCollectionOrder()
+                .ignoringFields("policyContent")
+                .isEqualTo(expectedIssuePolicies);
     }
 
     private static class ExpectedQualityChecks {

@@ -1,6 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.resources.internal.quality;
 
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAdditionalPropertiesRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssuePolicyRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalFieldRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualitySemaphoreRes;
@@ -33,11 +34,20 @@ public class QualityCheck {
 
     private List<BDAdditionalPropertiesRes> additionalProperties = new ArrayList<>();
 
-    //Field used only internally to the Observer
+    //Fields used only internally to the Observer
     private boolean isReference;
+    private List<BDIssuePolicyRes> issuePolicies = new ArrayList<>();
 
     public QualityCheck() {
         //DO NOTHING
+    }
+
+    public List<BDIssuePolicyRes> getIssuePolicies() {
+        return issuePolicies;
+    }
+
+    public void setIssuePolicies(List<BDIssuePolicyRes> issuePolicies) {
+        this.issuePolicies = issuePolicies;
     }
 
     public String getUuid() {

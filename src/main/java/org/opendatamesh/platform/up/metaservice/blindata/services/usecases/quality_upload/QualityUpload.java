@@ -5,6 +5,8 @@ import org.opendatamesh.dpds.model.interfaces.InterfaceComponents;
 import org.opendatamesh.dpds.model.interfaces.Port;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDUploadResultsMessage;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualitySuiteRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.quality.QualityCheck;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
@@ -16,6 +18,7 @@ import org.springframework.util.StringUtils;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,6 +43,7 @@ class QualityUpload implements UseCase {
             validateDataProduct(dataProductVersion);
             validateDataProductDescriptorPorts(dataProductVersion.getInterfaceComponents());
 
+            //KQI & QUALITY SUITE
             List<QualityCheck> qualityChecks = extractQualityFromPorts(dataProductVersion.getInterfaceComponents());
             if (CollectionUtils.isEmpty(qualityChecks)) {
                 getUseCaseLogger().info(String.format("%s Data Product: %s no quality check defined.", USE_CASE_PREFIX, dataProductVersion.getInfo().getFullyQualifiedName()));
@@ -48,8 +52,13 @@ class QualityUpload implements UseCase {
             getUseCaseLogger().info(String.format("%s Data Product: %s extracted  %s quality checks.", USE_CASE_PREFIX, dataProductVersion.getInfo().getFullyQualifiedName(), qualityChecks.size()));
 
             qualityChecks = removeMalformedReferences(qualityChecks);
-
             BDQualitySuiteRes qualitySuite = buildQualitySuite(dataProductVersion);
+
+            //ISSUE POLICIES & CAMPAIGN
+            BDIssueCampaignRes issueCampaign = handleIssueCampaign(dataProductVersion);
+            Optional<BDShortUserRes> dataProductOwner = getDataProductOwner(dataProductVersion);
+            updateIssuePoliciesOnQualityChecks(qualityChecks, issueCampaign, dataProductOwner);
+
             BDUploadResultsMessage uploadResult = blindataOutboundPort.saveQualityDefinitions(qualitySuite, qualityChecks);
 
             getUseCaseLogger().info(String.format("%s Quality Checks created: %s updated: %s discarded: %s", USE_CASE_PREFIX, uploadResult.getRowCreated(), uploadResult.getRowUpdated(), uploadResult.getRowDiscarded()));
@@ -57,6 +66,35 @@ class QualityUpload implements UseCase {
                 getUseCaseLogger().warn(String.format("%s Quality Checks upload error: %s", USE_CASE_PREFIX, uploadResult.getMessage()));
             }
         });
+    }
+
+    private Optional<BDShortUserRes> getDataProductOwner(DataProductVersion dataProductVersion) {
+        Optional<BDShortUserRes> dataProductOwner = Optional.empty();
+        if (dataProductVersion.getInfo() != null && dataProductVersion.getInfo().getOwner() != null && StringUtils.hasText(dataProductVersion.getInfo().getOwner().getId())) {
+            dataProductOwner = blindataOutboundPort.findDataProductOwner(dataProductVersion.getInfo().getOwner().getId());
+        } else {
+            getUseCaseLogger().info(String.format("%s Missing data product owner on data product: %s, skipping assignee on issue policies.", USE_CASE_PREFIX, dataProductVersion.getInfo().getFullyQualifiedName()));
+        }
+        return dataProductOwner;
+    }
+
+    private void updateIssuePoliciesOnQualityChecks(List<QualityCheck> qualityChecks, BDIssueCampaignRes issueCampaign, Optional<BDShortUserRes> dataProductOwner) {
+        qualityChecks.stream().flatMap(qualityCheck -> qualityCheck.getIssuePolicies().stream())
+                .forEach(issuePolicy -> {
+                    issuePolicy.getIssueTemplate().setCampaign(issueCampaign);
+                    dataProductOwner.ifPresent(dpo -> issuePolicy.getIssueTemplate().setAssignee(dpo));
+                });
+    }
+
+    private BDIssueCampaignRes handleIssueCampaign(DataProductVersion dataProductVersion) {
+        String campaignName = String.format("Quality - %s - %s", dataProductVersion.getInfo().getDomain(), dataProductVersion.getInfo().getName());
+        Optional<BDIssueCampaignRes> existentCampaign = blindataOutboundPort.findIssueCampaign(campaignName);
+        if (existentCampaign.isPresent()) {
+            return existentCampaign.get();
+        }
+        BDIssueCampaignRes newIssueCampaign = new BDIssueCampaignRes();
+        newIssueCampaign.setName(campaignName);
+        return blindataOutboundPort.createIssueCampaign(newIssueCampaign);
     }
 
     private List<QualityCheck> removeMalformedReferences(List<QualityCheck> qualityChecks) {

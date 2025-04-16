@@ -91,4 +91,19 @@ public class BDQualitySuiteRes {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    @Override
+    public String toString() {
+        return "BDQualitySuiteRes{" +
+                "uuid='" + uuid + '\'' +
+                ", code='" + code + '\'' +
+                ", system=" + system +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", published=" + published +
+                ", teamCode='" + teamCode + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 }

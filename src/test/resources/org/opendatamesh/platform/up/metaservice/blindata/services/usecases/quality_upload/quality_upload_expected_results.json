@@ -1,0 +1,65 @@
+{
+  "qualitySuite": {
+    "uuid": null,
+    "code": "testDomain::test",
+    "system": null,
+    "name": "testDomain::test",
+    "description": null,
+    "published": true,
+    "teamCode": null,
+    "createdAt": null,
+    "updatedAt": null
+  },
+  "issuePolicies": [
+    {
+      "uuid": null,
+      "name": "ScambiMWh ExpectColumnValuesToBeBetween",
+      "resourceIdentifier": null,
+      "resourceType": null,
+      "resourceName": null,
+      "policyType": "RECURRENT_RESULT_SEMAPHORE",
+      "policyContent": {
+        "semaphores": [
+          "RED"
+        ],
+        "semaphoresNumber": 1,
+        "autoClose": true
+      },
+      "issueTemplate": {
+        "name": "Quality Alert - ScambiMWh ExpectColumnValuesToBeBetween",
+        "description": null,
+        "issueType": "ALERT",
+        "campaign": {
+          "uuid": null,
+          "name": "Quality - testDomain - test",
+          "description": null,
+          "creator": null,
+          "owner": null,
+          "startDate": null,
+          "endDate": null,
+          "status": null,
+          "openIssues": null,
+          "closedIssues": null,
+          "private": null
+        },
+        "issueStatus": "TO_DO",
+        "severity": "INFO",
+        "priorityOrder": 3,
+        "assignee": null,
+        "additionalProperties": [
+          {
+            "name": "jiraAssigneeAccountID",
+            "value": "111111"
+          },
+          {
+            "name": "jiraProjectKey",
+            "value": "ABCD"
+          }
+        ]
+      },
+      "active": true,
+      "createdAt": null,
+      "updatedAt": null
+    }
+  ]
+}

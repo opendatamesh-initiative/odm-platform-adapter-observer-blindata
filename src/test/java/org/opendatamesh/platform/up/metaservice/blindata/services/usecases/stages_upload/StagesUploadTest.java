@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import static org.mockito.Mockito.*;
 
-public class QualityUploadTest {
+public class StagesUploadTest {
     private ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 

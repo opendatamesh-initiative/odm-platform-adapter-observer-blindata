@@ -4,5 +4,5 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDUp
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadRes;
 
 public interface BDQualityClient {
-    BDUploadResultsMessage uploadQualityChecks(BDQualityUploadRes qualityUpload);
+    BDUploadResultsMessage uploadQuality(BDQualityUploadRes qualityUpload);
 }

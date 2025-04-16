@@ -1,0 +1,494 @@
+{
+  "qualityChecks": [
+    {
+      "uuid": null,
+      "code": "Macrozona ExpectColumnValuesToBeInSet",
+      "name": null,
+      "description": null,
+      "warningThreshold": null,
+      "successThreshold": null,
+      "isEnabled": null,
+      "qualitySuite": null,
+      "lastSemaphore": null,
+      "scoreStrategy": null,
+      "scoreExpectedValue": null,
+      "scoreLeftValue": null,
+      "scoreRightValue": null,
+      "checkGroupCode": null,
+      "physicalEntities": [],
+      "physicalFields": [
+        {
+          "uuid": null,
+          "name": "customer_id",
+          "type": "VARCHAR",
+          "ordinalPosition": 1,
+          "description": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "additionalProperties": [
+            {
+              "name": "displayName",
+              "value": "Customer ID"
+            },
+            {
+              "name": "isUnique",
+              "value": "true"
+            },
+            {
+              "name": "isNullable",
+              "value": "true"
+            },
+            {
+              "name": "isRequired",
+              "value": "true"
+            }
+          ],
+          "logicalFields": [],
+          "physicalEntity": {
+            "uuid": null,
+            "schema": "profit",
+            "name": "v_monthly_customer_payments",
+            "system": null
+          }
+        }
+      ],
+      "additionalProperties": [],
+      "issuePolicies": [],
+      "reference": true,
+      "manual": null
+    },
+    {
+      "uuid": null,
+      "code": "Macrozona ExpectColumnValuesToBeInSet",
+      "name": "Macrozona ExpectColumnValuesToBeInSet",
+      "description": "PLACEHOLDER",
+      "warningThreshold": 95.0,
+      "successThreshold": 100.0,
+      "isEnabled": true,
+      "qualitySuite": null,
+      "lastSemaphore": null,
+      "scoreStrategy": "PERCENTAGE",
+      "scoreExpectedValue": null,
+      "scoreLeftValue": null,
+      "scoreRightValue": null,
+      "checkGroupCode": null,
+      "physicalEntities": [
+        {
+          "uuid": null,
+          "schema": "profit",
+          "name": "v_monthly_customer_payments",
+          "description": "The view that store the information about monthly customer payments",
+          "dataSet": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "physicalFields": [
+            {
+              "uuid": null,
+              "name": "customer_id",
+              "type": "VARCHAR",
+              "ordinalPosition": 1,
+              "description": null,
+              "creationDate": null,
+              "modificationDate": null,
+              "additionalProperties": [
+                {
+                  "name": "displayName",
+                  "value": "Customer ID"
+                },
+                {
+                  "name": "isUnique",
+                  "value": "true"
+                },
+                {
+                  "name": "isNullable",
+                  "value": "true"
+                },
+                {
+                  "name": "isRequired",
+                  "value": "true"
+                }
+              ],
+              "logicalFields": [],
+              "physicalEntity": {
+                "uuid": null,
+                "schema": "profit",
+                "name": "v_monthly_customer_payments",
+                "system": null
+              }
+            },
+            {
+              "uuid": null,
+              "name": "customer_email",
+              "type": "VARCHAR",
+              "ordinalPosition": 2,
+              "description": "Email address of the customer",
+              "creationDate": null,
+              "modificationDate": null,
+              "additionalProperties": [
+                {
+                  "name": "displayName",
+                  "value": "Customer Email"
+                },
+                {
+                  "name": "isUnique",
+                  "value": "false"
+                },
+                {
+                  "name": "isNullable",
+                  "value": "true"
+                },
+                {
+                  "name": "isRequired",
+                  "value": "true"
+                }
+              ],
+              "logicalFields": [],
+              "physicalEntity": {
+                "uuid": null,
+                "schema": "profit",
+                "name": "v_monthly_customer_payments",
+                "system": null
+              }
+            },
+            {
+              "uuid": null,
+              "name": "payment_month",
+              "type": "TIMESTAMP",
+              "ordinalPosition": 3,
+              "description": "Month of the payment",
+              "creationDate": null,
+              "modificationDate": null,
+              "additionalProperties": [
+                {
+                  "name": "displayName",
+                  "value": "Payment Month"
+                },
+                {
+                  "name": "format",
+                  "value": "date-time"
+                },
+                {
+                  "name": "isUnique",
+                  "value": "false"
+                },
+                {
+                  "name": "isNullable",
+                  "value": "false"
+                },
+                {
+                  "name": "isRequired",
+                  "value": "true"
+                }
+              ],
+              "logicalFields": [],
+              "physicalEntity": {
+                "uuid": null,
+                "schema": "profit",
+                "name": "v_monthly_customer_payments",
+                "system": null
+              }
+            },
+            {
+              "uuid": null,
+              "name": "total_payment",
+              "type": "NUMERIC",
+              "ordinalPosition": 4,
+              "description": "Total payment amount for the month",
+              "creationDate": null,
+              "modificationDate": null,
+              "additionalProperties": [
+                {
+                  "name": "displayName",
+                  "value": "Total Payment"
+                },
+                {
+                  "name": "isUnique",
+                  "value": "false"
+                },
+                {
+                  "name": "isNullable",
+                  "value": "false"
+                },
+                {
+                  "name": "isRequired",
+                  "value": "true"
+                }
+              ],
+              "logicalFields": [],
+              "physicalEntity": {
+                "uuid": null,
+                "schema": "profit",
+                "name": "v_monthly_customer_payments",
+                "system": null
+              }
+            }
+          ],
+          "dataCategories": null,
+          "system": null,
+          "isConsentView": null,
+          "isHidden": null,
+          "tableType": "VIEW",
+          "additionalProperties": []
+        }
+      ],
+      "physicalFields": [],
+      "additionalProperties": [
+        {
+          "name": "dimension",
+          "value": "Validity"
+        },
+        {
+          "name": "unit",
+          "value": "percent"
+        },
+        {
+          "name": "constraint_type",
+          "value": "custom"
+        },
+        {
+          "name": "quality_engine",
+          "value": "greatExpectations"
+        }
+      ],
+      "issuePolicies": [
+        {
+          "uuid": null,
+          "name": "ScambiMWh ExpectColumnValuesToBeBetween",
+          "resourceIdentifier": null,
+          "resourceType": null,
+          "resourceName": null,
+          "policyType": "RECURRENT_RESULT_SEMAPHORE",
+          "policyContent": {
+            "semaphores": [
+              "RED"
+            ],
+            "semaphoresNumber": 1,
+            "autoClose": true
+          },
+          "issueTemplate": {
+            "name": "Quality Alert - ScambiMWh ExpectColumnValuesToBeBetween",
+            "description": null,
+            "issueType": "ALERT",
+            "campaign": null,
+            "issueStatus": "TO_DO",
+            "severity": "INFO",
+            "priorityOrder": 3,
+            "assignee": null,
+            "additionalProperties": [
+              {
+                "name": "jiraAssigneeAccountID",
+                "value": "111111"
+              },
+              {
+                "name": "jiraProjectKey",
+                "value": "ABCD"
+              }
+            ]
+          },
+          "active": true,
+          "createdAt": null,
+          "updatedAt": null
+        }
+      ],
+      "reference": false,
+      "manual": null
+    },
+    {
+      "uuid": null,
+      "code": "ScambiMWh ExpectColumnValuesToBeBetween",
+      "name": "ScambiMWh ExpectColumnValuesToBeBetween",
+      "description": "",
+      "warningThreshold": 95.0,
+      "successThreshold": 100.0,
+      "isEnabled": true,
+      "qualitySuite": null,
+      "lastSemaphore": null,
+      "scoreStrategy": "PERCENTAGE",
+      "scoreExpectedValue": null,
+      "scoreLeftValue": null,
+      "scoreRightValue": null,
+      "checkGroupCode": null,
+      "physicalEntities": [
+        {
+          "uuid": null,
+          "schema": "profit",
+          "name": "v_monthly_customer_payments",
+          "description": "The view that store the information about monthly customer payments",
+          "dataSet": null,
+          "creationDate": null,
+          "modificationDate": null,
+          "physicalFields": [
+            {
+              "uuid": null,
+              "name": "customer_id",
+              "type": "VARCHAR",
+              "ordinalPosition": 1,
+              "description": null,
+              "creationDate": null,
+              "modificationDate": null,
+              "additionalProperties": [
+                {
+                  "name": "displayName",
+                  "value": "Customer ID"
+                },
+                {
+                  "name": "isUnique",
+                  "value": "true"
+                },
+                {
+                  "name": "isNullable",
+                  "value": "true"
+                },
+                {
+                  "name": "isRequired",
+                  "value": "true"
+                }
+              ],
+              "logicalFields": [],
+              "physicalEntity": {
+                "uuid": null,
+                "schema": "profit",
+                "name": "v_monthly_customer_payments",
+                "system": null
+              }
+            },
+            {
+              "uuid": null,
+              "name": "customer_email",
+              "type": "VARCHAR",
+              "ordinalPosition": 2,
+              "description": "Email address of the customer",
+              "creationDate": null,
+              "modificationDate": null,
+              "additionalProperties": [
+                {
+                  "name": "displayName",
+                  "value": "Customer Email"
+                },
+                {
+                  "name": "isUnique",
+                  "value": "false"
+                },
+                {
+                  "name": "isNullable",
+                  "value": "true"
+                },
+                {
+                  "name": "isRequired",
+                  "value": "true"
+                }
+              ],
+              "logicalFields": [],
+              "physicalEntity": {
+                "uuid": null,
+                "schema": "profit",
+                "name": "v_monthly_customer_payments",
+                "system": null
+              }
+            },
+            {
+              "uuid": null,
+              "name": "payment_month",
+              "type": "TIMESTAMP",
+              "ordinalPosition": 3,
+              "description": "Month of the payment",
+              "creationDate": null,
+              "modificationDate": null,
+              "additionalProperties": [
+                {
+                  "name": "displayName",
+                  "value": "Payment Month"
+                },
+                {
+                  "name": "format",
+                  "value": "date-time"
+                },
+                {
+                  "name": "isUnique",
+                  "value": "false"
+                },
+                {
+                  "name": "isNullable",
+                  "value": "false"
+                },
+                {
+                  "name": "isRequired",
+                  "value": "true"
+                }
+              ],
+              "logicalFields": [],
+              "physicalEntity": {
+                "uuid": null,
+                "schema": "profit",
+                "name": "v_monthly_customer_payments",
+                "system": null
+              }
+            },
+            {
+              "uuid": null,
+              "name": "total_payment",
+              "type": "NUMERIC",
+              "ordinalPosition": 4,
+              "description": "Total payment amount for the month",
+              "creationDate": null,
+              "modificationDate": null,
+              "additionalProperties": [
+                {
+                  "name": "displayName",
+                  "value": "Total Payment"
+                },
+                {
+                  "name": "isUnique",
+                  "value": "false"
+                },
+                {
+                  "name": "isNullable",
+                  "value": "false"
+                },
+                {
+                  "name": "isRequired",
+                  "value": "true"
+                }
+              ],
+              "logicalFields": [],
+              "physicalEntity": {
+                "uuid": null,
+                "schema": "profit",
+                "name": "v_monthly_customer_payments",
+                "system": null
+              }
+            }
+          ],
+          "dataCategories": null,
+          "system": null,
+          "isConsentView": null,
+          "isHidden": null,
+          "tableType": "VIEW",
+          "additionalProperties": []
+        }
+      ],
+      "physicalFields": [],
+      "additionalProperties": [
+        {
+          "name": "dimension",
+          "value": "Consistency"
+        },
+        {
+          "name": "unit",
+          "value": "percent"
+        },
+        {
+          "name": "constraint_type",
+          "value": "custom"
+        },
+        {
+          "name": "quality_engine",
+          "value": "greatExpectations"
+        }
+      ],
+      "issuePolicies": [],
+      "reference": false,
+      "manual": null
+    }
+  ]
+}

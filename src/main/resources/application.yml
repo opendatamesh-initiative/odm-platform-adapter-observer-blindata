@@ -11,9 +11,12 @@ blindata:
   systemNameRegex: ".*"
   systemTechnologyRegex: "[^:]*"
   dependsOnSystemNameRegex: "blindata:systems:(.+)"
-  blindata:
-    dataProducts:
-      assetsCleanup: false
+  enableAsync: false
+  dataProducts:
+    assetsCleanup: false
+  issueManagement:
+    policies:
+      active: true
   validator:
     active: false
     policyEngine:

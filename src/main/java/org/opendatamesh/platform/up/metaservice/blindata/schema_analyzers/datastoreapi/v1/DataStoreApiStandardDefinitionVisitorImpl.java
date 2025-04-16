@@ -3,6 +3,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datas
 import com.google.common.collect.Lists;
 import org.opendatamesh.dpds.datastoreapi.v1.extensions.DataStoreApiStandardDefinitionVisitor;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAdditionalPropertiesRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityShortRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalFieldRes;
@@ -11,6 +12,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.qual
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1.model.DataStoreApiBlindataDefinition;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1.model.DataStoreApiBlindataDefinitionProperty;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1.model.quality.Quality;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1.model.quality.QualityIssuePolicy;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -44,7 +46,6 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
 
     @Override
     protected void visitDefinition(DataStoreApiBlindataDefinition definition) {
-        List<QualityCheck> qualityChecks = new ArrayList<>();
         BDPhysicalEntityRes physicalEntity = definitionToPhysicalEntity(definition);
 
         //Handle physical fields
@@ -54,21 +55,16 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
                 physicalField.setPhysicalEntity(new BDPhysicalEntityShortRes(physicalEntity));
                 physicalEntity.getPhysicalFields().add(physicalField);
                 //Handle physical fields quality checks
-                List<QualityCheck> physicalFieldQualityChecks = definitionPropertyQualityToPhysicalFieldQualityChecks(definitionProperty, physicalField);
-                qualityChecks.addAll(physicalFieldQualityChecks);
+                extractPhysicalFieldQualityCheckFromDefinitionProperty(definitionProperty, physicalField);
             }
         }
 
         //Handle physical entity quality checks
-        List<QualityCheck> physicalEntityQualityChecks = definitionQualityToPhysicalEntityQualityChecks(definition, physicalEntity);
-        qualityChecks.addAll(physicalEntityQualityChecks);
-
-        physicalEntityPresenter.presentPhysicalEntities(Lists.newArrayList(physicalEntity));
-        qualityCheckPresenter.presentQualityChecks(qualityChecks);
+        extractPhysicalEntityQualityCheckFromDefinition(definition, physicalEntity);
+        physicalEntityPresenter.presentPhysicalEntity(physicalEntity);
     }
 
-    private List<QualityCheck> definitionQualityToPhysicalEntityQualityChecks(DataStoreApiBlindataDefinition definition, BDPhysicalEntityRes physicalEntity) {
-        List<QualityCheck> qualityChecks = new ArrayList<>();
+    private void extractPhysicalEntityQualityCheckFromDefinition(DataStoreApiBlindataDefinition definition, BDPhysicalEntityRes physicalEntity) {
         if (!CollectionUtils.isEmpty(definition.getQuality())) {
             for (Quality quality : definition.getQuality()) {
                 QualityCheck qualityCheck = qualityToQualityCheck(quality);
@@ -77,14 +73,12 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
                     continue;
                 }
                 qualityCheck.setPhysicalEntities(Lists.newArrayList(physicalEntity));
-                qualityChecks.add(qualityCheck);
+                qualityCheckPresenter.presentQualityCheck(qualityCheck);
             }
         }
-        return qualityChecks;
     }
 
-    private List<QualityCheck> definitionPropertyQualityToPhysicalFieldQualityChecks(DataStoreApiBlindataDefinitionProperty definitionProperty, BDPhysicalFieldRes physicalField) {
-        List<QualityCheck> qualityChecks = new ArrayList<>();
+    private void extractPhysicalFieldQualityCheckFromDefinitionProperty(DataStoreApiBlindataDefinitionProperty definitionProperty, BDPhysicalFieldRes physicalField) {
         if (!CollectionUtils.isEmpty(definitionProperty.getQuality())) {
             for (Quality quality : definitionProperty.getQuality()) {
                 QualityCheck qualityCheck = qualityToQualityCheck(quality);
@@ -93,10 +87,9 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
                     continue;
                 }
                 qualityCheck.setPhysicalFields(Lists.newArrayList(physicalField));
-                qualityChecks.add(qualityCheck);
+                qualityCheckPresenter.presentQualityCheck(qualityCheck);
             }
         }
-        return qualityChecks;
     }
 
     private BDPhysicalEntityRes definitionToPhysicalEntity(DataStoreApiBlindataDefinition dataStoreApiBlindataDefinition) {
@@ -133,40 +126,100 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
             qualityCheck.setScoreExpectedValue(BigDecimal.valueOf(quality.getMustBe()));
         }
 
-        if (quality.getCustomProperties() != null) {
-            String strategy = quality.getCustomProperties().getScoreStrategy();
-            if (strategy != null) {
-                qualityCheck.setScoreStrategy(BDQualityStrategyRes.valueOf(strategy));
+        addIfPresent(qualityCheck.getAdditionalProperties(), "dimension", quality.getDimension());
+        addIfPresent(qualityCheck.getAdditionalProperties(), "unit", quality.getUnit());
+        addIfPresent(qualityCheck.getAdditionalProperties(), "constraint_type", quality.getType());
+        addIfPresent(qualityCheck.getAdditionalProperties(), "quality_engine", quality.getEngine());
+
+        handleQualityCustomProperties(quality, qualityCheck);
+        handleQualityIssuePolicies(quality, qualityCheck);
+        return qualityCheck;
+    }
+
+    private void handleQualityIssuePolicies(Quality quality, QualityCheck qualityCheck) {
+        if (quality.getCustomProperties() == null || CollectionUtils.isEmpty(quality.getCustomProperties().getIssuePolicies())) {
+            return;
+        }
+        for (QualityIssuePolicy qualityIssuePolicy : quality.getCustomProperties().getIssuePolicies()) {
+            BDIssuePolicyRes issuePolicy = new BDIssuePolicyRes();
+            issuePolicy.setName(qualityIssuePolicy.getName());
+            issuePolicy.setPolicyType(BDIssuePolicyType.valueOf(qualityIssuePolicy.getPolicyType()));
+            issuePolicy.setActive(true);
+
+            switch (issuePolicy.getPolicyType()) {
+                case SINGLE_RESULT_SEMAPHORE:
+                    BDIssuePolicyContentSingleResultRes singleResultPolicy = new BDIssuePolicyContentSingleResultRes();
+                    singleResultPolicy.setSemaphores(Lists.newArrayList(BDQualitySemaphoreRes.valueOf(qualityIssuePolicy.getSemaphoreColor())));
+                    issuePolicy.setPolicyContent(singleResultPolicy);
+                    break;
+                case RECURRENT_RESULT_SEMAPHORE:
+                    BDIssuePolicyContentRecurrentResultRes recurrentPolicy = new BDIssuePolicyContentRecurrentResultRes();
+                    recurrentPolicy.setSemaphoresNumber(qualityIssuePolicy.getSemaphoresNumber());
+                    recurrentPolicy.setAutoClose(qualityIssuePolicy.getAutoClose());
+                    recurrentPolicy.setSemaphores(Lists.newArrayList(BDQualitySemaphoreRes.valueOf(qualityIssuePolicy.getSemaphoreColor())));
+                    issuePolicy.setPolicyContent(recurrentPolicy);
+                    break;
+                default:
+                    getUseCaseLogger().warn("Unsupported issue policy type: " + issuePolicy.getPolicyType());
             }
-            Float warningThreshold = quality.getCustomProperties().getScoreWarningThreshold();
-            if (warningThreshold != null) {
-                qualityCheck.setWarningThreshold(BigDecimal.valueOf(warningThreshold));
-            }
-            Float successThreshold = quality.getCustomProperties().getScoreSuccessThreshold();
-            if (successThreshold != null) {
-                qualityCheck.setSuccessThreshold(BigDecimal.valueOf(successThreshold));
-            }
-            boolean isCheckEnabled = quality.getCustomProperties().getCheckEnabled();
-            qualityCheck.setIsEnabled(isCheckEnabled);
+
+            BDIssueRes issueTemplate = new BDIssueRes();
+            issueTemplate.setIssueType(BDIssueTypeRes.ALERT);
+            issueTemplate.setName("Quality Alert - " + issuePolicy.getName());
+            issueTemplate.setIssueStatus(BDIssueStatusRes.TO_DO);
+            issueTemplate.setSeverity(BDIssueSeverityLevelRes.valueOf(qualityIssuePolicy.getSeverity()));
+            issueTemplate.setPriorityOrder(3);
+            qualityIssuePolicy.getAdditionalProperties()
+                    .forEach((propKey, propValue) -> {
+                        if (propKey.startsWith("blindataCustomProp-")) {
+                            issueTemplate.getAdditionalProperties()
+                                    .add(new BDAdditionalPropertiesRes(propKey.replace("blindataCustomProp-", ""), propValue.isTextual() ? propValue.asText() : propValue.toString()));
+                        }
+                    });
+
+            issuePolicy.setIssueTemplate(issueTemplate);
+            qualityCheck.getIssuePolicies().add(issuePolicy);
+        }
+    }
+
+    private void handleQualityCustomProperties(Quality quality, QualityCheck qualityCheck) {
+        if (quality.getCustomProperties() == null) {
+            return;
         }
 
-        //Additional Properties
-        List<BDAdditionalPropertiesRes> qualityCheckAdditionalProperties = qualityCheck.getAdditionalProperties();
-        addIfPresent(qualityCheckAdditionalProperties, "displayName", quality.getCustomProperties().getDisplayName());
-        addIfPresent(qualityCheckAdditionalProperties, "dimension", quality.getDimension());
-        addIfPresent(qualityCheckAdditionalProperties, "unit", quality.getUnit());
-        addIfPresent(qualityCheckAdditionalProperties, "constraint_type", quality.getType());
-        addIfPresent(qualityCheckAdditionalProperties, "quality_engine", quality.getEngine());
+        if (StringUtils.hasText(quality.getCustomProperties().getDisplayName())) {
+            qualityCheck.setName(quality.getCustomProperties().getDisplayName());
+            qualityCheck.getAdditionalProperties().add(new BDAdditionalPropertiesRes("displayName", quality.getCustomProperties().getDisplayName()));
+        }
+
+        String strategy = quality.getCustomProperties().getScoreStrategy();
+        if (strategy != null) {
+            qualityCheck.setScoreStrategy(BDQualityStrategyRes.valueOf(strategy));
+        }
+
+        Float warningThreshold = quality.getCustomProperties().getScoreWarningThreshold();
+        if (warningThreshold != null) {
+            qualityCheck.setWarningThreshold(BigDecimal.valueOf(warningThreshold));
+        }
+
+        Float successThreshold = quality.getCustomProperties().getScoreSuccessThreshold();
+        if (successThreshold != null) {
+            qualityCheck.setSuccessThreshold(BigDecimal.valueOf(successThreshold));
+        }
+
+        boolean isCheckEnabled = quality.getCustomProperties().getCheckEnabled();
+        qualityCheck.setIsEnabled(isCheckEnabled);
+
+        //Handling Blindata Additional Properties
         if (quality.getCustomProperties().getAdditionalProperties() != null) {
             quality.getCustomProperties()
                     .getAdditionalProperties()
                     .forEach((name, value) -> {
                         if (name.startsWith("blindataCustomProp-")) {
-                            qualityCheckAdditionalProperties.add(new BDAdditionalPropertiesRes(name.replace("blindataCustomProp-", ""), value.isTextual() ? value.asText() : value.toString()));
+                            qualityCheck.getAdditionalProperties().add(new BDAdditionalPropertiesRes(name.replace("blindataCustomProp-", ""), value.isTextual() ? value.asText() : value.toString()));
                         }
                     });
         }
-        return qualityCheck;
     }
 
     private boolean isReference(Quality quality) {

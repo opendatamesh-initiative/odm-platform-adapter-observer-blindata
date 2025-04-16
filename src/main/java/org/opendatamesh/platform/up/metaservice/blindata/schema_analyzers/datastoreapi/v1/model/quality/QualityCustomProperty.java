@@ -3,6 +3,9 @@ package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datas
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opendatamesh.dpds.model.core.ComponentBase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class QualityCustomProperty extends ComponentBase {
     private String displayName;
     private String scoreStrategy;
@@ -10,6 +13,7 @@ public class QualityCustomProperty extends ComponentBase {
     private Float scoreSuccessThreshold;
     @JsonProperty("isCheckEnabled")
     private Boolean isCheckEnabled;
+    private List<QualityIssuePolicy> issuePolicies = new ArrayList<>();
     private String refName;
 
     public QualityCustomProperty() {
@@ -62,5 +66,13 @@ public class QualityCustomProperty extends ComponentBase {
 
     public void setRefName(String refName) {
         this.refName = refName;
+    }
+
+    public List<QualityIssuePolicy> getIssuePolicies() {
+        return issuePolicies;
+    }
+
+    public void setIssuePolicies(List<QualityIssuePolicy> issuePolicies) {
+        this.issuePolicies = issuePolicies;
     }
 }

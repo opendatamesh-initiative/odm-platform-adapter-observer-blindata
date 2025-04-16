@@ -10,38 +10,43 @@ public class BDClientConfigs {
     @Autowired
     private BDCredentials bdCredentials;
     @Autowired
-    private BDDataProductClientConfig bdDataProductClientConfig;
+    private BDDataProductConfig bdDataProductConfig;
     @Autowired
     private RestTemplate restTemplate;
 
     @Bean
     public BDDataProductClient bdDataProductClient() {
-        return new BDClientImpl(bdCredentials, bdDataProductClientConfig, restTemplate);
+        return new BDClientImpl(bdCredentials, bdDataProductConfig, restTemplate);
     }
 
     @Bean
     public BDQualityClient bdQualityClient() {
-        return new BDClientImpl(bdCredentials, bdDataProductClientConfig, restTemplate);
+        return new BDClientImpl(bdCredentials, bdDataProductConfig, restTemplate);
+    }
+
+    @Bean
+    public BDIssueCampaignClient bdIssueCampaignClient() {
+        return new BDClientImpl(bdCredentials, bdDataProductConfig, restTemplate);
     }
 
     @Bean
     public BDUserClient bdUserClient() {
-        return new BDClientImpl(bdCredentials, bdDataProductClientConfig, restTemplate);
+        return new BDClientImpl(bdCredentials, bdDataProductConfig, restTemplate);
     }
 
     @Bean
     public BDStewardshipClient bdStewardshipClient() {
-        return new BDClientImpl(bdCredentials, bdDataProductClientConfig, restTemplate);
+        return new BDClientImpl(bdCredentials, bdDataProductConfig, restTemplate);
     }
 
     @Bean
     public BDPolicyEvaluationResultClient bdPolicyEvaluationResultClient() {
-        return new BDClientImpl(bdCredentials, bdDataProductClientConfig, restTemplate);
+        return new BDClientImpl(bdCredentials, bdDataProductConfig, restTemplate);
     }
 
     @Bean
     public BDSemanticLinkingClient bdSemanticLinkingClient() {
-        return new BDClientImpl(bdCredentials, bdDataProductClientConfig, restTemplate);
+        return new BDClientImpl(bdCredentials, bdDataProductConfig, restTemplate);
     }
 
 }

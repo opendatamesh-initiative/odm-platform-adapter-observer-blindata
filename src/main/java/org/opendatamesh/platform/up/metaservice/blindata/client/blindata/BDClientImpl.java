@@ -11,6 +11,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpH
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.Oauth2;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDUploadResultsMessage;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.*;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignsSearchOptions;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadRes;
@@ -24,16 +26,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, BDUserClient, BDPolicyEvaluationResultClient, BDSemanticLinkingClient, BDQualityClient {
+public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, BDUserClient, BDPolicyEvaluationResultClient, BDSemanticLinkingClient, BDQualityClient, BDIssueCampaignClient {
 
     private final BDCredentials credentials;
-    private final BDDataProductClientConfig dataProductClientConfig;
+    private final BDDataProductConfig dataProductClientConfig;
     private final RestUtils restUtils;
     private final RestUtils asyncRestUtils;
 
     public BDClientImpl(
             BDCredentials bdCredentials,
-            BDDataProductClientConfig dataProductClientConfig,
+            BDDataProductConfig dataProductClientConfig,
             RestTemplate restTemplate
     ) {
         this.credentials = bdCredentials;
@@ -370,13 +372,48 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     }
 
     @Override
-    public BDUploadResultsMessage uploadQualityChecks(BDQualityUploadRes qualityUpload) {
+    public BDUploadResultsMessage uploadQuality(BDQualityUploadRes qualityUpload) {
         try {
             return restUtils.genericPost(
                     String.format("%s/api/v1/data-quality/suites/*/import-objects%s", credentials.getBlindataUrl(), dataProductClientConfig.isAssetsCleanup() ? "?cleanup=true" : ""),
                     null,
                     qualityUpload,
                     BDUploadResultsMessage.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Optional<BDIssueCampaignRes> getIssueCampaign(String campaignName) {
+        BDIssueCampaignsSearchOptions searchOptions = new BDIssueCampaignsSearchOptions();
+        searchOptions.setName(campaignName);
+        try {
+            return restUtils.getPage(
+                    String.format("%s/api/v1/issue-management/campaigns", credentials.getBlindataUrl()),
+                    null,
+                    Pageable.ofSize(1),
+                    searchOptions,
+                    BDIssueCampaignRes.class
+            ).stream().findFirst();
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public BDIssueCampaignRes createCampaign(BDIssueCampaignRes newIssueCampaign) {
+        try {
+            return restUtils.create(
+                    String.format("%s/api/v1/issue-management/campaigns", credentials.getBlindataUrl()),
+                    null,
+                    newIssueCampaign,
+                    BDIssueCampaignRes.class
             );
         } catch (ClientException e) {
             throw new BlindataClientException(e.getCode(), e.getResponseBody());

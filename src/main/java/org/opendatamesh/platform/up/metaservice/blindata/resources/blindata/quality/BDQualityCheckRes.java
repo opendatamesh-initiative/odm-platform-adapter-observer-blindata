@@ -1,5 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAdditionalPropertiesRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalFieldRes;
@@ -90,10 +92,12 @@ public class BDQualityCheckRes {
         this.successThreshold = successThreshold;
     }
 
+    @JsonGetter("isEnabled")
     public Boolean getEnabled() {
         return isEnabled;
     }
 
+    @JsonSetter("isEnabled")
     public void setEnabled(Boolean enabled) {
         isEnabled = enabled;
     }
