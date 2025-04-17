@@ -1,8 +1,8 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload;
 
 import org.opendatamesh.dpds.model.DataProductVersion;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductPortAssetDetailRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductPortAssetDetailRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_removal;
 
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 
 import java.util.Optional;
 

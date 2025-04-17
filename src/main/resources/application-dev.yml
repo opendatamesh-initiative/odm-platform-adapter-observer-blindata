@@ -4,9 +4,9 @@ spring:
 blindata:
   url: http://localhost:3000
   user: "owner@default.blindata.io"
-  password: "owner123"
-  tenantUUID: "83471577-3921-48ed-bd8f-fde278aa0449"
-  roleUuid: "bcb001b7-58ea-43df-8ac4-db28f4b6c262"
+  password: ""
+  tenantUUID: ""
+  roleUuid: ""
   validator:
     active: true
     policyEngine:
@@ -24,6 +24,7 @@ blindata:
       activeUseCases:
         - DATA_PRODUCT_UPLOAD
         - DATA_PRODUCT_VERSION_UPLOAD
+        - QUALITY_UPLOAD
         - STAGES_UPLOAD
         - POLICIES_UPLOAD
     - eventType: DATA_PRODUCT_ACTIVITY_COMPLETED

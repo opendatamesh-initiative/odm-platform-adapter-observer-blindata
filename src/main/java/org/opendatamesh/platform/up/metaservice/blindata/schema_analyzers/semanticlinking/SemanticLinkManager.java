@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking;
 
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDPhysicalEntityRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
 
 import java.util.Map;
 

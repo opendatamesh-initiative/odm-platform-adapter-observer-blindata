@@ -1,6 +1,5 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.ActivityEventState;
@@ -24,8 +23,7 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory, U
     private BDDataProductClient bdDataProductClient;
     @Autowired
     private DataProductPortAssetAnalyzer dataProductPortAssetAnalyzer;
-    @Autowired
-    private ObjectMapper objectMapper;
+
     @Autowired
     private BlindataProperties blindataProperties;
 

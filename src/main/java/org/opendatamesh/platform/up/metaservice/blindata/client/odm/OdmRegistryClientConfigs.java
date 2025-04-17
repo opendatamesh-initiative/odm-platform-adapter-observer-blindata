@@ -45,7 +45,7 @@ public class OdmRegistryClientConfigs {
                 }
 
                 @Override
-                public Optional<OdmExternalComponentResource> getApi(String identifier) {
+                public Optional<JsonNode> getApi(String identifier) {
                     log.warn("getApi called but registry client is disabled. Returning optional.empty() for API with id: {}.", identifier);
                     return Optional.empty();
                 }
