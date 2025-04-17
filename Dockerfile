@@ -1,6 +1,6 @@
 FROM amazoncorretto:11-alpine-jdk
 
-COPY observer-blindata-server/target/odm-platform-adapter-observer-blindata-server-*.jar ./application.jar
+COPY target/odm-platform-adapter-observer-blindata-*.jar ./application.jar
 ENV JAVA_OPTS=""
 ENV SPRING_PROPS=""
 ENV PROFILES_ACTIVE="docker"

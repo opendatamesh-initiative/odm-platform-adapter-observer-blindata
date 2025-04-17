@@ -35,6 +35,26 @@
         <url>scm:git:git@github.com:opendatamesh-initiative/odm-platform-adapter-observer-blindata</url>
     </scm>
 
+    <profiles>
+        <profile>
+            <id>github</id>
+            <activation>
+                <property>
+                    <name>GitHubPackages</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub Packages</name>
+                    <url>https://maven.pkg.github.com/opendatamesh-initiative/odm-platform-adapter-observer-blindata
+                    </url>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
+
     <properties>
         <java.version>11</java.version>
         <maven.compiler.source>11</maven.compiler.source>
