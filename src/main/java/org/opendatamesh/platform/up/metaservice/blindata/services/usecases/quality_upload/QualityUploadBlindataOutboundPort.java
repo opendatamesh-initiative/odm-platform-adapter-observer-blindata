@@ -11,7 +11,7 @@ import java.util.Optional;
 
 interface QualityUploadBlindataOutboundPort {
 
-    BDUploadResultsMessage saveQualityDefinitions(BDQualitySuiteRes qualitySuite, List<QualityCheck> qualityChecks);
+    BDUploadResultsMessage uploadQuality(BDQualitySuiteRes qualitySuite, List<QualityCheck> qualityChecks);
 
     Optional<BDIssueCampaignRes> findIssueCampaign(String campaignName);
 

@@ -22,6 +22,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.excep
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,7 +66,7 @@ public class QualityUploadTest {
         when(blindataOutboundPort.findIssueCampaign(any())).thenReturn(Optional.empty());
         when(blindataOutboundPort.createIssueCampaign(any()))
                 .thenAnswer(invocation -> invocation.getArgument(0));
-        when(blindataOutboundPort.saveQualityDefinitions(any(), any())).thenReturn(new BDUploadResultsMessage());
+        when(blindataOutboundPort.uploadQuality(any(), any())).thenReturn(new BDUploadResultsMessage());
 
         new QualityUpload(blindataOutboundPort, odmOutboundPort).execute();
 
@@ -78,7 +79,7 @@ public class QualityUploadTest {
         ArgumentCaptor<List<QualityCheck>> qualityChecksArg = ArgumentCaptor.forClass(List.class);
 
         verify(blindataOutboundPort, times(1))
-                .saveQualityDefinitions(qualitySuiteArg.capture(), qualityChecksArg.capture());
+                .uploadQuality(qualitySuiteArg.capture(), qualityChecksArg.capture());
 
         QualityExpectedResult expectedQualityUpload = objectMapper.readValue(Resources.toByteArray(getClass().getResource("quality_upload_expected_results.json")), QualityExpectedResult.class);
 
@@ -87,7 +88,11 @@ public class QualityUploadTest {
                 .isEqualTo(expectedQualityUpload.getQualitySuite());
 
         assertThat(qualityChecksArg.getValue()).hasSize(2);
-        assertThat(qualityChecksArg.getValue().stream().flatMap(qualityCheck -> qualityCheck.getIssuePolicies().stream()).collect(Collectors.toList()))
+        Set<String> qualityChecksCodes = qualityChecksArg.getValue().stream().map(QualityCheck::getCode).collect(Collectors.toSet());
+        assertThat(qualityChecksCodes).containsExactlyInAnyOrderElementsOf(expectedQualityUpload.getQualityChecksCodes());
+
+        List<BDIssuePolicyRes> issuePolicies = qualityChecksArg.getValue().stream().flatMap(qualityCheck -> qualityCheck.getIssuePolicies().stream()).collect(Collectors.toList());
+        assertThat(issuePolicies)
                 .usingRecursiveComparison()
                 .ignoringCollectionOrder()
                 .ignoringFields("policyContent")
@@ -98,8 +103,10 @@ public class QualityUploadTest {
     static class QualityExpectedResult {
         private BDQualitySuiteRes qualitySuite;
         private List<BDIssuePolicyRes> issuePolicies;
+        private Set<String> qualityChecksCodes;
 
         public QualityExpectedResult() {
+            //DO NOTHING
         }
 
         public BDQualitySuiteRes getQualitySuite() {
@@ -117,6 +124,14 @@ public class QualityUploadTest {
 
         public void setIssuePolicies(List<BDIssuePolicyRes> issuePolicies) {
             this.issuePolicies = issuePolicies;
+        }
+
+        public Set<String> getQualityChecksCodes() {
+            return qualityChecksCodes;
+        }
+
+        public void setQualityChecksCodes(Set<String> qualityChecksCodes) {
+            this.qualityChecksCodes = qualityChecksCodes;
         }
     }
 }

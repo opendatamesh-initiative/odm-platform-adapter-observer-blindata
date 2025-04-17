@@ -25,6 +25,11 @@ its catalog remains aligned.
         * [Data Store Api](#data-store-api)
             * [From JSONSchema to Physical Entities](#from-jsonschema-to-physical-entities)
             * [From JSONSchema to Physical Field](#from-jsonschema-to-physical-field)
+            * [From JSONSchema to Blindata Quality Checks](#from-jsonschema-to-blindata-quality-checks)
+                * [Quality Suites](#quality-suites)
+                * [Quality Checks](#quality-checks)
+                * [Issue Policies](#issue-policies)
+                * [Issue Campaigns](#issue-campaigns)
         * [AsyncApi](#asyncapi)
             * [From Avro to Physical Fields](#from-avro-to-physical-fields)
             * [From Json Schema to Physical Fields](#from-json-schema-to-physical-fields)
@@ -392,13 +397,13 @@ Physical fields are mapped from "properties" field inside each entity definition
 | `schema.tables[n].definition.properties.<key>.displayName`   | add.prop                | Human readable name of the object    | -         |
 | `schema.tables[n].definition.properties.<key>.description`   | add.prop                | Description of the object            | -         |
 
-#### From JSONSchema to Quality Checks
-
-## Mapping Schema Annotations to Blindata Quality Checks
+#### From JSONSchema to Blindata Quality Checks
 
 This section explains how schema annotations are mapped to Blindata Quality Checks.  
 For more details about the Blindata Quality module, refer to
 the [official documentation](https://help.blindata.io/data-quality/).
+
+##### Quality Suites
 
 When any quality annotation is present in the data product descriptor, a **Quality Suite** is automatically created with
 the following values:
@@ -409,7 +414,9 @@ the following values:
 
 All quality checks derived from the annotations are included in this Quality Suite.
 
-### Placement of Quality Annotations
+##### Quality Checks
+
+**Placement of Quality Annotations**
 
 The `quality` property can be defined at two different levels within the schema:
 
@@ -419,28 +426,60 @@ The `quality` property can be defined at two different levels within the schema:
 - `schema.tables[n].definition.properties.<key>.quality`  
   → The quality check will be associated with the corresponding **Physical Field**.
 
-### Structure of the `quality` Property
+**Structure of the `quality` Property**
 
 The `quality` property is an array consisting of the following objects:
 
-| Quality Object Property                            | Quality Check Property                  | Description                                                                                                                                                  | Mandatory |
-|----------------------------------------------------|-----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
-| `name`                                             | code, name                              | Quality check code, KQI check name (uses `customProperties.displayName` if not specified)                                                                    | ✔️        |
-| `description`                                      | description                             | KQI description                                                                                                                                              |           |
-| `dimension`                                        | additionalProperty: "Quality Dimension" | If present, mapped into a Blindata Custom Property named "Quality Dimension", otherwise ignored                                                              |           |
-| `unit`                                             | additionalProperty: "Unit"              | If present, mapped into a Blindata Custom Property named "Unit", otherwise ignored                                                                           |           |
-| `type`                                             | additionalProperty: "Constraint Type"   | If present, mapped into a Blindata Custom Property named "Constraint Type", otherwise ignored                                                                |           |
-| `engine`                                           | additionalProperty: "Quality Engine"    | If present, mapped into a Blindata Custom Property named "Quality Engine", otherwise ignored                                                                 |           |
-| `mustBeGreaterOrEqualTo`                           | scoreLeftValue                          | KQI Lowest Acceptable Value (used only for score strategies: MINIMUM, DISTANCE)                                                                              |           |
-| `mustBeLessOrEqualTo`                              | scoreRightValue                         | KQI Highest Acceptable Value (used only for score strategies: MAXIMUM, DISTANCE)                                                                             |           |
-| `mustBe`                                           | expectedValue                           | KQI Expected Value (used only for score strategies: MAXIMUM, MINIMUM, DISTANCE)                                                                              |           |
-| `customProperties.displayName`                     | name                                    | KQI name                                                                                                                                                     |           |
-| `customProperties.scoreStrategy`                   | scoreStrategy                           | KQI score strategy                                                                                                                                           |           |
-| `customProperties.scoreWarningThreshold`           | warningThreshold                        | KQI warning threshold                                                                                                                                        |           |
-| `customProperties.scoreSuccessThreshold`           | successThreshold                        | KQI success threshold                                                                                                                                        |           |
-| `customProperties.isCheckEnabled`                  | enabled (default false)                 | KQI Is Check Enabled                                                                                                                                         |           |
-| `customProperties.blindataCustomProp-propertyName` | additionalProperty: "propertyName"      | If present, all the properties that starts with `blindataCustomProp-` are mapped into Blindata Custom Properties. E.g. `blindataCustomProp-IssueOwner`       |           |
-| `customProperties.refName`                         |                                         | Use this property to reference another quality definition code. The associated physical field or physical entity will then be included in the quality check. |           |
+| Quality Object Property                            | Quality Check Property                | Description                                                                                                                                                                                                         | Mandatory |
+|----------------------------------------------------|---------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `name`                                             | code, name                            | The quality check code will be a concatenation of the code of its Quality Suite and the vale of this property. KQI check name (uses `customProperties.displayName` if not specified)                                | ✔️        |
+| `description`                                      | description                           | KQI description                                                                                                                                                                                                     |           |
+| `dimension`                                        | additionalProperty: "dimension"       | If present, mapped into a Blindata Additional Property named "dimension", otherwise ignored                                                                                                                         |           |
+| `unit`                                             | additionalProperty: "unit"            | If present, mapped into a Blindata Additional Property named "unit", otherwise ignored                                                                                                                              |           |
+| `type`                                             | additionalProperty: "constraint_type" | If present, mapped into a Blindata Additional Property named "constraint_type", otherwise ignored                                                                                                                   |           |
+| `engine`                                           | additionalProperty: "quality_engine"  | If present, mapped into a Blindata Additional Property named "quality_engine", otherwise ignored                                                                                                                    |           |
+| `mustBeGreaterOrEqualTo`                           | scoreLeftValue                        | KQI Lowest Acceptable Value (used only for score strategies: MINIMUM, DISTANCE)                                                                                                                                     |           |
+| `mustBeLessOrEqualTo`                              | scoreRightValue                       | KQI Highest Acceptable Value (used only for score strategies: MAXIMUM, DISTANCE)                                                                                                                                    |           |
+| `mustBe`                                           | expectedValue                         | KQI Expected Value (used only for score strategies: MAXIMUM, MINIMUM, DISTANCE)                                                                                                                                     |           |
+| `customProperties.displayName`                     | name                                  | KQI name                                                                                                                                                                                                            |           |
+| `customProperties.scoreStrategy`                   | scoreStrategy                         | KQI score strategy                                                                                                                                                                                                  |           |
+| `customProperties.scoreWarningThreshold`           | warningThreshold                      | KQI warning threshold                                                                                                                                                                                               |           |
+| `customProperties.scoreSuccessThreshold`           | successThreshold                      | KQI success threshold                                                                                                                                                                                               |           |
+| `customProperties.isCheckEnabled`                  | isEnabled (default true)              | KQI Is Check Enabled                                                                                                                                                                                                |           |
+| `customProperties.blindataCustomProp-propertyName` | additionalProperty: "propertyName"    | If present, all the properties that starts with `blindataCustomProp-` are mapped into Blindata Additional Properties. E.g. `blindataCustomProp-IssueOwner` is mapped into an additional property named `IssueOwner` |           |
+| `customProperties.refName`                         |                                       | Use this property to reference another quality definition code. The associated physical field or physical entity will then be included in the quality check.                                                        |           |
+
+##### Issue Policies
+
+This section explains how schema annotations are mapped to Blindata Issue Policies.  
+For more details about the Blindata Issue Management module, refer to
+the [official documentation](https://help.blindata.io/collaboration/issue-management/).
+
+**Placement of Issue Policy Annotations**
+
+The `issuePolicies` property can be defined under `[...].quality[n].customProperties.issuePolicies`.
+
+**Structure of the `issuePolicies` Property**
+
+The `issuePolicies` property is an array consisting of the following objects:
+
+| Issue Policy Object Property      | Issue Policy Property                      | Description                                                                                                                                                                                     | Mandatory |
+|-----------------------------------|--------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `name`                            | name                                       | The name of the Issue Policy                                                                                                                                                                    | ✔️        |
+| `policyType`                      | policyType                                 | The type of the Issue Policy. Must be `SINGLE_RESULT_SEMAPHORE` of `RECURRENT_RESULT_SEMAPHORE`                                                                                                 | ✔️        |
+| `semaphoreColor`                  | semaphores (default `RED`)                 | The color of the KQI semaphore that triggers the policy. Must be `RED` or `YELLOW` or `GREEN`                                                                                                   | ️         |
+| `semaphoresNumber`                | policyContent.semaphoresNumber (default 1) | The number of semaphores after which a new Issue is generated by the Policy. Needed only for `RECURRENT_RESULT_SEMAPHORE`.                                                                      | ️         |
+| `autoClose`                       | policyContent.autoClose (default `false`)  | If `true` the generated issue is closed if a result is detected with a semaphore different from the one selected by the semaphoreColor property.  Needed only for `RECURRENT_RESULT_SEMAPHORE`. | ️         |
+| `severity`                        | issueTemplate.severity (default `INFO`)    | The severity of the generated Issue. Can be one of `BLOCKER`, `CRITICAL`, `MAJOR`, `MINOR`, `INFO`.                                                                                             | ️         |
+| `blindataCustomProp-propertyName` | issueTemplate.additionalProperties         | All the properties that start with `blindataCustomProp-` will be the`additionalProperties` of the generated issue.                                                                              | ️         |
+| -                                 | issueTemplate.priorityOrder                | The priority order of the generated Issue is set to `3` as default.                                                                                                                             | ️         |
+| -                                 | issueTemplate.assignee                     | The default assignee of the generated Issue is taken from the data product owner, if present.                                                                                                   | ️         |
+
+##### Issue Campaigns
+
+An Issue Campaign is generated for each data product. All the issues generated by the automated Issue Policies will be
+part of this Campaign.
+The Campaign name is `Quality - <domainName> - <dataProductName>`.
 
 ### AsyncApi
 
@@ -1515,7 +1554,10 @@ blindata:
   enableAsync: (true/false, default false) If enabled, the observer will use the asynchronous endpoints of Blindata API. This allows
     to process big data product descriptors without failing due to connection timeouts.
   dataProducts:
-    assetsCleanup: (true/false, default true) Enables or disables the cleanup of deprecated assets associated with data product ports. Additionally, when set to true, any quality checks defined in the Data Product Quality Suite but no longer listed in the quality section of the data product descriptor will also be automatically disabled. 
+    assetsCleanup: (true/false, default true) Enables or disables the cleanup of deprecated assets associated with data product ports. Additionally, when set to true, any quality checks defined in the Data Product Quality Suite but no longer listed in the quality section of the data product descriptor will also be automatically disabled.
+  issueManagement:
+    policies:
+      active: (true/false, default true) If set to false, all the issue policies that are uploaded on Blindata are set to disabled.
 ```
 
 ### ODM configuration

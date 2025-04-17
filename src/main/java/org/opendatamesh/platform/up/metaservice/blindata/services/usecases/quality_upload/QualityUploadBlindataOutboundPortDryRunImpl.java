@@ -18,7 +18,7 @@ class QualityUploadBlindataOutboundPortDryRunImpl implements QualityUploadBlinda
     }
 
     @Override
-    public BDUploadResultsMessage saveQualityDefinitions(BDQualitySuiteRes qualitySuite, List<QualityCheck> qualityChecks) {
+    public BDUploadResultsMessage uploadQuality(BDQualitySuiteRes qualitySuite, List<QualityCheck> qualityChecks) {
         return new BDUploadResultsMessage();
     }
 

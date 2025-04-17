@@ -112,6 +112,7 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
             qualityCheck.setReference(true);
             return qualityCheck;
         }
+        qualityCheck.setIsEnabled(true); //Default, overwritten if customProperty field is present
         qualityCheck.setCode(quality.getName());
         qualityCheck.setName(quality.getName());
         qualityCheck.setDescription(quality.getDescription());
@@ -146,6 +147,10 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
             issuePolicy.setPolicyType(BDIssuePolicyType.valueOf(qualityIssuePolicy.getPolicyType()));
             issuePolicy.setActive(true);
 
+            if (!StringUtils.hasText(qualityIssuePolicy.getSemaphoreColor())) {
+                qualityIssuePolicy.setSemaphoreColor(BDQualitySemaphoreRes.RED.name());
+            }
+
             switch (issuePolicy.getPolicyType()) {
                 case SINGLE_RESULT_SEMAPHORE:
                     BDIssuePolicyContentSingleResultRes singleResultPolicy = new BDIssuePolicyContentSingleResultRes();
@@ -154,8 +159,8 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
                     break;
                 case RECURRENT_RESULT_SEMAPHORE:
                     BDIssuePolicyContentRecurrentResultRes recurrentPolicy = new BDIssuePolicyContentRecurrentResultRes();
-                    recurrentPolicy.setSemaphoresNumber(qualityIssuePolicy.getSemaphoresNumber());
-                    recurrentPolicy.setAutoClose(qualityIssuePolicy.getAutoClose());
+                    recurrentPolicy.setSemaphoresNumber(qualityIssuePolicy.getSemaphoresNumber() == null ? 1 : qualityIssuePolicy.getSemaphoresNumber());
+                    recurrentPolicy.setAutoClose(qualityIssuePolicy.getAutoClose() == null ? false : qualityIssuePolicy.getAutoClose());
                     recurrentPolicy.setSemaphores(Lists.newArrayList(BDQualitySemaphoreRes.valueOf(qualityIssuePolicy.getSemaphoreColor())));
                     issuePolicy.setPolicyContent(recurrentPolicy);
                     break;
@@ -167,7 +172,7 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
             issueTemplate.setIssueType(BDIssueTypeRes.ALERT);
             issueTemplate.setName("Quality Alert - " + issuePolicy.getName());
             issueTemplate.setIssueStatus(BDIssueStatusRes.TO_DO);
-            issueTemplate.setSeverity(BDIssueSeverityLevelRes.valueOf(qualityIssuePolicy.getSeverity()));
+            issueTemplate.setSeverity(StringUtils.hasText(qualityIssuePolicy.getSeverity()) ? BDIssueSeverityLevelRes.valueOf(qualityIssuePolicy.getSeverity()) : BDIssueSeverityLevelRes.INFO);
             issueTemplate.setPriorityOrder(3);
             qualityIssuePolicy.getAdditionalProperties()
                     .forEach((propKey, propValue) -> {

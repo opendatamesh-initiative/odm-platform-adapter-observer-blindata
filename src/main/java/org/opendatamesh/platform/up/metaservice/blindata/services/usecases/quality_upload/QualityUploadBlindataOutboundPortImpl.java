@@ -35,7 +35,7 @@ class QualityUploadBlindataOutboundPortImpl implements QualityUploadBlindataOutb
     }
 
     @Override
-    public BDUploadResultsMessage saveQualityDefinitions(BDQualitySuiteRes qualitySuite, List<QualityCheck> qualityChecks) {
+    public BDUploadResultsMessage uploadQuality(BDQualitySuiteRes qualitySuite, List<QualityCheck> qualityChecks) {
         List<BDQualityCheckRes> bdQualityChecks = qualityChecks.stream().map(qualityCheckMapper::toBlindataRes).collect(Collectors.toList());
         Map<String, List<BDIssuePolicyRes>> issuePolicies = new HashMap<>();
         qualityChecks.forEach(qualityCheck -> {

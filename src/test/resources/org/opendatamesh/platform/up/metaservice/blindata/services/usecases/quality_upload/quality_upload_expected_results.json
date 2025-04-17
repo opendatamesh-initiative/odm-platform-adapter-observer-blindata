@@ -61,5 +61,9 @@
       "createdAt": null,
       "updatedAt": null
     }
+  ],
+  "qualityChecksCodes": [
+    "testDomain::test - ScambiMWh ExpectColumnValuesToBeBetween",
+    "testDomain::test - Macrozona ExpectColumnValuesToBeInSet"
   ]
 }

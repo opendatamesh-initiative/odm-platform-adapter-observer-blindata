@@ -59,13 +59,20 @@ class QualityUpload implements UseCase {
             Optional<BDShortUserRes> dataProductOwner = getDataProductOwner(dataProductVersion);
             updateIssuePoliciesOnQualityChecks(qualityChecks, issueCampaign, dataProductOwner);
 
-            BDUploadResultsMessage uploadResult = blindataOutboundPort.saveQualityDefinitions(qualitySuite, qualityChecks);
+            addQualitySuiteCodeToQualityChecksCode(qualitySuite, qualityChecks);
+            BDUploadResultsMessage uploadResult = blindataOutboundPort.uploadQuality(qualitySuite, qualityChecks);
 
             getUseCaseLogger().info(String.format("%s Quality Checks created: %s updated: %s discarded: %s", USE_CASE_PREFIX, uploadResult.getRowCreated(), uploadResult.getRowUpdated(), uploadResult.getRowDiscarded()));
             if (StringUtils.hasText(uploadResult.getMessage())) {
                 getUseCaseLogger().warn(String.format("%s Quality Checks upload error: %s", USE_CASE_PREFIX, uploadResult.getMessage()));
             }
         });
+    }
+
+    private void addQualitySuiteCodeToQualityChecksCode(BDQualitySuiteRes qualitySuite, List<QualityCheck> qualityChecks) {
+        qualityChecks.forEach(qualityCheck -> qualityCheck.setCode(
+                String.format("%s - %s", qualitySuite.getCode(), qualityCheck.getCode())
+        ));
     }
 
     private Optional<BDShortUserRes> getDataProductOwner(DataProductVersion dataProductVersion) {
