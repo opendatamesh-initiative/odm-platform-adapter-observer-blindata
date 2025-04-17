@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opendatamesh.dpds.model.DataProductVersion;
 import org.opendatamesh.dpds.model.interfaces.Port;
 import org.opendatamesh.dpds.model.interfaces.Promises;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDUploadResultsMessage;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssuePolicyRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualitySuiteRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.quality.QualityCheck;
@@ -66,7 +66,7 @@ public class QualityUploadTest {
         when(blindataOutboundPort.findIssueCampaign(any())).thenReturn(Optional.empty());
         when(blindataOutboundPort.createIssueCampaign(any()))
                 .thenAnswer(invocation -> invocation.getArgument(0));
-        when(blindataOutboundPort.uploadQuality(any(), any())).thenReturn(new BDUploadResultsMessage());
+        when(blindataOutboundPort.uploadQuality(any(), any())).thenReturn(new BDQualityUploadResultsRes());
 
         new QualityUpload(blindataOutboundPort, odmOutboundPort).execute();
 

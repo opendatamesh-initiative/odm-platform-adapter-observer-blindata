@@ -9,7 +9,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientResourceMappingException;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpHeader;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.Oauth2;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDUploadResultsMessage;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignsSearchOptions;
@@ -293,13 +293,13 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     }
 
     @Override
-    public BDUploadResultsMessage createPolicyEvaluationRecords(BDPolicyEvaluationRecords evaluationRecords) throws BlindataClientException, BlindataClientResourceMappingException {
+    public BDPolicyResultsUploadResultsRes createPolicyEvaluationRecords(BDPolicyEvaluationRecords evaluationRecords) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
             return restUtils.genericPost(
                     String.format("%s/api/v1/governance-policies/policy-evaluations/*/upload", credentials.getBlindataUrl()),
                     null,
                     evaluationRecords,
-                    BDUploadResultsMessage.class
+                    BDPolicyResultsUploadResultsRes.class
             );
         } catch (ClientException e) {
             throw new BlindataClientException(e.getCode(), e.getResponseBody());
@@ -372,13 +372,13 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
     }
 
     @Override
-    public BDUploadResultsMessage uploadQuality(BDQualityUploadRes qualityUpload) {
+    public BDQualityUploadResultsRes uploadQuality(BDQualityUploadRes qualityUpload) {
         try {
             return restUtils.genericPost(
                     String.format("%s/api/v1/data-quality/suites/*/import-objects%s", credentials.getBlindataUrl(), dataProductClientConfig.isAssetsCleanup() ? "?cleanup=true" : ""),
                     null,
                     qualityUpload,
-                    BDUploadResultsMessage.class
+                    BDQualityUploadResultsRes.class
             );
         } catch (ClientException e) {
             throw new BlindataClientException(e.getCode(), e.getResponseBody());

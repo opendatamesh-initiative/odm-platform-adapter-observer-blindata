@@ -1,9 +1,9 @@
-package org.opendatamesh.platform.up.metaservice.blindata.resources.blindata;
+package org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BDUploadResultsMessage {
+public class BDQualityUploadResultsRes {
     private String message;
     private int rowCreated;
     private int rowUpdated;

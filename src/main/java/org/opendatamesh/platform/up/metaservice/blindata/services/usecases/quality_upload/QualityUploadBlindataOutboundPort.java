@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload;
 
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDUploadResultsMessage;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualitySuiteRes;
@@ -11,7 +11,7 @@ import java.util.Optional;
 
 interface QualityUploadBlindataOutboundPort {
 
-    BDUploadResultsMessage uploadQuality(BDQualitySuiteRes qualitySuite, List<QualityCheck> qualityChecks);
+    BDQualityUploadResultsRes uploadQuality(BDQualitySuiteRes qualitySuite, List<QualityCheck> qualityChecks);
 
     Optional<BDIssueCampaignRes> findIssueCampaign(String campaignName);
 

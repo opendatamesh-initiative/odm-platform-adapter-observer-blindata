@@ -4,7 +4,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDIssue
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDIssueManagementConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDQualityClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDUserClient;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDUploadResultsMessage;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssuePolicyRes;
@@ -35,7 +35,7 @@ class QualityUploadBlindataOutboundPortImpl implements QualityUploadBlindataOutb
     }
 
     @Override
-    public BDUploadResultsMessage uploadQuality(BDQualitySuiteRes qualitySuite, List<QualityCheck> qualityChecks) {
+    public BDQualityUploadResultsRes uploadQuality(BDQualitySuiteRes qualitySuite, List<QualityCheck> qualityChecks) {
         List<BDQualityCheckRes> bdQualityChecks = qualityChecks.stream().map(qualityCheckMapper::toBlindataRes).collect(Collectors.toList());
         Map<String, List<BDIssuePolicyRes>> issuePolicies = new HashMap<>();
         qualityChecks.forEach(qualityCheck -> {
