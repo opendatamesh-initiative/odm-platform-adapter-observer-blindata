@@ -3,6 +3,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.notificatione
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_removal.DataProductRemovalFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload.DataProductUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload.DataProductPortsAndAssetsUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_align.PoliciesAlignFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload.PoliciesUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload.QualityUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.stages_upload.StagesUploadFactory;
@@ -30,6 +31,8 @@ public class NotificationEventManagerConfiguration {
     @Autowired
     private QualityUploadFactory qualityUploadFactory;
     @Autowired
+    private PoliciesAlignFactory policiesAlignFactory;
+    @Autowired
     private PoliciesUploadFactory policiesUploadFactory;
     @Autowired
     private DataProductRemovalFactory dataProductRemovalFactory;
@@ -53,6 +56,7 @@ public class NotificationEventManagerConfiguration {
                     eventHandler.getActiveUseCases().contains("DATA_PRODUCT_VERSION_UPLOAD") ? dataProductPortsAndAssetsUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("QUALITY_UPLOAD") ? qualityUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("STAGES_UPLOAD") ? stagesUploadFactory : null,
+                    eventHandler.getActiveUseCases().contains("POLICIES_ALIGN") ? policiesAlignFactory : null,
                     eventHandler.getActiveUseCases().contains("POLICIES_UPLOAD") ? policiesUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("DATA_PRODUCT_REMOVAL") ? dataProductRemovalFactory : null,
                     eventHandler.getEventType(),

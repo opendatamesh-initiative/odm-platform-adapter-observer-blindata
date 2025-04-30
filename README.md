@@ -91,6 +91,10 @@ The observer can subscribe to notification events whit two level of granularity:
     - DATA_PRODUCT_TASK_CREATED
     - DATA_PRODUCT_TASK_STARTED
     - DATA_PRODUCT_TASK_COMPLETED
+    - POLICY_CREATED
+    - POLICY_UPDATED
+    - POLICY_DELETED
+
 2. The event content using a SpeL expression.
    E.g. An expression to capture an event regarding a data product ( match done by its fullyQualifiedName ).
    ```
@@ -140,6 +144,12 @@ These are:
     - Supported event types:
         - DATA_PRODUCT_VERSION_CREATED
         - DATA_PRODUCT_ACTIVITY_COMPLETED
+7. **POLICIES_ALIGN**. Aligns Blindata Governance Policy Suites, Policies and Policies Implementations using Odm Policy
+   External Context field.
+    - Supported Event Types
+        - POLICY_CREATED: creates the Suite, Policy and Implementation if not present.
+        - POLICY_UPDATED: updates the Suite, Policy and Implementation.
+        - POLICY_DELETED: deletes only the Policy and its Implementation if present.
 
 ### Configuration
 

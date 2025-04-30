@@ -9,13 +9,13 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientResourceMappingException;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpHeader;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.Oauth2;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignsSearchOptions;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, BDUserClient, BDPolicyEvaluationResultClient, BDSemanticLinkingClient, BDQualityClient, BDIssueCampaignClient {
+public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, BDUserClient, BDPolicyEvaluationResultClient, BDSemanticLinkingClient, BDQualityClient, BDIssueCampaignClient, BDGovernancePolicyClient, BDGovernancePolicySuiteClient, BDGovernancePolicyImplementationClient {
 
     private final BDCredentials credentials;
     private final BDDataProductConfig dataProductClientConfig;
@@ -414,6 +414,201 @@ public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, B
                     null,
                     newIssueCampaign,
                     BDIssueCampaignRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Page<BDPolicyRes> getPolicies(BDPoliciesSearchOptions filters, Pageable pageable) {
+        try {
+            return restUtils.getPage(
+                    String.format("%s/api/v1/governance-policies", credentials.getBlindataUrl()),
+                    null,
+                    pageable,
+                    filters,
+                    BDPolicyRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public BDPolicyRes createPolicy(BDPolicyRes policy) {
+        try {
+            return restUtils.create(
+                    String.format("%s/api/v1/governance-policies", credentials.getBlindataUrl()),
+                    null,
+                    policy,
+                    BDPolicyRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public BDPolicyRes putPolicyRes(BDPolicyRes policy) {
+        try {
+            return restUtils.put(
+                    String.format("%s/api/v1/governance-policies/{id}", credentials.getBlindataUrl()),
+                    null,
+                    policy.getUuid(),
+                    policy,
+                    BDPolicyRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void deletePolicy(String policyUuid) {
+        try {
+            restUtils.delete(
+                    String.format("%s/api/v1/governance-policies/{id}", credentials.getBlindataUrl()),
+                    null,
+                    policyUuid
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Page<BDPolicySuiteRes> getPolicySuites(BDPolicySuiteSearchOptions filters, Pageable pageable) {
+        try {
+            return restUtils.getPage(
+                    String.format("%s/api/v1/governance-policy-suites", credentials.getBlindataUrl()),
+                    null,
+                    pageable,
+                    filters,
+                    BDPolicySuiteRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public BDPolicySuiteRes createPolicySuite(BDPolicySuiteRes policySuite) {
+        try {
+            return restUtils.create(
+                    String.format("%s/api/v1/governance-policy-suites", credentials.getBlindataUrl()),
+                    null,
+                    policySuite,
+                    BDPolicySuiteRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public BDPolicySuiteRes putPolicySuite(BDPolicySuiteRes policySuite) {
+        try {
+            return restUtils.put(
+                    String.format("%s/api/v1/governance-policy-suites/{id}", credentials.getBlindataUrl()),
+                    null,
+                    policySuite.getUuid(),
+                    policySuite,
+                    BDPolicySuiteRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void deletePolicySuite(String policySuiteUuid) {
+        try {
+            restUtils.delete(
+                    String.format("%s/api/v1/governance-policy-suites/{id}", credentials.getBlindataUrl()),
+                    null,
+                    policySuiteUuid
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Page<BDPolicyImplementationRes> getPolicyImplementations(BDPolicyImplementationsSearchOptions filters, Pageable pageable) {
+        try {
+            return restUtils.getPage(
+                    String.format("%s/api/v1/governance-policies/policy-implementations", credentials.getBlindataUrl()),
+                    null,
+                    pageable,
+                    filters,
+                    BDPolicyImplementationRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public BDPolicyImplementationRes createPolicyImplementation(BDPolicyImplementationRes policyImplementation) {
+        try {
+            return restUtils.create(
+                    String.format("%s/api/v1/governance-policies/policy-implementations", credentials.getBlindataUrl()),
+                    null,
+                    policyImplementation,
+                    BDPolicyImplementationRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public BDPolicyImplementationRes putPolicyImplementation(BDPolicyImplementationRes policyImplementation) {
+        try {
+            return restUtils.put(
+                    String.format("%s/api/v1/governance-policies/policy-implementations/{id}", credentials.getBlindataUrl()),
+                    null,
+                    policyImplementation.getUuid(),
+                    policyImplementation,
+                    BDPolicyImplementationRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void deletePolicyImplementation(String implementationUuid) {
+        try {
+            restUtils.delete(
+                    String.format("%s/api/v1/governance-policies/policy-implementations/{id}", credentials.getBlindataUrl()),
+                    null,
+                    implementationUuid
             );
         } catch (ClientException e) {
             throw new BlindataClientException(e.getCode(), e.getResponseBody());
