@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import org.junit.jupiter.api.Test;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 
 import java.io.IOException;

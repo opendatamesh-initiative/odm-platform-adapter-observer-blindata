@@ -1,7 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.blindata;
 
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDStewardshipResponsibilityRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDStewardshipRoleRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipResponsibilityRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipRoleRes;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientResourceMappingException;
 

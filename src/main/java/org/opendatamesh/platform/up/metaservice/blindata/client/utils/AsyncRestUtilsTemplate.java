@@ -76,7 +76,8 @@ class AsyncRestUtilsTemplate implements RestUtilsTemplate {
                 case DONE:
                     return pollResponse;
                 case FAILED:
-                    throw new ClientException(500, "Async task failed: " + new String(pollResponse.getResponseBody(), StandardCharsets.UTF_8));
+                    String responseBody = pollResponse.getResponseBody() == null ? "Empty Body" : new String(pollResponse.getResponseBody(), StandardCharsets.UTF_8);
+                    throw new ClientException(500, "Async task failed: " + responseBody);
                 case NOT_FOUND:
                     throw new ClientException(404, "Async task not found: " + task.getId());
                 default:
@@ -140,6 +141,9 @@ class AsyncRestUtilsTemplate implements RestUtilsTemplate {
                 httpHeaders,
                 asyncRequest
         );
+        if (finalResult.getResponseBody() == null) {
+            throw new ClientException(500, "Error downloading file: missing body from response");
+        }
         try (FileOutputStream fos = new FileOutputStream(storeLocation)) {
             StreamUtils.copy(finalResult.getResponseBody(), fos);
             return storeLocation;

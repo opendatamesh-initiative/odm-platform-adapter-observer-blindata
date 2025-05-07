@@ -1,7 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload;
 
 import org.opendatamesh.dpds.model.info.Info;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyEvaluationResultResource;
 
 import java.util.List;

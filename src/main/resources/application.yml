@@ -11,9 +11,12 @@ blindata:
   systemNameRegex: ".*"
   systemTechnologyRegex: "[^:]*"
   dependsOnSystemNameRegex: "blindata:systems:(.+)"
-  blindata:
-    dataProducts:
-      assetsCleanup: false
+  enableAsync: false
+  dataProducts:
+    assetsCleanup: false
+  issueManagement:
+    policies:
+      active: true
   validator:
     active: false
     policyEngine:
@@ -31,6 +34,7 @@ blindata:
       activeUseCases:
         - DATA_PRODUCT_UPLOAD
         - DATA_PRODUCT_VERSION_UPLOAD
+        - QUALITY_UPLOAD
         - STAGES_UPLOAD
         - POLICIES_UPLOAD
     - eventType: DATA_PRODUCT_ACTIVITY_COMPLETED

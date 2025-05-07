@@ -1,8 +1,8 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload;
 
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDPolicyEvaluationRecords;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDUploadResultsMessage;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDPolicyEvaluationRecords;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDPolicyResultsUploadResultsRes;
 
 import java.util.Optional;
 
@@ -20,7 +20,7 @@ public class PoliciesUploadBlindataOutboundPortMock implements PoliciesUploadBli
     }
 
     @Override
-    public BDUploadResultsMessage createPolicyEvaluationRecords(BDPolicyEvaluationRecords bdPolicyEvaluationRecords) {
-        return new BDUploadResultsMessage();
+    public BDPolicyResultsUploadResultsRes createPolicyEvaluationRecords(BDPolicyEvaluationRecords bdPolicyEvaluationRecords) {
+        return new BDPolicyResultsUploadResultsRes();
     }
 }

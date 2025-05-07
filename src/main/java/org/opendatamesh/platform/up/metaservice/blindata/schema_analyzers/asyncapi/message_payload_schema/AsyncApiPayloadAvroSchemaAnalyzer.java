@@ -5,7 +5,7 @@ import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.Schema.Parser;
 import org.apache.avro.Schema.Type;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDPhysicalFieldRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalFieldRes;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 

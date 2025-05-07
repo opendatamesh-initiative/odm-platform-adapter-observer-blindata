@@ -6,11 +6,15 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtils;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtilsFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientResourceMappingException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.OdmExternalComponentResource;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.utils.InternalRefResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +28,7 @@ class OdmRegistryClientImpl implements OdmRegistryClient {
     private final String baseUrl;
     private final RestUtils restUtils;
     private final RestTemplate restTemplate;
+    private static final Logger logger = LoggerFactory.getLogger(OdmRegistryClientImpl.class);
 
     OdmRegistryClientImpl(RestTemplate restTemplate, String baseUrl) {
         this.restUtils = RestUtilsFactory.getRestUtils(restTemplate);
@@ -61,10 +66,23 @@ class OdmRegistryClientImpl implements OdmRegistryClient {
     }
 
     @Override
-    public Optional<OdmExternalComponentResource> getApi(String identifier) {
+    public Optional<JsonNode> getApi(String identifier) {
         String url = String.format("%s/api/v1/pp/registry/apis/{id}", baseUrl);
 
-        OdmExternalComponentResource api = restUtils.get(url, null, identifier, OdmExternalComponentResource.class);
+        JsonNode api = restUtils.get(url, null, identifier, JsonNode.class);
+
+        if (api != null && api.isObject() && api.has("definition")) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode rootNode = objectMapper.readTree(api.get("definition").asText());
+                InternalRefResolver.resolveRefs(rootNode, rootNode);
+                ((ObjectNode) api).remove("definition");
+                ((ObjectNode) api).set("definition", rootNode);
+            } catch (JsonProcessingException e) {
+                logger.warn("Failed to parse the JSON of port standard definition schema: {}", api);
+            }
+        }
+
         return Optional.ofNullable(api);
     }
 

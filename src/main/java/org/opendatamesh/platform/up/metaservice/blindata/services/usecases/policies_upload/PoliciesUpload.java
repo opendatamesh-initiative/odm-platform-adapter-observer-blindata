@@ -1,12 +1,14 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload;
 
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataProductRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDPolicyEvaluationRecord;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDPolicyEvaluationRecords;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDUploadResultsMessage;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDPolicyEvaluationRecord;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDPolicyEvaluationRecords;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDPolicyResultsUploadResultsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyEvaluationResultResource;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,10 +49,22 @@ class PoliciesUpload implements UseCase {
                 bdPolicyEvaluationRecords.getRecords().add(bdPolicyEvaluationRecord);
             }
 
-            BDUploadResultsMessage uploadResultsMessage = blindataOutboundPort.createPolicyEvaluationRecords(bdPolicyEvaluationRecords);
+            BDPolicyResultsUploadResultsRes uploadResultsMessage = blindataOutboundPort.createPolicyEvaluationRecords(bdPolicyEvaluationRecords);
             getUseCaseLogger().info(String.format("%s Data product: %s uploaded %s policies results on Blindata, discarded %s.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), uploadResultsMessage.getRowCreated(), uploadResultsMessage.getRowDiscarded()));
+            logPolicyEvaluationRecordsUploadErrors(uploadResultsMessage);
         } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);
+        }
+    }
+
+    private void logPolicyEvaluationRecordsUploadErrors(BDPolicyResultsUploadResultsRes uploadResultsMessage) {
+        if (!CollectionUtils.isEmpty(uploadResultsMessage.getErrors())) {
+            uploadResultsMessage.getErrors().stream().filter(error -> StringUtils.hasText(error.getMessage()))
+                    .forEach(error ->
+                            getUseCaseLogger().warn(
+                                    String.format("%s Data product: %s error on policy result upload: %s.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), error.getMessage())
+                            )
+                    );
         }
     }
 

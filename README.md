@@ -10,59 +10,66 @@ its catalog remains aligned.
 ## Contents
 
 <!-- TOC -->
+
 * [Open Data Mesh Observer Blindata](#open-data-mesh-observer-blindata)
-  * [Contents](#contents)
+    * [Contents](#contents)
 * [Event Handling](#event-handling)
     * [Configuration](#configuration)
 * [Data Product Validation](#data-product-validation)
 * [Mapping data product descriptor into Blindata](#mapping-data-product-descriptor-into-blindata)
-  * [Promises.Platform](#promisesplatform)
-  * [General Schema Annotations](#general-schema-annotations)
-    * [Entities](#entities)
-    * [Fields](#fields)
-  * [Promises.Api.Definition: Specifications mapping in Blindata](#promisesapidefinition-specifications-mapping-in-blindata)
-    * [Data Store Api](#data-store-api)
-        * [From JSONSchema to Physical Entities](#from-jsonschema-to-physical-entities)
-      * [From JSONSchema to Physical Field](#from-jsonschema-to-physical-field)
-    * [AsyncApi](#asyncapi)
-        * [From Avro to Physical Fields](#from-avro-to-physical-fields)
-        * [From Json Schema to Physical Fields](#from-json-schema-to-physical-fields)
+    * [Promises.Platform](#promisesplatform)
+    * [General Schema Annotations](#general-schema-annotations)
+        * [Entities](#entities)
+        * [Fields](#fields)
+    * [Promises.Api.Definition: Specifications mapping in Blindata](#promisesapidefinition-specifications-mapping-in-blindata)
+        * [Data Store Api](#data-store-api)
+            * [From JSONSchema to Physical Entities](#from-jsonschema-to-physical-entities)
+            * [From JSONSchema to Physical Field](#from-jsonschema-to-physical-field)
+            * [From JSONSchema to Blindata Quality Checks](#from-jsonschema-to-blindata-quality-checks)
+                * [Quality Suites](#quality-suites)
+                * [Quality Checks](#quality-checks)
+                * [Issue Policies](#issue-policies)
+                * [Issue Campaigns](#issue-campaigns)
+        * [AsyncApi](#asyncapi)
+            * [From Avro to Physical Fields](#from-avro-to-physical-fields)
+            * [From Json Schema to Physical Fields](#from-json-schema-to-physical-fields)
 * [Examples](#examples)
-  * [Datastore Api Example](#datastore-api-example)
-  * [Async Api](#async-api)
-    * [Raw Port Async Api V3](#raw-port-async-api-v3)
-    * [Raw Port Async Api V2](#raw-port-async-api-v2)
-    * [Entities Async Api V3](#entities-async-api-v3)
-    * [Entities Async Api V2](#entities-async-api-v2)
-  * [Input port dependency](#input-port-dependency)
+    * [Datastore Api Example](#datastore-api-example)
+    * [Async Api](#async-api)
+        * [Raw Port Async Api V3](#raw-port-async-api-v3)
+        * [Raw Port Async Api V2](#raw-port-async-api-v2)
+        * [Entities Async Api V3](#entities-async-api-v3)
+        * [Entities Async Api V2](#entities-async-api-v2)
+    * [Input port dependency](#input-port-dependency)
 * [Blindata credentials configurations](#blindata-credentials-configurations)
-  * [Using Api Key](#using-api-key)
-  * [Using Oauth2](#using-oauth2)
+    * [Using Api Key](#using-api-key)
+    * [Using Oauth2](#using-oauth2)
 * [Run the Project](#run-the-project)
-  * [Prerequisites](#prerequisites)
-  * [Dependencies](#dependencies)
-    * [Clone dependencies repository](#clone-dependencies-repository)
-    * [Compile dependencies](#compile-dependencies)
-  * [Run locally](#run-locally)
-    * [Clone repository](#clone-repository)
-    * [Compile project](#compile-project)
-    * [Run application](#run-application)
-  * [Run with Docker](#run-with-docker)
-    * [Clone repository](#clone-repository-1)
-    * [Compile project](#compile-project-1)
-    * [Build image](#build-image)
-    * [Run application](#run-application-1)
-    * [Stop application](#stop-application)
-  * [Run with Docker Compose](#run-with-docker-compose)
-    * [Clone repository](#clone-repository-2)
-    * [Compile project](#compile-project-2)
-    * [Build image](#build-image-1)
-    * [Run application](#run-application-2)
-    * [Stop application](#stop-application-1)
+    * [Prerequisites](#prerequisites)
+    * [Dependencies](#dependencies)
+        * [Clone dependencies repository](#clone-dependencies-repository)
+        * [Compile dependencies](#compile-dependencies)
+    * [Run locally](#run-locally)
+        * [Clone repository](#clone-repository)
+        * [Compile project](#compile-project)
+        * [Run application](#run-application)
+    * [Run with Docker](#run-with-docker)
+        * [Clone repository](#clone-repository-1)
+        * [Compile project](#compile-project-1)
+        * [Build image](#build-image)
+        * [Run application](#run-application-1)
+        * [Stop application](#stop-application)
+    * [Run with Docker Compose](#run-with-docker-compose)
+        * [Clone repository](#clone-repository-2)
+        * [Compile project](#compile-project-2)
+        * [Build image](#build-image-1)
+        * [Run application](#run-application-2)
+        * [Stop application](#stop-application-1)
 * [Test it](#test-it)
     * [REST services](#rest-services)
     * [Blindata configuration](#blindata-configuration)
     * [ODM configuration](#odm-configuration)
+
 <!-- TOC -->
 
 # Event Handling
@@ -117,14 +124,18 @@ These are:
     - Supported event types:
         - DATA_PRODUCT_VERSION_CREATED
         - DATA_PRODUCT_ACTIVITY_COMPLETED
-2. **STAGES_UPLOAD**. It uploads the data product's stages which are defined inside the lifecycleInfo of the descriptor.
+3. **QUALITY_UPLOAD**: It uploads the quality checks specified in the data product's ports metadata.
     - Supported event types:
         - DATA_PRODUCT_VERSION_CREATED
         - DATA_PRODUCT_ACTIVITY_COMPLETED
-3. **DATA_PRODUCT_REMOVAL**. It removes the data product from Blindata.
+4. **STAGES_UPLOAD**. It uploads the data product's stages which are defined inside the lifecycleInfo of the descriptor.
+    - Supported event types:
+        - DATA_PRODUCT_VERSION_CREATED
+        - DATA_PRODUCT_ACTIVITY_COMPLETED
+5. **DATA_PRODUCT_REMOVAL**. It removes the data product from Blindata.
     - Supported event types:
         - DATA_PRODUCT_DELETED
-4. **POLICIES_UPLOAD**. It gathers all policy evaluation results for the specified data product and uploads them to
+6. **POLICIES_UPLOAD**. It gathers all policy evaluation results for the specified data product and uploads them to
    Blindata.
     - Supported event types:
         - DATA_PRODUCT_VERSION_CREATED
@@ -385,6 +396,90 @@ Physical fields are mapped from "properties" field inside each entity definition
 | `schema.tables[n].definition.properties.<key>.version`       | add.prop                | Version of the object                | -         |
 | `schema.tables[n].definition.properties.<key>.displayName`   | add.prop                | Human readable name of the object    | -         |
 | `schema.tables[n].definition.properties.<key>.description`   | add.prop                | Description of the object            | -         |
+
+#### From JSONSchema to Blindata Quality Checks
+
+This section explains how schema annotations are mapped to Blindata Quality Checks.  
+For more details about the Blindata Quality module, refer to
+the [official documentation](https://help.blindata.io/data-quality/).
+
+##### Quality Suites
+
+When any quality annotation is present in the data product descriptor, a **Quality Suite** is automatically created with
+the following values:
+
+- **Quality Suite Code**: `<data product domain>::<data product name>`
+- **Quality Suite Name**: `<data product domain>::<data product display name>`  
+  *(If the display name is not provided, the data product name will be used instead.)*
+
+All quality checks derived from the annotations are included in this Quality Suite.
+
+##### Quality Checks
+
+**Placement of Quality Annotations**
+
+The `quality` property can be defined at two different levels within the schema:
+
+- `schema.tables[n].definition.quality`  
+  → The quality check will be associated with the corresponding **Physical Entity**.
+
+- `schema.tables[n].definition.properties.<key>.quality`  
+  → The quality check will be associated with the corresponding **Physical Field**.
+
+**Structure of the `quality` Property**
+
+The `quality` property is an array consisting of the following objects:
+
+| Quality Object Property                            | Quality Check Property                | Description                                                                                                                                                                                                         | Mandatory |
+|----------------------------------------------------|---------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `name`                                             | code, name                            | The quality check code will be a concatenation of the code of its Quality Suite and the vale of this property. KQI check name (uses `customProperties.displayName` if not specified)                                | ✔️        |
+| `description`                                      | description                           | KQI description                                                                                                                                                                                                     |           |
+| `dimension`                                        | additionalProperty: "dimension"       | If present, mapped into a Blindata Additional Property named "dimension", otherwise ignored                                                                                                                         |           |
+| `unit`                                             | additionalProperty: "unit"            | If present, mapped into a Blindata Additional Property named "unit", otherwise ignored                                                                                                                              |           |
+| `type`                                             | additionalProperty: "constraint_type" | If present, mapped into a Blindata Additional Property named "constraint_type", otherwise ignored                                                                                                                   |           |
+| `engine`                                           | additionalProperty: "quality_engine"  | If present, mapped into a Blindata Additional Property named "quality_engine", otherwise ignored                                                                                                                    |           |
+| `mustBeGreaterOrEqualTo`                           | scoreLeftValue                        | KQI Lowest Acceptable Value (used only for score strategies: MINIMUM, DISTANCE)                                                                                                                                     |           |
+| `mustBeLessOrEqualTo`                              | scoreRightValue                       | KQI Highest Acceptable Value (used only for score strategies: MAXIMUM, DISTANCE)                                                                                                                                    |           |
+| `mustBe`                                           | expectedValue                         | KQI Expected Value (used only for score strategies: MAXIMUM, MINIMUM, DISTANCE)                                                                                                                                     |           |
+| `customProperties.displayName`                     | name                                  | KQI name                                                                                                                                                                                                            |           |
+| `customProperties.scoreStrategy`                   | scoreStrategy                         | KQI score strategy                                                                                                                                                                                                  |           |
+| `customProperties.scoreWarningThreshold`           | warningThreshold                      | KQI warning threshold                                                                                                                                                                                               |           |
+| `customProperties.scoreSuccessThreshold`           | successThreshold                      | KQI success threshold                                                                                                                                                                                               |           |
+| `customProperties.isCheckEnabled`                  | isEnabled (default true)              | KQI Is Check Enabled                                                                                                                                                                                                |           |
+| `customProperties.blindataCustomProp-propertyName` | additionalProperty: "propertyName"    | If present, all the properties that starts with `blindataCustomProp-` are mapped into Blindata Additional Properties. E.g. `blindataCustomProp-IssueOwner` is mapped into an additional property named `IssueOwner` |           |
+| `customProperties.refName`                         |                                       | Use this property to reference another quality definition code. The associated physical field or physical entity will then be included in the quality check.                                                        |           |
+
+##### Issue Policies
+
+This section explains how schema annotations are mapped to Blindata Issue Policies.  
+For more details about the Blindata Issue Management module, refer to
+the [official documentation](https://help.blindata.io/collaboration/issue-management/).
+
+**Placement of Issue Policy Annotations**
+
+The `issuePolicies` property can be defined under `[...].quality[n].customProperties.issuePolicies`.
+
+**Structure of the `issuePolicies` Property**
+
+The `issuePolicies` property is an array consisting of the following objects:
+
+| Issue Policy Object Property      | Issue Policy Property                      | Description                                                                                                                                                                                     | Mandatory |
+|-----------------------------------|--------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `name`                            | name                                       | The name of the Issue Policy                                                                                                                                                                    | ✔️        |
+| `policyType`                      | policyType                                 | The type of the Issue Policy. Must be `SINGLE_RESULT_SEMAPHORE` of `RECURRENT_RESULT_SEMAPHORE`                                                                                                 | ✔️        |
+| `semaphoreColor`                  | semaphores (default `RED`)                 | The color of the KQI semaphore that triggers the policy. Must be `RED` or `YELLOW` or `GREEN`                                                                                                   | ️         |
+| `semaphoresNumber`                | policyContent.semaphoresNumber (default 1) | The number of semaphores after which a new Issue is generated by the Policy. Needed only for `RECURRENT_RESULT_SEMAPHORE`.                                                                      | ️         |
+| `autoClose`                       | policyContent.autoClose (default `false`)  | If `true` the generated issue is closed if a result is detected with a semaphore different from the one selected by the semaphoreColor property.  Needed only for `RECURRENT_RESULT_SEMAPHORE`. | ️         |
+| `severity`                        | issueTemplate.severity (default `INFO`)    | The severity of the generated Issue. Can be one of `BLOCKER`, `CRITICAL`, `MAJOR`, `MINOR`, `INFO`.                                                                                             | ️         |
+| `blindataCustomProp-propertyName` | issueTemplate.additionalProperties         | All the properties that start with `blindataCustomProp-` will be the`additionalProperties` of the generated issue.                                                                              | ️         |
+| -                                 | issueTemplate.priorityOrder                | The priority order of the generated Issue is set to `3` as default.                                                                                                                             | ️         |
+| -                                 | issueTemplate.assignee                     | The default assignee of the generated Issue is taken from the data product owner, if present.                                                                                                   | ️         |
+
+##### Issue Campaigns
+
+An Issue Campaign is generated for each data product. All the issues generated by the automated Issue Policies will be
+part of this Campaign.
+The Campaign name is `Quality - <domainName> - <dataProductName>`.
 
 ### AsyncApi
 
@@ -1459,7 +1554,10 @@ blindata:
   enableAsync: (true/false, default false) If enabled, the observer will use the asynchronous endpoints of Blindata API. This allows
     to process big data product descriptors without failing due to connection timeouts.
   dataProducts:
-    assetsCleanup: (true/false, default true) the option to enable/disable the cleanup of deprecated assets associated to data products ports
+    assetsCleanup: (true/false, default true) Enables or disables the cleanup of deprecated assets associated with data product ports. Additionally, when set to true, any quality checks defined in the Data Product Quality Suite but no longer listed in the quality section of the data product descriptor will also be automatically disabled.
+  issueManagement:
+    policies:
+      active: (true/false, default true) If set to false, all the issue policies that are uploaded on Blindata are set to disabled.
 ```
 
 ### ODM configuration

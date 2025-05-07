@@ -1,0 +1,352 @@
+{
+  "datastoreapi": "1.0.0",
+  "info": {
+    "title": "flight_frequency Data",
+    "summary": "This API exposes the current flight_frequency data of each `Airline` entity",
+    "description": "API description",
+    "termsOfService": "https://example.com/terms/",
+    "version": "1.0.0",
+    "datastoreName": "flight_frequency",
+    "contact": {
+      "name": "API Support",
+      "url": "https://www.example.com/support",
+      "email": "support@example.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "nameSpace": "nome_schema"
+  },
+  "services": {
+    "development": {
+      "name": "Flight frequency service",
+      "description": "The service tablethat host the `FREQUENCY` data store in the given environment",
+      "serverInfo": {
+        "flightFrequencyStoreServerInfo": {
+          "host:": "{host}",
+          "port:": "3306",
+          "dbmsType:": "MySQL",
+          "dbmsVersion:": "8",
+          "connectionProtocols": {
+            "jdbc": {
+              "version": "1.0",
+              "url": "jdbc:mysql://{hosts}:3306/foodmart",
+              "driverName": "MySQL JDBC Driver",
+              "driverClass": "org.mysql.Driver",
+              "driverVersion": "latest",
+              "driverLibrary": {
+                "description": "MySQL JDBC Driver Library",
+                "dataType": "application/java-archive",
+                "$href": "https://jdbc.mysql.org/"
+              },
+              "driverDocs": {
+                "description": "MySQL JDBC Driver HomePage",
+                "dataType": "text/html",
+                "$href": "https://jdbc.mysql.org/mysql-8.jar"
+              }
+            }
+          }
+        }
+      },
+      "variables": {
+        "host": {
+          "default": "35.52.55.12"
+        }
+      }
+    }
+  },
+  "schema": {
+    "databaseName": "flightdb",
+    "databaseSchemaName": "dwh",
+    "tables": [
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "externalDocs": {
+          "description": "docs"
+        },
+        "definition": {
+          "name": "Customer",
+          "type": "object",
+          "quality": [
+            {
+              "name": "Macrozona ExpectColumnValuesToBeInSet",
+              "description": "PLACEHOLDER",
+              "dimension": "Validity",
+              "unit": "percent",
+              "type": "custom",
+              "engine": "greatExpectations",
+              "implementation": {
+                "type": "ExpectColumnValuesToBeInSet",
+                "kwargs": {
+                  "column": "Macrozona",
+                  "value_set": [
+                    "NORD",
+                    "SUD"
+                  ]
+                }
+              },
+              "customProperties": {
+                "scoreStrategy": "PERCENTAGE",
+                "scoreWarningThreshold": 95,
+                "scoreSuccessThreshold": 100,
+                "isCheckEnabled": true,
+                "assetKwargs": {
+                }
+              }
+            },
+            {
+              "name": "ScambiMWh ExpectColumnValuesToBeBetween",
+              "description": "",
+              "dimension": "Consistency",
+              "unit": "percent",
+              "type": "custom",
+              "engine": "greatExpectations",
+              "implementation": {
+                "type": "ExpectColumnValuesToBeInSet",
+                "kwargs": {
+                  "column": "Scambi[MWh]",
+                  "min_value": -930,
+                  "max_value": 800
+                }
+              },
+              "customProperties": {
+                "scoreStrategy": "PERCENTAGE",
+                "scoreWarningThreshold": 95,
+                "scoreSuccessThreshold": 100,
+                "isCheckEnabled": true,
+                "assetKwargs": {
+                }
+              }
+            }
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The customer identifier.",
+              "name": "ID",
+              "kind": "ATTRIBUTE",
+              "required": true,
+              "displayName": "Identifier",
+              "summary": "Inline description",
+              "comments": "come sopra",
+              "examples": [
+                "1234567",
+                "988654"
+              ],
+              "status": "come sopra",
+              "tags": [
+                "tag1",
+                "tag2"
+              ],
+              "externalDocs": "https://www.google.it/",
+              "default": null,
+              "isClassified": true,
+              "classificationLevel": "INTERNAL",
+              "isUnique": true,
+              "isNullable": false,
+              "pattern": "^[0-9]+$",
+              "format": "named pattern e.g. email",
+              "enum": [
+                "VAL1",
+                "VAL2"
+              ],
+              "minLength": 2,
+              "maxLength": 10,
+              "contentEncoding": "UTF-8",
+              "contentMediaType": "application/json",
+              "precision": 0,
+              "scale": 10,
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "maximum": 10000,
+              "exclusiveMaximum": false,
+              "readOnly": true,
+              "writeOnly": true,
+              "physicalType": "VARCHAR",
+              "partitionStatus": true,
+              "partitionKeyPosition": 2,
+              "clusterStatus": true,
+              "clusterKeyPosition": 2,
+              "ordinalPosition": 0
+            }
+          }
+        }
+      },
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "externalDocs": {
+          "description": "docs"
+        },
+        "definition": {
+          "name": "Payment",
+          "type": "object",
+          "properties": {
+            "id": {
+              "quality": [
+                {
+                  "name": "Macrozona ExpectColumnValuesToBeInSet",
+                  "description": "PLACEHOLDER",
+                  "dimension": "Validity",
+                  "unit": "percent",
+                  "type": "custom",
+                  "engine": "greatExpectations",
+                  "implementation": {
+                    "type": "ExpectColumnValuesToBeInSet",
+                    "kwargs": {
+                      "column": "Macrozona",
+                      "value_set": [
+                        "NORD",
+                        "SUD"
+                      ]
+                    }
+                  },
+                  "customProperties": {
+                    "scoreStrategy": "PERCENTAGE",
+                    "scoreWarningThreshold": 95,
+                    "scoreSuccessThreshold": 100,
+                    "isCheckEnabled": true,
+                    "assetKwargs": {
+                    }
+                  }
+                },
+                {
+                  "name": "ScambiMWh ExpectColumnValuesToBeBetween",
+                  "description": "",
+                  "dimension": "Consistency",
+                  "unit": "percent",
+                  "type": "custom",
+                  "engine": "greatExpectations",
+                  "implementation": {
+                    "type": "ExpectColumnValuesToBeInSet",
+                    "kwargs": {
+                      "column": "Scambi[MWh]",
+                      "min_value": -930,
+                      "max_value": 800
+                    }
+                  },
+                  "customProperties": {
+                    "scoreStrategy": "PERCENTAGE",
+                    "scoreWarningThreshold": 95,
+                    "scoreSuccessThreshold": 100,
+                    "isCheckEnabled": true,
+                    "blindataCustomProp-propertyName": "propertyValue",
+                    "assetKwargs": {
+                    }
+                  }
+                }
+              ],
+              "type": "string",
+              "description": "The customer identifier.",
+              "name": "ID",
+              "kind": "ATTRIBUTE",
+              "required": true,
+              "displayName": "Identifier",
+              "summary": "Inline description",
+              "comments": "come sopra",
+              "examples": [
+                "1234567",
+                "988654"
+              ],
+              "status": "come sopra",
+              "tags": [
+                "tag1",
+                "tag2"
+              ],
+              "externalDocs": "https://www.google.it/",
+              "default": null,
+              "isClassified": true,
+              "classificationLevel": "INTERNAL",
+              "isUnique": true,
+              "isNullable": false,
+              "pattern": "^[0-9]+$",
+              "format": "named pattern e.g. email",
+              "enum": [
+                "VAL1",
+                "VAL2"
+              ],
+              "minLength": 2,
+              "maxLength": 10,
+              "contentEncoding": "UTF-8",
+              "contentMediaType": "application/json",
+              "precision": 0,
+              "scale": 10,
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "maximum": 10000,
+              "exclusiveMaximum": false,
+              "readOnly": true,
+              "writeOnly": true,
+              "physicalType": "VARCHAR",
+              "partitionStatus": true,
+              "partitionKeyPosition": 2,
+              "clusterStatus": true,
+              "clusterKeyPosition": 2,
+              "ordinalPosition": 0
+            },
+            "amount": {
+              "quality": [
+                {
+                  "customProperties": {
+                    "refName": "Macrozona ExpectColumnValuesToBeInSet"
+                  }
+                },
+                {
+                  "customProperties": {
+                    "refName": "Macrozona ExpectColumnValuesToBeInSet"
+                  }
+                }
+              ],
+              "type": "number",
+              "description": "The monetary amount associated with the transaction.",
+              "name": "Amount",
+              "kind": "ATTRIBUTE",
+              "required": true,
+              "displayName": "Amount",
+              "summary": "The value of the transaction in a numeric format.",
+              "comments": "Monetary value in standard format",
+              "examples": [
+                123.45,
+                9886.54
+              ],
+              "status": "active",
+              "tags": [
+                "financial",
+                "numeric"
+              ],
+              "externalDocs": "https://www.google.it/",
+              "default": 0.0,
+              "isClassified": false,
+              "classificationLevel": "PUBLIC",
+              "isUnique": false,
+              "isNullable": false,
+              "format": "decimal",
+              "minimum": 0,
+              "exclusiveMinimum": false,
+              "maximum": 1000000,
+              "exclusiveMaximum": false,
+              "precision": 2,
+              "scale": 2,
+              "readOnly": false,
+              "writeOnly": false,
+              "physicalType": "DECIMAL",
+              "partitionStatus": false,
+              "clusterStatus": false,
+              "ordinalPosition": 1
+            }
+          }
+        }
+      }
+    ]
+  }
+}

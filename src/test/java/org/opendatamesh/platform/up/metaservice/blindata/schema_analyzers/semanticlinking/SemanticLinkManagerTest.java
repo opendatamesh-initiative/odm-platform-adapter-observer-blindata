@@ -9,10 +9,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDSemanticLinkingClient;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDDataCategoryRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDLogicalNamespaceRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDPhysicalEntityRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDLogicalFieldSemanticLinkRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDDataCategoryRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalNamespaceRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalFieldSemanticLinkRes;
 
 import java.io.IOException;
 import java.util.Map;

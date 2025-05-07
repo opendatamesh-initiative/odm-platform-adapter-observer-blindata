@@ -1,0 +1,899 @@
+{
+  "qualityChecks": [
+    {
+      "code": "Macrozona ExpectColumnValuesToBeInSet",
+      "name": "Macrozona ExpectColumnValuesToBeInSet",
+      "description": "PLACEHOLDER",
+      "warningThreshold": 95.0,
+      "successThreshold": 100.0,
+      "isEnabled": true,
+      "scoreStrategy": "PERCENTAGE",
+      "physicalEntities": [
+        {
+          "schema": "dwh",
+          "name": "Customer",
+
+          "physicalFields": [
+            {
+              "name": "ID",
+              "type": "VARCHAR",
+              "ordinalPosition": 0,
+              "description": "The customer identifier.",
+
+              "additionalProperties": [
+                {
+                  "name": "displayName",
+                  "value": "Identifier"
+                },
+                {
+                  "name": "summary",
+                  "value": "Inline description"
+                },
+                {
+                  "name": "status",
+                  "value": "come sopra"
+                },
+                {
+                  "name": "externalDocs",
+                  "value": "https://www.google.it/"
+                },
+                {
+                  "name": "classificationLevel",
+                  "value": "INTERNAL"
+                },
+                {
+                  "name": "pattern",
+                  "value": "^[0-9]+$"
+                },
+                {
+                  "name": "format",
+                  "value": "named pattern e.g. email"
+                },
+                {
+                  "name": "contentEncoding",
+                  "value": "UTF-8"
+                },
+                {
+                  "name": "contentMediaType",
+                  "value": "application/json"
+                },
+                {
+                  "name": "minLength",
+                  "value": "2"
+                },
+                {
+                  "name": "maxLength",
+                  "value": "10"
+                },
+                {
+                  "name": "precision",
+                  "value": "0"
+                },
+                {
+                  "name": "scale",
+                  "value": "10"
+                },
+                {
+                  "name": "minimum",
+                  "value": "0"
+                },
+                {
+                  "name": "maximum",
+                  "value": "10000"
+                },
+                {
+                  "name": "partitionKeyPosition",
+                  "value": "2"
+                },
+                {
+                  "name": "clusterKeyPosition",
+                  "value": "2"
+                },
+                {
+                  "name": "isClassified",
+                  "value": "true"
+                },
+                {
+                  "name": "isUnique",
+                  "value": "true"
+                },
+                {
+                  "name": "exclusiveMinimum",
+                  "value": "true"
+                },
+                {
+                  "name": "exclusiveMaximum",
+                  "value": "false"
+                },
+                {
+                  "name": "readOnly",
+                  "value": "true"
+                },
+                {
+                  "name": "writeOnly",
+                  "value": "true"
+                },
+                {
+                  "name": "isNullable",
+                  "value": "false"
+                },
+                {
+                  "name": "isPartitionStatus",
+                  "value": "true"
+                },
+                {
+                  "name": "isClusterStatus",
+                  "value": "true"
+                },
+                {
+                  "name": "isRequired",
+                  "value": "true"
+                },
+                {
+                  "name": "tags",
+                  "value": "tag1"
+                },
+                {
+                  "name": "tags",
+                  "value": "tag2"
+                },
+                {
+                  "name": "enum",
+                  "value": "VAL1"
+                },
+                {
+                  "name": "enum",
+                  "value": "VAL2"
+                }
+              ],
+              "logicalFields": []
+            }
+          ],
+          "additionalProperties": []
+        }
+      ],
+      "physicalFields": [],
+      "additionalProperties": [
+        {
+          "name": "dimension",
+          "value": "Validity"
+        },
+        {
+          "name": "unit",
+          "value": "percent"
+        },
+        {
+          "name": "constraint_type",
+          "value": "custom"
+        },
+        {
+          "name": "quality_engine",
+          "value": "greatExpectations"
+        }
+      ],
+      "reference": false
+    },
+    {
+      "code": "ScambiMWh ExpectColumnValuesToBeBetween",
+      "name": "ScambiMWh ExpectColumnValuesToBeBetween",
+      "description": "",
+      "warningThreshold": 95.0,
+      "successThreshold": 100.0,
+      "isEnabled": true,
+      "scoreStrategy": "PERCENTAGE",
+      "physicalEntities": [
+        {
+          "schema": "dwh",
+          "name": "Customer",
+          "physicalFields": [
+            {
+              "name": "ID",
+              "type": "VARCHAR",
+              "ordinalPosition": 0,
+              "description": "The customer identifier.",
+
+              "additionalProperties": [
+                {
+                  "name": "displayName",
+                  "value": "Identifier"
+                },
+                {
+                  "name": "summary",
+                  "value": "Inline description"
+                },
+                {
+                  "name": "status",
+                  "value": "come sopra"
+                },
+                {
+                  "name": "externalDocs",
+                  "value": "https://www.google.it/"
+                },
+                {
+                  "name": "classificationLevel",
+                  "value": "INTERNAL"
+                },
+                {
+                  "name": "pattern",
+                  "value": "^[0-9]+$"
+                },
+                {
+                  "name": "format",
+                  "value": "named pattern e.g. email"
+                },
+                {
+                  "name": "contentEncoding",
+                  "value": "UTF-8"
+                },
+                {
+                  "name": "contentMediaType",
+                  "value": "application/json"
+                },
+                {
+                  "name": "minLength",
+                  "value": "2"
+                },
+                {
+                  "name": "maxLength",
+                  "value": "10"
+                },
+                {
+                  "name": "precision",
+                  "value": "0"
+                },
+                {
+                  "name": "scale",
+                  "value": "10"
+                },
+                {
+                  "name": "minimum",
+                  "value": "0"
+                },
+                {
+                  "name": "maximum",
+                  "value": "10000"
+                },
+                {
+                  "name": "partitionKeyPosition",
+                  "value": "2"
+                },
+                {
+                  "name": "clusterKeyPosition",
+                  "value": "2"
+                },
+                {
+                  "name": "isClassified",
+                  "value": "true"
+                },
+                {
+                  "name": "isUnique",
+                  "value": "true"
+                },
+                {
+                  "name": "exclusiveMinimum",
+                  "value": "true"
+                },
+                {
+                  "name": "exclusiveMaximum",
+                  "value": "false"
+                },
+                {
+                  "name": "readOnly",
+                  "value": "true"
+                },
+                {
+                  "name": "writeOnly",
+                  "value": "true"
+                },
+                {
+                  "name": "isNullable",
+                  "value": "false"
+                },
+                {
+                  "name": "isPartitionStatus",
+                  "value": "true"
+                },
+                {
+                  "name": "isClusterStatus",
+                  "value": "true"
+                },
+                {
+                  "name": "isRequired",
+                  "value": "true"
+                },
+                {
+                  "name": "tags",
+                  "value": "tag1"
+                },
+                {
+                  "name": "tags",
+                  "value": "tag2"
+                },
+                {
+                  "name": "enum",
+                  "value": "VAL1"
+                },
+                {
+                  "name": "enum",
+                  "value": "VAL2"
+                }
+              ],
+              "logicalFields": []
+            }
+          ],
+          "additionalProperties": []
+        }
+      ],
+      "physicalFields": [],
+      "additionalProperties": [
+        {
+          "name": "dimension",
+          "value": "Consistency"
+        },
+        {
+          "name": "unit",
+          "value": "percent"
+        },
+        {
+          "name": "constraint_type",
+          "value": "custom"
+        },
+        {
+          "name": "quality_engine",
+          "value": "greatExpectations"
+        }
+      ],
+      "reference": false
+    },
+    {
+      "code": "Macrozona ExpectColumnValuesToBeInSet",
+      "name": "Macrozona ExpectColumnValuesToBeInSet",
+      "description": "PLACEHOLDER",
+      "warningThreshold": 95.0,
+      "successThreshold": 100.0,
+      "isEnabled": true,
+      "scoreStrategy": "PERCENTAGE",
+      "physicalEntities": [],
+      "physicalFields": [
+        {
+          "name": "ID",
+          "type": "VARCHAR",
+          "ordinalPosition": 0,
+          "description": "The customer identifier.",
+          "additionalProperties": [
+            {
+              "name": "displayName",
+              "value": "Identifier"
+            },
+            {
+              "name": "summary",
+              "value": "Inline description"
+            },
+            {
+              "name": "status",
+              "value": "come sopra"
+            },
+            {
+              "name": "externalDocs",
+              "value": "https://www.google.it/"
+            },
+            {
+              "name": "classificationLevel",
+              "value": "INTERNAL"
+            },
+            {
+              "name": "pattern",
+              "value": "^[0-9]+$"
+            },
+            {
+              "name": "format",
+              "value": "named pattern e.g. email"
+            },
+            {
+              "name": "contentEncoding",
+              "value": "UTF-8"
+            },
+            {
+              "name": "contentMediaType",
+              "value": "application/json"
+            },
+            {
+              "name": "minLength",
+              "value": "2"
+            },
+            {
+              "name": "maxLength",
+              "value": "10"
+            },
+            {
+              "name": "precision",
+              "value": "0"
+            },
+            {
+              "name": "scale",
+              "value": "10"
+            },
+            {
+              "name": "minimum",
+              "value": "0"
+            },
+            {
+              "name": "maximum",
+              "value": "10000"
+            },
+            {
+              "name": "partitionKeyPosition",
+              "value": "2"
+            },
+            {
+              "name": "clusterKeyPosition",
+              "value": "2"
+            },
+            {
+              "name": "isClassified",
+              "value": "true"
+            },
+            {
+              "name": "isUnique",
+              "value": "true"
+            },
+            {
+              "name": "exclusiveMinimum",
+              "value": "true"
+            },
+            {
+              "name": "exclusiveMaximum",
+              "value": "false"
+            },
+            {
+              "name": "readOnly",
+              "value": "true"
+            },
+            {
+              "name": "writeOnly",
+              "value": "true"
+            },
+            {
+              "name": "isNullable",
+              "value": "false"
+            },
+            {
+              "name": "isPartitionStatus",
+              "value": "true"
+            },
+            {
+              "name": "isClusterStatus",
+              "value": "true"
+            },
+            {
+              "name": "isRequired",
+              "value": "true"
+            },
+            {
+              "name": "tags",
+              "value": "tag1"
+            },
+            {
+              "name": "tags",
+              "value": "tag2"
+            },
+            {
+              "name": "enum",
+              "value": "VAL1"
+            },
+            {
+              "name": "enum",
+              "value": "VAL2"
+            }
+          ],
+          "logicalFields": []
+        }
+      ],
+      "additionalProperties": [
+        {
+          "name": "dimension",
+          "value": "Validity"
+        },
+        {
+          "name": "unit",
+          "value": "percent"
+        },
+        {
+          "name": "constraint_type",
+          "value": "custom"
+        },
+        {
+          "name": "quality_engine",
+          "value": "greatExpectations"
+        }
+      ],
+      "reference": false
+    },
+    {
+      "code": "ScambiMWh ExpectColumnValuesToBeBetween",
+      "name": "ScambiMWh ExpectColumnValuesToBeBetween",
+      "description": "",
+      "warningThreshold": 95.0,
+      "successThreshold": 100.0,
+      "isEnabled": true,
+      "scoreStrategy": "PERCENTAGE",
+      "physicalEntities": [],
+      "physicalFields": [
+        {
+          "name": "ID",
+          "type": "VARCHAR",
+          "ordinalPosition": 0,
+          "description": "The customer identifier.",
+          "additionalProperties": [
+            {
+              "name": "displayName",
+              "value": "Identifier"
+            },
+            {
+              "name": "summary",
+              "value": "Inline description"
+            },
+            {
+              "name": "status",
+              "value": "come sopra"
+            },
+            {
+              "name": "externalDocs",
+              "value": "https://www.google.it/"
+            },
+            {
+              "name": "classificationLevel",
+              "value": "INTERNAL"
+            },
+            {
+              "name": "pattern",
+              "value": "^[0-9]+$"
+            },
+            {
+              "name": "format",
+              "value": "named pattern e.g. email"
+            },
+            {
+              "name": "contentEncoding",
+              "value": "UTF-8"
+            },
+            {
+              "name": "contentMediaType",
+              "value": "application/json"
+            },
+            {
+              "name": "minLength",
+              "value": "2"
+            },
+            {
+              "name": "maxLength",
+              "value": "10"
+            },
+            {
+              "name": "precision",
+              "value": "0"
+            },
+            {
+              "name": "scale",
+              "value": "10"
+            },
+            {
+              "name": "minimum",
+              "value": "0"
+            },
+            {
+              "name": "maximum",
+              "value": "10000"
+            },
+            {
+              "name": "partitionKeyPosition",
+              "value": "2"
+            },
+            {
+              "name": "clusterKeyPosition",
+              "value": "2"
+            },
+            {
+              "name": "isClassified",
+              "value": "true"
+            },
+            {
+              "name": "isUnique",
+              "value": "true"
+            },
+            {
+              "name": "exclusiveMinimum",
+              "value": "true"
+            },
+            {
+              "name": "exclusiveMaximum",
+              "value": "false"
+            },
+            {
+              "name": "readOnly",
+              "value": "true"
+            },
+            {
+              "name": "writeOnly",
+              "value": "true"
+            },
+            {
+              "name": "isNullable",
+              "value": "false"
+            },
+            {
+              "name": "isPartitionStatus",
+              "value": "true"
+            },
+            {
+              "name": "isClusterStatus",
+              "value": "true"
+            },
+            {
+              "name": "isRequired",
+              "value": "true"
+            },
+            {
+              "name": "tags",
+              "value": "tag1"
+            },
+            {
+              "name": "tags",
+              "value": "tag2"
+            },
+            {
+              "name": "enum",
+              "value": "VAL1"
+            },
+            {
+              "name": "enum",
+              "value": "VAL2"
+            }
+          ],
+          "logicalFields": []
+        }
+      ],
+      "additionalProperties": [
+        {
+          "name": "dimension",
+          "value": "Consistency"
+        },
+        {
+          "name": "unit",
+          "value": "percent"
+        },
+        {
+          "name": "constraint_type",
+          "value": "custom"
+        },
+        {
+          "name": "quality_engine",
+          "value": "greatExpectations"
+        },
+        {
+          "name": "propertyName",
+          "value": "propertyValue"
+        }
+      ],
+      "reference": false
+    },
+    {
+      "code": "Macrozona ExpectColumnValuesToBeInSet",
+      "physicalEntities": [],
+      "physicalFields": [
+        {
+          "name": "Amount",
+          "type": "DECIMAL",
+          "ordinalPosition": 1,
+          "description": "The monetary amount associated with the transaction.",
+          "additionalProperties": [
+            {
+              "name": "displayName",
+              "value": "Amount"
+            },
+            {
+              "name": "summary",
+              "value": "The value of the transaction in a numeric format."
+            },
+            {
+              "name": "status",
+              "value": "active"
+            },
+            {
+              "name": "externalDocs",
+              "value": "https://www.google.it/"
+            },
+            {
+              "name": "classificationLevel",
+              "value": "PUBLIC"
+            },
+            {
+              "name": "format",
+              "value": "decimal"
+            },
+            {
+              "name": "default",
+              "value": "0.0"
+            },
+            {
+              "name": "precision",
+              "value": "2"
+            },
+            {
+              "name": "scale",
+              "value": "2"
+            },
+            {
+              "name": "minimum",
+              "value": "0"
+            },
+            {
+              "name": "maximum",
+              "value": "1000000"
+            },
+            {
+              "name": "isClassified",
+              "value": "false"
+            },
+            {
+              "name": "isUnique",
+              "value": "false"
+            },
+            {
+              "name": "exclusiveMinimum",
+              "value": "false"
+            },
+            {
+              "name": "exclusiveMaximum",
+              "value": "false"
+            },
+            {
+              "name": "readOnly",
+              "value": "false"
+            },
+            {
+              "name": "writeOnly",
+              "value": "false"
+            },
+            {
+              "name": "isNullable",
+              "value": "false"
+            },
+            {
+              "name": "isPartitionStatus",
+              "value": "false"
+            },
+            {
+              "name": "isClusterStatus",
+              "value": "false"
+            },
+            {
+              "name": "isRequired",
+              "value": "true"
+            },
+            {
+              "name": "tags",
+              "value": "financial"
+            },
+            {
+              "name": "tags",
+              "value": "numeric"
+            }
+          ],
+          "logicalFields": []
+        }
+      ],
+      "additionalProperties": [],
+      "reference": true
+    },
+    {
+      "code": "Macrozona ExpectColumnValuesToBeInSet",
+      "physicalEntities": [],
+      "physicalFields": [
+        {
+          "name": "Amount",
+          "type": "DECIMAL",
+          "ordinalPosition": 1,
+          "description": "The monetary amount associated with the transaction.",
+          "additionalProperties": [
+            {
+              "name": "displayName",
+              "value": "Amount"
+            },
+            {
+              "name": "summary",
+              "value": "The value of the transaction in a numeric format."
+            },
+            {
+              "name": "status",
+              "value": "active"
+            },
+            {
+              "name": "externalDocs",
+              "value": "https://www.google.it/"
+            },
+            {
+              "name": "classificationLevel",
+              "value": "PUBLIC"
+            },
+            {
+              "name": "format",
+              "value": "decimal"
+            },
+            {
+              "name": "default",
+              "value": "0.0"
+            },
+            {
+              "name": "precision",
+              "value": "2"
+            },
+            {
+              "name": "scale",
+              "value": "2"
+            },
+            {
+              "name": "minimum",
+              "value": "0"
+            },
+            {
+              "name": "maximum",
+              "value": "1000000"
+            },
+            {
+              "name": "isClassified",
+              "value": "false"
+            },
+            {
+              "name": "isUnique",
+              "value": "false"
+            },
+            {
+              "name": "exclusiveMinimum",
+              "value": "false"
+            },
+            {
+              "name": "exclusiveMaximum",
+              "value": "false"
+            },
+            {
+              "name": "readOnly",
+              "value": "false"
+            },
+            {
+              "name": "writeOnly",
+              "value": "false"
+            },
+            {
+              "name": "isNullable",
+              "value": "false"
+            },
+            {
+              "name": "isPartitionStatus",
+              "value": "false"
+            },
+            {
+              "name": "isClusterStatus",
+              "value": "false"
+            },
+            {
+              "name": "isRequired",
+              "value": "true"
+            },
+            {
+              "name": "tags",
+              "value": "financial"
+            },
+            {
+              "name": "tags",
+              "value": "numeric"
+            }
+          ],
+          "logicalFields": []
+        }
+      ],
+      "additionalProperties": [],
+      "reference": true
+    }
+  ]
+}
