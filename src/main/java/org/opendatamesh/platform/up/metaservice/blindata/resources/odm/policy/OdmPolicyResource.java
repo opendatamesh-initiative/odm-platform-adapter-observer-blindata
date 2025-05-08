@@ -1,6 +1,8 @@
 package org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy;
 
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +22,8 @@ public class OdmPolicyResource {
     private OdmPolicyEngineResource policyEngine;
     private Date createdAt;
     private Date updatedAt;
+
+    private ObjectNode externalContext;
 
     public OdmPolicyResource() {
     }
@@ -134,5 +138,13 @@ public class OdmPolicyResource {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public ObjectNode getExternalContext() {
+        return externalContext;
+    }
+
+    public void setExternalContext(ObjectNode externalContext) {
+        this.externalContext = externalContext;
     }
 }

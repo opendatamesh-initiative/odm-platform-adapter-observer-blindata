@@ -27,7 +27,7 @@ public class OdmPolicyClientConfigs {
     private RestTemplate restTemplate;
 
     @Bean
-    public OdmPolicyClient policyClient() {
+    public OdmPolicyClient odmPolicyClient() {
         if (active) {
             return new OdmPolicyClientImpl(policyServiceBaseUrl, RestUtilsFactory.getRestUtils(restTemplate));
         } else {

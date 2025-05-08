@@ -8,6 +8,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.datap
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload.DataProductPortsAndAssetsUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_align.PoliciesAlignFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload.PoliciesUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload.QualityUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.stages_upload.StagesUploadFactory;
@@ -29,7 +30,8 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
     private final Optional<DataProductPortsAndAssetsUploadFactory> dataProductVersionCreation;
     private final Optional<QualityUploadFactory> qualityUpload;
     private final Optional<StagesUploadFactory> stagesUploadFactory;
-    private final Optional<PoliciesUploadFactory> policiesCreation;
+    private final Optional<PoliciesAlignFactory> policiesAlignFactory;
+    private final Optional<PoliciesUploadFactory> policiesUploadFactory;
     private final Optional<DataProductRemovalFactory> dataProductDeletion;
 
     private final String eventType;
@@ -40,7 +42,8 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
             DataProductPortsAndAssetsUploadFactory dataProductVersionCreation,
             QualityUploadFactory qualityUpload,
             StagesUploadFactory stagesUploadFactory,
-            PoliciesUploadFactory policiesCreation,
+            PoliciesAlignFactory policiesAlignFactory,
+            PoliciesUploadFactory policiesUploadFactory,
             DataProductRemovalFactory dataProductDeletion,
             String eventType,
             String filter) {
@@ -48,7 +51,8 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
         this.dataProductVersionCreation = Optional.ofNullable(dataProductVersionCreation);
         this.qualityUpload = Optional.ofNullable(qualityUpload);
         this.stagesUploadFactory = Optional.ofNullable(stagesUploadFactory);
-        this.policiesCreation = Optional.ofNullable(policiesCreation);
+        this.policiesAlignFactory = Optional.ofNullable(policiesAlignFactory);
+        this.policiesUploadFactory = Optional.ofNullable(policiesUploadFactory);
         this.dataProductDeletion = Optional.ofNullable(dataProductDeletion);
         this.eventType = eventType;
         this.filter = filter;
@@ -69,8 +73,11 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
             if (stagesUploadFactory.isPresent()) {
                 stagesUploadFactory.get().getUseCase(event).execute();
             }
-            if (policiesCreation.isPresent()) {
-                policiesCreation.get().getUseCase(event).execute();
+            if (policiesAlignFactory.isPresent()) {
+                policiesAlignFactory.get().getUseCase(event).execute();
+            }
+            if (policiesUploadFactory.isPresent()) {
+                policiesUploadFactory.get().getUseCase(event).execute();
             }
             if (dataProductDeletion.isPresent()) {
                 dataProductDeletion.get().getUseCase(event).execute();

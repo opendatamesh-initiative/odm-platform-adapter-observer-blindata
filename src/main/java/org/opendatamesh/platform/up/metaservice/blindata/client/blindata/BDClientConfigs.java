@@ -15,6 +15,21 @@ public class BDClientConfigs {
     private RestTemplate restTemplate;
 
     @Bean
+    public BDGovernancePolicyClient bdGovernancePolicyClient() {
+        return new BDClientImpl(bdCredentials, bdDataProductConfig, restTemplate);
+    }
+
+    @Bean
+    public BDGovernancePolicySuiteClient bdGovernancePolicySuiteClient() {
+        return new BDClientImpl(bdCredentials, bdDataProductConfig, restTemplate);
+    }
+
+    @Bean
+    public BDGovernancePolicyImplementationClient bdGovernancePolicyImplementationClient() {
+        return new BDClientImpl(bdCredentials, bdDataProductConfig, restTemplate);
+    }
+
+    @Bean
     public BDDataProductClient bdDataProductClient() {
         return new BDClientImpl(bdCredentials, bdDataProductConfig, restTemplate);
     }

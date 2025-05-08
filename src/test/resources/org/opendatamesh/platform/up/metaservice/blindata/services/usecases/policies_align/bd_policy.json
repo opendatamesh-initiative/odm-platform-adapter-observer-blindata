@@ -1,0 +1,19 @@
+{
+  "uuid": null,
+  "governancePolicySuite": {
+    "uuid": null,
+    "displayName": "ODM Policies",
+    "name": "odmPolicies",
+    "description": null,
+    "additionalProperties": []
+  },
+  "name": "odmPolicies::provaOpaPolicy",
+  "displayName": "prova Opa Policy",
+  "description": "",
+  "policyVersion": "v1.0.0",
+  "policyStatus": "PUBLISHED",
+  "policyType": "Generic",
+  "implementationType": "AUTOMATIC_EVALUATION",
+  "adoptionTargetType": "DATA_PRODUCT",
+  "additionalProperties": []
+}
