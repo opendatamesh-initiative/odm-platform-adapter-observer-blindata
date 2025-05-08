@@ -58,6 +58,9 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
                 extractPhysicalFieldQualityCheckFromDefinitionProperty(definitionProperty, physicalField);
             }
         }
+        if (definition.getsContext() != null) {
+            semanticLinkManager.enrichWithSemanticContext(physicalEntity, definition.getsContext());
+        }
 
         //Handle physical entity quality checks
         extractPhysicalEntityQualityCheckFromDefinition(definition, physicalEntity);
@@ -98,9 +101,6 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
         physicalEntity.setName(dataStoreApiBlindataDefinition.getName());
         physicalEntity.setDescription(dataStoreApiBlindataDefinition.getDescription());
         physicalEntity.setTableType(dataStoreApiBlindataDefinition.getPhysicalType());
-        if (dataStoreApiBlindataDefinition.getsContext() != null) {
-            semanticLinkManager.enrichWithSemanticContext(physicalEntity, dataStoreApiBlindataDefinition.getsContext());
-        }
         physicalEntity.setAdditionalProperties(getExtractAdditionalPropertiesForEntities(dataStoreApiBlindataDefinition));
         return physicalEntity;
     }
