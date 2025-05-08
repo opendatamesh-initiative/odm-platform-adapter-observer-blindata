@@ -1,8 +1,8 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload;
 
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDSystemRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDProductPortAssetsRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDSystemRes;
 
 import java.util.Optional;
 
@@ -33,5 +33,10 @@ public class DataProductPortsAndAssetsUploadBlindataOutboundPortMock implements 
     @Override
     public Optional<BDSystemRes> getSystemDependency(String portDependency) {
         return Optional.empty();
+    }
+
+    @Override
+    public String getDataProductAdditionalPropertiesRegex() {
+        return "\\bx-([\\S]+)";
     }
 }

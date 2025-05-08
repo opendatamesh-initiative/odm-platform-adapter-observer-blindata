@@ -1,9 +1,9 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload;
 
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipResponsibilityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipRoleRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 
 import java.util.Optional;
 
@@ -53,5 +53,10 @@ public class DataProductUploadBlindataOutboundPortMock implements DataProductUpl
     @Override
     public void createDataProductResponsibility(BDStewardshipRoleRes role, BDShortUserRes user, BDDataProductRes dataProduct) {
         //DO NOTHING
+    }
+
+    @Override
+    public String getDataProductAdditionalPropertiesRegex() {
+        return "\\bx-([\\S]+)";
     }
 }

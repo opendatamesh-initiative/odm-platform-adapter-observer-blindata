@@ -5,7 +5,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventTyp
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.ActivityEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.DataProductVersionEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDIssueCampaignClient;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDIssueManagementConfig;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.BDIssueManagementConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDQualityClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDUserClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.QualityCheckMapper;

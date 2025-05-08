@@ -14,6 +14,7 @@ blindata:
   enableAsync: false
   dataProducts:
     assetsCleanup: false
+    additionalPropertiesRegex: "\\bx-([\\S]+)"
   issueManagement:
     policies:
       active: true

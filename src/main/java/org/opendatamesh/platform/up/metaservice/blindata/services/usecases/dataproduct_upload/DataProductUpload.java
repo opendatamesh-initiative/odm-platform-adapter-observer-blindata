@@ -2,16 +2,22 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.data
 
 import org.opendatamesh.dpds.model.info.Info;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAdditionalPropertiesRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipResponsibilityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipRoleRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
 
@@ -98,9 +104,51 @@ class DataProductUpload implements UseCase {
             blindataDataProduct.setProductStatus("DRAFT");
         }
 
+        if (!CollectionUtils.isEmpty(odmDataProduct.getAdditionalProperties())) {
+            Optional.ofNullable(odmDataProduct.getAdditionalProperties().get("x-productType"))
+                    .ifPresent(productType -> {
+                        if (productType.isTextual()) {
+                            blindataDataProduct.setProductType(productType.asText());
+                        } else {
+                            getUseCaseLogger().warn("Product Type is not a textual value: " + productType);
+                        }
+                    });
+        }
+
+        handleDataProductAdditionalProperties(odmDataProduct, blindataDataProduct);
+
         return blindataDataProduct;
     }
 
+
+    private void handleDataProductAdditionalProperties(Info odmDataProduct, BDDataProductRes blindataDataProduct) {
+        String addPropRegex = blindataOutboundPort.getDataProductAdditionalPropertiesRegex();
+        if (CollectionUtils.isEmpty(blindataDataProduct.getAdditionalProperties())) {
+            blindataDataProduct.setAdditionalProperties(new ArrayList<>());
+        }
+        try {
+            Pattern compiledPattern = Pattern.compile(addPropRegex);
+            if (!CollectionUtils.isEmpty(odmDataProduct.getAdditionalProperties()) && StringUtils.hasText(addPropRegex)) {
+                odmDataProduct.getAdditionalProperties().forEach((key, value) -> {
+                    if (key.startsWith("x-productType")) {
+                        return;
+                    }
+
+                    Matcher matcher = compiledPattern.matcher(key);
+                    if (matcher.find()) {
+                        String propName = matcher.group(1);
+                        blindataDataProduct.getAdditionalProperties()
+                                .add(new BDAdditionalPropertiesRes(
+                                        propName,
+                                        value.isTextual() ? value.asText() : value.toString()
+                                ));
+                    }
+                });
+            }
+        } catch (PatternSyntaxException e) {
+            getUseCaseLogger().warn("Invalid regex for additional properties: " + addPropRegex, e);
+        }
+    }
 
     private void updateDataProduct(BDDataProductRes oldBdDataProduct) {
         BDDataProductRes newBdDataProduct = odmToBlindataDataProduct(odmOutboundPort.getDataProductInfo());

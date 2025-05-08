@@ -54,4 +54,9 @@ class DataProductUploadBlindataOutboundPortDryRunImpl implements DataProductUplo
     public void createDataProductResponsibility(BDStewardshipRoleRes role, BDShortUserRes user, BDDataProductRes dataProduct) {
         //DO NOTHING
     }
+
+    @Override
+    public String getDataProductAdditionalPropertiesRegex() {
+        return outboundPort.getDataProductAdditionalPropertiesRegex();
+    }
 }

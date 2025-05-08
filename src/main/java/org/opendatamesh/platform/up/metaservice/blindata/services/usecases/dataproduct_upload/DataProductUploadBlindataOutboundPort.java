@@ -24,4 +24,6 @@ interface DataProductUploadBlindataOutboundPort {
     Optional<BDStewardshipResponsibilityRes> findDataProductResponsibilities(String userUuid, String dataProductUuid);
 
     void createDataProductResponsibility(BDStewardshipRoleRes role, BDShortUserRes user, BDDataProductRes dataProduct);
+
+    String getDataProductAdditionalPropertiesRegex();
 }
