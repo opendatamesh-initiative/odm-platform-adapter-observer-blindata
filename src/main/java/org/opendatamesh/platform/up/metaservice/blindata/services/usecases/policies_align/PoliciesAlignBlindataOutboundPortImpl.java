@@ -86,9 +86,4 @@ class PoliciesAlignBlindataOutboundPortImpl implements PoliciesAlignBlindataOutb
         policyImplementationClient.deletePolicyImplementation(uuid);
     }
 
-    @Override
-    public void deletePolicy(String uuid) {
-        policyClient.deletePolicy(uuid);
-    }
-
 }

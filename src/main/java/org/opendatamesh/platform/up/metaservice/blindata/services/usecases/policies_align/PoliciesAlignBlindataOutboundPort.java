@@ -27,7 +27,4 @@ interface PoliciesAlignBlindataOutboundPort {
     BDPolicyImplementationRes updatePolicyImplementation(String uuid, BDPolicyRes policy, BDPolicyImplementationRes extractedPolicyImplementation);
 
     void deletePolicyImplementation(String uuid);
-
-    void deletePolicy(String uuid);
-
 }

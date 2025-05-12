@@ -265,8 +265,6 @@ public class PoliciesAlignTest {
                 .thenReturn(new PageImpl<>(List.of(existingImpl)));
 
         // Capture delete calls
-        ArgumentCaptor<String> policyDeleteCaptor = ArgumentCaptor.forClass(String.class);
-        doNothing().when(bdPolicyClient).deletePolicy(policyDeleteCaptor.capture());
         ArgumentCaptor<String> implDeleteCaptor = ArgumentCaptor.forClass(String.class);
         doNothing().when(bdImplementationClient).deletePolicyImplementation(implDeleteCaptor.capture());
 
@@ -274,7 +272,7 @@ public class PoliciesAlignTest {
         policiesAlignFactory.getUseCase(deleteEvent).execute();
 
         // Verify delete called and other operations not invoked
-        verify(bdPolicyClient, times(1)).deletePolicy(any());
+        verify(bdPolicyClient, never()).deletePolicy(any());
         verify(bdSuiteClient, never()).deletePolicySuite(any());
         verify(bdImplementationClient, times(1)).deletePolicyImplementation(any());
         verify(bdPolicyClient, never()).createPolicy(any());
@@ -285,8 +283,6 @@ public class PoliciesAlignTest {
         verify(bdImplementationClient, never()).putPolicyImplementation(any());
 
         // Assert that the correct IDs were deleted
-        assertThat(policyDeleteCaptor.getValue())
-                .isEqualTo(existingPolicy.getUuid());
         assertThat(implDeleteCaptor.getValue())
                 .isEqualTo(existingImpl.getUuid());
     }

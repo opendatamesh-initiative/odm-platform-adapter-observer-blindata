@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.*;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDPolicyImplementationRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDPolicyRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDPolicySuiteRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyResource;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
@@ -36,14 +38,14 @@ class PoliciesAlignDelete implements UseCase {
 
             if (externalContextIsNotValid(externalContext, odmPolicy)) return;
 
-            BDPolicyRes extractedPolicy = extractBdPolicyFromExternalContext(externalContext);
+            BDPolicyImplementationRes extractedPolicyImplementation = extractBdPolicyImplementationFromExternalContext(externalContext);
+            if (extractedPolicyImplementationIsNotValid(extractedPolicyImplementation, odmPolicy)) return;
+
+            BDPolicyRes extractedPolicy = extractedPolicyImplementation.getGovernancePolicy();
             if (extractedPolicyIsNotValid(extractedPolicy, odmPolicy)) return;
 
             BDPolicySuiteRes extractedSuite = extractedPolicy.getGovernancePolicySuite();
             if (extractedPolicySuiteIsNotValid(extractedSuite, odmPolicy)) return;
-
-            BDPolicyImplementationRes extractedPolicyImplementation = buildPolicyImplementationFromOdmPolicy(odmPolicy);
-            if (extractedPolicyImplementationIsNotValid(extractedPolicyImplementation, odmPolicy)) return;
 
             // Handle Policy Suite
             Optional<BDPolicySuiteRes> suite = blindataOutboundPort
@@ -68,14 +70,11 @@ class PoliciesAlignDelete implements UseCase {
                 blindataOutboundPort.deletePolicyImplementation(implementation.get().getUuid());
                 getUseCaseLogger().info(String.format("%s Deleted Policy Implementation: %s on Blindata", USE_CASE_PREFIX, implementation.get().getName()));
             }
-            blindataOutboundPort.deletePolicy(policy.get().getUuid());
-            getUseCaseLogger().info(String.format("%s Deleted Policy: %s on Blindata", USE_CASE_PREFIX, policy.get().getName()));
-
         });
     }
 
     private boolean extractedPolicyImplementationIsNotValid(BDPolicyImplementationRes extractedPolicyImplementation, OdmPolicyResource odmPolicy) {
-        if (!StringUtils.hasText(extractedPolicyImplementation.getName())) {
+        if (extractedPolicyImplementation == null || !StringUtils.hasText(extractedPolicyImplementation.getName())) {
             getUseCaseLogger().warn(String.format("%s Invalid Policy Implementation built from Odm Policy: %s", USE_CASE_PREFIX, odmPolicy.getName()));
             return true;
         }
@@ -98,12 +97,12 @@ class PoliciesAlignDelete implements UseCase {
         return false;
     }
 
-    private BDPolicyRes extractBdPolicyFromExternalContext(ObjectNode externalContext) {
+    private BDPolicyImplementationRes extractBdPolicyImplementationFromExternalContext(ObjectNode externalContext) {
         try {
             return new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                    .treeToValue(externalContext, BDPolicyRes.class);
+                    .treeToValue(externalContext, BDPolicyImplementationRes.class);
         } catch (JacksonException e) {
-            getUseCaseLogger().warn(String.format("%s Error mapping external context to Blindata Policy: %s", USE_CASE_PREFIX, e.getMessage()), e);
+            getUseCaseLogger().warn(String.format("%s Error mapping external context to Blindata Policy Implementation: %s", USE_CASE_PREFIX, e.getMessage()), e);
             return null;
         }
     }
@@ -114,26 +113,6 @@ class PoliciesAlignDelete implements UseCase {
             return true;
         }
         return false;
-    }
-
-    private BDPolicyImplementationRes buildPolicyImplementationFromOdmPolicy(OdmPolicyResource odmPolicy) {
-
-        BDPolicyImplementationRes policyImplementation = new BDPolicyImplementationRes();
-        policyImplementation.setName(odmPolicy.getName());
-        policyImplementation.setDisplayName(odmPolicy.getDisplayName());
-        policyImplementation.setDescription(odmPolicy.getDescription());
-        policyImplementation.setBlocking(odmPolicy.getBlockingFlag());
-        policyImplementation.setPolicyBody(odmPolicy.getRawContent());
-        odmPolicy.getEvaluationEvents().forEach(odmEvalEvent ->
-                policyImplementation.getEvaluationEvents().add(
-                        new BDPolicyImplementationEvaluationEventRes(BDPolicyEvaluationEvent.valueOf(odmEvalEvent.getEvent()))
-                )
-        );
-        policyImplementation.setEvaluationCondition(odmPolicy.getFilteringExpression());
-        if (odmPolicy.getPolicyEngine() != null) {
-            policyImplementation.setPolicyEngineName(odmPolicy.getPolicyEngine().getName());
-        }
-        return policyImplementation;
     }
 
     private void withErrorHandling(Runnable runnable) throws UseCaseExecutionException {
@@ -149,5 +128,4 @@ class PoliciesAlignDelete implements UseCase {
             throw new UseCaseExecutionException(e.getMessage(), e);
         }
     }
-
 }

@@ -149,7 +149,7 @@ These are:
     - Supported Event Types
         - POLICY_CREATED: creates the Suite, Policy and Implementation if not present.
         - POLICY_UPDATED: updates the Suite, Policy and Implementation.
-        - POLICY_DELETED: deletes only the Policy and its Implementation if present.
+        - POLICY_DELETED: deletes only the Implementation of a Policy, if present.
 
 ### Configuration
 
