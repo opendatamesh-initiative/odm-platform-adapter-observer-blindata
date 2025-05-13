@@ -7,6 +7,7 @@ import org.opendatamesh.dpds.datastoreapi.v1.parser.DataStoreApiParser;
 import org.opendatamesh.dpds.datastoreapi.v1.parser.DataStoreApiParserFactory;
 import org.opendatamesh.dpds.datastoreapi.v1.visitor.DataStoreApiVisitor;
 import org.opendatamesh.dpds.model.core.StandardDefinition;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.BDDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.quality.QualityCheck;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionEntitiesExtractor;
@@ -26,13 +27,15 @@ import static org.opendatamesh.platform.up.metaservice.blindata.services.usecase
 public class PortDatastoreApiEntitiesExtractor implements PortStandardDefinitionEntitiesExtractor, PortStandardDefinitionQualityExtractor {
 
     private final SemanticLinkManager semanticLinkManager;
+    private final BDDataProductConfig bdDataProductConfig;
 
     private final String SPECIFICATION = "datastoreapi";
     private final String VERSION = "1.*.*";
 
     @Autowired
-    public PortDatastoreApiEntitiesExtractor(SemanticLinkManager semanticLinkManager) {
+    public PortDatastoreApiEntitiesExtractor(SemanticLinkManager semanticLinkManager, BDDataProductConfig bdDataProductConfig) {
         this.semanticLinkManager = semanticLinkManager;
+        this.bdDataProductConfig = bdDataProductConfig;
     }
 
     @Override
@@ -49,7 +52,7 @@ public class PortDatastoreApiEntitiesExtractor implements PortStandardDefinition
             DataStoreApi dataStoreApi = parser.deserialize(new ObjectMapper().valueToTree(portStandardDefinition.getDefinition()));
 
             List<QualityCheck> qualityChecks = new ArrayList<>();
-            DataStoreApiVisitor visitor = new DataStoreApiVisitorImpl(semanticLinkManager, NO_OP_ENTITIES(), qualityChecks::add);
+            DataStoreApiVisitor visitor = new DataStoreApiVisitorImpl(semanticLinkManager, NO_OP_ENTITIES(), qualityChecks::add, bdDataProductConfig);
             visitor.visit(dataStoreApi.getSchema());
             return qualityChecks;
         } catch (MismatchedInputException e) {
@@ -68,7 +71,7 @@ public class PortDatastoreApiEntitiesExtractor implements PortStandardDefinition
                     .register(new DataStoreApiBlindataDefinitionConverter());
             DataStoreApi dataStoreApi = parser.deserialize(new ObjectMapper().valueToTree(portStandardDefinition.getDefinition()));
             List<BDPhysicalEntityRes> physicalEntities = new ArrayList<>();
-            DataStoreApiVisitor visitor = new DataStoreApiVisitorImpl(semanticLinkManager, physicalEntities::add, NO_OP_QUALITY_DEFINITIONS());
+            DataStoreApiVisitor visitor = new DataStoreApiVisitorImpl(semanticLinkManager, physicalEntities::add, NO_OP_QUALITY_DEFINITIONS(), bdDataProductConfig);
             visitor.visit(dataStoreApi.getSchema());
             return physicalEntities;
         } catch (MismatchedInputException e) {
