@@ -1,0 +1,69 @@
+{
+  "id": 2,
+  "rootId": 2,
+  "name": "odmPolicies::provaOpaPolicy::provaImplementation",
+  "displayName": "provaImplementation",
+  "description": null,
+  "blockingFlag": true,
+  "rawContent": "package dataproduct\n\ndefault allow := false\ndefault warning := false\n\nallow := true {\n    startswith(input.afterState.dataProductVersion.info.fullyQualifiedName, \"urn\")\n}\n\nwarning := true {\n    startswith(input.name, \"x\")\n}\n",
+  "suite": "odmPolicies",
+  "evaluationEvents": [
+    {
+      "event": "DATA_PRODUCT_CREATION"
+    },
+    {
+      "event": "DATA_PRODUCT_VERSION_CREATION"
+    }
+  ],
+  "filteringExpression": "",
+  "policyEngine": {
+    "id": 1,
+    "name": "opa-policy-checker",
+    "displayName": "OPA Policy Checker",
+    "adapterUrl": "http://localhost:9009",
+    "createdAt": 1746016869816,
+    "updatedAt": 1746016869816
+  },
+  "createdAt": 1746016884045,
+  "updatedAt": 1746016884047,
+  "externalContext": {
+    "uuid": null,
+    "name": "odmPolicies::provaOpaPolicy::provaImplementation",
+    "displayName": "provaImplementation",
+    "description": null,
+    "evaluationEvent": null,
+    "evaluationEvents": [
+      {
+        "event": "DATA_PRODUCT_CREATION"
+      },
+      {
+        "event": "DATA_PRODUCT_VERSION_CREATION"
+      }
+    ],
+    "governancePolicy": {
+      "uuid": null,
+      "governancePolicySuite": {
+        "uuid": null,
+        "displayName": "ODM Policies",
+        "name": "odmPolicies",
+        "description": null,
+        "additionalProperties": []
+      },
+      "name": "odmPolicies::provaOpaPolicy",
+      "displayName": "prova Opa Policy",
+      "description": "",
+      "policyVersion": "v1.0.0",
+      "policyStatus": "PUBLISHED",
+      "policyType": "Generic",
+      "implementationType": "AUTOMATIC_EVALUATION",
+      "adoptionTargetType": "DATA_PRODUCT",
+      "additionalProperties": []
+    },
+    "evaluationCondition": "",
+    "blocking": true,
+    "policyBody": "package dataproduct\n\ndefault allow := false\ndefault warning := false\n\nallow := true {\n    startswith(input.afterState.dataProductVersion.info.fullyQualifiedName, \"urn\")\n}\n\nwarning := true {\n    startswith(input.name, \"x\")\n}\n",
+    "policyEngineName": "opa-policy-checker",
+    "version": null
+  },
+  "lastVersion": true
+}

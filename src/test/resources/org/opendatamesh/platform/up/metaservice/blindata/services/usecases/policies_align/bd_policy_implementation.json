@@ -1,0 +1,39 @@
+{
+  "uuid": null,
+  "name": "odmPolicies::provaOpaPolicy::provaImplementation",
+  "displayName": "provaImplementation",
+  "description": null,
+  "evaluationEvent": null,
+  "evaluationEvents": [
+    {
+      "event": "DATA_PRODUCT_CREATION"
+    },
+    {
+      "event": "DATA_PRODUCT_VERSION_CREATION"
+    }
+  ],
+  "governancePolicy": {
+    "uuid": null,
+    "governancePolicySuite": {
+      "uuid": null,
+      "displayName": "ODM Policies",
+      "name": "odmPolicies",
+      "description": null,
+      "additionalProperties": []
+    },
+    "name": "odmPolicies::provaOpaPolicy",
+    "displayName": "prova Opa Policy",
+    "description": "",
+    "policyVersion": "v1.0.0",
+    "policyStatus": "PUBLISHED",
+    "policyType": "Generic",
+    "implementationType": "AUTOMATIC_EVALUATION",
+    "adoptionTargetType": "DATA_PRODUCT",
+    "additionalProperties": []
+  },
+  "evaluationCondition": "",
+  "blocking": true,
+  "policyBody": "package dataproduct\n\ndefault allow := false\ndefault warning := false\n\nallow := true {\n    startswith(input.afterState.dataProductVersion.info.fullyQualifiedName, \"urn\")\n}\n\nwarning := true {\n    startswith(input.name, \"x\")\n}\n",
+  "policyEngineName": "opa-policy-checker",
+  "version": null
+}
