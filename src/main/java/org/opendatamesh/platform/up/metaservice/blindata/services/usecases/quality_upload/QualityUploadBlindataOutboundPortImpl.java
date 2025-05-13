@@ -1,7 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload;
 
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDIssueCampaignClient;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDIssueManagementConfig;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.BDIssueManagementConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDQualityClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDUserClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;

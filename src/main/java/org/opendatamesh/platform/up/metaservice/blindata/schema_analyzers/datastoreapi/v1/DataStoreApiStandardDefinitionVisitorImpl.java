@@ -2,6 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datas
 
 import com.google.common.collect.Lists;
 import org.opendatamesh.dpds.datastoreapi.v1.extensions.DataStoreApiStandardDefinitionVisitor;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.BDDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAdditionalPropertiesRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
@@ -21,6 +22,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
 
@@ -30,18 +34,21 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
     private final DataStoreApiVisitorQualityDefinitionsPresenter qualityCheckPresenter;
     private final SemanticLinkManager semanticLinkManager;
     private final String databaseSchemaName;
+    private final BDDataProductConfig bdDataProductConfig;
 
     protected DataStoreApiStandardDefinitionVisitorImpl(
             DataStoreApiVisitorEntitiesPresenter entitiesPresenter,
             DataStoreApiVisitorQualityDefinitionsPresenter qualityCheckPresenter,
             SemanticLinkManager semanticLinkManager,
-            String databaseSchemaName
+            String databaseSchemaName,
+            BDDataProductConfig bdDataProductConfig
     ) {
         super(DataStoreApiBlindataDefinition.class);
         this.physicalEntityPresenter = entitiesPresenter;
         this.qualityCheckPresenter = qualityCheckPresenter;
         this.semanticLinkManager = semanticLinkManager;
         this.databaseSchemaName = databaseSchemaName;
+        this.bdDataProductConfig = bdDataProductConfig;
     }
 
     @Override
@@ -101,7 +108,7 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
         physicalEntity.setName(dataStoreApiBlindataDefinition.getName());
         physicalEntity.setDescription(dataStoreApiBlindataDefinition.getDescription());
         physicalEntity.setTableType(dataStoreApiBlindataDefinition.getPhysicalType());
-        physicalEntity.setAdditionalProperties(getExtractAdditionalPropertiesForEntities(dataStoreApiBlindataDefinition));
+        physicalEntity.setAdditionalProperties(extractAdditionalPropertiesForEntity(dataStoreApiBlindataDefinition));
         return physicalEntity;
     }
 
@@ -231,7 +238,17 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
         return quality.getCustomProperties() != null && StringUtils.hasText(quality.getCustomProperties().getRefName());
     }
 
-    private List<BDAdditionalPropertiesRes> getExtractAdditionalPropertiesForEntities(DataStoreApiBlindataDefinition dataStoreApiSchemaEntity) {
+    private BDPhysicalFieldRes definitionPropertyToPhysicalField(DataStoreApiBlindataDefinitionProperty schema) {
+        BDPhysicalFieldRes fieldRes = new BDPhysicalFieldRes();
+        fieldRes.setName(schema.getName());
+        fieldRes.setType(schema.getPhysicalType());
+        fieldRes.setDescription(StringUtils.hasText(schema.getDescription()) ? schema.getDescription() : null);
+        fieldRes.setOrdinalPosition(schema.getOrdinalPosition());
+        fieldRes.setAdditionalProperties(extractAdditionalPropertiesForField(schema));
+        return fieldRes;
+    }
+
+    private List<BDAdditionalPropertiesRes> extractAdditionalPropertiesForEntity(DataStoreApiBlindataDefinition dataStoreApiSchemaEntity) {
         List<BDAdditionalPropertiesRes> additionalPropertiesRes = new ArrayList<>();
         if (StringUtils.hasText(dataStoreApiSchemaEntity.getStatus())) {
             additionalPropertiesRes.add(new BDAdditionalPropertiesRes("status", dataStoreApiSchemaEntity.getStatus()));
@@ -251,20 +268,11 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
         if (StringUtils.hasText(dataStoreApiSchemaEntity.getExternalDocs())) {
             additionalPropertiesRes.add(new BDAdditionalPropertiesRes("externalDocs", dataStoreApiSchemaEntity.getExternalDocs()));
         }
+        handlePhysicalEntityCustomAdditionalProperties(additionalPropertiesRes, dataStoreApiSchemaEntity);
         return additionalPropertiesRes;
     }
 
-    private BDPhysicalFieldRes definitionPropertyToPhysicalField(DataStoreApiBlindataDefinitionProperty schema) {
-        BDPhysicalFieldRes fieldRes = new BDPhysicalFieldRes();
-        fieldRes.setName(schema.getName());
-        fieldRes.setType(schema.getPhysicalType());
-        fieldRes.setDescription(StringUtils.hasText(schema.getDescription()) ? schema.getDescription() : null);
-        fieldRes.setOrdinalPosition(schema.getOrdinalPosition());
-        fieldRes.setAdditionalProperties(extractAdditionalPropertiesForFields(schema));
-        return fieldRes;
-    }
-
-    private List<BDAdditionalPropertiesRes> extractAdditionalPropertiesForFields(DataStoreApiBlindataDefinitionProperty dataStoreApiSchemaColumn) {
+    private List<BDAdditionalPropertiesRes> extractAdditionalPropertiesForField(DataStoreApiBlindataDefinitionProperty dataStoreApiSchemaColumn) {
         List<BDAdditionalPropertiesRes> additionalPropertiesRes = new ArrayList<>();
 
         extractStringValuesFromSchemaColumn(dataStoreApiSchemaColumn, additionalPropertiesRes);
@@ -277,8 +285,52 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
         if (!CollectionUtils.isEmpty(dataStoreApiSchemaColumn.getEnumValues())) {
             dataStoreApiSchemaColumn.getEnumValues().forEach(tag -> additionalPropertiesRes.add(new BDAdditionalPropertiesRes("enum", tag)));
         }
-
+        handlePhysicalFieldCustomAdditionalProperties(additionalPropertiesRes, dataStoreApiSchemaColumn);
         return additionalPropertiesRes;
+    }
+
+    private void handlePhysicalFieldCustomAdditionalProperties(List<BDAdditionalPropertiesRes> additionalProperties, DataStoreApiBlindataDefinitionProperty definitionProperty) {
+        String addPropRegex = bdDataProductConfig.getAdditionalPropertiesRegex();
+        if (!StringUtils.hasText(addPropRegex)) return;
+        try {
+            Pattern compiledPattern = Pattern.compile(addPropRegex);
+            if (!CollectionUtils.isEmpty(definitionProperty.getAdditionalProperties()) && StringUtils.hasText(addPropRegex)) {
+                definitionProperty.getAdditionalProperties().forEach((key, value) -> {
+                    Matcher matcher = compiledPattern.matcher(key);
+                    if (matcher.find()) {
+                        String propName = matcher.group(1);
+                        additionalProperties.add(new BDAdditionalPropertiesRes(
+                                propName,
+                                value.isTextual() ? value.asText() : value.toString()
+                        ));
+                    }
+                });
+            }
+        } catch (PatternSyntaxException e) {
+            getUseCaseLogger().warn("Invalid regex for additional properties: " + addPropRegex, e);
+        }
+    }
+
+    private void handlePhysicalEntityCustomAdditionalProperties(List<BDAdditionalPropertiesRes> additionalProperties, DataStoreApiBlindataDefinition definition) {
+        String addPropRegex = bdDataProductConfig.getAdditionalPropertiesRegex();
+        if (!StringUtils.hasText(addPropRegex)) return;
+        try {
+            Pattern compiledPattern = Pattern.compile(addPropRegex);
+            if (!CollectionUtils.isEmpty(definition.getAdditionalProperties()) && StringUtils.hasText(addPropRegex)) {
+                definition.getAdditionalProperties().forEach((key, value) -> {
+                    Matcher matcher = compiledPattern.matcher(key);
+                    if (matcher.find()) {
+                        String propName = matcher.group(1);
+                        additionalProperties.add(new BDAdditionalPropertiesRes(
+                                propName,
+                                value.isTextual() ? value.asText() : value.toString()
+                        ));
+                    }
+                });
+            }
+        } catch (PatternSyntaxException e) {
+            getUseCaseLogger().warn("Invalid regex for additional properties: " + addPropRegex, e);
+        }
     }
 
     private void extractStringValuesFromSchemaColumn(DataStoreApiBlindataDefinitionProperty dataStoreApiSchemaColumn, List<BDAdditionalPropertiesRes> additionalPropertiesRes) {
