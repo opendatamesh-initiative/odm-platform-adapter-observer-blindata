@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opendatamesh.dpds.model.DataProductVersion;
 import org.opendatamesh.dpds.model.interfaces.Port;
 import org.opendatamesh.dpds.model.interfaces.Promises;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.BDDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssuePolicyRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualitySuiteRes;
@@ -40,9 +41,12 @@ public class QualityUploadTest {
 
     @Mock
     private SemanticLinkManager mockSemanticLinkManager;
+
+    @Mock
+    private BDDataProductConfig mockBDDataProductConfig;
+
     @InjectMocks
     private PortDatastoreApiEntitiesExtractor portStandardDefinitionAnalyzer;
-
 
     @Test
     public void testDataProductVersionUpload() throws IOException, UseCaseExecutionException {
@@ -97,7 +101,6 @@ public class QualityUploadTest {
                 .ignoringCollectionOrder()
                 .ignoringFields("policyContent")
                 .isEqualTo(expectedQualityUpload.getIssuePolicies());
-
     }
 
     static class QualityExpectedResult {
@@ -116,7 +119,6 @@ public class QualityUploadTest {
         public void setQualitySuite(BDQualitySuiteRes qualitySuite) {
             this.qualitySuite = qualitySuite;
         }
-
 
         public List<BDIssuePolicyRes> getIssuePolicies() {
             return issuePolicies;

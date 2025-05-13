@@ -9,7 +9,7 @@ public class BDDataProductConfig {
     private boolean assetsCleanup;
 
     @Value("${blindata.dataProducts.additionalPropertiesRegex:}")
-    String additionalPropertiesRegex;
+    private String additionalPropertiesRegex;
 
     public boolean isAssetsCleanup() {
         return assetsCleanup;
