@@ -2,7 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datas
 
 import com.google.common.collect.Lists;
 import org.opendatamesh.dpds.datastoreapi.v1.extensions.DataStoreApiStandardDefinitionVisitor;
-import org.opendatamesh.platform.up.metaservice.blindata.configurations.BDDataProductConfig;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAdditionalPropertiesRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
@@ -34,14 +34,14 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
     private final DataStoreApiVisitorQualityDefinitionsPresenter qualityCheckPresenter;
     private final SemanticLinkManager semanticLinkManager;
     private final String databaseSchemaName;
-    private final BDDataProductConfig bdDataProductConfig;
+    private final BdDataProductConfig bdDataProductConfig;
 
     protected DataStoreApiStandardDefinitionVisitorImpl(
             DataStoreApiVisitorEntitiesPresenter entitiesPresenter,
             DataStoreApiVisitorQualityDefinitionsPresenter qualityCheckPresenter,
             SemanticLinkManager semanticLinkManager,
             String databaseSchemaName,
-            BDDataProductConfig bdDataProductConfig
+            BdDataProductConfig bdDataProductConfig
     ) {
         super(DataStoreApiBlindataDefinition.class);
         this.physicalEntityPresenter = entitiesPresenter;

@@ -4,7 +4,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issu
 
 import java.util.Optional;
 
-public interface BDIssueCampaignClient {
+public interface BdIssueCampaignClient {
     Optional<BDIssueCampaignRes> getIssueCampaign(String campaignName);
 
     BDIssueCampaignRes createCampaign(BDIssueCampaignRes newIssueCampaign);

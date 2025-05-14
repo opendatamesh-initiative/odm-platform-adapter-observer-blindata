@@ -1,17 +1,15 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload;
 
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDIssueCampaignClient;
-import org.opendatamesh.platform.up.metaservice.blindata.configurations.BDIssueManagementConfig;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDQualityClient;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDUserClient;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdIssueCampaignClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdQualityClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdUserClient;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdIssueManagementConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssuePolicyRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityCheckRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualitySuiteRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.QualityCheckMapper;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.quality.QualityCheck;
 import org.springframework.util.CollectionUtils;
 
@@ -20,13 +18,15 @@ import java.util.stream.Collectors;
 
 class QualityUploadBlindataOutboundPortImpl implements QualityUploadBlindataOutboundPort {
 
-    private final BDQualityClient bdQualityClient;
-    private final BDIssueCampaignClient bdIssueClient;
-    private final BDUserClient bdUserClient;
-    private final BDIssueManagementConfig issuePolicyConfig;
+    private final BdDataProductClient bdDataProductClient;
+    private final BdQualityClient bdQualityClient;
+    private final BdIssueCampaignClient bdIssueClient;
+    private final BdUserClient bdUserClient;
+    private final BdIssueManagementConfig issuePolicyConfig;
     private final QualityCheckMapper qualityCheckMapper;
 
-    QualityUploadBlindataOutboundPortImpl(BDQualityClient bdQualityClient, BDIssueCampaignClient bdIssueClient, BDUserClient bdUserClient, BDIssueManagementConfig issuePolicyConfig, QualityCheckMapper qualityCheckMapper) {
+    QualityUploadBlindataOutboundPortImpl(BdDataProductClient bdDataProductClient, BdQualityClient bdQualityClient, BdIssueCampaignClient bdIssueClient, BdUserClient bdUserClient, BdIssueManagementConfig issuePolicyConfig, QualityCheckMapper qualityCheckMapper) {
+        this.bdDataProductClient = bdDataProductClient;
         this.bdQualityClient = bdQualityClient;
         this.bdIssueClient = bdIssueClient;
         this.bdUserClient = bdUserClient;
@@ -66,5 +66,10 @@ class QualityUploadBlindataOutboundPortImpl implements QualityUploadBlindataOutb
     @Override
     public Optional<BDShortUserRes> findDataProductOwner(String username) {
         return bdUserClient.getBlindataUser(username);
+    }
+
+    @Override
+    public Optional<BDDataProductRes> findDataProduct(String fullyQualifiedName) {
+        return bdDataProductClient.getDataProduct(fullyQualifiedName);
     }
 }

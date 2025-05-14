@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
-public interface BDDataProductClient {
+public interface BdDataProductClient {
     Optional<BDDataProductRes> getDataProduct(String identifier);
 
     BDDataProductRes createDataProduct(BDDataProductRes dataProduct) throws BlindataClientException, BlindataClientResourceMappingException;

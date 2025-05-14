@@ -1,0 +1,21 @@
+{
+  "policyEvaluationId": 6,
+  "objectToEvaluate": {
+    "afterState": {
+      "dataProductVersion": {
+        "dataProductDescriptor": "1.0.0",
+        "info": {
+          "domain": "test",
+          "name": "test1",
+          "displayName": "test1",
+          "description": "A test data product with missing required fields",
+          "x-productType": "sourceAligned"
+        },
+        "interfaceComponents": {
+          "inputPorts": [],
+          "outputPorts": []
+        }
+      }
+    }
+  }
+} 

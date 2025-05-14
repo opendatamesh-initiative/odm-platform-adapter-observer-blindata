@@ -11,7 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opendatamesh.dpds.model.DataProductVersion;
 import org.opendatamesh.dpds.model.interfaces.Port;
 import org.opendatamesh.dpds.model.interfaces.Promises;
-import org.opendatamesh.platform.up.metaservice.blindata.configurations.BDDataProductConfig;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssuePolicyRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualitySuiteRes;
@@ -43,7 +44,7 @@ public class QualityUploadTest {
     private SemanticLinkManager mockSemanticLinkManager;
 
     @Mock
-    private BDDataProductConfig mockBDDataProductConfig;
+    private BdDataProductConfig mockBDDataProductConfig;
 
     @InjectMocks
     private PortDatastoreApiEntitiesExtractor portStandardDefinitionAnalyzer;
@@ -65,6 +66,7 @@ public class QualityUploadTest {
 
         when(odmOutboundPort.getDataProductVersion()).thenReturn(dataProductVersion);
         when(odmOutboundPort.extractQualityChecks(any())).thenReturn(qualityChecks);
+        when(blindataOutboundPort.findDataProduct(any())).thenReturn(Optional.of(new BDDataProductRes()));
 
         when(blindataOutboundPort.findDataProductOwner(any())).thenReturn(Optional.empty());
         when(blindataOutboundPort.findIssueCampaign(any())).thenReturn(Optional.empty());

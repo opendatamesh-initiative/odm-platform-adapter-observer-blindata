@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opendatamesh.dpds.model.core.ComponentBase;
 import org.opendatamesh.dpds.model.core.StandardDefinition;
-import org.opendatamesh.platform.up.metaservice.blindata.configurations.BDDataProductConfig;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
 
@@ -28,7 +28,7 @@ class PortDataStoreApiEntitiesExtractorTest {
     private SemanticLinkManager mockSemanticLinkManager;
 
     @Mock
-    private BDDataProductConfig mockBDDataProductConfig;
+    private BdDataProductConfig mockBDDataProductConfig;
 
     @InjectMocks
     private PortDatastoreApiEntitiesExtractor portStandardDefinitionAnalyzer;
