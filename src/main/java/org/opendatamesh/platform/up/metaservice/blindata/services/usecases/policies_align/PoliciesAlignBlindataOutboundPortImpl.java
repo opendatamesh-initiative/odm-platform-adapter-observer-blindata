@@ -1,9 +1,9 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_align;
 
 import com.google.common.collect.Lists;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDGovernancePolicyClient;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDGovernancePolicyImplementationClient;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDGovernancePolicySuiteClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdGovernancePolicyClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdGovernancePolicyImplementationClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdGovernancePolicySuiteClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.*;
 import org.springframework.data.domain.Pageable;
 
@@ -11,11 +11,11 @@ import java.util.Optional;
 
 class PoliciesAlignBlindataOutboundPortImpl implements PoliciesAlignBlindataOutboundPort {
 
-    private final BDGovernancePolicySuiteClient suiteClient;
-    private final BDGovernancePolicyClient policyClient;
-    private final BDGovernancePolicyImplementationClient policyImplementationClient;
+    private final BdGovernancePolicySuiteClient suiteClient;
+    private final BdGovernancePolicyClient policyClient;
+    private final BdGovernancePolicyImplementationClient policyImplementationClient;
 
-    PoliciesAlignBlindataOutboundPortImpl(BDGovernancePolicySuiteClient suiteClient, BDGovernancePolicyClient policyClient, BDGovernancePolicyImplementationClient policyImplementationClient) {
+    PoliciesAlignBlindataOutboundPortImpl(BdGovernancePolicySuiteClient suiteClient, BdGovernancePolicyClient policyClient, BdGovernancePolicyImplementationClient policyImplementationClient) {
         this.suiteClient = suiteClient;
         this.policyClient = policyClient;
         this.policyImplementationClient = policyImplementationClient;

@@ -4,6 +4,7 @@ import org.opendatamesh.dpds.model.DataProductVersion;
 import org.opendatamesh.dpds.model.interfaces.InterfaceComponents;
 import org.opendatamesh.dpds.model.interfaces.Port;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignRes;
@@ -41,8 +42,14 @@ class QualityUpload implements UseCase {
         withErrorHandling(() -> {
             DataProductVersion dataProductVersion = odmOutboundPort.getDataProductVersion();
             validateDataProduct(dataProductVersion);
-            validateDataProductDescriptorPorts(dataProductVersion.getInterfaceComponents());
 
+            Optional<BDDataProductRes> existentDataProduct = blindataOutboundPort.findDataProduct(odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName());
+            if (existentDataProduct.isEmpty()) {
+                getUseCaseLogger().warn(String.format("%s Data product: %s has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName()));
+                return;
+            }
+
+            validateDataProductDescriptorPorts(dataProductVersion.getInterfaceComponents());
             //KQI & QUALITY SUITE
             List<QualityCheck> qualityChecks = extractQualityFromPorts(dataProductVersion.getInterfaceComponents());
             if (CollectionUtils.isEmpty(qualityChecks)) {

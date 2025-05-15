@@ -4,8 +4,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.ActivityEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.DataProductVersionEventState;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
-import org.opendatamesh.platform.up.metaservice.blindata.configurations.BDDataProductConfig;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.services.DataProductPortAssetAnalyzer;
 import org.opendatamesh.platform.up.metaservice.blindata.services.notificationevents.BlindataProperties;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
@@ -21,13 +21,13 @@ import java.util.Set;
 public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory, UseCaseDryRunFactory {
 
     @Autowired
-    private BDDataProductClient bdDataProductClient;
+    private BdDataProductClient bdDataProductClient;
     @Autowired
     private DataProductPortAssetAnalyzer dataProductPortAssetAnalyzer;
     @Autowired
     private BlindataProperties blindataProperties;
     @Autowired
-    private BDDataProductConfig dataProductConfig;
+    private BdDataProductConfig dataProductConfig;
 
     private final Set<EventType> supportedEventTypes = Set.of(
             EventType.DATA_PRODUCT_VERSION_CREATED,

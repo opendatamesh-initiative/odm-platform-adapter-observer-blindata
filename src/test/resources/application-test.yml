@@ -1,0 +1,23 @@
+spring:
+  profile: test
+
+blindata:
+  tenantUUID: test-tenant-uuid
+  url: http://localhost:8080
+  username: test-user
+  password: test-password
+  clientId: test-client-id
+  clientSecret: test-client-secret
+  roleUuid: test-role-uuid
+
+odm:
+  productPlane:
+    notificationService:
+      address: http://localhost:8082
+      active: false
+    policyService:
+      address: http://localhost:8083
+      active: false
+    registryService:
+      active: false
+      address: http://localhost:8001

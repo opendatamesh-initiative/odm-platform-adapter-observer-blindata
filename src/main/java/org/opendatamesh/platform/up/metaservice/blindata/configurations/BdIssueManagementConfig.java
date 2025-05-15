@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BDIssueManagementConfig {
+public class BdIssueManagementConfig {
     @Value("${blindata.issueManagement.policies.active:true}")
     private boolean issuePoliciesActive;
 

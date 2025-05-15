@@ -5,7 +5,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.prod
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface BDGovernancePolicyClient {
+public interface BdGovernancePolicyClient {
 
     Page<BDPolicyRes> getPolicies(BDPoliciesSearchOptions filters, Pageable pageable);
 

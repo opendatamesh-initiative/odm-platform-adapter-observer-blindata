@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDSemanticLinkingClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdSemanticLinkingClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDDataCategoryRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalNamespaceRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
@@ -29,7 +29,7 @@ class SemanticLinkManagerTest {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
-    private BDSemanticLinkingClient mockSemanticLinkingClient;
+    private BdSemanticLinkingClient mockSemanticLinkingClient;
 
     @InjectMocks
     private SemanticLinkManagerImpl semanticLinkManager;

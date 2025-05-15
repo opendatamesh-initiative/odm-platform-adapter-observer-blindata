@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.stages_upload;
 
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductStageRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductStagesUploadRes;
@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 class StagesUploadBlindataOutboundPortImpl implements StagesUploadBlindataOutboundPort {
-    private final BDDataProductClient bdDataProductClient;
+    private final BdDataProductClient bdDataProductClient;
 
-    StagesUploadBlindataOutboundPortImpl(BDDataProductClient bdDataProductClient) {
+    StagesUploadBlindataOutboundPortImpl(BdDataProductClient bdDataProductClient) {
         this.bdDataProductClient = bdDataProductClient;
     }
 

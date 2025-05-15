@@ -11,9 +11,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.PolicyEventState;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDGovernancePolicyClient;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDGovernancePolicyImplementationClient;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDGovernancePolicySuiteClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdGovernancePolicyClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdGovernancePolicyImplementationClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdGovernancePolicySuiteClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDPolicyImplementationRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDPolicyRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDPolicySuiteRes;
@@ -34,13 +34,13 @@ import static org.mockito.Mockito.*;
 public class PoliciesAlignTest {
 
     @Mock
-    private BDGovernancePolicyClient bdPolicyClient;
+    private BdGovernancePolicyClient bdPolicyClient;
 
     @Mock
-    private BDGovernancePolicySuiteClient bdSuiteClient;
+    private BdGovernancePolicySuiteClient bdSuiteClient;
 
     @Mock
-    private BDGovernancePolicyImplementationClient bdImplementationClient;
+    private BdGovernancePolicyImplementationClient bdImplementationClient;
 
     @InjectMocks
     private PoliciesAlignFactory policiesAlignFactory;

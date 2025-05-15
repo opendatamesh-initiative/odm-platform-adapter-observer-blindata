@@ -3,9 +3,9 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.poli
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.PolicyEventState;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDGovernancePolicyClient;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDGovernancePolicyImplementationClient;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDGovernancePolicySuiteClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdGovernancePolicyClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdGovernancePolicyImplementationClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdGovernancePolicySuiteClient;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
@@ -21,11 +21,11 @@ import static org.opendatamesh.platform.up.metaservice.blindata.adapter.events.E
 public class PoliciesAlignFactory implements UseCaseFactory {
 
     @Autowired
-    private BDGovernancePolicyClient bdGovernancePolicyClient;
+    private BdGovernancePolicyClient bdGovernancePolicyClient;
     @Autowired
-    private BDGovernancePolicySuiteClient bdGovernancePolicySuiteClient;
+    private BdGovernancePolicySuiteClient bdGovernancePolicySuiteClient;
     @Autowired
-    private BDGovernancePolicyImplementationClient bdGovernancePolicyImplementationClient;
+    private BdGovernancePolicyImplementationClient bdGovernancePolicyImplementationClient;
 
     private final Set<EventType> supportedEventTypes = Set.of(
             POLICY_CREATED,

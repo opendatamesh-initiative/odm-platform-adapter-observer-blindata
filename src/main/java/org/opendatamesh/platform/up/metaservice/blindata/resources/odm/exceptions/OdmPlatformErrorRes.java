@@ -30,20 +30,10 @@ public class OdmPlatformErrorRes {
 
     }
 
-    public OdmPlatformErrorRes(int status, OdmPlatformApiStandardErrors error, String message, String path) {
-        super();
-        this.status = status;
-        this.code = error.code();
-        this.description = error.description();
-        this.message = message;
-        this.path = path;
-    }
-
-    public OdmPlatformErrorRes(int status, String errorCode, String errorDescription, String message, String path) {
+    public OdmPlatformErrorRes(int status, String errorCode, String message, String path) {
         super();
         this.status = status;
         this.code = errorCode;
-        this.description = errorDescription;
         this.message = message;
         this.path = path;
     }

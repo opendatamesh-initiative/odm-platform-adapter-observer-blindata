@@ -7,7 +7,7 @@ import org.opendatamesh.dpds.datastoreapi.v1.parser.DataStoreApiParser;
 import org.opendatamesh.dpds.datastoreapi.v1.parser.DataStoreApiParserFactory;
 import org.opendatamesh.dpds.datastoreapi.v1.visitor.DataStoreApiVisitor;
 import org.opendatamesh.dpds.model.core.StandardDefinition;
-import org.opendatamesh.platform.up.metaservice.blindata.configurations.BDDataProductConfig;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.quality.QualityCheck;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionEntitiesExtractor;
@@ -27,13 +27,13 @@ import static org.opendatamesh.platform.up.metaservice.blindata.services.usecase
 public class PortDatastoreApiEntitiesExtractor implements PortStandardDefinitionEntitiesExtractor, PortStandardDefinitionQualityExtractor {
 
     private final SemanticLinkManager semanticLinkManager;
-    private final BDDataProductConfig bdDataProductConfig;
+    private final BdDataProductConfig bdDataProductConfig;
 
     private final String SPECIFICATION = "datastoreapi";
     private final String VERSION = "1.*.*";
 
     @Autowired
-    public PortDatastoreApiEntitiesExtractor(SemanticLinkManager semanticLinkManager, BDDataProductConfig bdDataProductConfig) {
+    public PortDatastoreApiEntitiesExtractor(SemanticLinkManager semanticLinkManager, BdDataProductConfig bdDataProductConfig) {
         this.semanticLinkManager = semanticLinkManager;
         this.bdDataProductConfig = bdDataProductConfig;
     }
