@@ -1,5 +1,8 @@
 package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.opendatamesh.dpds.datastoreapi.v1.extensions.DataStoreApiStandardDefinitionVisitor;
 import org.opendatamesh.platform.up.metaservice.blindata.configurations.BDDataProductConfig;
@@ -77,6 +80,8 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
     private void extractPhysicalEntityQualityCheckFromDefinition(DataStoreApiBlindataDefinition definition, BDPhysicalEntityRes physicalEntity) {
         if (!CollectionUtils.isEmpty(definition.getQuality())) {
             for (Quality quality : definition.getQuality()) {
+                if (qualityIsNotValid(quality)) continue;
+
                 QualityCheck qualityCheck = qualityToQualityCheck(quality);
                 if (!StringUtils.hasText(qualityCheck.getCode())) {
                     getUseCaseLogger().warn("Quality check does not have code.");
@@ -91,6 +96,8 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
     private void extractPhysicalFieldQualityCheckFromDefinitionProperty(DataStoreApiBlindataDefinitionProperty definitionProperty, BDPhysicalFieldRes physicalField) {
         if (!CollectionUtils.isEmpty(definitionProperty.getQuality())) {
             for (Quality quality : definitionProperty.getQuality()) {
+                if (qualityIsNotValid(quality)) continue;
+
                 QualityCheck qualityCheck = qualityToQualityCheck(quality);
                 if (!StringUtils.hasText(qualityCheck.getCode())) {
                     getUseCaseLogger().warn("Quality check does not have code.");
@@ -100,6 +107,19 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
                 qualityCheckPresenter.presentQualityCheck(qualityCheck);
             }
         }
+    }
+
+    //It should have the name, or it should be a reference
+    private boolean qualityIsNotValid(Quality quality) {
+        boolean isNotValid = !StringUtils.hasText(quality.getName()) && !isReference(quality);
+        if (isNotValid) {
+            try {
+                getUseCaseLogger().warn("Quality object inside datastoreApi is not valid: " + new ObjectMapper().setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL).writeValueAsString(quality));
+            } catch (JsonProcessingException e) {
+                getUseCaseLogger().warn(e.getMessage(), e);
+            }
+        }
+        return isNotValid;
     }
 
     private BDPhysicalEntityRes definitionToPhysicalEntity(DataStoreApiBlindataDefinition dataStoreApiBlindataDefinition) {
@@ -219,7 +239,7 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
             qualityCheck.setSuccessThreshold(BigDecimal.valueOf(successThreshold));
         }
 
-        boolean isCheckEnabled = quality.getCustomProperties().getCheckEnabled();
+        boolean isCheckEnabled = Boolean.TRUE.equals(quality.getCustomProperties().getCheckEnabled());
         qualityCheck.setIsEnabled(isCheckEnabled);
 
         //Handling Blindata Additional Properties

@@ -75,4 +75,17 @@ public class QualityCustomProperty extends ComponentBase {
     public void setIssuePolicies(List<QualityIssuePolicy> issuePolicies) {
         this.issuePolicies = issuePolicies;
     }
+
+    @Override
+    public String toString() {
+        return "QualityCustomProperty{" +
+                "displayName='" + displayName + '\'' +
+                ", scoreStrategy='" + scoreStrategy + '\'' +
+                ", scoreWarningThreshold=" + scoreWarningThreshold +
+                ", scoreSuccessThreshold=" + scoreSuccessThreshold +
+                ", isCheckEnabled=" + isCheckEnabled +
+                ", issuePolicies=" + issuePolicies +
+                ", refName='" + refName + '\'' +
+                '}';
+    }
 }
