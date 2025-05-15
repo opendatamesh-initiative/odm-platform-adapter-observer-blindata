@@ -221,7 +221,6 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
 
         if (StringUtils.hasText(quality.getCustomProperties().getDisplayName())) {
             qualityCheck.setName(quality.getCustomProperties().getDisplayName());
-            qualityCheck.getAdditionalProperties().add(new BDAdditionalPropertiesRes("displayName", quality.getCustomProperties().getDisplayName()));
         }
 
         String strategy = quality.getCustomProperties().getScoreStrategy();
