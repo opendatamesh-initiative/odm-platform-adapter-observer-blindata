@@ -1,6 +1,5 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services;
 
-
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventAdapter;
 import org.opendatamesh.platform.up.metaservice.blindata.client.odm.OdmEventNotificationClient;
@@ -16,34 +15,66 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.Optional;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class NotificationEventConsumerService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private static final LinkedBlockingQueue<OdmEventNotificationResource> notificationQueue = new LinkedBlockingQueue<>();
+    private static final AtomicBoolean isProcessing = new AtomicBoolean(false);
+
     @Autowired
     private OdmEventNotificationClient notificationClient;
-    @Lazy
-    @Autowired
-    private NotificationEventConsumerService self;
     @Autowired
     private NotificationEventManager notificationEventManager;
     @Autowired
     private EventAdapter eventAdapter;
+    @Autowired
+    @Lazy
+    private NotificationEventConsumerService self;
 
     public OdmEventNotificationResource consumeEventNotification(OdmEventNotificationResource odmEventNotificationResource) {
         odmEventNotificationResource.setReceivedAt(new Date(System.currentTimeMillis()));
-        self.consumeEventNotificationAsync(
-                //Deep copy of the notification object so it is thread safe
-                new OdmEventNotificationResource(odmEventNotificationResource)
-        );
+        try {
+            notificationQueue.put(new OdmEventNotificationResource(odmEventNotificationResource));
+            // Only start processing if no other thread is currently processing
+            if (isProcessing.compareAndSet(false, true)) {
+                self.processNextNotification();
+            }
+        } catch (InterruptedException e) {
+            log.error("Failed to queue notification", e);
+            Thread.currentThread().interrupt();
+            odmEventNotificationResource.setStatus(OdmEventNotificationStatus.PROCESS_ERROR);
+            return odmEventNotificationResource;
+        }
         odmEventNotificationResource.setStatus(OdmEventNotificationStatus.PROCESSING);
         return odmEventNotificationResource;
     }
 
     @Async
-    public void consumeEventNotificationAsync(OdmEventNotificationResource odmEventNotificationResource) {
+    public void processNextNotification() {
+        try {
+            while (!notificationQueue.isEmpty()) {
+                OdmEventNotificationResource notification = notificationQueue.poll();
+                try {
+                    processNotification(notification);
+                } catch (Exception e) {
+                    log.error("Error processing notification", e);
+                }
+            }
+        } finally {
+            isProcessing.set(false);
+            // Double-check if new items were added while we were finishing
+            if (!notificationQueue.isEmpty() && isProcessing.compareAndSet(false, true)) {
+                self.processNextNotification();
+            }
+        }
+    }
+
+    private void processNotification(OdmEventNotificationResource odmEventNotificationResource) {
         try {
             Optional<Event> event = eventAdapter.odmToInternalEvent(odmEventNotificationResource);
             if (event.isPresent()) {
@@ -67,5 +98,4 @@ public class NotificationEventConsumerService {
                 odmEventNotificationResource.getId(), odmEventNotificationResource
         );
     }
-
 }

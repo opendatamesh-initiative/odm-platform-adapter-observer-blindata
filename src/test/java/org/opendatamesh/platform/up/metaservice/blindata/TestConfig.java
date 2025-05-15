@@ -5,16 +5,27 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.concurrent.Executor;
+
 @TestConfiguration
 public class TestConfig {
+
+    //Makes all @Async methods synchronous
+    @Bean
+    @Primary
+    public Executor taskExecutor() {
+        return new SyncTaskExecutor();
+    }
 
     /**
      * Scans for all interfaces under the client packages and
