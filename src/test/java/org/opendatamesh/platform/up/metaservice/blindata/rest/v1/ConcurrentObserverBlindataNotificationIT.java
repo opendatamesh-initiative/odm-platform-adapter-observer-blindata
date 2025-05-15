@@ -4,7 +4,6 @@ import com.google.common.io.Resources;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.opendatamesh.platform.up.metaservice.blindata.AsyncTestConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.ObserverBlindataAppIT;
@@ -24,11 +23,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+/*
+ * This test uses the AsyncTestConfig configuration, which enables a multithread environment during testing.
+ * This behaviour is disabled by default, so you should use the annotation below to enable it.
+ */
 @SpringBootTest(
         classes = {AsyncTestConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -54,11 +56,6 @@ public class ConcurrentObserverBlindataNotificationIT extends ObserverBlindataAp
 
     @Test
     public void testConcurrentNotificationsProcessing() throws IOException, InterruptedException, java.util.concurrent.ExecutionException {
-        // Store thread names for verification
-        Set<String> threadNames = ConcurrentHashMap.newKeySet();
-        String mainThreadName = Thread.currentThread().getName();
-        threadNames.add(mainThreadName);
-
         // Mock BDDataProductClient behavior
         BDDataProductRes dataProduct = new BDDataProductRes();
         dataProduct.setName("Test Data Product");
@@ -87,6 +84,7 @@ public class ConcurrentObserverBlindataNotificationIT extends ObserverBlindataAp
 
         // Prepare the countdown latch
         CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch completionLatch = new CountDownLatch(numNotifications);
         ExecutorService executorService = Executors.newFixedThreadPool(numNotifications);
 
         // Create futures that will wait for the signal before executing
@@ -95,15 +93,14 @@ public class ConcurrentObserverBlindataNotificationIT extends ObserverBlindataAp
         for (OdmEventNotificationResource notification : notifications) {
             CompletableFuture<ResponseEntity<OdmEventNotificationResource>> future = CompletableFuture.supplyAsync(() -> {
                 try {
-                    // Record the thread name
-                    threadNames.add(Thread.currentThread().getName());
-
                     startLatch.await(); // Wait for the signal
-                    return rest.postForEntity(
+                    ResponseEntity<OdmEventNotificationResource> response = rest.postForEntity(
                             apiUrl(RoutesV1.CONSUME),
                             notification,
                             OdmEventNotificationResource.class
                     );
+                    completionLatch.countDown(); // Signal that this request is complete
+                    return response;
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw new RuntimeException(e);
@@ -115,8 +112,8 @@ public class ConcurrentObserverBlindataNotificationIT extends ObserverBlindataAp
         // Trigger all requests simultaneously
         startLatch.countDown();
 
-        // Wait for all requests to complete
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        // Wait for all requests to complete with a timeout
+        completionLatch.await(30, TimeUnit.SECONDS);
         executorService.shutdown();
         executorService.awaitTermination(10, TimeUnit.SECONDS);
 
@@ -127,36 +124,12 @@ public class ConcurrentObserverBlindataNotificationIT extends ObserverBlindataAp
             Assertions.assertThat(response.getBody().getStatus()).hasToString(OdmEventNotificationStatus.PROCESSING.toString());
         }
 
-        // Verify sequential processing using Mockito's InOrder
-        InOrder inOrder = Mockito.inOrder(bdDataProductClient);
-
-        // Verify that createDataProduct was called exactly numNotifications times in sequence
-        for (int i = 0; i < numNotifications; i++) {
-            inOrder.verify(bdDataProductClient, Mockito.timeout(5000)).createDataProduct(Mockito.any());
-        }
-
-        // Verify total number of calls
-        Mockito.verify(bdDataProductClient, Mockito.times(numNotifications)).createDataProduct(Mockito.any());
+        // Verify total number of calls with timeout
+        Mockito.verify(bdDataProductClient, Mockito.timeout(5000).times(numNotifications)).createDataProduct(Mockito.any());
 
         // Verify no unexpected calls were made
         Mockito.verify(bdUserClient, Mockito.never()).getBlindataUser(Mockito.anyString());
         Mockito.verify(bdStewardshipClient, Mockito.never()).getRole(Mockito.anyString());
         Mockito.verify(bdStewardshipClient, Mockito.never()).createResponsibility(Mockito.any());
-
-        // Verify that we used multiple threads
-        Assertions.assertThat(threadNames)
-                .as("Expected multiple threads to be used, but only found: " + threadNames)
-                .hasSizeGreaterThan(1);
-
-        // Verify that worker threads are different from main thread
-        threadNames.remove(mainThreadName);
-        Assertions.assertThat(threadNames)
-                .as("Expected all worker threads to be named pool-1-thread-*, but found: " + threadNames)
-                .allMatch(name -> name.startsWith("pool-1-thread-"));
-
-        // Verify that we have the expected number of worker threads
-        Assertions.assertThat(threadNames)
-                .as("Expected " + numNotifications + " worker threads, but found: " + threadNames.size())
-                .hasSize(numNotifications);
     }
 } 

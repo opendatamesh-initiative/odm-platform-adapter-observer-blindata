@@ -6,6 +6,14 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
 
+/*
+* This test configuration should be used in tests that need a multithread environment
+* This can be achieved by annotating the test class as follows:
+*    @SpringBootTest(
+*            classes = {AsyncTestConfig.class},
+*            webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+*    )
+* */
 @TestConfiguration
 public class AsyncTestConfig {
     
