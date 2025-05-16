@@ -42,8 +42,8 @@ class QualityUpload implements UseCase {
         withErrorHandling(() -> {
             DataProductVersion dataProductVersion = odmOutboundPort.getDataProductVersion();
             validateDataProduct(dataProductVersion);
-            validateDataProductDescriptorPorts(dataProductVersion.getInterfaceComponents());
 
+            validateDataProductDescriptorPorts(dataProductVersion.getInterfaceComponents());
             //KQI & QUALITY SUITE
             List<QualityCheck> qualityChecks = extractQualityFromPorts(dataProductVersion.getInterfaceComponents());
             if (CollectionUtils.isEmpty(qualityChecks)) {
