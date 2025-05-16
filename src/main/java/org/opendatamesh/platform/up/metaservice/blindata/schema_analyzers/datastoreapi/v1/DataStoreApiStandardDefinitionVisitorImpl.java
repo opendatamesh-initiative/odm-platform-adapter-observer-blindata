@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.opendatamesh.dpds.datastoreapi.v1.extensions.DataStoreApiStandardDefinitionVisitor;
-import org.opendatamesh.platform.up.metaservice.blindata.configurations.BDDataProductConfig;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAdditionalPropertiesRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
@@ -37,14 +37,14 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
     private final DataStoreApiVisitorQualityDefinitionsPresenter qualityCheckPresenter;
     private final SemanticLinkManager semanticLinkManager;
     private final String databaseSchemaName;
-    private final BDDataProductConfig bdDataProductConfig;
+    private final BdDataProductConfig bdDataProductConfig;
 
     protected DataStoreApiStandardDefinitionVisitorImpl(
             DataStoreApiVisitorEntitiesPresenter entitiesPresenter,
             DataStoreApiVisitorQualityDefinitionsPresenter qualityCheckPresenter,
             SemanticLinkManager semanticLinkManager,
             String databaseSchemaName,
-            BDDataProductConfig bdDataProductConfig
+            BdDataProductConfig bdDataProductConfig
     ) {
         super(DataStoreApiBlindataDefinition.class);
         this.physicalEntityPresenter = entitiesPresenter;
@@ -169,6 +169,8 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
             return;
         }
         for (QualityIssuePolicy qualityIssuePolicy : quality.getCustomProperties().getIssuePolicies()) {
+            if (qualityIssuePolicyIsNotValid(qualityCheck, qualityIssuePolicy)) break;
+
             BDIssuePolicyRes issuePolicy = new BDIssuePolicyRes();
             issuePolicy.setName(qualityIssuePolicy.getName());
             issuePolicy.setPolicyType(BDIssuePolicyType.valueOf(qualityIssuePolicy.getPolicyType()));
@@ -212,6 +214,18 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
             issuePolicy.setIssueTemplate(issueTemplate);
             qualityCheck.getIssuePolicies().add(issuePolicy);
         }
+    }
+
+    private boolean qualityIssuePolicyIsNotValid(QualityCheck qualityCheck, QualityIssuePolicy qualityIssuePolicy) {
+        if (!StringUtils.hasText(qualityIssuePolicy.getName())) {
+            getUseCaseLogger().warn("Missing quality issue policy name for quality check: " + qualityCheck.getName());
+            return true;
+        }
+        if (!StringUtils.hasText(qualityIssuePolicy.getPolicyType())) {
+            getUseCaseLogger().warn("Missing quality issue policy type for quality check: " + qualityCheck.getName());
+            return true;
+        }
+        return false;
     }
 
     private void handleQualityCustomProperties(Quality quality, QualityCheck qualityCheck) {

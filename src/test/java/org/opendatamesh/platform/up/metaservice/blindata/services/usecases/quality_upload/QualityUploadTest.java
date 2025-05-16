@@ -11,10 +11,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opendatamesh.dpds.model.DataProductVersion;
 import org.opendatamesh.dpds.model.interfaces.Port;
 import org.opendatamesh.dpds.model.interfaces.Promises;
-import org.opendatamesh.platform.up.metaservice.blindata.configurations.BDDataProductConfig;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssuePolicyRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualitySuiteRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.quality.QualityCheck;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1.PortDatastoreApiEntitiesExtractor;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
@@ -43,7 +43,7 @@ public class QualityUploadTest {
     private SemanticLinkManager mockSemanticLinkManager;
 
     @Mock
-    private BDDataProductConfig mockBDDataProductConfig;
+    private BdDataProductConfig mockBDDataProductConfig;
 
     @InjectMocks
     private PortDatastoreApiEntitiesExtractor portStandardDefinitionAnalyzer;

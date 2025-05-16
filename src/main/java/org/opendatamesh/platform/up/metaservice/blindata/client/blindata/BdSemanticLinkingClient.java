@@ -6,7 +6,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logi
 
 import java.util.Optional;
 
-public interface BDSemanticLinkingClient {
+public interface BdSemanticLinkingClient {
 
     BDLogicalFieldSemanticLinkRes getSemanticLinkElements(String pathString, String defaultNamespaceIdentifier);
 

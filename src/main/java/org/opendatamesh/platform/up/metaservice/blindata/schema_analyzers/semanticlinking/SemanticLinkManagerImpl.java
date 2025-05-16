@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking;
 
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDSemanticLinkingClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdSemanticLinkingClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDDataCategoryRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalFieldSemanticLinkRes;
@@ -17,9 +17,9 @@ import static org.opendatamesh.platform.up.metaservice.blindata.services.usecase
 
 class SemanticLinkManagerImpl implements SemanticLinkManager {
 
-    private final BDSemanticLinkingClient client;
+    private final BdSemanticLinkingClient client;
 
-    public SemanticLinkManagerImpl(BDSemanticLinkingClient client) {
+    public SemanticLinkManagerImpl(BdSemanticLinkingClient client) {
         this.client = client;
     }
 

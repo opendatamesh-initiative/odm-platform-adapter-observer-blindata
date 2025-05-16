@@ -6,6 +6,6 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.excepti
 
 import java.util.Optional;
 
-public interface BDUserClient {
+public interface BdUserClient {
     Optional<BDShortUserRes> getBlindataUser(String username) throws BlindataClientException, BlindataClientResourceMappingException;
 }

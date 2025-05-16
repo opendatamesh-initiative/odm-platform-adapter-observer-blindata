@@ -1,24 +1,22 @@
 package org.opendatamesh.platform.up.metaservice.blindata;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.runner.RunWith;
 import org.opendatamesh.platform.up.metaservice.blindata.rest.v1.RoutesV1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import javax.annotation.PostConstruct;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        classes = {ObserverBlindataApp.class, TestConfig.class},
-        properties = {"spring.main.allow-bean-definition-overriding=true"}
+        classes = {ObserverBlindataApp.class, TestConfig.class}
 )
+@ActiveProfiles("test")
 public abstract class ObserverBlindataAppIT {
     @LocalServerPort
     protected String port;

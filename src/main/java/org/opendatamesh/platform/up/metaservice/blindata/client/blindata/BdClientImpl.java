@@ -9,7 +9,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientResourceMappingException;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpHeader;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.Oauth2;
-import org.opendatamesh.platform.up.metaservice.blindata.configurations.BDDataProductConfig;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignsSearchOptions;
@@ -27,16 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class BDClientImpl implements BDDataProductClient, BDStewardshipClient, BDUserClient, BDPolicyEvaluationResultClient, BDSemanticLinkingClient, BDQualityClient, BDIssueCampaignClient, BDGovernancePolicyClient, BDGovernancePolicySuiteClient, BDGovernancePolicyImplementationClient {
+public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, BdUserClient, BdPolicyEvaluationResultClient, BdSemanticLinkingClient, BdQualityClient, BdIssueCampaignClient, BdGovernancePolicyClient, BdGovernancePolicySuiteClient, BdGovernancePolicyImplementationClient {
 
-    private final BDCredentials credentials;
-    private final BDDataProductConfig dataProductClientConfig;
+    private final BdCredentials credentials;
+    private final BdDataProductConfig dataProductClientConfig;
     private final RestUtils restUtils;
     private final RestUtils asyncRestUtils;
 
-    public BDClientImpl(
-            BDCredentials bdCredentials,
-            BDDataProductConfig dataProductClientConfig,
+    public BdClientImpl(
+            BdCredentials bdCredentials,
+            BdDataProductConfig dataProductClientConfig,
             RestTemplate restTemplate
     ) {
         this.credentials = bdCredentials;

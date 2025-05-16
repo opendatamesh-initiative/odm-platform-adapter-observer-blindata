@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 @Component
-public class BDCredentials {
+public class BdCredentials {
     @Value("${blindata.enableAsync:false}")
     private boolean enableAsync;
 
