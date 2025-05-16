@@ -137,8 +137,8 @@ class QualityUpload implements UseCase {
     private BDQualitySuiteRes buildQualitySuite(DataProductVersion dataProductVersion) {
         BDQualitySuiteRes qualitySuite = new BDQualitySuiteRes();
         String displayName = StringUtils.hasText(dataProductVersion.getInfo().getDisplayName()) ? dataProductVersion.getInfo().getDisplayName() : dataProductVersion.getInfo().getName();
-        qualitySuite.setCode(String.format("%s::%s", dataProductVersion.getInfo().getDomain(), dataProductVersion.getInfo().getName()));
-        qualitySuite.setName(String.format("%s::%s", dataProductVersion.getInfo().getDomain(), displayName));
+        qualitySuite.setCode(String.format("%s - %s", dataProductVersion.getInfo().getDomain(), dataProductVersion.getInfo().getName()));
+        qualitySuite.setName(String.format("%s - %s", dataProductVersion.getInfo().getDomain(), displayName));
         return qualitySuite;
     }
 

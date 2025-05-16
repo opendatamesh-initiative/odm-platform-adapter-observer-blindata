@@ -97,4 +97,20 @@ public class Quality extends ComponentBase {
     public void setCustomProperties(QualityCustomProperty customProperties) {
         this.customProperties = customProperties;
     }
+
+    @Override
+    public String toString() {
+        return "Quality{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", dimension='" + dimension + '\'' +
+                ", unit='" + unit + '\'' +
+                ", type='" + type + '\'' +
+                ", engine='" + engine + '\'' +
+                ", mustBeGreaterOrEqualTo=" + mustBeGreaterOrEqualTo +
+                ", mustBeLessOrEqualTo=" + mustBeLessOrEqualTo +
+                ", mustBe=" + mustBe +
+                ", customProperties=" + customProperties +
+                '}';
+    }
 }

@@ -453,8 +453,8 @@ the [official documentation](https://help.blindata.io/data-quality/).
 When any quality annotation is present in the data product descriptor, a **Quality Suite** is automatically created with
 the following values:
 
-- **Quality Suite Code**: `<data product domain>::<data product name>`
-- **Quality Suite Name**: `<data product domain>::<data product display name>`  
+- **Quality Suite Code**: `<data product domain> - <data product name>`
+- **Quality Suite Name**: `<data product domain> - <data product display name>`  
   *(If the display name is not provided, the data product name will be used instead.)*
 
 All quality checks derived from the annotations are included in this Quality Suite.
