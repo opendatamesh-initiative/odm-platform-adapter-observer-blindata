@@ -7,7 +7,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.opendatamesh.platform.up.metaservice.blindata.ObserverBlindataAppIT;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.*;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdSemanticLinkingClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdStewardshipClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdUserClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.odm.OdmRegistryClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipRoleRes;
@@ -36,19 +39,7 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
     @MockBean
     private BdUserClient bdUserClient;
     @MockBean
-    private BdPolicyEvaluationResultClient bdPolicyEvaluationResultClient;
-    @MockBean
     private BdSemanticLinkingClient bdSemanticLinkingClient;
-    @MockBean
-    private BdQualityClient bdQualityClient;
-    @MockBean
-    private BdIssueCampaignClient bdIssueCampaignClient;
-    @MockBean
-    private BdGovernancePolicyClient bdGovernancePolicyClient;
-    @MockBean
-    private BdGovernancePolicySuiteClient bdGovernancePolicySuiteClient;
-    @MockBean
-    private BdGovernancePolicyImplementationClient bdGovernancePolicyImplementationClient;
     @MockBean
     private OdmRegistryClient odmRegistryClient;
 
@@ -58,13 +49,7 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
                 bdDataProductClient,
                 bdStewardshipClient,
                 bdUserClient,
-                bdPolicyEvaluationResultClient,
                 bdSemanticLinkingClient,
-                bdQualityClient,
-                bdIssueCampaignClient,
-                bdGovernancePolicyClient,
-                bdGovernancePolicySuiteClient,
-                bdGovernancePolicyImplementationClient,
                 odmRegistryClient
         );
     }
