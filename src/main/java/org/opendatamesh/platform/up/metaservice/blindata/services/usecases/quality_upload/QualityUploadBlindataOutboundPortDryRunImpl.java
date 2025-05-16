@@ -37,9 +37,4 @@ class QualityUploadBlindataOutboundPortDryRunImpl implements QualityUploadBlinda
     public Optional<BDShortUserRes> findDataProductOwner(String username) {
         return outboundPort.findDataProductOwner(username);
     }
-
-    @Override
-    public Optional<BDDataProductRes> findDataProduct(String fullyQualifiedName) {
-        return outboundPort.findDataProduct(fullyQualifiedName);
-    }
 }

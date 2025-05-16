@@ -43,12 +43,6 @@ class QualityUpload implements UseCase {
             DataProductVersion dataProductVersion = odmOutboundPort.getDataProductVersion();
             validateDataProduct(dataProductVersion);
 
-            Optional<BDDataProductRes> existentDataProduct = blindataOutboundPort.findDataProduct(odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName());
-            if (existentDataProduct.isEmpty()) {
-                getUseCaseLogger().warn(String.format("%s Data product: %s has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName()));
-                return;
-            }
-
             validateDataProductDescriptorPorts(dataProductVersion.getInterfaceComponents());
             //KQI & QUALITY SUITE
             List<QualityCheck> qualityChecks = extractQualityFromPorts(dataProductVersion.getInterfaceComponents());
