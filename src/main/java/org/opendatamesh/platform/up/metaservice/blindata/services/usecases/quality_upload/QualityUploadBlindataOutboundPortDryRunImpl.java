@@ -2,7 +2,6 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.qual
 
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualitySuiteRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.quality.QualityCheck;
@@ -36,10 +35,5 @@ class QualityUploadBlindataOutboundPortDryRunImpl implements QualityUploadBlinda
     @Override
     public Optional<BDShortUserRes> findDataProductOwner(String username) {
         return outboundPort.findDataProductOwner(username);
-    }
-
-    @Override
-    public Optional<BDDataProductRes> findDataProduct(String fullyQualifiedName) {
-        return outboundPort.findDataProduct(fullyQualifiedName);
     }
 }

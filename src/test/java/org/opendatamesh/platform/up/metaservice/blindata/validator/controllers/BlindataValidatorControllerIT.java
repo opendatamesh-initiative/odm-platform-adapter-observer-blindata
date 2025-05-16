@@ -11,8 +11,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.*;
 import org.opendatamesh.platform.up.metaservice.blindata.client.odm.OdmRegistryClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipRoleRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalNamespaceRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDDataCategoryRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalNamespaceRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.OdmValidatorPolicyEvaluationRequestRes;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.OdmValidatorPolicyEvaluationResultRes;
@@ -212,9 +212,9 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
         Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
         Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
-            .contains("[DataProductUpload] Missing odm data product info fully qualified name")
-            .contains("[DataProductVersionUpload] Missing interface components on data product")
-            .contains("[QualityUpload] Missing info fields on data product");
+                .contains("[DataProductUpload] Missing odm data product info fully qualified name")
+                .contains("[DataProductVersionUpload] Missing interface components on data product")
+                .contains("[QualityUpload] Missing info fields on data product");
     }
 
     @Test
@@ -352,7 +352,7 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
         Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
         Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
-            .contains("Data category: Customer not found in namespace https://demo.blindata.io/logical/namespaces/name/filmRentalInc#");
+                .contains("Data category: Customer not found in namespace https://demo.blindata.io/logical/namespaces/name/filmRentalInc#");
     }
 
     @Test
@@ -419,13 +419,13 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
 
         // Verify bdDataProduct was called
         verify(bdDataProductClient, atLeastOnce()).getDataProduct(any());
-        
+
         // Verify getLogicalNamespaceByIdentifier was called and returned a namespace
         verify(bdSemanticLinkingClient, atLeastOnce()).getLogicalNamespaceByIdentifier(any());
-        
+
         // Verify getDataCategoryByNameAndNamespaceUuid was called and returned a category
         verify(bdSemanticLinkingClient, atLeastOnce()).getDataCategoryByNameAndNamespaceUuid(any(), any());
-        
+
         // Verify getSemanticLinkElements was called and returned null
         verify(bdSemanticLinkingClient, atLeastOnce()).getSemanticLinkElements(any(), any());
 
@@ -436,7 +436,7 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
         Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
         Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
-            .contains("Unable to resolve semantic elements for semantic link path: [Customer]");
+                .contains("Unable to resolve semantic elements for semantic link path: [Customer]");
     }
 
     @Test
@@ -475,9 +475,9 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
 
         // Verify bdDataProduct was called and returned empty
         verify(bdDataProductClient, atLeastOnce()).getDataProduct(any());
-        
+
         // Verify semantic linking calls were never made since data product was not found
-        verify(bdSemanticLinkingClient, never()).getLogicalNamespaceByIdentifier(any());
+        verify(bdSemanticLinkingClient, atLeastOnce()).getLogicalNamespaceByIdentifier(any());
         verify(bdSemanticLinkingClient, never()).getDataCategoryByNameAndNamespaceUuid(any(), any());
         verify(bdSemanticLinkingClient, never()).getSemanticLinkElements(any(), any());
 
@@ -488,7 +488,7 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
         Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
         Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
-            .contains("Data product: urn:dpds:qualityDemo:dataproducts:test1:1 has not been created yet on Blindata");
+                .contains("Data product: urn:dpds:qualityDemo:dataproducts:test1:1 has not been created yet on Blindata");
     }
 
     @Test
@@ -510,7 +510,7 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
 
         // Verify bdUserClient was called and returned empty
         verify(bdUserClient, atLeastOnce()).getBlindataUser(any());
-        
+
         // Verify semantic linking calls were never made since user was not found
         verify(bdSemanticLinkingClient, never()).getLogicalNamespaceByIdentifier(any());
         verify(bdSemanticLinkingClient, never()).getDataCategoryByNameAndNamespaceUuid(any(), any());
@@ -523,7 +523,7 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
         Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
         Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
-            .contains("user: owner@default.blindata.io not found on Blindata");
+                .contains("user: owner@default.blindata.io not found on Blindata");
     }
 
     @Test
@@ -551,10 +551,10 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
 
         // Verify bdUserClient was called and returned user
         verify(bdUserClient, atLeastOnce()).getBlindataUser(any());
-        
+
         // Verify bdStewardshipClient was called and returned null
         verify(bdStewardshipClient, atLeastOnce()).getRole(any());
-        
+
         // Verify semantic linking calls were never made since role was not found
         verify(bdSemanticLinkingClient, never()).getLogicalNamespaceByIdentifier(any());
         verify(bdSemanticLinkingClient, never()).getDataCategoryByNameAndNamespaceUuid(any(), any());
@@ -567,7 +567,112 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
         Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
         Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
-            .contains("role: test-role-uuid not found on Blindata");
+                .contains("role: test-role-uuid not found on Blindata");
+    }
+
+    @Test
+    public void testValidateDataProductWithMissingQualityCheckFields() throws IOException {
+        // Load test data from JSON file
+        OdmValidatorPolicyEvaluationRequestRes request = mapper.readValue(
+                Resources.toByteArray(getClass().getResource("invalid_data_product_missing_quality_fields.json")),
+                OdmValidatorPolicyEvaluationRequestRes.class
+        );
+
+        BDShortUserRes owner = new BDShortUserRes();
+        owner.setUsername("owner@default.blindata.io");
+        owner.setFullName("owner@default.blindata.io");
+        when(bdUserClient.getBlindataUser(any())).thenReturn(Optional.of(owner));
+
+        BDStewardshipRoleRes role = new BDStewardshipRoleRes();
+        role.setUuid("test-role-uuid");
+        role.setName("test-role-name");
+        when(bdStewardshipClient.getRole(any())).thenReturn(role);
+
+        when(odmRegistryClient.getApi(any()))
+                .thenAnswer(invocation -> {
+                    String identifier = invocation.getArgument(0);
+                    return Optional.ofNullable(findObjectByFullyQualifiedName(
+                            request.getObjectToEvaluate(), identifier));
+                });
+
+        // Return a data product like in other tests
+        BDDataProductRes existingDataProduct = new BDDataProductRes();
+        existingDataProduct.setUuid("dp-uuid");
+        existingDataProduct.setName("test1");
+        existingDataProduct.setIdentifier("urn:dpds:qualityDemo:dataproducts:test1:1");
+        existingDataProduct.setVersion("1.0.0");
+        existingDataProduct.setDomain("test");
+        when(bdDataProductClient.getDataProduct(any())).thenReturn(Optional.of(existingDataProduct));
+
+        // Call the validator endpoint
+        ResponseEntity<OdmValidatorPolicyEvaluationResultRes> response = rest.postForEntity(
+                "http://localhost:" + port + "/api/v1/up/validator/evaluate-policy",
+                request,
+                OdmValidatorPolicyEvaluationResultRes.class
+        );
+
+        // Verify the response
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getBody()).isNotNull();
+        Assertions.assertThat(response.getBody().getPolicyEvaluationId()).isEqualTo(8L);
+        Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
+        Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
+        Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
+                //Missing refName on a quality reference object
+                .contains("Quality object inside datastoreApi is not valid: {\\\"customProperties\\\":{\\\"issuePolicies\\\":[]}}")
+                //Missing name field on a quality object
+                .contains("Quality object inside datastoreApi is not valid: {\\\"description\\\":\\\"PLACEHOLDER\\\",\\\"dimension\\\":\\\"Validity\\\",\\\"unit\\\":\\\"percent\\\",\\\"type\\\":\\\"custom\\\",\\\"engine\\\":\\\"greatExpectations\\\",\\\"customProperties\\\":{\\\"scoreStrategy\\\":\\\"PERCENTAGE\\\",\\\"scoreWarningThreshold\\\":95.0,\\\"scoreSuccessThreshold\\\":100.0,\\\"issuePolicies\\\":[{\\\"name\\\":\\\"ScambiMWh ExpectColumnValuesToBeBetween\\\",\\\"policyType\\\":\\\"RECURRENT_RESULT_SEMAPHORE\\\",\\\"semaphoreColor\\\":\\\"RED\\\",\\\"semaphoresNumber\\\":1,\\\"autoClose\\\":true,\\\"severity\\\":\\\"INFO\\\",\\\"blindataCustomProp-jiraAssigneeAccountID\\\":\\\"111111\\\",\\\"description\\\":\\\"PLACEHOLDER\\\",\\\"blindataCustomProp-jiraProjectKey\\\":\\\"ABCD\\\"}],\\\"checkEnabled\\\":true,\\\"isCheckEnabled\\\":true,\\\"assetKwargs\\\":{}},\\\"implementation\\\":{\\\"type\\\":\\\"ExpectColumnValuesToBeInSet\\\",\\\"kwargs\\\":{\\\"column\\\":\\\"Macrozona\\\",\\\"value_set\\\":[\\\"NORD\\\",\\\"SUD\\\"]}}}\",\"Quality object inside datastoreApi is not valid: {\\\"customProperties\\\":{\\\"issuePolicies\\\":[]}}\",\"Quality object inside datastoreApi is not valid: {\\\"description\\\":\\\"PLACEHOLDER\\\",\\\"dimension\\\":\\\"Validity\\\",\\\"unit\\\":\\\"percent\\\",\\\"type\\\":\\\"custom\\\",\\\"engine\\\":\\\"greatExpectations\\\",\\\"customProperties\\\":{\\\"scoreStrategy\\\":\\\"PERCENTAGE\\\",\\\"scoreWarningThreshold\\\":95.0,\\\"scoreSuccessThreshold\\\":100.0,\\\"issuePolicies\\\":[{\\\"name\\\":\\\"ScambiMWh ExpectColumnValuesToBeBetween\\\",\\\"policyType\\\":\\\"RECURRENT_RESULT_SEMAPHORE\\\",\\\"semaphoreColor\\\":\\\"RED\\\",\\\"semaphoresNumber\\\":1,\\\"autoClose\\\":true,\\\"severity\\\":\\\"INFO\\\",\\\"blindataCustomProp-jiraAssigneeAccountID\\\":\\\"111111\\\",\\\"description\\\":\\\"PLACEHOLDER\\\",\\\"blindataCustomProp-jiraProjectKey\\\":\\\"ABCD\\\"}],\\\"checkEnabled\\\":true,\\\"isCheckEnabled\\\":true,\\\"assetKwargs\\\":{}},\\\"implementation\\\":{\\\"type\\\":\\\"ExpectColumnValuesToBeInSet\\\",\\\"kwargs\\\":{\\\"column\\\":\\\"Macrozona\\\",\\\"value_set\\\":[\\\"NORD\\\",\\\"SUD\\\"]}}}");
+    }
+
+    @Test
+    public void testValidateDataProductWithMissingQualityCheckIssuePolicyFields() throws IOException {
+        // Load test data from JSON file
+        OdmValidatorPolicyEvaluationRequestRes request = mapper.readValue(
+                Resources.toByteArray(getClass().getResource("invalid_data_product_missing_quality_issue_policy_fields.json")),
+                OdmValidatorPolicyEvaluationRequestRes.class
+        );
+
+        BDShortUserRes owner = new BDShortUserRes();
+        owner.setUsername("owner@default.blindata.io");
+        owner.setFullName("owner@default.blindata.io");
+        when(bdUserClient.getBlindataUser(any())).thenReturn(Optional.of(owner));
+
+        BDStewardshipRoleRes role = new BDStewardshipRoleRes();
+        role.setUuid("test-role-uuid");
+        role.setName("test-role-name");
+        when(bdStewardshipClient.getRole(any())).thenReturn(role);
+
+        when(odmRegistryClient.getApi(any()))
+                .thenAnswer(invocation -> {
+                    String identifier = invocation.getArgument(0);
+                    return Optional.ofNullable(findObjectByFullyQualifiedName(
+                            request.getObjectToEvaluate(), identifier));
+                });
+
+        // Return a data product like in other tests
+        BDDataProductRes existingDataProduct = new BDDataProductRes();
+        existingDataProduct.setUuid("dp-uuid");
+        existingDataProduct.setName("test1");
+        existingDataProduct.setIdentifier("urn:dpds:qualityDemo:dataproducts:test1:1");
+        existingDataProduct.setVersion("1.0.0");
+        existingDataProduct.setDomain("test");
+        when(bdDataProductClient.getDataProduct(any())).thenReturn(Optional.of(existingDataProduct));
+
+        // Call the validator endpoint
+        ResponseEntity<OdmValidatorPolicyEvaluationResultRes> response = rest.postForEntity(
+                "http://localhost:" + port + "/api/v1/up/validator/evaluate-policy",
+                request,
+                OdmValidatorPolicyEvaluationResultRes.class
+        );
+
+        // Verify the response
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getBody()).isNotNull();
+        Assertions.assertThat(response.getBody().getPolicyEvaluationId()).isEqualTo(9L);
+        Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
+        Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
+        Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
+                .contains("Missing quality issue policy name for quality check: Macrozona ExpectColumnValuesToBeInSet");
     }
 
     private JsonNode findObjectByFullyQualifiedName(JsonNode root, String identifier) {
