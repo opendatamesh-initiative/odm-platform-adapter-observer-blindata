@@ -4,7 +4,6 @@ import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.ActivityEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.DataProductVersionEventState;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdIssueCampaignClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdQualityClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdUserClient;
@@ -23,8 +22,6 @@ import java.util.Set;
 @Component
 public class QualityUploadFactory implements UseCaseFactory, UseCaseDryRunFactory {
 
-    @Autowired
-    private BdDataProductClient bdDataProductClient;
     @Autowired
     private BdQualityClient bdQualityClient;
     @Autowired
@@ -50,7 +47,7 @@ public class QualityUploadFactory implements UseCaseFactory, UseCaseDryRunFactor
             throw new UseCaseInitException("Failed to init QualityUpload use case, unsupported event type: " + event.getEventType());
         }
         try {
-            QualityUploadBlindataOutboundPort blindataOutboundPort = new QualityUploadBlindataOutboundPortImpl(bdDataProductClient, bdQualityClient, bdIssueCampaignClient, bdUserClient, issuePolicyConfig, qualityCheckMapper);
+            QualityUploadBlindataOutboundPort blindataOutboundPort = new QualityUploadBlindataOutboundPortImpl(bdQualityClient, bdIssueCampaignClient, bdUserClient, issuePolicyConfig, qualityCheckMapper);
             QualityUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
             return new QualityUpload(blindataOutboundPort, odmOutboundPort);
         } catch (Exception e) {
@@ -64,7 +61,7 @@ public class QualityUploadFactory implements UseCaseFactory, UseCaseDryRunFactor
             throw new UseCaseInitException("Failed to init QualityUpload use case, unsupported event type: " + event.getEventType());
         }
         try {
-            QualityUploadBlindataOutboundPort blindataOutboundPort = new QualityUploadBlindataOutboundPortDryRunImpl(new QualityUploadBlindataOutboundPortImpl(bdDataProductClient, bdQualityClient, bdIssueCampaignClient, bdUserClient, issuePolicyConfig, qualityCheckMapper));
+            QualityUploadBlindataOutboundPort blindataOutboundPort = new QualityUploadBlindataOutboundPortDryRunImpl(new QualityUploadBlindataOutboundPortImpl(bdQualityClient, bdIssueCampaignClient, bdUserClient, issuePolicyConfig, qualityCheckMapper));
             QualityUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
             return new QualityUpload(blindataOutboundPort, odmOutboundPort);
         } catch (Exception e) {

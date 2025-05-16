@@ -169,6 +169,8 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
             return;
         }
         for (QualityIssuePolicy qualityIssuePolicy : quality.getCustomProperties().getIssuePolicies()) {
+            if (qualityIssuePolicyIsNotValid(qualityCheck, qualityIssuePolicy)) break;
+
             BDIssuePolicyRes issuePolicy = new BDIssuePolicyRes();
             issuePolicy.setName(qualityIssuePolicy.getName());
             issuePolicy.setPolicyType(BDIssuePolicyType.valueOf(qualityIssuePolicy.getPolicyType()));
@@ -212,6 +214,18 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
             issuePolicy.setIssueTemplate(issueTemplate);
             qualityCheck.getIssuePolicies().add(issuePolicy);
         }
+    }
+
+    private boolean qualityIssuePolicyIsNotValid(QualityCheck qualityCheck, QualityIssuePolicy qualityIssuePolicy) {
+        if (!StringUtils.hasText(qualityIssuePolicy.getName())) {
+            getUseCaseLogger().warn("Missing quality issue policy name for quality check: " + qualityCheck.getName());
+            return true;
+        }
+        if (!StringUtils.hasText(qualityIssuePolicy.getPolicyType())) {
+            getUseCaseLogger().warn("Missing quality issue policy type for quality check: " + qualityCheck.getName());
+            return true;
+        }
+        return false;
     }
 
     private void handleQualityCustomProperties(Quality quality, QualityCheck qualityCheck) {
