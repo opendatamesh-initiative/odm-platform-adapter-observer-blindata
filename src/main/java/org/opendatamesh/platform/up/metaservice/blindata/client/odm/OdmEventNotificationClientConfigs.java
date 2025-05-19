@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
@@ -25,12 +26,16 @@ public class OdmEventNotificationClientConfigs {
     private boolean active;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private RestTemplateBuilder restTemplateBuilder;
+
+    private RestTemplate getRestTemplate() {
+        return restTemplateBuilder.build();
+    }
 
     @Bean
     public OdmEventNotificationClient eventNotificationClient() {
         if (active) {
-            return new OdmEventNotificationClientImpl(address, RestUtilsFactory.getRestUtils(restTemplate));
+            return new OdmEventNotificationClientImpl(address, RestUtilsFactory.getRestUtils(getRestTemplate()));
         } else {
             log.warn("ODM Event Notification Client is not enabled in the configuration.");
             return new OdmEventNotificationClient() {
