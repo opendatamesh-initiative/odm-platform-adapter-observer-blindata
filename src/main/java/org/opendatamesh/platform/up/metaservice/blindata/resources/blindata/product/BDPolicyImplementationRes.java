@@ -14,6 +14,7 @@ public class BDPolicyImplementationRes {
     private BDPolicyRes governancePolicy;
     private String evaluationCondition;
     private boolean blocking;
+    private boolean deployed;
     private String policyBody;
     private String policyEngineName;
     private String version;
@@ -115,5 +116,13 @@ public class BDPolicyImplementationRes {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public boolean isDeployed() {
+        return deployed;
+    }
+
+    public void setDeployed(boolean deployed) {
+        this.deployed = deployed;
     }
 }
