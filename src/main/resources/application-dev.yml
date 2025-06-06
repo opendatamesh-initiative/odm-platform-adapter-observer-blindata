@@ -55,6 +55,10 @@ blindata:
       filter: ""
       activeUseCases:
         - DATA_PRODUCT_REMOVAL
+    - eventType: MARKETPLACE_EXECUTOR_RESULT_RECEIVED
+      filter: ""
+      activeUseCases:
+        - MARKETPLACE_ACCESS_REQUEST_PORTS_UPDATE
 
 #############################
 # ODM projects configurations

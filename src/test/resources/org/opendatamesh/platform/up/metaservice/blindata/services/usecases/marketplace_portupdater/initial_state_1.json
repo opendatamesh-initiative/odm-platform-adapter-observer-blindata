@@ -1,0 +1,12 @@
+{
+  "odmMarketplaceAccessRequestPortUploadResult": {
+    "accessRequestIdentifier": "test-access-request-1",
+    "status": "GRANTED",
+    "provider": {
+      "dataProductPortsFqn": [
+        "urn:dpds:it.quantyca:dataproducts:sampleDomain:tripExecution:ports:input",
+        "urn:dpds:it.quantyca:dataproducts:sampleDomain:tripExecution:ports:output"
+      ]
+    }
+  }
+} 

@@ -3,6 +3,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.notificatione
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_removal.DataProductRemovalFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload.DataProductUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload.DataProductPortsAndAssetsUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.marketplace_portupdater.MarketplaceAccessRequestsPortUpdateFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_align.PoliciesAlignFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload.PoliciesUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload.QualityUploadFactory;
@@ -38,6 +39,8 @@ public class NotificationEventManagerConfiguration {
     private DataProductRemovalFactory dataProductRemovalFactory;
     @Autowired
     private StagesUploadFactory stagesUploadFactory;
+    @Autowired
+    private MarketplaceAccessRequestsPortUpdateFactory marketplaceAccessRequestsPortUpdateFactory;
 
     private final BlindataProperties blindataProperties;
 
@@ -59,6 +62,7 @@ public class NotificationEventManagerConfiguration {
                     eventHandler.getActiveUseCases().contains("POLICIES_ALIGN") ? policiesAlignFactory : null,
                     eventHandler.getActiveUseCases().contains("POLICIES_UPLOAD") ? policiesUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("DATA_PRODUCT_REMOVAL") ? dataProductRemovalFactory : null,
+                    eventHandler.getActiveUseCases().contains("MARKETPLACE_ACCESS_REQUEST_PORTS_UPDATE") ? marketplaceAccessRequestsPortUpdateFactory : null,
                     eventHandler.getEventType(),
                     eventHandler.getFilter()
             ));

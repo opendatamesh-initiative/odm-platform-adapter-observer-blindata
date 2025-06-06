@@ -1,0 +1,10 @@
+package org.opendatamesh.platform.up.metaservice.blindata.client.blindata;
+
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientResourceMappingException;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.marketplace.BDMarketplaceAccessRequestsUploadRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDMarketplaceAccessRequestPortStatusUploadResultsRes;
+
+public interface BdMarketplaceAccessRequestsUploadResultClient {
+    BDMarketplaceAccessRequestPortStatusUploadResultsRes uploadAccessRequestPortStatusRes(BDMarketplaceAccessRequestsUploadRes bdMarketplaceAccessRequestsUploadRes) throws BlindataClientException, BlindataClientResourceMappingException;
+}

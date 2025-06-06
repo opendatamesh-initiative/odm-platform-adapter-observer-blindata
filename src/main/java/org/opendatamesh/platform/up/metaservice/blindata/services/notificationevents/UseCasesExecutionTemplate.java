@@ -8,6 +8,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.datap
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload.DataProductPortsAndAssetsUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.marketplace_portupdater.MarketplaceAccessRequestsPortUpdateFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_align.PoliciesAlignFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload.PoliciesUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload.QualityUploadFactory;
@@ -33,6 +34,7 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
     private final Optional<PoliciesAlignFactory> policiesAlignFactory;
     private final Optional<PoliciesUploadFactory> policiesUploadFactory;
     private final Optional<DataProductRemovalFactory> dataProductDeletion;
+    private final Optional<MarketplaceAccessRequestsPortUpdateFactory> marketplaceAccessRequestResultUploadFactory;
 
     private final String eventType;
     private final String filter;
@@ -45,6 +47,8 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
             PoliciesAlignFactory policiesAlignFactory,
             PoliciesUploadFactory policiesUploadFactory,
             DataProductRemovalFactory dataProductDeletion,
+            MarketplaceAccessRequestsPortUpdateFactory marketplaceAccessRequestResultUploadFactory,
+
             String eventType,
             String filter) {
         this.dataProductCreation = Optional.ofNullable(dataProductCreation);
@@ -54,6 +58,7 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
         this.policiesAlignFactory = Optional.ofNullable(policiesAlignFactory);
         this.policiesUploadFactory = Optional.ofNullable(policiesUploadFactory);
         this.dataProductDeletion = Optional.ofNullable(dataProductDeletion);
+        this.marketplaceAccessRequestResultUploadFactory = Optional.ofNullable(marketplaceAccessRequestResultUploadFactory);
         this.eventType = eventType;
         this.filter = filter;
     }
@@ -81,6 +86,9 @@ public class UseCasesExecutionTemplate implements NotificationEventHandler {
             }
             if (dataProductDeletion.isPresent()) {
                 dataProductDeletion.get().getUseCase(event).execute();
+            }
+            if (marketplaceAccessRequestResultUploadFactory.isPresent()) {
+                marketplaceAccessRequestResultUploadFactory.get().getUseCase(event).execute();
             }
             event.setEventStatus(EventStatus.PROCESSED);
             return event;
