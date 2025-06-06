@@ -239,6 +239,35 @@ class BaseRestUtils implements RestUtils {
     }
 
     /**
+     * Executes a generic HTTP PATCH request with the given resource and maps the response to an object of the specified type.
+     *
+     * @param url the base URL of the REST endpoint.
+     * @param httpHeaders the HTTP headers to include in the request.
+     * @param resourceToModify the resource object containing the partial updates.
+     * @param clazz the target class to which the response should be mapped.
+     * @param <I> the type of the resource sent in the request.
+     * @param <O> the type of the object returned.
+     * @return an object of type {@code O} representing the response.
+     * @throws ClientException if an HTTP client error occurs.
+     * @throws ClientResourceMappingException if JSON processing fails.
+     */
+    @Override
+    public <I, O> O genericPatch(String url, List<HttpHeader> httpHeaders, I resourceToModify, Class<O> clazz) throws ClientException, ClientResourceMappingException {
+        try {
+            JsonNode response = rest.exchange(
+                    url,
+                    HttpMethod.PATCH,
+                    new HttpEntity<>(resourceToModify, httpHeaders),
+                    JsonNode.class
+            );
+
+            return objectMapper.treeToValue(response, clazz);
+        } catch (JsonProcessingException e) {
+            throw new ClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    /**
      * Deletes a resource identified by the given identifier by sending a DELETE request to the specified URL.
      *
      * @param url         the base URL of the REST endpoint.
