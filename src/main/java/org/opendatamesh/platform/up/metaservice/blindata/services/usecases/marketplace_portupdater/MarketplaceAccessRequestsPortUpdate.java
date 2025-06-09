@@ -31,31 +31,13 @@ class MarketplaceAccessRequestsPortUpdate implements UseCase {
     public void execute() throws UseCaseExecutionException {
         withErrorHandling(() -> {
             OdmExecutorResultReceivedEventExecutorResponse odmMarketplaceAccessRequestPortUploadResult = odmOutboundPort.getOdmMarketplaceAccessRequestPortUploadResult();
-            if (!StringUtils.hasText(odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier())) {
-                getUseCaseLogger().warn(String.format("%s Missing Access Request identifier.", USE_CASE_PREFIX));
-                return;
-            }
-            if (odmMarketplaceAccessRequestPortUploadResult.getStatus() == null) {
-                getUseCaseLogger().info(String.format("%s Marketplace Access Request: %s missing Port status update", USE_CASE_PREFIX, odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier()));
-                return;
-            }
-            if (odmMarketplaceAccessRequestPortUploadResult.getStatus() == OdmExecutorResultReceivedEventExecutorResponse.ExecutorResultReceivedEventExecutorResponseStatus.PENDING) {
-                getUseCaseLogger().info(String.format("%s Marketplace Access Request: %s Port status update PENDING, nothing to do", USE_CASE_PREFIX, odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier()));
-                return;
-            }
-            if (odmMarketplaceAccessRequestPortUploadResult.getProvider() == null) {
-                getUseCaseLogger().warn(String.format("%s Marketplace Access Request: %s Missing Provider.", USE_CASE_PREFIX, odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier()));
+            if (!isValidMarketplaceAccessRequestPortUpdateResult(odmMarketplaceAccessRequestPortUploadResult)) {
                 return;
             }
             List<String> providerDataProductPortsFqn = odmMarketplaceAccessRequestPortUploadResult.getProvider().getDataProductPortsFqn();
-            if (providerDataProductPortsFqn == null || providerDataProductPortsFqn.isEmpty()) {
-                getUseCaseLogger().warn(String.format("%s Marketplace Access Request: %s Missing Provider ports.", USE_CASE_PREFIX, odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier()));
-                return;
-            }
-
             getUseCaseLogger().info(String.format("%s Marketplace Access Request: %s found %s port updates.", USE_CASE_PREFIX, odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier(), providerDataProductPortsFqn.size()));
             BDMarketplaceAccessRequestsUploadRes uploadRes =
-                    OdmExecutorResultReceivedEventExecutorResponseToBDMarketplaceAccessRequestsUploadRes(odmMarketplaceAccessRequestPortUploadResult);
+                    odmExecutorResponseToBDAccessRequestsUploadRes(odmMarketplaceAccessRequestPortUploadResult);
 
             BDMarketplaceAccessRequestPortStatusUploadResultsRes uploadResultsMessage = blindataOutboundPort.uploadPortStatuses(uploadRes);
             getUseCaseLogger().info(String.format("%s Access Request: %s updated %s access requests on Blindata, discarded %s.", USE_CASE_PREFIX, odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier(), uploadResultsMessage.getRowUpdated(), uploadResultsMessage.getRowDiscarded()));
@@ -63,7 +45,32 @@ class MarketplaceAccessRequestsPortUpdate implements UseCase {
         });
     }
 
-    private BDMarketplaceAccessRequestsUploadRes OdmExecutorResultReceivedEventExecutorResponseToBDMarketplaceAccessRequestsUploadRes(OdmExecutorResultReceivedEventExecutorResponse odmMarketplaceAccessRequestPortUploadResult) {
+    private boolean isValidMarketplaceAccessRequestPortUpdateResult(OdmExecutorResultReceivedEventExecutorResponse odmMarketplaceAccessRequestPortUploadResult) {
+        if (!StringUtils.hasText(odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier())) {
+            getUseCaseLogger().warn(String.format("%s Missing Access Request identifier.", USE_CASE_PREFIX));
+            return false;
+        }
+        if (odmMarketplaceAccessRequestPortUploadResult.getStatus() == null) {
+            getUseCaseLogger().info(String.format("%s Marketplace Access Request: %s missing Port status update", USE_CASE_PREFIX, odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier()));
+            return false;
+        }
+        if (odmMarketplaceAccessRequestPortUploadResult.getStatus() == OdmExecutorResultReceivedEventExecutorResponse.ExecutorResultReceivedEventExecutorResponseStatus.PENDING) {
+            getUseCaseLogger().info(String.format("%s Marketplace Access Request: %s Port status update PENDING, nothing to do", USE_CASE_PREFIX, odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier()));
+            return false;
+        }
+        if (odmMarketplaceAccessRequestPortUploadResult.getProvider() == null) {
+            getUseCaseLogger().warn(String.format("%s Marketplace Access Request: %s Missing Provider.", USE_CASE_PREFIX, odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier()));
+            return false;
+        }
+        List<String> providerDataProductPortsFqn = odmMarketplaceAccessRequestPortUploadResult.getProvider().getDataProductPortsFqn();
+        if (providerDataProductPortsFqn == null || providerDataProductPortsFqn.isEmpty()) {
+            getUseCaseLogger().warn(String.format("%s Marketplace Access Request: %s Missing Provider ports.", USE_CASE_PREFIX, odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier()));
+            return false;
+        }
+        return true;
+    }
+
+    private BDMarketplaceAccessRequestsUploadRes odmExecutorResponseToBDAccessRequestsUploadRes(OdmExecutorResultReceivedEventExecutorResponse odmMarketplaceAccessRequestPortUploadResult) {
         BDMarketplaceAccessRequestsUploadRes uploadRes = new BDMarketplaceAccessRequestsUploadRes();
         List<String> providerDataProductPortsFqn = odmMarketplaceAccessRequestPortUploadResult.getProvider().getDataProductPortsFqn();
         BDMarketplaceAccessRequestsUploadRes.AccessRequestUpdate accessRequestUpdate = new BDMarketplaceAccessRequestsUploadRes.AccessRequestUpdate();
@@ -77,7 +84,7 @@ class MarketplaceAccessRequestsPortUpdate implements UseCase {
             marketplaceAccessRequestsPortUpdates.add(accessRequestPortUpdate);
         }
         accessRequestUpdate.setAccessRequestPortsUpdates(marketplaceAccessRequestsPortUpdates);
-        uploadRes.setPortStatusUpdates(List.of(accessRequestUpdate));
+        uploadRes.setAccessRequestsUpdates(List.of(accessRequestUpdate));
 
         return uploadRes;
     }

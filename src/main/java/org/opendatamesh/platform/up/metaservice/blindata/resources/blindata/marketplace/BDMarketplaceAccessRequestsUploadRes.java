@@ -144,15 +144,13 @@ public class BDMarketplaceAccessRequestsUploadRes {
         //DO NOTHING
     }
 
-    public List<AccessRequestUpdate> getPortStatusUpdates() {
+    public List<AccessRequestUpdate> getAccessRequestsUpdates() {
         return accessRequestsUpdates;
     }
 
-    public void setPortStatusUpdates(List<AccessRequestUpdate> portStatusUpdates) {
-        this.accessRequestsUpdates = portStatusUpdates;
+    public void setAccessRequestsUpdates(List<AccessRequestUpdate> accessRequestsUpdates) {
+        this.accessRequestsUpdates = accessRequestsUpdates;
     }
-
-    // Per ora lo metto qui, al limite aggiungo MarketplaceAccessRequestPortRes
 
     /**
      * Represents the possible statuses of a marketplace access request grant for each port, on the data ops platform.
