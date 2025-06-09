@@ -14,6 +14,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.coll
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignsSearchOptions;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.*;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.marketplace.BDMarketplaceAccessRequestsUploadRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, BdUserClient, BdPolicyEvaluationResultClient, BdSemanticLinkingClient, BdQualityClient, BdIssueCampaignClient, BdGovernancePolicyClient, BdGovernancePolicySuiteClient, BdGovernancePolicyImplementationClient {
+public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, BdUserClient, BdPolicyEvaluationResultClient, BdSemanticLinkingClient, BdQualityClient, BdIssueCampaignClient, BdGovernancePolicyClient, BdGovernancePolicySuiteClient, BdGovernancePolicyImplementationClient, BdMarketplaceAccessRequestsUploadResultClient {
 
     private final BdCredentials credentials;
     private final BdDataProductConfig dataProductClientConfig;
@@ -610,6 +611,22 @@ public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, B
                     String.format("%s/api/v1/governance-policies/policy-implementations/{id}", credentials.getBlindataUrl()),
                     null,
                     implementationUuid
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public BDMarketplaceAccessRequestPortStatusUploadResultsRes uploadAccessRequestPortStatusRes(BDMarketplaceAccessRequestsUploadRes bdMarketplaceAccessRequestsUploadRes) throws BlindataClientException, BlindataClientResourceMappingException {
+        try {
+            return restUtils.genericPatch(
+                    String.format("%s/api/v1/marketplace/requests/*/update/ports", credentials.getBlindataUrl()),
+                    null,
+                    bdMarketplaceAccessRequestsUploadRes,
+                    BDMarketplaceAccessRequestPortStatusUploadResultsRes.class
             );
         } catch (ClientException e) {
             throw new BlindataClientException(e.getCode(), e.getResponseBody());

@@ -96,6 +96,7 @@ The observer can subscribe to notification events whit two level of granularity:
     - POLICY_CREATED
     - POLICY_UPDATED
     - POLICY_DELETED
+    - MARKETPLACE_EXECUTOR_RESULT_RECEIVED
 
 2. The event content using a SpeL expression.
    E.g. An expression to capture an event regarding a data product ( match done by its fullyQualifiedName ).
@@ -152,6 +153,10 @@ These are:
         - POLICY_CREATED: creates the Suite, Policy and Implementation if not present.
         - POLICY_UPDATED: updates the Suite, Policy and Implementation.
         - POLICY_DELETED: deletes only the Implementation of a Policy, if present.
+8. **MARKETPLACE_ACCESS_REQUEST_PORTS_UPDATE**. It updates the grant status of the provider data product's ports in
+   Blindata based on the result received from the platform.
+    - Supported event types:
+        - MARKETPLACE_ACCESS_REQUEST_PORTS_UPDATE
 
 ### Configuration
 

@@ -69,4 +69,9 @@ public class BdClientConfigs {
     public BdSemanticLinkingClient bdSemanticLinkingClient() {
         return new BdClientImpl(bdCredentials, bdDataProductConfig, getRestTemplate());
     }
+
+    @Bean
+    public BdMarketplaceAccessRequestsUploadResultClient bdMarketplaceAccessRequestsUploadResultClient() {
+        return new BdClientImpl(bdCredentials, bdDataProductConfig, getRestTemplate());
+    }
 }
