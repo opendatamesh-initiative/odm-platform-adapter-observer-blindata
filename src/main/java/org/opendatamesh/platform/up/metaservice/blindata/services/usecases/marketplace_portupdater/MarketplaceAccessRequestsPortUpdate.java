@@ -81,6 +81,7 @@ class MarketplaceAccessRequestsPortUpdate implements UseCase {
             BDMarketplaceAccessRequestsUploadRes.AccessRequestPortUpdate accessRequestPortUpdate = new BDMarketplaceAccessRequestsUploadRes.AccessRequestPortUpdate();
             accessRequestPortUpdate.setPortIdentifier(providerDataProductPortFqn);
             accessRequestPortUpdate.setGrantStatus(odmMarketplaceAccessRequestPortUploadStatusToBDGrantStatus(odmMarketplaceAccessRequestPortUploadResult.getStatus()));
+            accessRequestPortUpdate.setGrantMessage(odmMarketplaceAccessRequestPortUploadResult.getMessage());
             marketplaceAccessRequestsPortUpdates.add(accessRequestPortUpdate);
         }
         accessRequestUpdate.setAccessRequestPortsUpdates(marketplaceAccessRequestsPortUpdates);

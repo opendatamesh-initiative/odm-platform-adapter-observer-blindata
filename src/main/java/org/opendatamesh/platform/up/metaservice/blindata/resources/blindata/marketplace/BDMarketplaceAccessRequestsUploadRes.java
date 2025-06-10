@@ -1,6 +1,5 @@
 package org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.marketplace;
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.ArrayList;
@@ -119,6 +118,13 @@ public class BDMarketplaceAccessRequestsUploadRes {
         )
         private GrantStatusRes grantStatus;
 
+        @Schema(
+                description = "The message from the platform when the grant status is updated",
+                example = "The port is already granted to the user",
+                required = false
+        )
+        private String grantMessage;
+
         public AccessRequestPortUpdate() {
         }
 
@@ -138,6 +144,13 @@ public class BDMarketplaceAccessRequestsUploadRes {
             this.grantStatus = grantStatus;
         }
 
+        public String getGrantMessage() {
+            return grantMessage;
+        }
+
+        public void setGrantMessage(String grantMessage) {
+            this.grantMessage = grantMessage;
+        }
     }
 
     public BDMarketplaceAccessRequestsUploadRes() {
