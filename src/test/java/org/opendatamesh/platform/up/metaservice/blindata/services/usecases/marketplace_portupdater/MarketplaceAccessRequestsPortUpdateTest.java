@@ -10,6 +10,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.excep
 
 import java.io.IOException;
 
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 public class MarketplaceAccessRequestsPortUpdateTest {
@@ -30,7 +31,14 @@ public class MarketplaceAccessRequestsPortUpdateTest {
         new MarketplaceAccessRequestsPortUpdate(odmOutboundPort, blindataOutboundPort).execute();
 
         verify(odmOutboundPort, times(1)).getOdmMarketplaceAccessRequestPortUploadResult();
-        verify(blindataOutboundPort, times(1)).uploadPortStatuses(any(BDMarketplaceAccessRequestsUploadRes.class));
+        verify(blindataOutboundPort, times(1)).uploadPortStatuses(argThat(uploadRes -> {
+            assert uploadRes.getAccessRequestsUpdates().size() == 1;
+            assert uploadRes.getAccessRequestsUpdates().get(0).getAccessRequestIdentifier().equals("test-access-request-1");
+            assert uploadRes.getAccessRequestsUpdates().get(0).getAccessRequestPortsUpdates().size() == 2;
+            assert uploadRes.getAccessRequestsUpdates().get(0).getAccessRequestPortsUpdates().get(0).getGrantStatus() == BDMarketplaceAccessRequestsUploadRes.GrantStatusRes.PLATFORM_GRANTED;
+            assert uploadRes.getAccessRequestsUpdates().get(0).getAccessRequestPortsUpdates().get(0).getGrantMessage().equals("Access request has been granted successfully");
+            return true;
+        }));
     }
 
     @Test
