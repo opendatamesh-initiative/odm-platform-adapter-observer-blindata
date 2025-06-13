@@ -135,12 +135,17 @@ class BaseRestUtils implements RestUtils {
     @Override
     public <R, ID> R get(String url, List<HttpHeader> httpHeaders, ID identifier, Class<R> clazz) throws ClientException, ClientResourceMappingException {
         try {
+            Map<String, Object> uriVariables = new HashMap<>();
+            if (identifier != null) {
+                uriVariables.put("id", identifier);
+            }
+            
             JsonNode response = rest.exchange(
                     url,
                     HttpMethod.GET,
                     new HttpEntity<>(httpHeaders),
                     JsonNode.class,
-                    identifier
+                    uriVariables
             );
 
             return objectMapper.treeToValue(response, clazz);
@@ -168,7 +173,8 @@ class BaseRestUtils implements RestUtils {
                     url,
                     HttpMethod.POST,
                     new HttpEntity<>(resourceToCreate, httpHeaders),
-                    JsonNode.class
+                    JsonNode.class,
+                    new HashMap<>()
             );
             return objectMapper.treeToValue(response, clazz);
         } catch (JsonProcessingException e) {
@@ -193,12 +199,17 @@ class BaseRestUtils implements RestUtils {
     @Override
     public <R, ID> R put(String url, List<HttpHeader> httpHeaders, ID identifier, R resourceToModify, Class<R> clazz) throws ClientException, ClientResourceMappingException {
         try {
+            Map<String, Object> uriVariables = new HashMap<>();
+            if (identifier != null) {
+                uriVariables.put("id", identifier);
+            }
+            
             JsonNode response = rest.exchange(
                     url,
                     HttpMethod.PUT,
                     new HttpEntity<>(resourceToModify, httpHeaders),
                     JsonNode.class,
-                    identifier
+                    uriVariables
             );
 
             return objectMapper.treeToValue(response, clazz);
@@ -224,12 +235,17 @@ class BaseRestUtils implements RestUtils {
     @Override
     public <R, ID> R patch(String url, List<HttpHeader> httpHeaders, ID identifier, R resourceToModify, Class<R> clazz) throws ClientException, ClientResourceMappingException {
         try {
+            Map<String, Object> uriVariables = new HashMap<>();
+            if (identifier != null) {
+                uriVariables.put("id", identifier);
+            }
+            
             JsonNode response = rest.exchange(
                     url,
                     HttpMethod.PATCH,
                     new HttpEntity<>(resourceToModify, httpHeaders),
                     JsonNode.class,
-                    identifier
+                    uriVariables
             );
 
             return objectMapper.treeToValue(response, clazz);
@@ -258,7 +274,8 @@ class BaseRestUtils implements RestUtils {
                     url,
                     HttpMethod.PATCH,
                     new HttpEntity<>(resourceToModify, httpHeaders),
-                    JsonNode.class
+                    JsonNode.class,
+                    new HashMap<>()
             );
 
             return objectMapper.treeToValue(response, clazz);
@@ -278,12 +295,17 @@ class BaseRestUtils implements RestUtils {
      */
     @Override
     public <ID> void delete(String url, List<HttpHeader> httpHeaders, ID identifier) throws ClientException {
+        Map<String, Object> uriVariables = new HashMap<>();
+        if (identifier != null) {
+            uriVariables.put("id", identifier);
+        }
+        
         rest.exchange(
                 url,
                 HttpMethod.DELETE,
                 new HttpEntity<>(httpHeaders),
                 JsonNode.class,
-                identifier
+                uriVariables
         );
     }
 
@@ -307,7 +329,8 @@ class BaseRestUtils implements RestUtils {
                     url,
                     HttpMethod.POST,
                     new HttpEntity<>(resource, httpHeaders),
-                    JsonNode.class
+                    JsonNode.class,
+                    new HashMap<>()
             );
 
             return objectMapper.treeToValue(response, clazz);

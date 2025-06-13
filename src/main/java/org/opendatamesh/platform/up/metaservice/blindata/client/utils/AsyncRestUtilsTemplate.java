@@ -17,9 +17,8 @@ import org.springframework.util.StreamUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,13 +49,15 @@ class AsyncRestUtilsTemplate implements RestUtilsTemplate {
         int attempt = 0;
         long waitTime = INITIAL_POLL_WAIT_MILLIS;
 
+        Map<String, String> uriVariables = Map.of("taskId", task.getId());
+
         while (attempt < MAX_POLL_ATTEMPTS) {
             AsyncRestTask pollResponse = wrappedInstance.exchange(
-                    buildPollUrl(url),
+                    buildPollUrl(url) + "/{taskId}",
                     HttpMethod.GET,
                     new HttpEntity<>(requestHeaders),
                     AsyncRestTask.class,
-                    task.getId()
+                    uriVariables
             );
 
             if (pollResponse.getStatus() == null) {
@@ -89,28 +90,6 @@ class AsyncRestUtilsTemplate implements RestUtilsTemplate {
         throw new ClientException(500, "Async task polling exceeded maximum attempts");
     }
 
-
-    @Override
-    public <T> T exchange(String url, HttpMethod method, HttpEntity<?> requestEntity, Class<T> responseType, Object... uriVariables) throws ClientException {
-        AsyncRestTask asyncRequest = wrappedInstance.exchange(
-                buildRequestUrl(url), method,
-                requestEntity,
-                AsyncRestTask.class,
-                uriVariables
-        );
-
-        AsyncRestTask finalResult = pollResult(
-                url,
-                requestEntity.getHeaders(),
-                asyncRequest
-        );
-        try {
-            return objectMapper.readValue(finalResult.getResponseBody(), responseType);
-        } catch (IOException e) {
-            throw new ClientResourceMappingException(e.getMessage(), e);
-        }
-    }
-
     @Override
     public <T> T exchange(String url, HttpMethod method, HttpEntity<?> requestEntity, Class<T> responseType, Map<String, ?> uriVariables) throws ClientException {
         AsyncRestTask asyncRequest = wrappedInstance.exchange(
@@ -135,7 +114,14 @@ class AsyncRestUtilsTemplate implements RestUtilsTemplate {
 
     @Override
     public File download(String url, List<HttpHeader> httpHeaders, Object resource, File storeLocation) throws ClientException {
-        AsyncRestTask asyncRequest = wrappedInstance.exchange(buildRequestUrl(url), HttpMethod.POST, new HttpEntity<>(resource, httpHeaders), AsyncRestTask.class);
+        AsyncRestTask asyncRequest = wrappedInstance.exchange(
+                buildRequestUrl(url),
+                HttpMethod.POST,
+                new HttpEntity<>(resource, httpHeaders),
+                AsyncRestTask.class,
+                new HashMap<>()
+        );
+
         AsyncRestTask finalResult = pollResult(
                 url,
                 httpHeaders,
@@ -153,24 +139,47 @@ class AsyncRestUtilsTemplate implements RestUtilsTemplate {
     }
 
     private String buildRequestUrl(String url) {
-        try {
-            URI originalUri = new URI(url);
-
-            String newPath = asyncEndpointRequest + originalUri.getPath();
-
-            URI newUri = new URI(originalUri.getScheme(), originalUri.getAuthority(), newPath, originalUri.getQuery(), originalUri.getFragment());
-            return newUri.toString();
-        } catch (URISyntaxException e) {
-            throw new ClientException(400, e.getMessage());
+        // Find the first occurrence of '/' after the protocol
+        int protocolEnd = url.indexOf("://");
+        if (protocolEnd == -1) {
+            throw new ClientException(400, "Invalid URL format: missing protocol");
         }
+
+        // Find the first '/' after the protocol and host
+        int pathStart = url.indexOf('/', protocolEnd + 3);
+        if (pathStart == -1) {
+            // If no path, just append the async endpoint
+            return url + asyncEndpointRequest;
+        }
+
+        // Split into base URL and path
+        String baseUrl = url.substring(0, pathStart);
+        String path = url.substring(pathStart);
+
+        // If the path already contains the async endpoint, return as is
+        if (path.startsWith(asyncEndpointRequest)) {
+            return url;
+        }
+
+        // Otherwise, prepend the async endpoint to the path
+        return baseUrl + asyncEndpointRequest + path;
     }
 
     private String buildPollUrl(String url) {
-        try {
-            String baseUrl = new URI(url).getScheme() + "://" + new URI(url).getAuthority();
-            return baseUrl + asyncEndpointPoll;
-        } catch (URISyntaxException e) {
-            throw new ClientException(400, e.getMessage());
+        // Find the first occurrence of '/' after the protocol
+        int protocolEnd = url.indexOf("://");
+        if (protocolEnd == -1) {
+            throw new ClientException(400, "Invalid URL format: missing protocol");
         }
+
+        // Find the first '/' after the protocol and host
+        int pathStart = url.indexOf('/', protocolEnd + 3);
+        if (pathStart == -1) {
+            // If no path, just append the async endpoint
+            return url + asyncEndpointPoll;
+        }
+
+        // Return base URL + async endpoint
+        return url.substring(0, pathStart) + asyncEndpointPoll;
     }
 }
