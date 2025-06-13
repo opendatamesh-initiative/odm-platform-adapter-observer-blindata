@@ -146,6 +146,7 @@ public class OdmExecutorResultReceivedEventAccessRequest {
     public enum ExecutorResultReceivedEventAccessRequestConsumerType {
         USER,
         TEAM,
-        DATA_PRODUCT
+        DATA_PRODUCT,
+        APPLICATION
     }
 }
