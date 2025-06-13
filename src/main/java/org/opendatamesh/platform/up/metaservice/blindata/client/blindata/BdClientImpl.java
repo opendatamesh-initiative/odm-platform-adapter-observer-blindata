@@ -70,7 +70,7 @@ public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, B
                 authenticatedHeaders,
                 oauth2,
                 "/api/v1/settings/async/request",
-                "/api/v1/settings/async/poll/{requestId}"
+                "/api/v1/settings/async/poll"
         );
     }
 
@@ -110,7 +110,8 @@ public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, B
     @Override
     public BDDataProductRes patchDataProduct(BDDataProductRes dataProduct) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
-            return restUtils.patch(
+            RestUtils rest = credentials.getEnableAsync() ? asyncRestUtils : restUtils;
+            return rest.patch(
                     String.format("%s/api/v1/dataproducts/{id}%s",
                             credentials.getBlindataUrl(),
                             dataProductClientConfig.isAssetsCleanup() ? "?assetsCleanup=true" : ""

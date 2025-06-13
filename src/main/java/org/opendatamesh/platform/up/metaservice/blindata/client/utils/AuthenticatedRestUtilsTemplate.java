@@ -100,7 +100,8 @@ class AuthenticatedRestUtilsTemplate implements RestUtilsTemplate {
                     oauth2.getUrl(),
                     HttpMethod.POST,
                     new HttpEntity<>(requestBody, tokenRequestHeaders),
-                    ObjectNode.class
+                    ObjectNode.class,
+                    new HashMap<>()
             );
 
             if (responseBody != null && responseBody.has("access_token")) {
@@ -206,15 +207,6 @@ class AuthenticatedRestUtilsTemplate implements RestUtilsTemplate {
      *       Wrapped Methods
      *  ======================================================================================
      */
-
-    @Override
-    public <T> T exchange(String url, HttpMethod method, HttpEntity<?> requestEntity, Class<T> responseType, Object... uriVariables) throws RestClientException {
-        HttpEntity<?> updatedRequestEntity = new HttpEntity<>(
-                requestEntity.getBody(),
-                getAuthenticatedHeaders(requestEntity.getHeaders())
-        );
-        return wrappedInstance.exchange(url, method, updatedRequestEntity, responseType, uriVariables);
-    }
 
     @Override
     public <T> T exchange(String url, HttpMethod method, HttpEntity<?> requestEntity, Class<T> responseType, Map<String, ?> uriVariables) throws RestClientException {
