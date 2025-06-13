@@ -2,8 +2,9 @@ package org.opendatamesh.platform.up.metaservice.blindata.client.utils;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpEntity;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpHeader;
@@ -23,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class RestTemplateWrapperTest {
 
     @Mock
@@ -31,10 +33,8 @@ class RestTemplateWrapperTest {
     private RestTemplateWrapper restTemplateWrapper;
 
     @BeforeEach
-    void setUp() throws Exception {
-        AutoCloseable mocks = MockitoAnnotations.openMocks(this);
+    void setUp() {
         restTemplateWrapper = RestTemplateWrapper.wrap(mockRestTemplate);
-        mocks.close();
     }
 
     @Test

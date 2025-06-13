@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpHeader;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpMethod;
@@ -23,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class BaseRestUtilsTest {
 
     @Mock
@@ -32,11 +34,9 @@ class BaseRestUtilsTest {
     private ObjectMapper objectMapper;
 
     @BeforeEach
-    void setUp() throws Exception {
-        AutoCloseable mocks = MockitoAnnotations.openMocks(this);
+    void setUp() {
         baseRestUtils = new BaseRestUtils(mockRestTemplate);
         objectMapper = new ObjectMapper();
-        mocks.close();
     }
 
     @Test
