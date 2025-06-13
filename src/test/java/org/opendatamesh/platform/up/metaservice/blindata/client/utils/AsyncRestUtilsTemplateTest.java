@@ -60,14 +60,6 @@ class AsyncRestUtilsTemplateTest {
         // Setup mock behavior
         when(mockRestTemplate.exchange(
                 any(String.class),
-                eq(method),
-                any(HttpEntity.class),
-                eq(AsyncRestTask.class),
-                eq(uriVariables)
-        )).thenReturn(asyncRequest);
-
-        when(mockRestTemplate.exchange(
-                any(String.class),
                 eq(HttpMethod.GET),
                 any(HttpEntity.class),
                 eq(AsyncRestTask.class),

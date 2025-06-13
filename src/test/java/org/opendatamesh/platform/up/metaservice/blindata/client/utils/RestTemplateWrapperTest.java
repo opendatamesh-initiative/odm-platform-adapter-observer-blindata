@@ -81,7 +81,11 @@ class RestTemplateWrapperTest {
                 eq(org.springframework.http.HttpMethod.POST),
                 any(),
                 any()
-        )).thenReturn(storeLocation);
+        )).thenAnswer(invocation -> {
+            // Create the file when the mock is called
+            storeLocation.createNewFile();
+            return storeLocation;
+        });
 
         // Execute test
         File result = restTemplateWrapper.download(url, headers, resource, storeLocation);
@@ -90,6 +94,9 @@ class RestTemplateWrapperTest {
         assertNotNull(result);
         assertTrue(result.exists());
         assertEquals(storeLocation, result);
+        
+        // Cleanup
+        result.delete();
     }
 
     @Test
