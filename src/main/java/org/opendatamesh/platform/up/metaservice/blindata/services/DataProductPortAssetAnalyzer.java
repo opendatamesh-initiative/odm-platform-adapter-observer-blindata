@@ -220,9 +220,9 @@ public class DataProductPortAssetAnalyzer {
                 physicalFields.addAll(qualityCheck.getPhysicalFields());
 
                 //Removing duplicates from physical fields and physical entities
-                List<BDPhysicalEntityRes> distinctPhysicalEntities = physicalEntities.stream().filter(CollectionsBDUtils.distinctByKey((pe) -> pe.getSchema() + pe.getName()))
+                List<BDPhysicalEntityRes> distinctPhysicalEntities = physicalEntities.stream().filter(CollectionsBDUtils.distinctByKey(this::getPeNaturalKey))
                         .collect(Collectors.toList());
-                List<BDPhysicalFieldRes> distinctPhysicalFields = physicalFields.stream().filter(CollectionsBDUtils.distinctByKey((pf) -> pf.getPhysicalEntity().getSchema() + pf.getPhysicalEntity().getName() + pf.getName()))
+                List<BDPhysicalFieldRes> distinctPhysicalFields = physicalFields.stream().filter(CollectionsBDUtils.distinctByKey(this::getPfNaturalKey))
                         .collect(Collectors.toList());
 
                 encounteredQualityCheck.setPhysicalEntities(distinctPhysicalEntities);
@@ -237,6 +237,15 @@ public class DataProductPortAssetAnalyzer {
             }
         });
         return new ArrayList<>(mergedQualityChecks.values());
+    }
+
+    private String getPfNaturalKey(BDPhysicalFieldRes pf) {
+        return pf.getPhysicalEntity().getSystem().getName() + pf.getPhysicalEntity().getSchema() + pf.getPhysicalEntity().getName()
+                + pf.getName();
+    }
+
+    private String getPeNaturalKey(BDPhysicalEntityRes pe) {
+        return pe.getSystem().getName() + pe.getSchema() + pe.getName();
     }
 
     private void addSystemToLinkedPhysicalEntitiesAndFields(Port port, List<QualityCheck> qualityChecks) {
