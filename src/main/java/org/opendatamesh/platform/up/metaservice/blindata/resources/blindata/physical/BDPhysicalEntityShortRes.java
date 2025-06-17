@@ -21,6 +21,7 @@ public class BDPhysicalEntityShortRes {
         this.uuid = physicalEntityRes.getUuid();
         this.name = physicalEntityRes.getName();
         this.schema = physicalEntityRes.getSchema();
+        this.system = physicalEntityRes.getSystem();
     }
 
     public BDPhysicalEntityShortRes() {
