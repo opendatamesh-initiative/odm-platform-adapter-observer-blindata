@@ -95,6 +95,13 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
         return new SemanticContext(defaultNamespaceIdentifier, defaultDataCategoryName, semanticLinks, dataCategories);
     }
 
+    // Used for nested field, like in AVRO
+    // E.g.
+    // "copyright": {
+    //    "s-type": "copyrightHolder[Organization]",
+    //    "organization_id": "vatNumber",
+    //    "email": "contactPoint[ContactPoint].mail"
+    //  }
     private SemanticContext handleNestedSemanticPath(
             String fieldName,
             Map<String, Object> nestedContext,
