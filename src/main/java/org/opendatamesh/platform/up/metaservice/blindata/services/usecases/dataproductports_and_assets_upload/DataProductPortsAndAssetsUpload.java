@@ -54,10 +54,17 @@ class DataProductPortsAndAssetsUpload implements UseCase {
             blindataOutboundPort.updateDataProductPorts(existentDataProduct.get());
             getUseCaseLogger().info(String.format("%s Data product: %s, updated ports on Blindata.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier()));
 
+            getUseCaseLogger().info(USE_CASE_PREFIX + " Extracting data product ports assets");
             List<BDDataProductPortAssetDetailRes> dataProductPortAssets = extractBdAssetsFromDpPorts(interfaceComponents);
-            getUseCaseLogger().info(String.format("%s Data product: %s, found %s data assets.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), dataProductPortAssets.size()));
+            getUseCaseLogger().info(String.format("%s Data product: %s, found %s ports to update assets.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), dataProductPortAssets.size()));
+            
+            getUseCaseLogger().info(USE_CASE_PREFIX + " Validating data product ports assets");
             validateDataProductPortsAssets(dataProductPortAssets);
+            getUseCaseLogger().info(USE_CASE_PREFIX + " Validating data product ports assets completed");
+
+            getUseCaseLogger().info(USE_CASE_PREFIX + " Uploading of data product ports assets");
             uploadAssetsOnBlindata(dataProductPortAssets);
+            getUseCaseLogger().info(USE_CASE_PREFIX + " Uploading of data product ports assets completed");
         });
     }
 
@@ -77,7 +84,7 @@ class DataProductPortsAndAssetsUpload implements UseCase {
     private void validateDataProductPortsAssets(List<BDDataProductPortAssetDetailRes> dataProductPortAssetsDetails) {
         for (BDDataProductPortAssetDetailRes dataProductPortAssetsDetail : dataProductPortAssetsDetails) {
             if (!StringUtils.hasText(dataProductPortAssetsDetail.getPortIdentifier())) {
-                getUseCaseLogger().warn(USE_CASE_PREFIX + "Missing port identifier on data product port asset");
+                getUseCaseLogger().warn(USE_CASE_PREFIX + " Missing port identifier on data product port asset");
                 break;
             }
             for (BDProductPortAssetSystemRes dataProductPortAssets : dataProductPortAssetsDetail.getAssets()) {

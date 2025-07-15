@@ -11,6 +11,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpH
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpMethod;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.jackson.PageUtility;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.exceptions.OdmPlatformInternalServerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.util.StreamUtils;
 
@@ -24,6 +26,7 @@ import java.util.Map;
 
 class AsyncRestUtilsTemplate implements RestUtilsTemplate {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final int MAX_POLL_ATTEMPTS = 100;
     private final long INITIAL_POLL_WAIT_MILLIS = 500;
     private final long MAX_POLL_WAIT_MILLIS = 60000;
@@ -51,6 +54,7 @@ class AsyncRestUtilsTemplate implements RestUtilsTemplate {
 
         Map<String, String> uriVariables = Map.of("taskId", task.getId());
 
+        logger.info("Polling async task {} started", task.getId());
         while (attempt < MAX_POLL_ATTEMPTS) {
             AsyncRestTask pollResponse = wrappedInstance.exchange(
                     buildPollUrl(url) + "/{taskId}",
@@ -69,12 +73,14 @@ class AsyncRestUtilsTemplate implements RestUtilsTemplate {
                     try {
                         Thread.sleep(waitTime);
                         waitTime = Math.min(waitTime * 2, MAX_POLL_WAIT_MILLIS);
+                        logger.info("Async task {} is in progress. Waiting for {} milliseconds before next attempt.", task.getId(), waitTime);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         throw new OdmPlatformInternalServerException(e);
                     }
                     break;
                 case DONE:
+                    logger.info("Async task {} completed", task.getId());
                     return pollResponse;
                 case FAILED:
                     String responseBody = pollResponse.getResponseBody() == null ? "Empty Body" : new String(pollResponse.getResponseBody(), StandardCharsets.UTF_8);
