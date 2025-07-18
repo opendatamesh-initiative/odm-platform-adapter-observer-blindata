@@ -4,6 +4,7 @@ import org.opendatamesh.dpds.model.DataProductVersion;
 import org.opendatamesh.dpds.model.interfaces.InterfaceComponents;
 import org.opendatamesh.dpds.model.interfaces.Port;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignRes;
@@ -41,8 +42,8 @@ class QualityUpload implements UseCase {
         withErrorHandling(() -> {
             DataProductVersion dataProductVersion = odmOutboundPort.getDataProductVersion();
             validateDataProduct(dataProductVersion);
-            validateDataProductDescriptorPorts(dataProductVersion.getInterfaceComponents());
 
+            validateDataProductDescriptorPorts(dataProductVersion.getInterfaceComponents());
             //KQI & QUALITY SUITE
             List<QualityCheck> qualityChecks = extractQualityFromPorts(dataProductVersion.getInterfaceComponents());
             if (CollectionUtils.isEmpty(qualityChecks)) {
@@ -130,8 +131,8 @@ class QualityUpload implements UseCase {
     private BDQualitySuiteRes buildQualitySuite(DataProductVersion dataProductVersion) {
         BDQualitySuiteRes qualitySuite = new BDQualitySuiteRes();
         String displayName = StringUtils.hasText(dataProductVersion.getInfo().getDisplayName()) ? dataProductVersion.getInfo().getDisplayName() : dataProductVersion.getInfo().getName();
-        qualitySuite.setCode(String.format("%s::%s", dataProductVersion.getInfo().getDomain(), dataProductVersion.getInfo().getName()));
-        qualitySuite.setName(String.format("%s::%s", dataProductVersion.getInfo().getDomain(), displayName));
+        qualitySuite.setCode(String.format("%s - %s", dataProductVersion.getInfo().getDomain(), dataProductVersion.getInfo().getName()));
+        qualitySuite.setName(String.format("%s - %s", dataProductVersion.getInfo().getDomain(), displayName));
         return qualitySuite;
     }
 

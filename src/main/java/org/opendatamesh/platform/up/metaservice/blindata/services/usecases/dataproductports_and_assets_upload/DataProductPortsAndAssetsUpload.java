@@ -5,7 +5,7 @@ import org.opendatamesh.dpds.model.interfaces.InterfaceComponents;
 import org.opendatamesh.dpds.model.interfaces.Port;
 import org.opendatamesh.dpds.model.interfaces.Promises;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.*;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAdditionalPropertiesRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalFieldRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDSystemRes;
@@ -19,6 +19,9 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
 
@@ -51,10 +54,17 @@ class DataProductPortsAndAssetsUpload implements UseCase {
             blindataOutboundPort.updateDataProductPorts(existentDataProduct.get());
             getUseCaseLogger().info(String.format("%s Data product: %s, updated ports on Blindata.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier()));
 
+            getUseCaseLogger().info(USE_CASE_PREFIX + " Extracting data product ports assets");
             List<BDDataProductPortAssetDetailRes> dataProductPortAssets = extractBdAssetsFromDpPorts(interfaceComponents);
-            getUseCaseLogger().info(String.format("%s Data product: %s, found %s data assets.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), dataProductPortAssets.size()));
+            getUseCaseLogger().info(String.format("%s Data product: %s, found %s ports to update assets.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), dataProductPortAssets.size()));
+            
+            getUseCaseLogger().info(USE_CASE_PREFIX + " Validating data product ports assets");
             validateDataProductPortsAssets(dataProductPortAssets);
+            getUseCaseLogger().info(USE_CASE_PREFIX + " Validating data product ports assets completed");
+
+            getUseCaseLogger().info(USE_CASE_PREFIX + " Uploading of data product ports assets");
             uploadAssetsOnBlindata(dataProductPortAssets);
+            getUseCaseLogger().info(USE_CASE_PREFIX + " Uploading of data product ports assets completed");
         });
     }
 
@@ -74,7 +84,7 @@ class DataProductPortsAndAssetsUpload implements UseCase {
     private void validateDataProductPortsAssets(List<BDDataProductPortAssetDetailRes> dataProductPortAssetsDetails) {
         for (BDDataProductPortAssetDetailRes dataProductPortAssetsDetail : dataProductPortAssetsDetails) {
             if (!StringUtils.hasText(dataProductPortAssetsDetail.getPortIdentifier())) {
-                getUseCaseLogger().warn(USE_CASE_PREFIX + "Missing port identifier on data product port asset");
+                getUseCaseLogger().warn(USE_CASE_PREFIX + " Missing port identifier on data product port asset");
                 break;
             }
             for (BDProductPortAssetSystemRes dataProductPortAssets : dataProductPortAssetsDetail.getAssets()) {
@@ -159,8 +169,34 @@ class DataProductPortsAndAssetsUpload implements UseCase {
             port.setAdditionalProperties(extractAdditionalProperties(odmDataProductPort.getPromises()));
         }
         addDependsOnIfPresent(odmDataProductPort, port);
+        handleDataProductAdditionalProperties(odmDataProductPort, port);
         return port;
 
+    }
+
+    private void handleDataProductAdditionalProperties(Port odmPort, BDDataProductPortRes bdPort) {
+        String addPropRegex = blindataOutboundPort.getDataProductAdditionalPropertiesRegex();
+        if (CollectionUtils.isEmpty(bdPort.getAdditionalProperties())) {
+            bdPort.setAdditionalProperties(new ArrayList<>());
+        }
+        try {
+            Pattern compiledPattern = Pattern.compile(addPropRegex);
+            if (!CollectionUtils.isEmpty(odmPort.getAdditionalProperties()) && StringUtils.hasText(addPropRegex)) {
+                odmPort.getAdditionalProperties().forEach((key, value) -> {
+                    Matcher matcher = compiledPattern.matcher(key);
+                    if (matcher.find()) {
+                        String propName = matcher.group(1);
+                        bdPort.getAdditionalProperties()
+                                .add(new BDAdditionalPropertiesRes(
+                                        propName,
+                                        value.isTextual() ? value.asText() : value.toString()
+                                ));
+                    }
+                });
+            }
+        } catch (PatternSyntaxException e) {
+            getUseCaseLogger().warn("Invalid regex for additional properties: " + addPropRegex, e);
+        }
     }
 
     private void addDependsOnIfPresent(Port odmDataProductPort, BDDataProductPortRes port) {

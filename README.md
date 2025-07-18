@@ -17,6 +17,8 @@ its catalog remains aligned.
     * [Configuration](#configuration)
 * [Data Product Validation](#data-product-validation)
 * [Mapping data product descriptor into Blindata](#mapping-data-product-descriptor-into-blindata)
+    * [DataProductVersion.Info](#dataproductversioninfo)
+    * [Ports](#ports)
     * [Promises.Platform](#promisesplatform)
     * [General Schema Annotations](#general-schema-annotations)
         * [Entities](#entities)
@@ -91,6 +93,11 @@ The observer can subscribe to notification events whit two level of granularity:
     - DATA_PRODUCT_TASK_CREATED
     - DATA_PRODUCT_TASK_STARTED
     - DATA_PRODUCT_TASK_COMPLETED
+    - POLICY_CREATED
+    - POLICY_UPDATED
+    - POLICY_DELETED
+    - MARKETPLACE_EXECUTOR_RESULT_RECEIVED
+
 2. The event content using a SpeL expression.
    E.g. An expression to capture an event regarding a data product ( match done by its fullyQualifiedName ).
    ```
@@ -140,6 +147,16 @@ These are:
     - Supported event types:
         - DATA_PRODUCT_VERSION_CREATED
         - DATA_PRODUCT_ACTIVITY_COMPLETED
+7. **POLICIES_ALIGN**. Aligns Blindata Governance Policy Suites, Policies and Policies Implementations using Odm Policy
+   External Context field.
+    - Supported Event Types
+        - POLICY_CREATED: creates the Suite, Policy and Implementation if not present.
+        - POLICY_UPDATED: updates the Suite, Policy and Implementation.
+        - POLICY_DELETED: deletes only the Implementation of a Policy, if present.
+8. **MARKETPLACE_ACCESS_REQUEST_PORTS_UPDATE**. It updates the grant status of the provider data product's ports in
+   Blindata based on the result received from the platform.
+    - Supported event types:
+        - MARKETPLACE_ACCESS_REQUEST_PORTS_UPDATE
 
 ### Configuration
 
@@ -205,12 +222,45 @@ blindata:
 
 Given a descriptor, the following elements are created in Blindata:
 
+- Blindata Data Product (and its Ports)
 - Systems
 - Physical Entities
 - Physical Fields
 
 This mapping ensures that all data structures and their components are accurately represented and can be monitored or
 managed within Blindata, providing a seamless integration between the descriptor and the Blindata environment.
+
+## DataProductVersion.Info
+
+The `info` section of the data product descriptor is mapped into Blindata Data Product.
+
+| Descriptor field                                   | Blindata field                     | Mandatory | Notes                                                                                                               |
+|----------------------------------------------------|------------------------------------|-----------|---------------------------------------------------------------------------------------------------------------------|
+| `info.name`                                        | `dataProduct.name`                 | ✔️        | If empty, we extract a name from                                                                                    |
+| `info.displayName`                                 | `dataProduct.displayName`          | ️         | Defaults to `name` if not provided                                                                                  |
+| `info.domain`                                      | `dataProduct.domain`               | ✔️        |                                                                                                                     |
+| `info.fullyQualifiedName`                          | `dataProduct.identifier`           | ✔️        |                                                                                                                     |
+| `info.version`                                     | `dataProduct.version`              | ️         | Defaults to `"0.0.0"` `productStatus="DRAFT"` if missing                                                            |
+| `info.description`                                 | `dataProduct.description`          |           |                                                                                                                     |
+| `info.x-productType`                               | `dataProduct.productType`          |           | Only textual values; others are logged and skipped                                                                  |
+| `info._model extension properties matching regex_` | `dataProduct.additionalProperties` |           | Keys matching the configured regex on the application properties `blindata.dataProducts.additionalPropertiesRegex`. |
+
+## Ports
+
+Each entry in a `ports[]` array is mapped into a Blindata Data Product Port.
+
+| Descriptor field                                                 | Blindata field                                       | Mandatory | Notes                                                                                                                     |
+|------------------------------------------------------------------|------------------------------------------------------|-----------|---------------------------------------------------------------------------------------------------------------------------|
+| `ports[].fullyQualifiedName`                                     | `port.identifier`                                    | ✔️        |                                                                                                                           |
+| `ports[].name`                                                   | `port.name`                                          | ✔️        |                                                                                                                           |
+| `ports[].displayName`                                            | `port.displayName`                                   |           |                                                                                                                           |
+| `ports[].version`                                                | `port.version`                                       |           |                                                                                                                           |
+| `ports[].description`                                            | `port.description`                                   |           |                                                                                                                           |
+| `ports[].promises.servicesType`                                  | `port.servicesType`                                  |           |                                                                                                                           |
+| `ports[].promises.slo.description`                               | additional property `sloDescription`                 |           | Extracted into `port.additionalProperties`                                                                                |
+| `ports[].promises.deprecationPolicy.description`                 | additional property `deprecationPolicy`              |           | Extracted into `port.additionalProperties`                                                                                |
+| _Port‐extension properties matching regex_                       | `port.additionalProperties`                          |           | Keys matching the configured regex (`blindata.dataProducts.additionalPropertiesRegex`) are extracted                      |
+| `ports[].additionalProperties["dependsOn"]` or `["x-dependsOn"]` | `port.dependsOnSystem` or `port.dependsOnIdentifier` |           | Resolves to a system dependency if found, otherwise sets identifier directly. Prioritizes `dependsOn` over `x-dependsOn`. |
 
 ## Promises.Platform
 
@@ -408,8 +458,8 @@ the [official documentation](https://help.blindata.io/data-quality/).
 When any quality annotation is present in the data product descriptor, a **Quality Suite** is automatically created with
 the following values:
 
-- **Quality Suite Code**: `<data product domain>::<data product name>`
-- **Quality Suite Name**: `<data product domain>::<data product display name>`  
+- **Quality Suite Code**: `<data product domain> - <data product name>`
+- **Quality Suite Name**: `<data product domain> - <data product display name>`  
   *(If the display name is not provided, the data product name will be used instead.)*
 
 All quality checks derived from the annotations are included in this Quality Suite.
@@ -1555,6 +1605,7 @@ blindata:
     to process big data product descriptors without failing due to connection timeouts.
   dataProducts:
     assetsCleanup: (true/false, default true) Enables or disables the cleanup of deprecated assets associated with data product ports. Additionally, when set to true, any quality checks defined in the Data Product Quality Suite but no longer listed in the quality section of the data product descriptor will also be automatically disabled.
+    additionalPropertiesRegex: (default \\bx-([\\S]+) ) A regex used to extract model extension fields as additional properties. # The regex must contain a capture group to define the name of the property. For example: `^x-prop:(.*)` would turn a field like `x-prop:sourceTeam` into an additional property named `sourceTeam`.
   issueManagement:
     policies:
       active: (true/false, default true) If set to false, all the issue policies that are uploaded on Blindata are set to disabled.

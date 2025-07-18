@@ -44,7 +44,7 @@ public class DataProductEventStateConverter implements EventStateConverter {
                 event.setBeforeState(convertState(odmEventNotificationResource.getEvent().getBeforeState()));
             }
 
-            if (odmEventNotificationResource.getEvent().getBeforeState() != null && !odmEventNotificationResource.getEvent().getBeforeState().isNull()) {
+            if (odmEventNotificationResource.getEvent().getAfterState() != null && !odmEventNotificationResource.getEvent().getAfterState().isNull()) {
                 event.setAfterState(convertState(odmEventNotificationResource.getEvent().getAfterState()));
             }
 

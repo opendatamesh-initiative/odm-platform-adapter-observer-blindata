@@ -1,15 +1,15 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_removal;
 
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 
 import java.util.Optional;
 
 class DataProductRemovalBlindataOutboundPortImpl implements DataProductRemovalBlindataOutboundPort {
 
-    private final BDDataProductClient bdDataProductClient;
+    private final BdDataProductClient bdDataProductClient;
 
-    public DataProductRemovalBlindataOutboundPortImpl(BDDataProductClient bdDataProductClient) {
+    public DataProductRemovalBlindataOutboundPortImpl(BdDataProductClient bdDataProductClient) {
         this.bdDataProductClient = bdDataProductClient;
     }
 

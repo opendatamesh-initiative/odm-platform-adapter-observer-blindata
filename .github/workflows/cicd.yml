@@ -49,7 +49,7 @@ jobs:
             </servers>
           </settings>" > ~/.m2/settings.xml
       - name: Execute tests with Maven
-        run: mvn -B test -Dspring.profiles.active=test
+        run: mvn -B verify -Dspring.profiles.active=test
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

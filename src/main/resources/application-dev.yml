@@ -15,10 +15,10 @@ blindata:
       name: blindata_observer_validator_policy
       blocking: true
   eventHandlers:
-    - eventType: DATA_PRODUCT_CREATED
-      filter: ""
-      activeUseCases:
-        - DATA_PRODUCT_UPLOAD
+    #    - eventType: DATA_PRODUCT_CREATED
+    #      filter: ""
+    #      activeUseCases:
+    #        - DATA_PRODUCT_UPLOAD
     - eventType: DATA_PRODUCT_VERSION_CREATED
       filter: ""
       activeUseCases:
@@ -27,6 +27,18 @@ blindata:
         - QUALITY_UPLOAD
         - STAGES_UPLOAD
         - POLICIES_UPLOAD
+    - eventType: POLICY_CREATED
+      filter: ""
+      activeUseCases:
+        - POLICIES_ALIGN
+    - eventType: POLICY_UPDATED
+      filter: ""
+      activeUseCases:
+        - POLICIES_ALIGN
+    - eventType: POLICY_DELETED
+      filter: ""
+      activeUseCases:
+        - POLICIES_ALIGN
     - eventType: DATA_PRODUCT_ACTIVITY_COMPLETED
       filter: "#root['afterState']['activity']['stage'] == 'dev'"
       activeUseCases:
@@ -43,6 +55,10 @@ blindata:
       filter: ""
       activeUseCases:
         - DATA_PRODUCT_REMOVAL
+    - eventType: MARKETPLACE_EXECUTOR_RESULT_RECEIVED
+      filter: ""
+      activeUseCases:
+        - MARKETPLACE_ACCESS_REQUEST_PORTS_UPDATE
 
 #############################
 # ODM projects configurations

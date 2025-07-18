@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking;
 
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDSemanticLinkingClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdSemanticLinkingClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +11,7 @@ public class SemanticLinkingManagerFactory {
 
     @Autowired
     @Qualifier("bdSemanticLinkingClient")
-    private BDSemanticLinkingClient client;
+    private BdSemanticLinkingClient client;
 
     @Bean
     public SemanticLinkManager semanticLinkManager() {

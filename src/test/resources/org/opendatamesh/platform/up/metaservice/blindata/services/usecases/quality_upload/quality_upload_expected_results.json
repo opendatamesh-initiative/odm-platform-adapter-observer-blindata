@@ -1,9 +1,9 @@
 {
   "qualitySuite": {
     "uuid": null,
-    "code": "testDomain::test",
+    "code": "testDomain - test",
     "system": null,
-    "name": "testDomain::test",
+    "name": "testDomain - test",
     "description": null,
     "published": true,
     "teamCode": null,
@@ -63,7 +63,7 @@
     }
   ],
   "qualityChecksCodes": [
-    "testDomain::test - ScambiMWh ExpectColumnValuesToBeBetween",
-    "testDomain::test - Macrozona ExpectColumnValuesToBeInSet"
+    "testDomain - test - Macrozona ExpectColumnValuesToBeInSet",
+    "testDomain - test - ScambiMWh ExpectColumnValuesToBeBetween"
   ]
 }

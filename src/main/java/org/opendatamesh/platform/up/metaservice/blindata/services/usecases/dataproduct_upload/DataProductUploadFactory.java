@@ -1,14 +1,14 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.ActivityEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.DataProductEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.DataProductVersionEventState;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDStewardshipClient;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDUserClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdStewardshipClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdUserClient;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseDryRunFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseFactory;
@@ -26,16 +26,13 @@ import static org.opendatamesh.platform.up.metaservice.blindata.adapter.events.E
 public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFactory {
 
     @Autowired
-    private BDUserClient bdUserClient;
-
+    private BdUserClient bdUserClient;
     @Autowired
-    private BDDataProductClient bdDataProductClient;
-
+    private BdDataProductClient bdDataProductClient;
     @Autowired
-    private BDStewardshipClient bdStewardshipClient;
-
+    private BdStewardshipClient bdStewardshipClient;
     @Autowired
-    private ObjectMapper objectMapper;
+    private BdDataProductConfig dataProductConfig;
 
     @Value("${blindata.roleUuid}")
     private String roleUuid;
@@ -57,8 +54,8 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
                     bdUserClient,
                     bdDataProductClient,
                     bdStewardshipClient,
-                    roleUuid
-            );
+                    dataProductConfig,
+                    roleUuid);
             DataProductUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
             return new DataProductUpload(
                     odmOutboundPort,
@@ -105,8 +102,8 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
                     bdUserClient,
                     bdDataProductClient,
                     bdStewardshipClient,
-                    roleUuid
-            );
+                    dataProductConfig,
+                    roleUuid);
             DataProductUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
             return new DataProductUpload(
                     odmOutboundPort,

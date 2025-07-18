@@ -1,0 +1,16 @@
+{
+  "policyEvaluationId": 1,
+  "objectToEvaluate": {
+    "currentState": null,
+    "afterState": {
+      "dataProductVersion": {
+        "info": {
+          "name": "Test Data Product",
+          "fullyQualifiedName": "urn:org.opendatamesh:dataproducts:test",
+          "description": "Test Description",
+          "domain": "test-domain"
+        }
+      }
+    }
+  }
+} 

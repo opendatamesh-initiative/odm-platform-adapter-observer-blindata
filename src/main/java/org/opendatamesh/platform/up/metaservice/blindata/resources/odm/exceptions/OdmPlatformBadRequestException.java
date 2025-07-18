@@ -25,6 +25,10 @@ public class OdmPlatformBadRequestException extends OdmPlatformApiException {
         super(cause);
     }
 
+    public OdmPlatformBadRequestException(String message) {
+        super(message);
+    }
+
     @Override
     public HttpStatus getStatus() {
         return HttpStatus.BAD_REQUEST;

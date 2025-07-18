@@ -1,0 +1,335 @@
+{
+  "policyEvaluationId": 2,
+  "objectToEvaluate": {
+    "currentState": {
+      "dataProductVersion": {
+        "dataProductDescriptor": "1.0.0",
+        "info": {
+          "fullyQualifiedName": "urn:dpds:qualityDemo:dataproducts:test1:1",
+          "domain": "test",
+          "name": "test1",
+          "version": "1.0.0",
+          "displayName": "test1",
+          "description": "",
+          "x-productType": "sourceAligned",
+          "x-property": "propertyToBeImported",
+          "owner": {
+            "id": "owner@default.blindata.io",
+            "name": "owner@default.blindata.io"
+          },
+          "contactPoints": []
+        },
+        "interfaceComponents": {
+          "inputPorts": [
+            {
+              "fullyQualifiedName": "urn:dpds:qualityDemo:dataproducts:test1:1:1.0.0:inputPorts:inputPortName",
+              "name": "inputPortName",
+              "version": "1.0.0",
+              "displayName": "inputPortDisplayName",
+              "description": "inputPortDescription",
+              "componentGroup": null,
+              "x-prop": null,
+              "dependsOn": "blindata:systems:PostgreSQL - Film Rental Inc.",
+              "slo": null,
+              "expectations": null,
+              "contracts": null,
+              "tags": []
+            }
+          ],
+          "outputPorts": [
+            {
+              "fullyQualifiedName": "urn:dpds:qualityDemo:dataproducts:test1:1:1.0.0:outputPorts:outputPortName",
+              "name": "outputPortName",
+              "version": "1.0.0",
+              "displayName": "outputPortDisplayName",
+              "description": "outputPortDescription",
+              "componentGroup": null,
+              "x-prop": "toBeImported",
+              "promises": {
+                "platform": "AWS Redshift:Redshift - film-rental-sales",
+                "servicesType": "datastore-services",
+                "api": {
+                  "id": "1a1e2b3d-8c31-42f4-bc66-94c7aa4c65a2",
+                  "specification": "datastoreapi",
+                  "specificationVersion": "1.0.0",
+                  "definition": {
+                    "datastoreapi": "1.0.0",
+                    "info": {
+                      "title": "",
+                      "summary": "",
+                      "description": "",
+                      "termsOfService": "https://example.com/terms/",
+                      "version": "1.0.0",
+                      "datastoreName": "",
+                      "contact": {
+                        "name": "API Support",
+                        "url": "https://www.example.com/support",
+                        "email": "support@example.com"
+                      },
+                      "license": {
+                        "name": "Apache 2.0",
+                        "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+                      }
+                    },
+                    "schema": {
+                      "databaseName": "film_rental_sales",
+                      "databaseSchemaName": "profit",
+                      "tables": [
+                        {
+                          "name": "v_monthly_customer_payments",
+                          "version": "1.0.0",
+                          "description": "The view that store the information about monthly customer payments",
+                          "specification": "json-schema",
+                          "specificationVersion": "1",
+                          "definition": {
+                            "name": "v_monthly_customer_payments",
+                            "version": "1.0.0",
+                            "fullyQualifiedName": "urn:dpds:qualityDemo:dataproducts:test1:1:1.0.0:outputPorts:outputPortName:tables:film_rental_sales.profit.v_monthly_customer_payments",
+                            "displayName": "Monthly Customer Payments",
+                            "description": "The view that store the information about monthly customer payments",
+                            "physicalType": "VIEW",
+                            "type": "object",
+                            "properties": {
+                              "customer_id": {
+                                "type": "string",
+                                "name": "customer_id",
+                                "description": "",
+                                "kind": "ATTRIBUTE",
+                                "required": true,
+                                "displayName": "Customer ID",
+                                "default": null,
+                                "isUnique": true,
+                                "isNullable": true,
+                                "length": 10,
+                                "physicalType": "VARCHAR",
+                                "ordinalPosition": 1
+                              },
+                              "customer_email": {
+                                "type": "string",
+                                "name": "customer_email",
+                                "description": "Email address of the customer",
+                                "kind": "ATTRIBUTE",
+                                "required": true,
+                                "displayName": "Customer Email",
+                                "default": null,
+                                "isUnique": false,
+                                "isNullable": true,
+                                "length": 255,
+                                "physicalType": "VARCHAR",
+                                "ordinalPosition": 2
+                              },
+                              "payment_month": {
+                                "type": "string",
+                                "format": "date-time",
+                                "name": "payment_month",
+                                "description": "Month of the payment",
+                                "kind": "ATTRIBUTE",
+                                "required": true,
+                                "displayName": "Payment Month",
+                                "default": null,
+                                "isUnique": false,
+                                "isNullable": false,
+                                "physicalType": "TIMESTAMP",
+                                "ordinalPosition": 3
+                              },
+                              "total_payment": {
+                                "type": "number",
+                                "name": "total_payment",
+                                "description": "Total payment amount for the month",
+                                "kind": "ATTRIBUTE",
+                                "required": true,
+                                "displayName": "Total Payment",
+                                "default": null,
+                                "isUnique": false,
+                                "isNullable": false,
+                                "physicalType": "NUMERIC",
+                                "ordinalPosition": 4
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "deprecationPolicy": {
+                  "description": "When a new major version becomes available, the previous one is kept online for 7 days.",
+                  "x-deprecation-period": "7D"
+                },
+                "slo": null
+              },
+              "expectations": null,
+              "contracts": null,
+              "tags": []
+            }
+          ]
+        }
+      }
+    },
+    "afterState": {
+      "dataProductVersion": {
+        "dataProductDescriptor": "1.0.1",
+        "info": {
+          "fullyQualifiedName": "urn:dpds:qualityDemo:dataproducts:test1:1",
+          "domain": "test",
+          "name": "test1",
+          "version": "1.0.1",
+          "displayName": "test1",
+          "description": "",
+          "x-productType": "sourceAligned",
+          "x-property": "propertyToBeImported",
+          "owner": {
+            "id": "owner@default.blindata.io",
+            "name": "owner@default.blindata.io"
+          },
+          "contactPoints": []
+        },
+        "interfaceComponents": {
+          "inputPorts": [
+            {
+              "fullyQualifiedName": "urn:dpds:qualityDemo:dataproducts:test1:1:1.0.1:inputPorts:inputPortName",
+              "name": "inputPortName",
+              "version": "1.0.1",
+              "displayName": "inputPortDisplayName",
+              "description": "inputPortDescription",
+              "componentGroup": null,
+              "x-prop": null,
+              "dependsOn": "blindata:systems:PostgreSQL - Film Rental Inc.",
+              "slo": null,
+              "expectations": null,
+              "contracts": null,
+              "tags": []
+            }
+          ],
+          "outputPorts": [
+            {
+              "fullyQualifiedName": "urn:dpds:qualityDemo:dataproducts:test1:1:1.0.1:outputPorts:outputPortName",
+              "name": "outputPortName",
+              "version": "1.0.1",
+              "displayName": "outputPortDisplayName",
+              "description": "outputPortDescription",
+              "componentGroup": null,
+              "x-prop": "toBeImported",
+              "promises": {
+                "platform": "AWS Redshift:Redshift - film-rental-sales",
+                "servicesType": "datastore-services",
+                "api": {
+                  "id": "1a1e2b3d-8c31-42f4-bc66-94c7aa4c65a2",
+                  "specification": "datastoreapi",
+                  "specificationVersion": "1.0.1",
+                  "definition": {
+                    "datastoreapi": "1.0.1",
+                    "info": {
+                      "title": "",
+                      "summary": "",
+                      "description": "",
+                      "termsOfService": "https://example.com/terms/",
+                      "version": "1.0.1",
+                      "datastoreName": "",
+                      "contact": {
+                        "name": "API Support",
+                        "url": "https://www.example.com/support",
+                        "email": "support@example.com"
+                      },
+                      "license": {
+                        "name": "Apache 2.0",
+                        "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+                      }
+                    },
+                    "schema": {
+                      "databaseName": "film_rental_sales",
+                      "databaseSchemaName": "profit",
+                      "tables": [
+                        {
+                          "name": "v_monthly_customer_payments",
+                          "version": "1.0.1",
+                          "description": "The view that store the information about monthly customer payments",
+                          "specification": "json-schema",
+                          "specificationVersion": "1",
+                          "definition": {
+                            "name": "v_monthly_customer_payments",
+                            "version": "1.0.1",
+                            "fullyQualifiedName": "urn:dpds:qualityDemo:dataproducts:test1:1:1.0.1:outputPorts:outputPortName:tables:film_rental_sales.profit.v_monthly_customer_payments",
+                            "displayName": "Monthly Customer Payments",
+                            "description": "The view that store the information about monthly customer payments",
+                            "physicalType": "VIEW",
+                            "type": "object",
+                            "properties": {
+                              "customer_id": {
+                                "type": "string",
+                                "name": "customer_id",
+                                "description": "",
+                                "kind": "ATTRIBUTE",
+                                "required": true,
+                                "displayName": "Customer ID",
+                                "default": null,
+                                "isUnique": true,
+                                "isNullable": true,
+                                "length": 10,
+                                "physicalType": "VARCHAR",
+                                "ordinalPosition": 1
+                              },
+                              "customer_email": {
+                                "type": "string",
+                                "name": "customer_email",
+                                "description": "Email address of the customer",
+                                "kind": "ATTRIBUTE",
+                                "required": true,
+                                "displayName": "Customer Email",
+                                "default": null,
+                                "isUnique": false,
+                                "isNullable": true,
+                                "length": 255,
+                                "physicalType": "VARCHAR",
+                                "ordinalPosition": 2
+                              },
+                              "payment_month": {
+                                "type": "string",
+                                "format": "date-time",
+                                "name": "payment_month",
+                                "description": "Month of the payment",
+                                "kind": "ATTRIBUTE",
+                                "required": true,
+                                "displayName": "Payment Month",
+                                "default": null,
+                                "isUnique": false,
+                                "isNullable": false,
+                                "physicalType": "TIMESTAMP",
+                                "ordinalPosition": 3
+                              },
+                              "total_payment": {
+                                "type": "number",
+                                "name": "total_payment",
+                                "description": "Total payment amount for the month",
+                                "kind": "ATTRIBUTE",
+                                "required": true,
+                                "displayName": "Total Payment",
+                                "default": null,
+                                "isUnique": false,
+                                "isNullable": false,
+                                "physicalType": "NUMERIC",
+                                "ordinalPosition": 4
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "deprecationPolicy": {
+                  "description": "When a new major version becomes available, the previous one is kept online for 7 days.",
+                  "x-deprecation-period": "7D"
+                },
+                "slo": null
+              },
+              "expectations": null,
+              "contracts": null,
+              "tags": []
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -135,12 +135,17 @@ class BaseRestUtils implements RestUtils {
     @Override
     public <R, ID> R get(String url, List<HttpHeader> httpHeaders, ID identifier, Class<R> clazz) throws ClientException, ClientResourceMappingException {
         try {
+            Map<String, Object> uriVariables = new HashMap<>();
+            if (identifier != null) {
+                uriVariables.put("id", identifier);
+            }
+            
             JsonNode response = rest.exchange(
                     url,
                     HttpMethod.GET,
                     new HttpEntity<>(httpHeaders),
                     JsonNode.class,
-                    identifier
+                    uriVariables
             );
 
             return objectMapper.treeToValue(response, clazz);
@@ -168,7 +173,8 @@ class BaseRestUtils implements RestUtils {
                     url,
                     HttpMethod.POST,
                     new HttpEntity<>(resourceToCreate, httpHeaders),
-                    JsonNode.class
+                    JsonNode.class,
+                    new HashMap<>()
             );
             return objectMapper.treeToValue(response, clazz);
         } catch (JsonProcessingException e) {
@@ -193,12 +199,17 @@ class BaseRestUtils implements RestUtils {
     @Override
     public <R, ID> R put(String url, List<HttpHeader> httpHeaders, ID identifier, R resourceToModify, Class<R> clazz) throws ClientException, ClientResourceMappingException {
         try {
+            Map<String, Object> uriVariables = new HashMap<>();
+            if (identifier != null) {
+                uriVariables.put("id", identifier);
+            }
+            
             JsonNode response = rest.exchange(
                     url,
                     HttpMethod.PUT,
                     new HttpEntity<>(resourceToModify, httpHeaders),
                     JsonNode.class,
-                    identifier
+                    uriVariables
             );
 
             return objectMapper.treeToValue(response, clazz);
@@ -224,12 +235,47 @@ class BaseRestUtils implements RestUtils {
     @Override
     public <R, ID> R patch(String url, List<HttpHeader> httpHeaders, ID identifier, R resourceToModify, Class<R> clazz) throws ClientException, ClientResourceMappingException {
         try {
+            Map<String, Object> uriVariables = new HashMap<>();
+            if (identifier != null) {
+                uriVariables.put("id", identifier);
+            }
+            
             JsonNode response = rest.exchange(
                     url,
                     HttpMethod.PATCH,
                     new HttpEntity<>(resourceToModify, httpHeaders),
                     JsonNode.class,
-                    identifier
+                    uriVariables
+            );
+
+            return objectMapper.treeToValue(response, clazz);
+        } catch (JsonProcessingException e) {
+            throw new ClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Executes a generic HTTP PATCH request with the given resource and maps the response to an object of the specified type.
+     *
+     * @param url the base URL of the REST endpoint.
+     * @param httpHeaders the HTTP headers to include in the request.
+     * @param resourceToModify the resource object containing the partial updates.
+     * @param clazz the target class to which the response should be mapped.
+     * @param <I> the type of the resource sent in the request.
+     * @param <O> the type of the object returned.
+     * @return an object of type {@code O} representing the response.
+     * @throws ClientException if an HTTP client error occurs.
+     * @throws ClientResourceMappingException if JSON processing fails.
+     */
+    @Override
+    public <I, O> O genericPatch(String url, List<HttpHeader> httpHeaders, I resourceToModify, Class<O> clazz) throws ClientException, ClientResourceMappingException {
+        try {
+            JsonNode response = rest.exchange(
+                    url,
+                    HttpMethod.PATCH,
+                    new HttpEntity<>(resourceToModify, httpHeaders),
+                    JsonNode.class,
+                    new HashMap<>()
             );
 
             return objectMapper.treeToValue(response, clazz);
@@ -249,12 +295,17 @@ class BaseRestUtils implements RestUtils {
      */
     @Override
     public <ID> void delete(String url, List<HttpHeader> httpHeaders, ID identifier) throws ClientException {
+        Map<String, Object> uriVariables = new HashMap<>();
+        if (identifier != null) {
+            uriVariables.put("id", identifier);
+        }
+        
         rest.exchange(
                 url,
                 HttpMethod.DELETE,
                 new HttpEntity<>(httpHeaders),
                 JsonNode.class,
-                identifier
+                uriVariables
         );
     }
 
@@ -278,7 +329,8 @@ class BaseRestUtils implements RestUtils {
                     url,
                     HttpMethod.POST,
                     new HttpEntity<>(resource, httpHeaders),
-                    JsonNode.class
+                    JsonNode.class,
+                    new HashMap<>()
             );
 
             return objectMapper.treeToValue(response, clazz);

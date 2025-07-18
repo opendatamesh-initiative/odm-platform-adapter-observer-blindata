@@ -25,6 +25,8 @@ public interface RestUtils {
 
     <R, ID> R patch(String url, List<HttpHeader> httpHeaders, ID identifier, R resourceToModify, Class<R> clazz) throws ClientException, ClientResourceMappingException;
 
+    <I, O> O genericPatch(String url, List<HttpHeader> httpHeaders, I resourceToModify, Class<O> clazz) throws ClientException, ClientResourceMappingException;
+
     <ID> void delete(String url, List<HttpHeader> httpHeaders, ID identifier) throws ClientException;
 
     <I, O> O genericPost(String url, List<HttpHeader> httpHeaders, I resource, Class<O> clazz) throws ClientException, ClientResourceMappingException;

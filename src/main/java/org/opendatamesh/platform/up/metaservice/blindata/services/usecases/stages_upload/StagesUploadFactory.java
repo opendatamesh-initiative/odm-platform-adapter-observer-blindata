@@ -5,7 +5,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.ActivityEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.DataProductVersionEventState;
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
@@ -18,7 +18,7 @@ import java.util.Set;
 public class StagesUploadFactory implements UseCaseFactory {
 
     @Autowired
-    private BDDataProductClient bdDataProductClient;
+    private BdDataProductClient bdDataProductClient;
 
     @Autowired
     private ObjectMapper objectMapper;

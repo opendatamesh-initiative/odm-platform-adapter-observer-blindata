@@ -1,9 +1,10 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload;
 
-import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BDDataProductClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDSystemRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDProductPortAssetsRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDSystemRes;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -11,12 +12,14 @@ import java.util.regex.Pattern;
 
 class DataProductPortsAndAssetsUploadBlindataOutboundPortImpl implements DataProductPortsAndAssetsUploadBlindataOutboundPort {
 
-    private final BDDataProductClient bdDataProductClient;
+    private final BdDataProductClient bdDataProductClient;
     private final String systemDependencyRegex;
+    private final BdDataProductConfig dataProductConfig;
 
-    public DataProductPortsAndAssetsUploadBlindataOutboundPortImpl(BDDataProductClient bdDataProductClient, String systemDependencyRegex) {
+    public DataProductPortsAndAssetsUploadBlindataOutboundPortImpl(BdDataProductClient bdDataProductClient, String systemDependencyRegex, BdDataProductConfig dataProductConfig) {
         this.bdDataProductClient = bdDataProductClient;
         this.systemDependencyRegex = systemDependencyRegex;
+        this.dataProductConfig = dataProductConfig;
     }
 
     @Override
@@ -48,6 +51,11 @@ class DataProductPortsAndAssetsUploadBlindataOutboundPortImpl implements DataPro
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public String getDataProductAdditionalPropertiesRegex() {
+        return dataProductConfig.getAdditionalPropertiesRegex();
     }
 
 }
