@@ -135,7 +135,7 @@ class DataProductUpload implements UseCase {
                 blindataDataProduct.getAdditionalProperties()
                         .add(new BDAdditionalPropertiesRes("contactPoints", contactPointsJson));
             } catch (JsonProcessingException e) {
-                throw new RuntimeException("Failed to serialize contactPoints", e);
+                getUseCaseLogger().warn("Failed to serialize contactPoints");
             }
         }
         try {
