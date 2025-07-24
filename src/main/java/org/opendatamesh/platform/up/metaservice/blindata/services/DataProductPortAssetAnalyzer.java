@@ -62,7 +62,7 @@ public class DataProductPortAssetAnalyzer {
                         .filter(extractor -> extractor.supports(standardDefinition.get()))
                         .findFirst();
                 if (portQualityExtractor.isEmpty()) {
-                    getUseCaseLogger().info(
+                    getUseCaseLogger().warn(
                             String.format("Quality extraction for data product port: %s with specification: %s and version: %s is not supported.",
                                     port.getFullyQualifiedName(), standardDefinition.get().getSpecification(), standardDefinition.get().getSpecificationVersion()
                             ));
@@ -96,7 +96,7 @@ public class DataProductPortAssetAnalyzer {
 
                 Optional<PortStandardDefinitionEntitiesExtractor> portStandardDefinitionAnalyzer = getPortStandardDefinitionAnalyzer(standardDefinition.get());
                 if (portStandardDefinitionAnalyzer.isEmpty()) {
-                    getUseCaseLogger().info(String.format(
+                    getUseCaseLogger().warn(String.format(
                             "Data product port: %s with specification: %s and version: %s is not supported.",
                             port.getFullyQualifiedName(), standardDefinition.get().getSpecification(), standardDefinition.get().getSpecificationVersion())
                     );
