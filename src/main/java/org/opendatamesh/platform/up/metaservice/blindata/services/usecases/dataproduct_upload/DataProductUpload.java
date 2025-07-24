@@ -1,5 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opendatamesh.dpds.model.info.Info;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAdditionalPropertiesRes;
@@ -126,6 +128,16 @@ class DataProductUpload implements UseCase {
         if (CollectionUtils.isEmpty(blindataDataProduct.getAdditionalProperties())) {
             blindataDataProduct.setAdditionalProperties(new ArrayList<>());
         }
+        if (!CollectionUtils.isEmpty(odmDataProduct.getContactPoints())) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                String contactPointsJson = objectMapper.writeValueAsString(odmDataProduct.getContactPoints());
+                blindataDataProduct.getAdditionalProperties()
+                        .add(new BDAdditionalPropertiesRes("contactPoints", contactPointsJson));
+            } catch (JsonProcessingException e) {
+                getUseCaseLogger().warn("Failed to serialize contactPoints");
+            }
+        }
         try {
             Pattern compiledPattern = Pattern.compile(addPropRegex);
             if (!CollectionUtils.isEmpty(odmDataProduct.getAdditionalProperties()) && StringUtils.hasText(addPropRegex)) {
@@ -133,7 +145,6 @@ class DataProductUpload implements UseCase {
                     if (key.startsWith("x-productType")) {
                         return;
                     }
-
                     Matcher matcher = compiledPattern.matcher(key);
                     if (matcher.find()) {
                         String propName = matcher.group(1);
