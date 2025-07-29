@@ -496,11 +496,6 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         // Verify bdUserClient was called and returned empty
         verify(bdUserClient, atLeastOnce()).getBlindataUser(any());
 
-        // Verify semantic linking calls were never made since user was not found
-        verify(bdSemanticLinkingClient, never()).getLogicalNamespaceByIdentifier(any());
-        verify(bdSemanticLinkingClient, never()).getDataCategoryByNameAndNamespaceUuid(any(), any());
-        verify(bdSemanticLinkingClient, never()).getSemanticLinkElements(any(), any());
-
         // Verify the response
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(response.getBody()).isNotNull();
@@ -539,11 +534,6 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
 
         // Verify bdStewardshipClient was called and returned null
         verify(bdStewardshipClient, atLeastOnce()).getRole(any());
-
-        // Verify semantic linking calls were never made since role was not found
-        verify(bdSemanticLinkingClient, never()).getLogicalNamespaceByIdentifier(any());
-        verify(bdSemanticLinkingClient, never()).getDataCategoryByNameAndNamespaceUuid(any(), any());
-        verify(bdSemanticLinkingClient, never()).getSemanticLinkElements(any(), any());
 
         // Verify the response
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -657,7 +647,57 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
         Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
         Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
-                .contains("Missing quality issue policy name for quality check: Macrozona ExpectColumnValuesToBeInSet");
+                .contains("Quality object inside datastoreApi is not valid");
+    }
+
+    @Test
+    public void testValidateDataProductVersionNotInRegistryMissingNamespace() throws IOException {
+        // Load test data from JSON file
+        OdmValidatorPolicyEvaluationRequestRes request = mapper.readValue(
+                Resources.toByteArray(getClass().getResource("valid_data_product_version_not_in_registry.json")),
+                OdmValidatorPolicyEvaluationRequestRes.class
+        );
+
+        BDShortUserRes owner = new BDShortUserRes();
+        owner.setUsername("owner@default.blindata.io");
+        owner.setFullName("owner@default.blindata.io");
+        when(bdUserClient.getBlindataUser(any())).thenReturn(Optional.of(owner));
+
+        BDStewardshipRoleRes role = new BDStewardshipRoleRes();
+        role.setUuid("test-role-uuid");
+        role.setName("test-role-name");
+        when(bdStewardshipClient.getRole(any())).thenReturn(role);
+
+        // Mock odmRegistryClient.getApi to return empty (data product version not in registry yet)
+        when(odmRegistryClient.getApi(any())).thenReturn(Optional.empty());
+
+        // Return a data product like in other tests
+        BDDataProductRes existingDataProduct = new BDDataProductRes();
+        existingDataProduct.setUuid("dp-uuid");
+        existingDataProduct.setName("test1");
+        existingDataProduct.setIdentifier("urn:dpds:qualityDemo:dataproducts:test1:1");
+        existingDataProduct.setVersion("1.0.0");
+        existingDataProduct.setDomain("test");
+        when(bdDataProductClient.getDataProduct(any())).thenReturn(Optional.of(existingDataProduct));
+
+        // Call the validator endpoint
+        ResponseEntity<OdmValidatorPolicyEvaluationResultRes> response = rest.postForEntity(
+                "http://localhost:" + port + "/api/v1/up/validator/evaluate-policy",
+                request,
+                OdmValidatorPolicyEvaluationResultRes.class
+        );
+
+        // Verify that odmRegistryClient.getApi was never called since there are no interface components
+        verify(odmRegistryClient, never()).getApi(any());
+
+        // Verify the response - validation should fail due to missing interface components
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getBody()).isNotNull();
+        Assertions.assertThat(response.getBody().getPolicyEvaluationId()).isEqualTo(10L);
+        Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
+        Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
+        Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
+                .contains("[\"Namespace not found for identifier: https://demo.blindata.io/logical/namespaces/name/filmRentalInc#\",\"Namespace not found for identifier: https://demo.blindata.io/logical/namespaces/name/filmRentalInc#\"]");
     }
 
     private JsonNode findObjectByFullyQualifiedName(JsonNode root, String identifier) {

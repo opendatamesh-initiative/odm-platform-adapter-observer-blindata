@@ -15,8 +15,6 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.qual
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionEntitiesExtractor;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.PortStandardDefinitionQualityExtractor;
 import org.opendatamesh.platform.up.metaservice.blindata.utils.CollectionsBDUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,6 +25,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
 
 @Service
 public class DataProductPortAssetAnalyzer {
@@ -48,13 +48,11 @@ public class DataProductPortAssetAnalyzer {
     @Autowired
     private List<PortStandardDefinitionQualityExtractor> qualityChecksExtractors;
 
-    private static final Logger logger = LoggerFactory.getLogger(DataProductPortAssetAnalyzer.class);
-
     public List<QualityCheck> extractQualityChecksFromPorts(List<Port> ports) {
         List<QualityCheck> qualityChecks = new ArrayList<>();
         try {
             for (Port port : ports) {
-                logger.info("Analyzing quality definition for port {}", port.getFullyQualifiedName());
+                getUseCaseLogger().info("Analyzing quality definition for port " + port.getFullyQualifiedName());
                 //Get StandardDefinition from port
                 Optional<StandardDefinition> standardDefinition = resolveStandardDefinitionFromPort(port);
                 if (standardDefinition.isEmpty()) continue;
@@ -64,8 +62,10 @@ public class DataProductPortAssetAnalyzer {
                         .filter(extractor -> extractor.supports(standardDefinition.get()))
                         .findFirst();
                 if (portQualityExtractor.isEmpty()) {
-                    logger.warn("Quality extraction for data product port: {} with specification: {} and version: {} is not supported.",
-                            port.getFullyQualifiedName(), standardDefinition.get().getSpecification(), standardDefinition.get().getSpecificationVersion());
+                    getUseCaseLogger().warn(
+                            String.format("Quality extraction for data product port: %s with specification: %s and version: %s is not supported.",
+                                    port.getFullyQualifiedName(), standardDefinition.get().getSpecification(), standardDefinition.get().getSpecificationVersion()
+                            ));
                     continue;
                 }
 
@@ -78,7 +78,7 @@ public class DataProductPortAssetAnalyzer {
 
             return mergeQualityChecksWithSameCode(qualityChecks);
         } catch (Exception e) {
-            logger.warn(e.getMessage(), e);
+            getUseCaseLogger().warn(e.getMessage(), e);
         }
         return qualityChecks;
     }
@@ -87,28 +87,35 @@ public class DataProductPortAssetAnalyzer {
         List<BDDataProductPortAssetDetailRes> dataProductPortAssetDetailRes = new ArrayList<>();
         try {
             for (Port port : ports) {
-                logger.info("Analyzing data assets for port {}", port.getFullyQualifiedName());
+                getUseCaseLogger().info("Analyzing data assets for port " + port.getFullyQualifiedName());
                 Optional<StandardDefinition> standardDefinition = resolveStandardDefinitionFromPort(port);
                 if (standardDefinition.isEmpty()) continue;
-                logger.info("Data product port: {} has specification: {} of version: {}", port.getFullyQualifiedName(), standardDefinition.get().getSpecification(), standardDefinition.get().getSpecificationVersion());
+                getUseCaseLogger().info(String.format("Data product port: %s has specification: %s of version: %s", port.getFullyQualifiedName(), standardDefinition.get().getSpecification(), standardDefinition.get().getSpecificationVersion()));
 
                 BDSystemRes platformSystem = getSystem(port);
 
                 Optional<PortStandardDefinitionEntitiesExtractor> portStandardDefinitionAnalyzer = getPortStandardDefinitionAnalyzer(standardDefinition.get());
                 if (portStandardDefinitionAnalyzer.isEmpty()) {
-                    logger.warn("Data product port: {} with specification: {} and version: {} is not supported.",
-                            port.getFullyQualifiedName(), standardDefinition.get().getSpecification(), standardDefinition.get().getSpecificationVersion());
+                    getUseCaseLogger().warn(String.format(
+                            "Data product port: %s with specification: %s and version: %s is not supported.",
+                            port.getFullyQualifiedName(), standardDefinition.get().getSpecification(), standardDefinition.get().getSpecificationVersion())
+                    );
                     continue;
                 }
 
                 List<BDPhysicalEntityRes> extractedEntities = portStandardDefinitionAnalyzer.get().extractEntities(standardDefinition.get());
-                logger.info("Data product port: {}, found {} physical entities", port.getFullyQualifiedName(), extractedEntities.size());
+                getUseCaseLogger().info(String.format(
+                        "Data product port: %s, found %s physical entities",
+                        port.getFullyQualifiedName(), extractedEntities.size())
+                );
                 //forcing physical entities to have the platform system
                 extractedEntities = extractedEntities.stream().map(pe -> {
                     if (CollectionUtils.isEmpty(pe.getPhysicalFields())) {
-                        logger.info("Data product port: {}, physical entity: {}, no physical fields found", port.getFullyQualifiedName(), pe.getName());
+                        getUseCaseLogger().info(String.format(
+                                "Data product port: %s, physical entity: %s, no physical fields found", port.getFullyQualifiedName(), pe.getName()
+                        ));
                     } else {
-                        logger.info("Data product port: {}, physical entity: {}, found {} physical fields", port.getFullyQualifiedName(), pe.getName(), pe.getPhysicalFields().size());
+                        getUseCaseLogger().info(String.format("Data product port: %s, physical entity: %s, found %s physical fields", port.getFullyQualifiedName(), pe.getName(), pe.getPhysicalFields().size()));
                     }
                     pe.setSystem(platformSystem);
                     return pe;
@@ -118,43 +125,53 @@ public class DataProductPortAssetAnalyzer {
                 dataProductPortAssetDetailRes.add(bdDataProductPortAssetDetail);
             }
         } catch (Exception e) {
-            logger.warn(e.getMessage(), e);
+            getUseCaseLogger().warn(e.getMessage(), e);
         }
         return dataProductPortAssetDetailRes;
     }
 
     private Optional<StandardDefinition> resolveStandardDefinitionFromPort(Port port) {
         if (port.getPromises() == null || port.getPromises().getApi() == null) {
-            logger.info("Data product port: {} has empty Api", port.getFullyQualifiedName());
+            getUseCaseLogger().info(String.format("Data product port: %s has empty Api", port.getFullyQualifiedName()));
             return Optional.empty();
         }
-
-        Optional<JsonNode> externalComponentResources = registryClient.getApi(port.getPromises().getApi().getId());
-        if (externalComponentResources.isEmpty()) {
-            logger.info("No definition found for the data product port: {}", port.getFullyQualifiedName());
+        Optional<JsonNode> rawApi = retrieveRawApi(port);
+        if (rawApi.isEmpty()) {
+            getUseCaseLogger().info("No definition found for the data product port: " + port.getFullyQualifiedName());
             return Optional.empty();
         }
 
         try {
-            StandardDefinition standardDefinition = objectMapper.treeToValue(externalComponentResources.get(), StandardDefinition.class);
+            StandardDefinition standardDefinition = objectMapper.treeToValue(rawApi.get(), StandardDefinition.class);
             if (portIsNotValid(port, standardDefinition)) {
                 return Optional.empty();
             }
             return Optional.of(standardDefinition);
         } catch (Exception e) {
-            logger.warn("Failed to parse standard definition for port {}: {}", port.getFullyQualifiedName(), e.getMessage());
+            getUseCaseLogger().warn(String.format("Failed to parse standard definition for port %s: %s", port.getFullyQualifiedName(), e.getMessage()));
             return Optional.empty();
         }
     }
 
+    private Optional<JsonNode> retrieveRawApi(Port port) {
+        if (portContainsCompleteApi(port)) {
+            return Optional.of(objectMapper.valueToTree(port.getPromises().getApi()));
+        } else {
+            return registryClient.getApi(port.getPromises().getApi().getId());
+        }
+    }
+
+    private boolean portContainsCompleteApi(Port port) {
+        return port.getPromises().getApi().getDefinition() != null && !port.getPromises().getApi().getDefinition().getAdditionalProperties().containsKey("$ref");
+    }
 
     private boolean portIsNotValid(Port port, StandardDefinition standardDefinition) {
         if (!StringUtils.hasText(standardDefinition.getSpecification())) {
-            logger.warn("Missing specification on port: {}", port.getFullyQualifiedName());
+            getUseCaseLogger().warn("Missing specification on port: " + port.getFullyQualifiedName());
             return true;
         }
         if (!StringUtils.hasText(standardDefinition.getSpecificationVersion())) {
-            logger.warn("Missing specification version on port: {}", port.getFullyQualifiedName());
+            getUseCaseLogger().warn("Missing specification version on port: " + port.getFullyQualifiedName());
             return true;
         }
         return false;
