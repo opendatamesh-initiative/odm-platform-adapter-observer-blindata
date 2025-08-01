@@ -10,6 +10,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataPr
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1.model.DataStoreApiBlindataDefinition;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
 
+import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
+
 class DataStoreApiVisitorImpl implements DataStoreApiVisitor {
 
     private final SemanticLinkManager semanticLinkManager;
@@ -42,6 +44,10 @@ class DataStoreApiVisitorImpl implements DataStoreApiVisitor {
             for (DataStoreApiStandardDefinitionObject table : dataStoreApiSchema.getTables()) {
                 DataStoreApiStandardDefinitionVisitor<DataStoreApiBlindataDefinition> visitor =
                         new DataStoreApiStandardDefinitionVisitorImpl(entitiesPresenter, qualityPresenter, semanticLinkManager, databaseSchemaName, bdDataProductConfig);
+                if (table.getDefinition() == null) {
+                    getUseCaseLogger().warn("Missing definition on datastore api table: " + table.getName());
+                    continue;
+                }
                 visitor.visit(table.getDefinition());
             }
         }

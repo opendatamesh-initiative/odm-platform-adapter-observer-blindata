@@ -52,6 +52,10 @@ public class PortDatastoreApiEntitiesExtractor implements PortStandardDefinition
             DataStoreApi dataStoreApi = parser.deserialize(new ObjectMapper().valueToTree(portStandardDefinition.getDefinition()));
 
             List<QualityCheck> qualityChecks = new ArrayList<>();
+            if (dataStoreApi.getSchema() == null) {
+                getUseCaseLogger().warn("Data product port has empty schema, skipping quality checks extraction");
+                return qualityChecks;
+            }
             DataStoreApiVisitor visitor = new DataStoreApiVisitorImpl(semanticLinkManager, NO_OP_ENTITIES(), qualityChecks::add, bdDataProductConfig);
             visitor.visit(dataStoreApi.getSchema());
             return qualityChecks;
@@ -71,6 +75,10 @@ public class PortDatastoreApiEntitiesExtractor implements PortStandardDefinition
                     .register(new DataStoreApiBlindataDefinitionConverter());
             DataStoreApi dataStoreApi = parser.deserialize(new ObjectMapper().valueToTree(portStandardDefinition.getDefinition()));
             List<BDPhysicalEntityRes> physicalEntities = new ArrayList<>();
+            if (dataStoreApi.getSchema() == null) {
+                getUseCaseLogger().warn("Data product port has empty schema, skipping entities extraction");
+                return physicalEntities;
+            }
             DataStoreApiVisitor visitor = new DataStoreApiVisitorImpl(semanticLinkManager, physicalEntities::add, NO_OP_QUALITY_DEFINITIONS(), bdDataProductConfig);
             visitor.visit(dataStoreApi.getSchema());
             return physicalEntities;
