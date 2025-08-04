@@ -24,6 +24,7 @@ Blindata is a SaaS platform that leverages Data Governance and Compliance to emp
 purpose of this adapter is to keep the data catalog within Blindata constantly updated. Upon the occurrence of a
 creation, deletion, or modification of a dataproduct, Blindata is immediately and automatically notified to ensure that
 its catalog remains aligned.
+
 ---
 
 ## Quick Start
