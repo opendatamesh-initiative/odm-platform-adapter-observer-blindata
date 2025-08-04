@@ -437,7 +437,6 @@ The `message` `payload` is mapped in a set of Physical Fields as follows.
 
 A semantic link is an explicit connection between a data asset exposed by a data product through one of its output ports
 and one or more concepts defined in a central enterprise ontology.
-You can find more information about the semantic linking [here](./mapping/RFC-74-semantic-linking.md).
 
 **Note**: Before starting, ensure that all the ontology elements (concepts, attributes and relationships) are correctly
 represented in Blindata. This can also be validated by the Observer validator functionality.
