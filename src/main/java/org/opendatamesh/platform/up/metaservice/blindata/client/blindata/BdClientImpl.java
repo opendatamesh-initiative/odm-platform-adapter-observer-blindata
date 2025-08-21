@@ -298,7 +298,8 @@ public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, B
     @Override
     public BDPolicyResultsUploadResultsRes createPolicyEvaluationRecords(BDPolicyEvaluationRecords evaluationRecords) throws BlindataClientException, BlindataClientResourceMappingException {
         try {
-            return restUtils.genericPost(
+            RestUtils rest = credentials.getEnableAsync() ? asyncRestUtils : restUtils;
+            return rest.genericPost(
                     String.format("%s/api/v1/governance-policies/policy-evaluations/*/upload", credentials.getBlindataUrl()),
                     null,
                     evaluationRecords,
