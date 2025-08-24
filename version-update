@@ -1,0 +1,46 @@
+#!/bin/bash
+
+set -e  # Exit on error
+
+# Check if Git is clean
+if [[ -n $(git status --porcelain) ]]; then
+  echo "Error: Git working directory is not clean. Commit or stash changes first."
+  exit 1
+fi
+
+# Get the current version from pom.xml
+CURRENT_VERSION=$(grep -m1 '<version>' pom.xml | sed -E 's/.*<version>([^<]+)<\/version>.*/\1/')
+CURRENT_VERSION=${CURRENT_VERSION%-SNAPSHOT}  # Remove "-SNAPSHOT" if present
+# Extract major, minor, patch
+IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+
+echo "Current version: v$MAJOR.$MINOR.$PATCH"
+
+# Determine new version
+if [[ "$1" == "major" ]]; then
+  ((MAJOR++))
+  MINOR=0
+  PATCH=0
+elif [[ "$1" == "minor" ]]; then
+  ((MINOR++))
+  PATCH=0
+elif [[ "$1" == "patch" ]]; then
+  ((++PATCH))
+else
+  echo "Usage: $0 {major|minor|patch}"
+  exit 1
+fi
+
+NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+
+echo "New version: v$MAJOR.$MINOR.$PATCH"
+
+# Update version in pom.xml
+sed -i "0,/<version>.*<\/version>/s/<version>.*<\/version>/<version>${NEW_VERSION}<\/version>/" pom.xml
+
+# Commit and tag
+git add pom.xml
+git commit -m "chore(release): bump version to ${NEW_VERSION}"
+git tag "v${NEW_VERSION}"
+
+echo "Version updated to ${NEW_VERSION}, committed, and tagged."

@@ -162,7 +162,7 @@ public class DataProductPortAssetAnalyzer {
     }
 
     private boolean portContainsCompleteApi(Port port) {
-        return port.getPromises().getApi().getDefinition() != null && !port.getPromises().getApi().getDefinition().getAdditionalProperties().containsKey("$ref");
+        return port.getPromises().getApi().getDefinition() != null && !StringUtils.hasText(port.getPromises().getApi().getDefinition().getRef());
     }
 
     private boolean portIsNotValid(Port port, StandardDefinition standardDefinition) {
