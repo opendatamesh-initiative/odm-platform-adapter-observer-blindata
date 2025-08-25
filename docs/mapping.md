@@ -68,7 +68,37 @@ The `info` section of the data product descriptor is mapped into Blindata Data P
 | `info.version`                                     | `dataProduct.version`              | ️         | Defaults to `"0.0.0"` `productStatus="DRAFT"` if missing                                                            |
 | `info.description`                                 | `dataProduct.description`          |           |                                                                                                                     |
 | `info.x-productType`                               | `dataProduct.productType`          |           | Only textual values; others are logged and skipped                                                                  |
+| `info.contactPoints`                               | `dataProduct.additionalProperties` |           | Serialized as JSON and stored under the fixed key `contactPoints` in `additionalProperties`.                        |
 | `info._model extension properties matching regex_` | `dataProduct.additionalProperties` |           | Keys matching the configured regex on the application properties `blindata.dataProducts.additionalPropertiesRegex`. |
+
+### Additional Property: Contact Points
+
+The **contactPoints** defined in the ODM Data Product Descriptor are always loaded into Blindata
+as an **additional property** with the fixed name `contactPoints`.  
+The list of contact points is serialized as JSON and stored as a string.
+
+Example:
+```json
+{
+  "name": "contactPoints",
+  "value": "[{\"name\":\"Data Steward\",\"email\":\"steward@example.com\"}]"
+}
+```
+Important: It is recommended to create a Blindata custom property named contactPoints with type TABLE for proper visualization of the contact points data.
+Example domain configuration for the contactPoints custom property:
+Example:
+```json
+{
+  "columns": [
+    {"name": "name", "label": "Name"},
+    {"name": "description", "label": "Description"},
+    {"name": "channel", "label": "Channel"},
+    {"name": "address", "label": "Address"}
+  ]
+}
+```
+- **name**: Technical identifier for the column (used internally by the system)
+- **label**: Display name shown to users in the interface (human-readable column header)
 
 ## Ports
 
