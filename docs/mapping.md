@@ -74,7 +74,7 @@ The `info` section of the data product descriptor is mapped into Blindata Data P
 ### Additional Property: Contact Points
 
 The **contactPoints** defined in the ODM Data Product Descriptor are always loaded into Blindata
-as an **additional property** with the fixed name `contactPoints`.  
+as an **additional property** of Blindata Data Product with the fixed name `contactPoints`.  
 The list of contact points is serialized as JSON and stored as a string.
 
 Example:
@@ -84,7 +84,6 @@ Example:
   "value": "[{\"name\":\"Data Steward\",\"email\":\"steward@example.com\"}]"
 }
 ```
-Important: It is recommended to create a Blindata custom property named contactPoints with type TABLE for proper visualization of the contact points data.
 Example domain configuration for the contactPoints custom property:
 Example:
 ```json
