@@ -118,22 +118,57 @@ public class BDDataProductRes {
 
     public void addOldAdditionalProperties(BDDataProductRes oldDataProduct) {
         if (oldDataProduct == null) return;
-        List<BDAdditionalPropertiesRes> merged = new ArrayList<>();
+        
+        List<BDAdditionalPropertiesRes> mergedProperties = new ArrayList<>();
+        
         if (oldDataProduct.getAdditionalProperties() != null) {
-            merged.addAll(oldDataProduct.getAdditionalProperties());
+            mergedProperties.addAll(oldDataProduct.getAdditionalProperties());
         }
+        
         if (this.getAdditionalProperties() != null) {
+            // Group properties by name to identify array vs non-array properties
+            Map<String, List<BDAdditionalPropertiesRes>> oldPropsByName = new HashMap<>();
+            Map<String, List<BDAdditionalPropertiesRes>> newPropsByName = new HashMap<>();
+            
+            // Group old properties by name
+            if (oldDataProduct.getAdditionalProperties() != null) {
+                for (BDAdditionalPropertiesRes prop : oldDataProduct.getAdditionalProperties()) {
+                    oldPropsByName.computeIfAbsent(prop.getName(), k -> new ArrayList<>()).add(prop);
+                }
+            }
+            
+            // Group new properties by name
             for (BDAdditionalPropertiesRes prop : this.getAdditionalProperties()) {
-                boolean exists = merged.stream().anyMatch(p ->
-                        Objects.equals(p.getName(), prop.getName()) &&
-                                Objects.equals(p.getValue(), prop.getValue())
-                );
-                if (!exists) {
-                    merged.add(prop);
+                newPropsByName.computeIfAbsent(prop.getName(), k -> new ArrayList<>()).add(prop);
+            }
+            
+            // Process each new property
+            for (BDAdditionalPropertiesRes newProp : this.getAdditionalProperties()) {
+                String propName = newProp.getName();
+                List<BDAdditionalPropertiesRes> oldPropsWithSameName = oldPropsByName.get(propName);
+                List<BDAdditionalPropertiesRes> newPropsWithSameName = newPropsByName.get(propName);
+                
+                if (oldPropsWithSameName == null) {
+                    // No old properties with this name, add the new one
+                    mergedProperties.add(newProp);
+                } else if (newPropsWithSameName.size() == 1 && oldPropsWithSameName.size() == 1) {
+                    // Non-array property: use old logic (only add if different)
+                    BDAdditionalPropertiesRes oldProp = oldPropsWithSameName.get(0);
+                    if (!Objects.equals(oldProp.getName(), newProp.getName()) ||
+                        !Objects.equals(oldProp.getValue(), newProp.getValue())) {
+                        mergedProperties.add(newProp);
+                    }
+                } else {
+                    // Array property: replace old with new
+                    // Remove old properties with this name
+                    mergedProperties.removeIf(p -> Objects.equals(p.getName(), propName));
+                    // Add all new properties with this name
+                    mergedProperties.addAll(newPropsWithSameName);
                 }
             }
         }
-        this.additionalProperties = merged;
+        
+        this.additionalProperties = mergedProperties;
     }
 
 }

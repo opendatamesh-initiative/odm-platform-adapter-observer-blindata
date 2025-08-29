@@ -208,7 +208,7 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
                     .forEach((propKey, propValue) -> {
                         if (propKey.startsWith("blindataCustomProp-")) {
                             String propName = propKey.replace("blindataCustomProp-", "");
-                            extractAdditionalPropertyValue(issueTemplate.getAdditionalProperties(), propName, propValue);
+                            addAdditionalPropertyValue(issueTemplate.getAdditionalProperties(), propName, propValue);
                         }
                     });
 
@@ -263,7 +263,7 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
                     .forEach((name, value) -> {
                         if (name.startsWith("blindataCustomProp-")) {
                             String propName = name.replace("blindataCustomProp-", "");
-                            extractAdditionalPropertyValue(qualityCheck.getAdditionalProperties(), propName, value);
+                            addAdditionalPropertyValue(qualityCheck.getAdditionalProperties(), propName, value);
                         }
                     });
         }
@@ -334,7 +334,7 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
                     Matcher matcher = compiledPattern.matcher(key);
                     if (matcher.find()) {
                         String propName = matcher.group(1);
-                        extractAdditionalPropertyValue(additionalProperties, propName, value);
+                        addAdditionalPropertyValue(additionalProperties, propName, value);
                     }
                 });
             }
@@ -353,7 +353,7 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
                     Matcher matcher = compiledPattern.matcher(key);
                     if (matcher.find()) {
                         String propName = matcher.group(1);
-                        extractAdditionalPropertyValue(additionalProperties, propName, value);
+                        addAdditionalPropertyValue(additionalProperties, propName, value);
                     }
                 });
             }
@@ -422,7 +422,7 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
         }
     }
 
-    private void extractAdditionalPropertyValue(List<BDAdditionalPropertiesRes> additionalProperties, String propName, JsonNode value) {
+    private void addAdditionalPropertyValue(List<BDAdditionalPropertiesRes> additionalProperties, String propName, JsonNode value) {
         if (value.isArray()) {
             // Create a separate additional property for each array element
             value.forEach(element -> {

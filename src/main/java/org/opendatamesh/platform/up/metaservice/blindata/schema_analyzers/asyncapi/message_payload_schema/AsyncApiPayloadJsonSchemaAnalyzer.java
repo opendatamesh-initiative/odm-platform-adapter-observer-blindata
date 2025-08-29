@@ -63,7 +63,7 @@ class AsyncApiPayloadJsonSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
     private List<BDAdditionalPropertiesRes> buildBlindataPhysicalFieldAdditionalProperties(JsonProperty childProperty, JsonProperty parentProperty, String childPropertyName) {
         List<BDAdditionalPropertiesRes> additionalPropertiesRes = new ArrayList<>();
         for (Map.Entry<String, JsonNode> additionalAttribute : childProperty.getAdditionalAttributes().entrySet()) {
-            extractAdditionalPropertyValue(additionalPropertiesRes, additionalAttribute.getKey(), additionalAttribute.getValue());
+            addAdditionalPropertyValue(additionalPropertiesRes, additionalAttribute.getKey(), additionalAttribute.getValue());
         }
         if (parentProperty.getRequired().contains(childPropertyName)) {
             additionalPropertiesRes.add(new BDAdditionalPropertiesRes("REQUIRED", "true"));
@@ -71,7 +71,7 @@ class AsyncApiPayloadJsonSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
         return additionalPropertiesRes;
     }
 
-    private void extractAdditionalPropertyValue(List<BDAdditionalPropertiesRes> additionalProperties, String propName, JsonNode value) {
+    private void addAdditionalPropertyValue(List<BDAdditionalPropertiesRes> additionalProperties, String propName, JsonNode value) {
         if (value.isArray()) {
             // Create a separate additional property for each array element
             value.forEach(element -> {

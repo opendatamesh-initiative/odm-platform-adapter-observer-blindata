@@ -150,7 +150,7 @@ class DataProductUpload implements UseCase {
                     Matcher matcher = compiledPattern.matcher(key);
                     if (matcher.find()) {
                         String propName = matcher.group(1);
-                        extractAdditionalPropertyValue(blindataDataProduct.getAdditionalProperties(), propName, value);
+                        addAdditionalPropertyValue(blindataDataProduct.getAdditionalProperties(), propName, value);
                     }
                 });
             }
@@ -159,7 +159,7 @@ class DataProductUpload implements UseCase {
         }
     }
 
-    private void extractAdditionalPropertyValue(List<BDAdditionalPropertiesRes> additionalProperties, String propName, JsonNode value) {
+    private void addAdditionalPropertyValue(List<BDAdditionalPropertiesRes> additionalProperties, String propName, JsonNode value) {
         if (value.isArray()) {
             // Create a separate additional property for each array element
             value.forEach(element -> {

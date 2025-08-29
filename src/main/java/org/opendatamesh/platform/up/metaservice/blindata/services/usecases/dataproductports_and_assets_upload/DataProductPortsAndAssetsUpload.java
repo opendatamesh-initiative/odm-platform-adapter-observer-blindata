@@ -186,7 +186,7 @@ class DataProductPortsAndAssetsUpload implements UseCase {
                     Matcher matcher = compiledPattern.matcher(key);
                     if (matcher.find()) {
                         String propName = matcher.group(1);
-                        extractAdditionalPropertyValue(bdPort.getAdditionalProperties(), propName, value);
+                        addAdditionalPropertyValue(bdPort.getAdditionalProperties(), propName, value);
                     }
                 });
             }
@@ -201,7 +201,7 @@ class DataProductPortsAndAssetsUpload implements UseCase {
      * @param propName the name of the property
      * @param value the JsonNode value to extract from
      */
-    private void extractAdditionalPropertyValue(List<BDAdditionalPropertiesRes> additionalProperties, String propName, JsonNode value) {
+    private void addAdditionalPropertyValue(List<BDAdditionalPropertiesRes> additionalProperties, String propName, JsonNode value) {
         if (value.isArray()) {
             // Create a separate additional property for each array element
             value.forEach(element -> {
