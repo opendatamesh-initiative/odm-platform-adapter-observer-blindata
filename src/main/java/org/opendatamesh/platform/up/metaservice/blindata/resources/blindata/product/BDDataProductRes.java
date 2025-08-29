@@ -2,10 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.pro
 
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAdditionalPropertiesRes;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BDDataProductRes {
 
@@ -121,18 +118,23 @@ public class BDDataProductRes {
 
     public void addOldAdditionalProperties(BDDataProductRes oldDataProduct) {
         if (oldDataProduct == null) return;
-        Map<String, BDAdditionalPropertiesRes> propertyMap = new LinkedHashMap<>();
+        List<BDAdditionalPropertiesRes> merged = new ArrayList<>();
         if (oldDataProduct.getAdditionalProperties() != null) {
-            for (BDAdditionalPropertiesRes prop : oldDataProduct.getAdditionalProperties()) {
-                propertyMap.put(prop.getName(), prop);
-            }
+            merged.addAll(oldDataProduct.getAdditionalProperties());
         }
         if (this.getAdditionalProperties() != null) {
             for (BDAdditionalPropertiesRes prop : this.getAdditionalProperties()) {
-                propertyMap.put(prop.getName(), prop);
+                boolean exists = merged.stream().anyMatch(p ->
+                        Objects.equals(p.getName(), prop.getName()) &&
+                                Objects.equals(p.getValue(), prop.getValue())
+                );
+                if (!exists) {
+                    merged.add(prop);
+                }
             }
         }
-        this.additionalProperties = new ArrayList<>(propertyMap.values());
+        this.additionalProperties = merged;
     }
+
 }
 

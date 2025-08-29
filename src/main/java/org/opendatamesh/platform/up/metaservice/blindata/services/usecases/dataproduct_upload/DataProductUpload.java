@@ -2,6 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.data
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.opendatamesh.dpds.model.info.Info;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAdditionalPropertiesRes;
@@ -16,6 +17,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -148,16 +150,28 @@ class DataProductUpload implements UseCase {
                     Matcher matcher = compiledPattern.matcher(key);
                     if (matcher.find()) {
                         String propName = matcher.group(1);
-                        blindataDataProduct.getAdditionalProperties()
-                                .add(new BDAdditionalPropertiesRes(
-                                        propName,
-                                        value.isTextual() ? value.asText() : value.toString()
-                                ));
+                        extractAdditionalPropertyValue(blindataDataProduct.getAdditionalProperties(), propName, value);
                     }
                 });
             }
         } catch (PatternSyntaxException e) {
             getUseCaseLogger().warn("Invalid regex for additional properties: " + addPropRegex, e);
+        }
+    }
+
+    private void extractAdditionalPropertyValue(List<BDAdditionalPropertiesRes> additionalProperties, String propName, JsonNode value) {
+        if (value.isArray()) {
+            // Create a separate additional property for each array element
+            value.forEach(element -> {
+                String elementValue = element.isTextual() ? element.asText() : element.toString();
+                additionalProperties.add(new BDAdditionalPropertiesRes(propName, elementValue));
+            });
+        } else {
+            // Handle single values as before
+            additionalProperties.add(new BDAdditionalPropertiesRes(
+                    propName,
+                    value.isTextual() ? value.asText() : value.toString()
+            ));
         }
     }
 

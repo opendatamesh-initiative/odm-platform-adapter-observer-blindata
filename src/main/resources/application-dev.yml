@@ -4,8 +4,8 @@ spring:
 blindata:
   url: http://localhost:3000
   user: "owner@default.blindata.io"
-  password: ""
-  tenantUUID: ""
+  password: "Owner123456!"
+  tenantUUID: "9f9b37b2-0e09-49fc-989f-91e3b90ad42d"
   roleUuid: ""
   validator:
     active: true

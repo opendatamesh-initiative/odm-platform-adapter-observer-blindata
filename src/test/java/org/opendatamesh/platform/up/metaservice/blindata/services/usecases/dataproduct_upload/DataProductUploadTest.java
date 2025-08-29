@@ -12,6 +12,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.excep
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -182,6 +183,62 @@ public class DataProductUploadTest {
 
         // confirm that no update was captured
         assertThat(updateCaptor.getAllValues()).isEmpty();
+    }
+
+    @Test
+    public void testDataProductCreationWithArrayAdditionalProperties() throws UseCaseExecutionException, IOException {
+        // load initial state with array custom properties
+        DataProductUploadInitialState initialState = objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("initial_state_6.json")),
+                DataProductUploadInitialState.class
+        );
+
+        // prepare ports
+        DataProductUploadOdmOutboundPort odmOutboundPort =
+                new DataProductUploadOdmOutboundPortMock(initialState);
+        DataProductUploadBlindataOutboundPort blindataOutboundPort =
+                spy(new DataProductUploadBlindataOutboundPortMock(initialState));
+
+        // execute use case
+        new DataProductUpload(odmOutboundPort, blindataOutboundPort).execute();
+
+        // capture arguments passed to createDataProduct
+        ArgumentCaptor<BDDataProductRes> createCaptor = ArgumentCaptor.forClass(BDDataProductRes.class);
+
+        // verify create called once, update never called
+        verify(blindataOutboundPort, times(1)).createDataProduct(createCaptor.capture());
+        verify(blindataOutboundPort, never()).updateDataProduct(any());
+        verify(blindataOutboundPort, times(0)).createDataProductResponsibility(any(), any(), any());
+
+        // inspect the captured DataProduct for creation
+        BDDataProductRes createdDp = createCaptor.getValue();
+        assertThat(createdDp).isNotNull();
+
+        // Check that array properties create multiple separate additional properties
+        List<BDAdditionalPropertiesRes> additionalProps = createdDp.getAdditionalProperties();
+        assertThat(additionalProps).hasSize(6); // 2 categories + 3 tags + 1 single property
+
+        // Verify that array values create separate properties for each element
+        List<BDAdditionalPropertiesRes> tagsProps = additionalProps.stream()
+                .filter(prop -> "tags".equals(prop.getName()))
+                .collect(Collectors.toList());
+        assertThat(tagsProps).hasSize(3);
+        assertThat(tagsProps).extracting("value")
+                .containsExactlyInAnyOrder("tag1", "tag2", "tag3");
+
+        List<BDAdditionalPropertiesRes> categoriesProps = additionalProps.stream()
+                .filter(prop -> "categories".equals(prop.getName()))
+                .collect(Collectors.toList());
+        assertThat(categoriesProps).hasSize(2);
+        assertThat(categoriesProps).extracting("value")
+                .containsExactlyInAnyOrder("cat1", "cat2");
+
+        BDAdditionalPropertiesRes singleProp = additionalProps.stream()
+                .filter(prop -> "singleProperty".equals(prop.getName()))
+                .findFirst()
+                .orElse(null);
+        assertThat(singleProp).isNotNull();
+        assertThat(singleProp.getValue()).isEqualTo("singleValue");
     }
 
 }
