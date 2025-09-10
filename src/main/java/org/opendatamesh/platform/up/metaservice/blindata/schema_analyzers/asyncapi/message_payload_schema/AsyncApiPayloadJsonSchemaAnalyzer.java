@@ -63,12 +63,28 @@ class AsyncApiPayloadJsonSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
     private List<BDAdditionalPropertiesRes> buildBlindataPhysicalFieldAdditionalProperties(JsonProperty childProperty, JsonProperty parentProperty, String childPropertyName) {
         List<BDAdditionalPropertiesRes> additionalPropertiesRes = new ArrayList<>();
         for (Map.Entry<String, JsonNode> additionalAttribute : childProperty.getAdditionalAttributes().entrySet()) {
-            additionalPropertiesRes.add(new BDAdditionalPropertiesRes(additionalAttribute.getKey(), additionalAttribute.getValue().toString()));
+            addAdditionalPropertyValue(additionalPropertiesRes, additionalAttribute.getKey(), additionalAttribute.getValue());
         }
         if (parentProperty.getRequired().contains(childPropertyName)) {
             additionalPropertiesRes.add(new BDAdditionalPropertiesRes("REQUIRED", "true"));
         }
         return additionalPropertiesRes;
+    }
+
+    private void addAdditionalPropertyValue(List<BDAdditionalPropertiesRes> additionalProperties, String propName, JsonNode value) {
+        if (value.isArray()) {
+            // Create a separate additional property for each array element
+            value.forEach(element -> {
+                String elementValue = element.isTextual() ? element.asText() : element.toString();
+                additionalProperties.add(new BDAdditionalPropertiesRes(propName, elementValue));
+            });
+        } else {
+            // Handle single values as before
+            additionalProperties.add(new BDAdditionalPropertiesRes(
+                    propName,
+                    value.isTextual() ? value.asText() : value.toString()
+            ));
+        }
     }
 
     private BDPhysicalFieldRes buildBlindataPhysicalField(String name, JsonProperty childProperty, int ordinalPosition) {

@@ -3,6 +3,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datas
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Lists;
 import org.opendatamesh.dpds.datastoreapi.v1.extensions.DataStoreApiStandardDefinitionVisitor;
 import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
@@ -206,8 +207,8 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
             qualityIssuePolicy.getAdditionalProperties()
                     .forEach((propKey, propValue) -> {
                         if (propKey.startsWith("blindataCustomProp-")) {
-                            issueTemplate.getAdditionalProperties()
-                                    .add(new BDAdditionalPropertiesRes(propKey.replace("blindataCustomProp-", ""), propValue.isTextual() ? propValue.asText() : propValue.toString()));
+                            String propName = propKey.replace("blindataCustomProp-", "");
+                            addAdditionalPropertyValue(issueTemplate.getAdditionalProperties(), propName, propValue);
                         }
                     });
 
@@ -261,7 +262,8 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
                     .getAdditionalProperties()
                     .forEach((name, value) -> {
                         if (name.startsWith("blindataCustomProp-")) {
-                            qualityCheck.getAdditionalProperties().add(new BDAdditionalPropertiesRes(name.replace("blindataCustomProp-", ""), value.isTextual() ? value.asText() : value.toString()));
+                            String propName = name.replace("blindataCustomProp-", "");
+                            addAdditionalPropertyValue(qualityCheck.getAdditionalProperties(), propName, value);
                         }
                     });
         }
@@ -332,10 +334,7 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
                     Matcher matcher = compiledPattern.matcher(key);
                     if (matcher.find()) {
                         String propName = matcher.group(1);
-                        additionalProperties.add(new BDAdditionalPropertiesRes(
-                                propName,
-                                value.isTextual() ? value.asText() : value.toString()
-                        ));
+                        addAdditionalPropertyValue(additionalProperties, propName, value);
                     }
                 });
             }
@@ -354,10 +353,7 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
                     Matcher matcher = compiledPattern.matcher(key);
                     if (matcher.find()) {
                         String propName = matcher.group(1);
-                        additionalProperties.add(new BDAdditionalPropertiesRes(
-                                propName,
-                                value.isTextual() ? value.asText() : value.toString()
-                        ));
+                        addAdditionalPropertyValue(additionalProperties, propName, value);
                     }
                 });
             }
@@ -423,6 +419,22 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
     private void addIfPresent(List<BDAdditionalPropertiesRes> props, String name, Object value) {
         if (value != null) {
             props.add(new BDAdditionalPropertiesRes(name, value.toString()));
+        }
+    }
+
+    private void addAdditionalPropertyValue(List<BDAdditionalPropertiesRes> additionalProperties, String propName, JsonNode value) {
+        if (value.isArray()) {
+            // Create a separate additional property for each array element
+            value.forEach(element -> {
+                String elementValue = element.isTextual() ? element.asText() : element.toString();
+                additionalProperties.add(new BDAdditionalPropertiesRes(propName, elementValue));
+            });
+        } else {
+            // Handle single values as before
+            additionalProperties.add(new BDAdditionalPropertiesRes(
+                    propName,
+                    value.isTextual() ? value.asText() : value.toString()
+            ));
         }
     }
 }

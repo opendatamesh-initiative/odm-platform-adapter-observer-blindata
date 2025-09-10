@@ -2,10 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.pro
 
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAdditionalPropertiesRes;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BDDataProductRes {
 
@@ -121,18 +118,58 @@ public class BDDataProductRes {
 
     public void addOldAdditionalProperties(BDDataProductRes oldDataProduct) {
         if (oldDataProduct == null) return;
-        Map<String, BDAdditionalPropertiesRes> propertyMap = new LinkedHashMap<>();
+        
+        List<BDAdditionalPropertiesRes> mergedProperties = new ArrayList<>();
+        
         if (oldDataProduct.getAdditionalProperties() != null) {
-            for (BDAdditionalPropertiesRes prop : oldDataProduct.getAdditionalProperties()) {
-                propertyMap.put(prop.getName(), prop);
-            }
+            mergedProperties.addAll(oldDataProduct.getAdditionalProperties());
         }
+        
         if (this.getAdditionalProperties() != null) {
+            // Group properties by name to identify array vs non-array properties
+            Map<String, List<BDAdditionalPropertiesRes>> oldPropsByName = new HashMap<>();
+            Map<String, List<BDAdditionalPropertiesRes>> newPropsByName = new HashMap<>();
+            
+            // Group old properties by name
+            if (oldDataProduct.getAdditionalProperties() != null) {
+                for (BDAdditionalPropertiesRes prop : oldDataProduct.getAdditionalProperties()) {
+                    oldPropsByName.computeIfAbsent(prop.getName(), k -> new ArrayList<>()).add(prop);
+                }
+            }
+            
+            // Group new properties by name
             for (BDAdditionalPropertiesRes prop : this.getAdditionalProperties()) {
-                propertyMap.put(prop.getName(), prop);
+                newPropsByName.computeIfAbsent(prop.getName(), k -> new ArrayList<>()).add(prop);
+            }
+            
+            // Process each new property
+            for (BDAdditionalPropertiesRes newProp : this.getAdditionalProperties()) {
+                String propName = newProp.getName();
+                List<BDAdditionalPropertiesRes> oldPropsWithSameName = oldPropsByName.get(propName);
+                List<BDAdditionalPropertiesRes> newPropsWithSameName = newPropsByName.get(propName);
+                
+                if (oldPropsWithSameName == null) {
+                    // No old properties with this name, add the new one
+                    mergedProperties.add(newProp);
+                } else if (newPropsWithSameName.size() == 1 && oldPropsWithSameName.size() == 1) {
+                    // Non-array property: use old logic (only add if different)
+                    BDAdditionalPropertiesRes oldProp = oldPropsWithSameName.get(0);
+                    if (!Objects.equals(oldProp.getName(), newProp.getName()) ||
+                        !Objects.equals(oldProp.getValue(), newProp.getValue())) {
+                        mergedProperties.add(newProp);
+                    }
+                } else {
+                    // Array property: replace old with new
+                    // Remove old properties with this name
+                    mergedProperties.removeIf(p -> Objects.equals(p.getName(), propName));
+                    // Add all new properties with this name
+                    mergedProperties.addAll(newPropsWithSameName);
+                }
             }
         }
-        this.additionalProperties = new ArrayList<>(propertyMap.values());
+        
+        this.additionalProperties = mergedProperties;
     }
+
 }
 

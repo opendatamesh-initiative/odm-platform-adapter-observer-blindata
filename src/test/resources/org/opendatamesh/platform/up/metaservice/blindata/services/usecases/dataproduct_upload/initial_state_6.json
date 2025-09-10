@@ -1,0 +1,21 @@
+{
+  "dataProductInfo": {
+    "fullyQualifiedName": "FQN",
+    "entityType": "source-aligned",
+    "name": "test-dp",
+    "version": "1.0.0",
+    "displayName": "Test Dp",
+    "description": "Description",
+    "domain": "Test Domain",
+    "x-productType": "source-aligned",
+    "x-tags": ["tag1", "tag2", "tag3"],
+    "x-categories": ["cat1", "cat2"],
+    "x-singleProperty": "singleValue",
+    "anotherProperty": "propertyNotToBeImported"
+  },
+  "existentDataProduct": null,
+  "user": null,
+  "defaultRoleUuid": null,
+  "dataProductRole": null,
+  "dataProductResponsibility": null
+}

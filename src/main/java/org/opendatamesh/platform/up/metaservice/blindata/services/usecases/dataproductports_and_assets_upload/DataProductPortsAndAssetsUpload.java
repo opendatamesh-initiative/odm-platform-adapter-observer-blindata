@@ -186,16 +186,34 @@ class DataProductPortsAndAssetsUpload implements UseCase {
                     Matcher matcher = compiledPattern.matcher(key);
                     if (matcher.find()) {
                         String propName = matcher.group(1);
-                        bdPort.getAdditionalProperties()
-                                .add(new BDAdditionalPropertiesRes(
-                                        propName,
-                                        value.isTextual() ? value.asText() : value.toString()
-                                ));
+                        addAdditionalPropertyValue(bdPort.getAdditionalProperties(), propName, value);
                     }
                 });
             }
         } catch (PatternSyntaxException e) {
             getUseCaseLogger().warn("Invalid regex for additional properties: " + addPropRegex, e);
+        }
+    }
+
+    /**
+     * Utility method to extract additional properties from JsonNode values, handling both single values and arrays
+     * @param additionalProperties the list to add the extracted properties to
+     * @param propName the name of the property
+     * @param value the JsonNode value to extract from
+     */
+    private void addAdditionalPropertyValue(List<BDAdditionalPropertiesRes> additionalProperties, String propName, JsonNode value) {
+        if (value.isArray()) {
+            // Create a separate additional property for each array element
+            value.forEach(element -> {
+                String elementValue = element.isTextual() ? element.asText() : element.toString();
+                additionalProperties.add(new BDAdditionalPropertiesRes(propName, elementValue));
+            });
+        } else {
+            // Handle single values as before
+            additionalProperties.add(new BDAdditionalPropertiesRes(
+                    propName,
+                    value.isTextual() ? value.asText() : value.toString()
+            ));
         }
     }
 
