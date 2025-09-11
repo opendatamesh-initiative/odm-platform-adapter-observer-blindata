@@ -1,8 +1,8 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opendatamesh.dpds.model.info.Info;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAdditionalPropertiesRes;
@@ -27,7 +27,7 @@ import static org.opendatamesh.platform.up.metaservice.blindata.services.usecase
 
 class DataProductUpload implements UseCase {
 
-    private final String USE_CASE_PREFIX = "[DataProductUpload]";
+    private static final String USE_CASE_PREFIX = "[DataProductUpload]";
 
     private final DataProductUploadOdmOutboundPort odmOutboundPort;
     private final DataProductUploadBlindataOutboundPort blindataOutboundPort;
@@ -114,7 +114,7 @@ class DataProductUpload implements UseCase {
                         if (productType.isTextual()) {
                             blindataDataProduct.setProductType(productType.asText());
                         } else {
-                            getUseCaseLogger().warn("Product Type is not a textual value: " + productType);
+                            getUseCaseLogger().warn(String.format("%s Product Type is not a textual value: %s", USE_CASE_PREFIX, productType));
                         }
                     });
         }
@@ -134,10 +134,11 @@ class DataProductUpload implements UseCase {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 String contactPointsJson = objectMapper.writeValueAsString(odmDataProduct.getContactPoints());
+                getUseCaseLogger().info(String.format("%s Data Product contact point available as: %s", USE_CASE_PREFIX, contactPointsJson));
                 blindataDataProduct.getAdditionalProperties()
                         .add(new BDAdditionalPropertiesRes("contactPoints", contactPointsJson));
             } catch (JsonProcessingException e) {
-                getUseCaseLogger().warn("Failed to serialize contactPoints");
+                getUseCaseLogger().warn(String.format("%s Failed to serialize contactPoints", USE_CASE_PREFIX));
             }
         }
         try {
@@ -155,7 +156,7 @@ class DataProductUpload implements UseCase {
                 });
             }
         } catch (PatternSyntaxException e) {
-            getUseCaseLogger().warn("Invalid regex for additional properties: " + addPropRegex, e);
+            getUseCaseLogger().warn(String.format("%s Invalid regex for additional properties: %s", USE_CASE_PREFIX, addPropRegex), e);
         }
     }
 
