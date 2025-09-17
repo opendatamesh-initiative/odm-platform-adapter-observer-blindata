@@ -76,6 +76,8 @@
                     "semaphoresNumber": "1",
                     "autoClose": true,
                     "severity": "INFO",
+                    "issueOwner": "test.owner@example.com",
+                    "issueReporter": "test.reporter@example.com",
                     "blindataCustomProp-jiraProjectKey": "ABCD",
                     "blindataCustomProp-jiraAssigneeAccountID": "111111"
                   }

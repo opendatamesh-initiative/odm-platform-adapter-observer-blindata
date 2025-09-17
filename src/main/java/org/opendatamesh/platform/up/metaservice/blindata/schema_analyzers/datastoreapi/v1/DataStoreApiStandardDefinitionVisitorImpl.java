@@ -2,12 +2,13 @@ package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datas
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.opendatamesh.dpds.datastoreapi.v1.extensions.DataStoreApiStandardDefinitionVisitor;
 import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAdditionalPropertiesRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityShortRes;
@@ -204,6 +205,19 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
             issueTemplate.setIssueStatus(BDIssueStatusRes.TO_DO);
             issueTemplate.setSeverity(StringUtils.hasText(qualityIssuePolicy.getSeverity()) ? BDIssueSeverityLevelRes.valueOf(qualityIssuePolicy.getSeverity()) : BDIssueSeverityLevelRes.INFO);
             issueTemplate.setPriorityOrder(3);
+
+            if (StringUtils.hasText(qualityIssuePolicy.getIssueOwner())) {
+                BDShortUserRes ownerUser = new BDShortUserRes();
+                ownerUser.setUsername(qualityIssuePolicy.getIssueOwner());
+                issueTemplate.setAssignee(ownerUser);
+            }
+
+            if (StringUtils.hasText(qualityIssuePolicy.getIssueReporter())) {
+                BDShortUserRes reporterUser = new BDShortUserRes();
+                reporterUser.setUsername(qualityIssuePolicy.getIssueReporter());
+                issueTemplate.setReporter(reporterUser);
+            }
+
             qualityIssuePolicy.getAdditionalProperties()
                     .forEach((propKey, propValue) -> {
                         if (propKey.startsWith("blindataCustomProp-")) {

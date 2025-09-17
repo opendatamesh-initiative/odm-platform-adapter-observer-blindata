@@ -9,6 +9,8 @@ public class QualityIssuePolicy extends ComponentBase {
     private Integer semaphoresNumber;
     private Boolean autoClose;
     private String severity;
+    private String issueOwner;
+    private String issueReporter;
 
     public QualityIssuePolicy() {
         //DO NOTHING
@@ -60,5 +62,21 @@ public class QualityIssuePolicy extends ComponentBase {
 
     public void setSeverity(String severity) {
         this.severity = severity;
+    }
+
+    public String getIssueOwner() {
+        return issueOwner;
+    }
+
+    public void setIssueOwner(String issueOwner) {
+        this.issueOwner = issueOwner;
+    }
+
+    public String getIssueReporter() {
+        return issueReporter;
+    }
+
+    public void setIssueReporter(String issueReporter) {
+        this.issueReporter = issueReporter;
     }
 }

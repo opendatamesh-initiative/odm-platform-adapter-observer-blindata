@@ -273,7 +273,18 @@
             "issueStatus": "TO_DO",
             "severity": "INFO",
             "priorityOrder": 3,
-            "assignee": null,
+            "assignee": {
+              "uuid": null,
+              "username": "test.owner@example.com",
+              "fullName": null,
+              "displayName": null
+            },
+            "reporter": {
+              "uuid": null,
+              "username": "test.reporter@example.com",
+              "fullName": null,
+              "displayName": null
+            },
             "additionalProperties": [
               {
                 "name": "jiraAssigneeAccountID",

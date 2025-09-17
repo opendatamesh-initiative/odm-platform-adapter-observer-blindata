@@ -17,5 +17,5 @@ interface QualityUploadBlindataOutboundPort {
 
     BDIssueCampaignRes createIssueCampaign(BDIssueCampaignRes newIssueCampaign);
 
-    Optional<BDShortUserRes> findDataProductOwner(String username);
+    Optional<BDShortUserRes> findUser(String username);
 }
