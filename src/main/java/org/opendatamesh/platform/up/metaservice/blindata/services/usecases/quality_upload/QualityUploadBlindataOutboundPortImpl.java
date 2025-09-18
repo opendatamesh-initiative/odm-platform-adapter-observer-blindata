@@ -60,7 +60,7 @@ class QualityUploadBlindataOutboundPortImpl implements QualityUploadBlindataOutb
     }
 
     @Override
-    public Optional<BDShortUserRes> findDataProductOwner(String username) {
+    public Optional<BDShortUserRes> findUser(String username) {
         return bdUserClient.getBlindataUser(username);
     }
 }

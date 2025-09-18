@@ -15,6 +15,7 @@ public class BDIssueRes {
     private BDIssueSeverityLevelRes severity;
     private Integer priorityOrder;
     private BDShortUserRes assignee;
+    private BDShortUserRes reporter;
     private List<BDAdditionalPropertiesRes> additionalProperties = new ArrayList<>();
 
     public BDIssueRes() {
@@ -85,6 +86,14 @@ public class BDIssueRes {
         this.assignee = assignee;
     }
 
+    public BDShortUserRes getReporter() {
+        return reporter;
+    }
+
+    public void setReporter(BDShortUserRes reporter) {
+        this.reporter = reporter;
+    }
+
     public Integer getPriorityOrder() {
         return priorityOrder;
     }
@@ -104,6 +113,7 @@ public class BDIssueRes {
                 ", severity=" + severity +
                 ", priorityOrder=" + priorityOrder +
                 ", assignee=" + assignee +
+                ", reporter=" + reporter +
                 ", additionalProperties=" + additionalProperties +
                 '}';
     }

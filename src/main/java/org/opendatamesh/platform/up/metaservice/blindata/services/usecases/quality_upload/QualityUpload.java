@@ -4,10 +4,11 @@ import org.opendatamesh.dpds.model.DataProductVersion;
 import org.opendatamesh.dpds.model.interfaces.InterfaceComponents;
 import org.opendatamesh.dpds.model.interfaces.Port;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssuePolicyRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualitySuiteRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.quality.QualityCheck;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
@@ -57,10 +58,10 @@ class QualityUpload implements UseCase {
 
             //ISSUE POLICIES & CAMPAIGN
             BDIssueCampaignRes issueCampaign = handleIssueCampaign(dataProductVersion);
-            Optional<BDShortUserRes> dataProductOwner = getDataProductOwner(dataProductVersion);
-            updateIssuePoliciesOnQualityChecks(qualityChecks, issueCampaign, dataProductOwner);
+            updateIssuePoliciesOnQualityChecks(qualityChecks, issueCampaign, dataProductVersion);
 
             addQualitySuiteCodeToQualityChecksCode(qualitySuite, qualityChecks);
+            
             BDQualityUploadResultsRes uploadResult = blindataOutboundPort.uploadQuality(qualitySuite, qualityChecks);
 
             getUseCaseLogger().info(String.format("%s Quality Checks created: %s updated: %s discarded: %s", USE_CASE_PREFIX, uploadResult.getRowCreated(), uploadResult.getRowUpdated(), uploadResult.getRowDiscarded()));
@@ -76,22 +77,63 @@ class QualityUpload implements UseCase {
         ));
     }
 
-    private Optional<BDShortUserRes> getDataProductOwner(DataProductVersion dataProductVersion) {
-        Optional<BDShortUserRes> dataProductOwner = Optional.empty();
-        if (dataProductVersion.getInfo() != null && dataProductVersion.getInfo().getOwner() != null && StringUtils.hasText(dataProductVersion.getInfo().getOwner().getId())) {
-            dataProductOwner = blindataOutboundPort.findDataProductOwner(dataProductVersion.getInfo().getOwner().getId());
-        } else {
-            getUseCaseLogger().info(String.format("%s Missing data product owner on data product: %s, skipping assignee on issue policies.", USE_CASE_PREFIX, dataProductVersion.getInfo().getFullyQualifiedName()));
-        }
-        return dataProductOwner;
-    }
-
-    private void updateIssuePoliciesOnQualityChecks(List<QualityCheck> qualityChecks, BDIssueCampaignRes issueCampaign, Optional<BDShortUserRes> dataProductOwner) {
+    private void updateIssuePoliciesOnQualityChecks(List<QualityCheck> qualityChecks, BDIssueCampaignRes issueCampaign, DataProductVersion dataProductVersion) {
         qualityChecks.stream().flatMap(qualityCheck -> qualityCheck.getIssuePolicies().stream())
                 .forEach(issuePolicy -> {
                     issuePolicy.getIssueTemplate().setCampaign(issueCampaign);
-                    dataProductOwner.ifPresent(dpo -> issuePolicy.getIssueTemplate().setAssignee(dpo));
+                    
+                    BDIssueRes issueTemplate = issuePolicy.getIssueTemplate();
+                    
+                    // Handle assignee (issue owner)
+                    if (issueTemplate.getAssignee() == null || !StringUtils.hasText(issueTemplate.getAssignee().getUsername())) {
+                        // No issueOwner specified, use data product owner as default
+                        setDataProductOwnerAsAssignee(issueTemplate, dataProductVersion);
+                    } else if ("None".equalsIgnoreCase(issueTemplate.getAssignee().getUsername())) {
+                        // issueOwner is set to "None", leave unassigned
+                        issueTemplate.setAssignee(null);
+                    } else {
+                        // Validate assignee exists in Blindata
+                        Optional<BDShortUserRes> owner = blindataOutboundPort.findUser(issueTemplate.getAssignee().getUsername());
+                        if (owner.isEmpty()) {
+                            getUseCaseLogger().warn(String.format("%s Issue owner '%s' not found in Blindata for issue policy '%s'.", 
+                                    USE_CASE_PREFIX, issueTemplate.getAssignee().getUsername(), issuePolicy.getName()));
+                        } else {
+                            // Update with full user information
+                            issueTemplate.setAssignee(owner.get());
+                        }
+                    }
+                    
+                    // Validate reporter exists in Blindata
+                    if (issueTemplate.getReporter() != null && StringUtils.hasText(issueTemplate.getReporter().getUsername())) {
+                        Optional<BDShortUserRes> reporter = blindataOutboundPort.findUser(issueTemplate.getReporter().getUsername());
+                        if (reporter.isEmpty()) {
+                            getUseCaseLogger().warn(String.format("%s Issue reporter '%s' not found in Blindata for issue policy '%s'.", 
+                                    USE_CASE_PREFIX, issueTemplate.getReporter().getUsername(), issuePolicy.getName()));
+                        } else {
+                            // Update with full user information
+                            issueTemplate.setReporter(reporter.get());
+                        }
+                    }
                 });
+    }
+
+    private void setDataProductOwnerAsAssignee(BDIssueRes issueTemplate, DataProductVersion dataProductVersion) {
+        boolean hasValidDataProductOwner = dataProductVersion.getInfo() != null && 
+                dataProductVersion.getInfo().getOwner() != null && 
+                StringUtils.hasText(dataProductVersion.getInfo().getOwner().getId());
+        
+        if (hasValidDataProductOwner) {
+            Optional<BDShortUserRes> dataProductOwner = blindataOutboundPort.findUser(dataProductVersion.getInfo().getOwner().getId());
+            if (dataProductOwner.isPresent()) {
+                issueTemplate.setAssignee(dataProductOwner.get());
+            } else {
+                getUseCaseLogger().warn(String.format("%s Data product owner '%s' not found in Blindata for data product: %s.", 
+                        USE_CASE_PREFIX, dataProductVersion.getInfo().getOwner().getId(), dataProductVersion.getInfo().getFullyQualifiedName()));
+            }
+        } else {
+            getUseCaseLogger().warn(String.format("%s Missing data product owner on data product: %s, skipping assignee on issue policies.", 
+                    USE_CASE_PREFIX, dataProductVersion.getInfo().getFullyQualifiedName()));
+        }
     }
 
     private BDIssueCampaignRes handleIssueCampaign(DataProductVersion dataProductVersion) {
@@ -160,6 +202,7 @@ class QualityUpload implements UseCase {
             getUseCaseLogger().warn(String.format("%s Missing interface components on data product: %s", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName()));
         }
     }
+
 
     private void withErrorHandling(Runnable runnable) throws UseCaseExecutionException {
         try {
