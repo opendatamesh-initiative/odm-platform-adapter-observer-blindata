@@ -157,7 +157,6 @@ public class QualityUploadTest {
         
         when(blindataOutboundPort.findUser("valid.owner@example.com")).thenReturn(Optional.of(validOwner));
         when(blindataOutboundPort.findUser("valid.reporter@example.com")).thenReturn(Optional.of(validReporter));
-        when(blindataOutboundPort.findUser("owner@default.blindata.io")).thenReturn(Optional.empty()); // Data product owner
         when(blindataOutboundPort.findIssueCampaign(any())).thenReturn(Optional.empty());
         when(blindataOutboundPort.createIssueCampaign(any()))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -205,15 +204,15 @@ public class QualityUploadTest {
 
         // Mock invalid user
         when(blindataOutboundPort.findUser("invalid.owner@example.com")).thenReturn(Optional.empty());
-        when(blindataOutboundPort.findUser("owner@default.blindata.io")).thenReturn(Optional.empty()); // Data product owner
         when(blindataOutboundPort.findIssueCampaign(any())).thenReturn(Optional.empty());
         when(blindataOutboundPort.createIssueCampaign(any()))
                 .thenAnswer(invocation -> invocation.getArgument(0));
+        when(blindataOutboundPort.uploadQuality(any(), any())).thenReturn(new BDQualityUploadResultsRes());
 
         new QualityUpload(blindataOutboundPort, odmOutboundPort).execute();
 
-        // Verify upload is skipped due to invalid user
-        verify(blindataOutboundPort, never()).uploadQuality(any(), any());
+        // Verify upload proceeds despite invalid user (with warning logged)
+        verify(blindataOutboundPort, times(1)).uploadQuality(any(), any());
     }
 
     @Test
@@ -257,11 +256,12 @@ public class QualityUploadTest {
         when(blindataOutboundPort.findIssueCampaign(any())).thenReturn(Optional.empty());
         when(blindataOutboundPort.createIssueCampaign(any()))
                 .thenAnswer(invocation -> invocation.getArgument(0));
+        when(blindataOutboundPort.uploadQuality(any(), any())).thenReturn(new BDQualityUploadResultsRes());
 
         new QualityUpload(blindataOutboundPort, odmOutboundPort).execute();
 
-        // Verify upload is skipped due to invalid user
-        verify(blindataOutboundPort, never()).uploadQuality(any(), any());
+        // Verify upload proceeds despite invalid user (with warning logged)
+        verify(blindataOutboundPort, times(1)).uploadQuality(any(), any());
     }
 
 

@@ -58,16 +58,9 @@ class QualityUpload implements UseCase {
 
             //ISSUE POLICIES & CAMPAIGN
             BDIssueCampaignRes issueCampaign = handleIssueCampaign(dataProductVersion);
-            Optional<BDShortUserRes> dataProductOwner = getDataProductOwner(dataProductVersion);
-            updateIssuePoliciesOnQualityChecks(qualityChecks, issueCampaign, dataProductOwner);
+            updateIssuePoliciesOnQualityChecks(qualityChecks, issueCampaign, dataProductVersion);
 
             addQualitySuiteCodeToQualityChecksCode(qualitySuite, qualityChecks);
-            
-            // Validate issue owners and reporters exist in Blindata before uploading
-            if (!validateIssuePolicyUsers(qualityChecks)) {
-                getUseCaseLogger().warn(String.format("%s Quality check upload skipped due to invalid issue policy users.", USE_CASE_PREFIX));
-                return;
-            }
             
             BDQualityUploadResultsRes uploadResult = blindataOutboundPort.uploadQuality(qualitySuite, qualityChecks);
 
@@ -84,30 +77,63 @@ class QualityUpload implements UseCase {
         ));
     }
 
-    private Optional<BDShortUserRes> getDataProductOwner(DataProductVersion dataProductVersion) {
-        Optional<BDShortUserRes> dataProductOwner = Optional.empty();
-        if (dataProductVersion.getInfo() != null && dataProductVersion.getInfo().getOwner() != null && StringUtils.hasText(dataProductVersion.getInfo().getOwner().getId())) {
-            dataProductOwner = blindataOutboundPort.findUser(dataProductVersion.getInfo().getOwner().getId());
-        } else {
-            getUseCaseLogger().info(String.format("%s Missing data product owner on data product: %s, skipping assignee on issue policies.", USE_CASE_PREFIX, dataProductVersion.getInfo().getFullyQualifiedName()));
-        }
-        return dataProductOwner;
-    }
-
-    private void updateIssuePoliciesOnQualityChecks(List<QualityCheck> qualityChecks, BDIssueCampaignRes issueCampaign, Optional<BDShortUserRes> dataProductOwner) {
+    private void updateIssuePoliciesOnQualityChecks(List<QualityCheck> qualityChecks, BDIssueCampaignRes issueCampaign, DataProductVersion dataProductVersion) {
         qualityChecks.stream().flatMap(qualityCheck -> qualityCheck.getIssuePolicies().stream())
                 .forEach(issuePolicy -> {
                     issuePolicy.getIssueTemplate().setCampaign(issueCampaign);
                     
                     BDIssueRes issueTemplate = issuePolicy.getIssueTemplate();
+                    
+                    // Handle assignee (issue owner)
                     if (issueTemplate.getAssignee() == null || !StringUtils.hasText(issueTemplate.getAssignee().getUsername())) {
                         // No issueOwner specified, use data product owner as default
-                        dataProductOwner.ifPresent(dpo -> issueTemplate.setAssignee(dpo));
+                        setDataProductOwnerAsAssignee(issueTemplate, dataProductVersion);
                     } else if ("None".equalsIgnoreCase(issueTemplate.getAssignee().getUsername())) {
                         // issueOwner is set to "None", leave unassigned
                         issueTemplate.setAssignee(null);
+                    } else {
+                        // Validate assignee exists in Blindata
+                        Optional<BDShortUserRes> owner = blindataOutboundPort.findUser(issueTemplate.getAssignee().getUsername());
+                        if (owner.isEmpty()) {
+                            getUseCaseLogger().warn(String.format("%s Issue owner '%s' not found in Blindata for issue policy '%s'.", 
+                                    USE_CASE_PREFIX, issueTemplate.getAssignee().getUsername(), issuePolicy.getName()));
+                        } else {
+                            // Update with full user information
+                            issueTemplate.setAssignee(owner.get());
+                        }
+                    }
+                    
+                    // Validate reporter exists in Blindata
+                    if (issueTemplate.getReporter() != null && StringUtils.hasText(issueTemplate.getReporter().getUsername())) {
+                        Optional<BDShortUserRes> reporter = blindataOutboundPort.findUser(issueTemplate.getReporter().getUsername());
+                        if (reporter.isEmpty()) {
+                            getUseCaseLogger().warn(String.format("%s Issue reporter '%s' not found in Blindata for issue policy '%s'.", 
+                                    USE_CASE_PREFIX, issueTemplate.getReporter().getUsername(), issuePolicy.getName()));
+                        } else {
+                            // Update with full user information
+                            issueTemplate.setReporter(reporter.get());
+                        }
                     }
                 });
+    }
+
+    private void setDataProductOwnerAsAssignee(BDIssueRes issueTemplate, DataProductVersion dataProductVersion) {
+        boolean hasValidDataProductOwner = dataProductVersion.getInfo() != null && 
+                dataProductVersion.getInfo().getOwner() != null && 
+                StringUtils.hasText(dataProductVersion.getInfo().getOwner().getId());
+        
+        if (hasValidDataProductOwner) {
+            Optional<BDShortUserRes> dataProductOwner = blindataOutboundPort.findUser(dataProductVersion.getInfo().getOwner().getId());
+            if (dataProductOwner.isPresent()) {
+                issueTemplate.setAssignee(dataProductOwner.get());
+            } else {
+                getUseCaseLogger().warn(String.format("%s Data product owner '%s' not found in Blindata for data product: %s.", 
+                        USE_CASE_PREFIX, dataProductVersion.getInfo().getOwner().getId(), dataProductVersion.getInfo().getFullyQualifiedName()));
+            }
+        } else {
+            getUseCaseLogger().warn(String.format("%s Missing data product owner on data product: %s, skipping assignee on issue policies.", 
+                    USE_CASE_PREFIX, dataProductVersion.getInfo().getFullyQualifiedName()));
+        }
     }
 
     private BDIssueCampaignRes handleIssueCampaign(DataProductVersion dataProductVersion) {
@@ -177,52 +203,6 @@ class QualityUpload implements UseCase {
         }
     }
 
-    private boolean validateIssuePolicyUsers(List<QualityCheck> qualityChecks) {
-        boolean allUsersValid = true;
-        
-        for (QualityCheck qualityCheck : qualityChecks) {
-            for (BDIssuePolicyRes issuePolicy : qualityCheck.getIssuePolicies()) {
-                if (!validateIssuePolicyUsers(issuePolicy)) {
-                    allUsersValid = false;
-                }
-            }
-        }
-        
-        return allUsersValid;
-    }
-    
-    private boolean validateIssuePolicyUsers(BDIssuePolicyRes issuePolicy) {
-        BDIssueRes issueTemplate = issuePolicy.getIssueTemplate();
-        boolean isValid = true;
-        
-        // Validate issue owner (assignee)
-        if (issueTemplate.getAssignee() != null && StringUtils.hasText(issueTemplate.getAssignee().getUsername())) {
-            Optional<BDShortUserRes> owner = blindataOutboundPort.findUser(issueTemplate.getAssignee().getUsername());
-            if (owner.isEmpty()) {
-                getUseCaseLogger().warn(String.format("%s Issue owner '%s' not found in Blindata for issue policy '%s'. Quality check upload will be skipped.", 
-                        USE_CASE_PREFIX, issueTemplate.getAssignee().getUsername(), issuePolicy.getName()));
-                isValid = false;
-            } else {
-                // Update with full user information
-                issueTemplate.setAssignee(owner.get());
-            }
-        }
-        
-        // Validate issue reporter
-        if (issueTemplate.getReporter() != null && StringUtils.hasText(issueTemplate.getReporter().getUsername())) {
-            Optional<BDShortUserRes> reporter = blindataOutboundPort.findUser(issueTemplate.getReporter().getUsername());
-            if (reporter.isEmpty()) {
-                getUseCaseLogger().warn(String.format("%s Issue reporter '%s' not found in Blindata for issue policy '%s'. Quality check upload will be skipped.", 
-                        USE_CASE_PREFIX, issueTemplate.getReporter().getUsername(), issuePolicy.getName()));
-                isValid = false;
-            } else {
-                // Update with full user information
-                issueTemplate.setReporter(reporter.get());
-            }
-        }
-        
-        return isValid;
-    }
 
     private void withErrorHandling(Runnable runnable) throws UseCaseExecutionException {
         try {
