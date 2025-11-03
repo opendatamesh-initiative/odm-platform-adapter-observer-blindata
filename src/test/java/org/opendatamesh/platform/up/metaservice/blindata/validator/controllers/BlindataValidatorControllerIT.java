@@ -690,16 +690,14 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         // Verify that odmRegistryClient.getApi was never called since there are no interface components
         verify(odmRegistryClient, never()).getApi(any());
 
-        // Verify the response - validation should fail due to missing namespace and other validation errors
+        // Verify the response - validation should fail due to missing interface components
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(response.getBody()).isNotNull();
         Assertions.assertThat(response.getBody().getPolicyEvaluationId()).isEqualTo(10L);
         Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
         Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
-        String rawError = response.getBody().getOutputObject().getRawError().toString();
-        // Verify that the error contains the namespace errors (may also contain other validation errors like Quality Checks)
-        Assertions.assertThat(rawError)
-                .contains("Namespace not found for identifier: https://demo.blindata.io/logical/namespaces/name/filmRentalInc#");
+        Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
+                .contains("[\"Namespace not found for identifier: https://demo.blindata.io/logical/namespaces/name/filmRentalInc#\",\"Namespace not found for identifier: https://demo.blindata.io/logical/namespaces/name/filmRentalInc#\"]");
     }
 
     private JsonNode findObjectByFullyQualifiedName(JsonNode root, String identifier) {
