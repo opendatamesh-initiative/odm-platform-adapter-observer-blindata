@@ -62,10 +62,6 @@ class QualityUpload implements UseCase {
             updateIssuePoliciesOnQualityChecks(qualityChecks, issueCampaign, dataProductVersion);
 
             addQualitySuiteCodeToQualityChecksCode(qualitySuite, qualityChecks);
-            
-            // Associate quality suite to quality checks before validation
-            qualityChecks.forEach(qc -> qc.setQualitySuite(qualitySuite));
-            // Validate quality checks after quality suite is associated
             validateQualityChecks(qualityChecks);
 
             BDQualityUploadResultsRes uploadResult = blindataOutboundPort.uploadQuality(qualitySuite, qualityChecks);
@@ -256,9 +252,6 @@ class QualityUpload implements UseCase {
             if (qualityCheck.getWarningThreshold().compareTo(qualityCheck.getSuccessThreshold()) > 0) {
                 getUseCaseLogger().warn(String.format("%s Quality Check validation failed: Warning threshold must be lower than or equal to the success threshold. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
             }
-        }
-        if (qualityCheck.getQualitySuite() == null) {
-            getUseCaseLogger().warn(String.format("%s Quality Check validation failed: A valid quality suite must be provided for the check. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
         }
     }
 
