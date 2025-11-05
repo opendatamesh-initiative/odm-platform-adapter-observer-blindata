@@ -253,9 +253,6 @@ class QualityUpload implements UseCase {
                 getUseCaseLogger().warn(String.format("%s Quality Check validation failed: Warning threshold must be lower than or equal to the success threshold. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
             }
         }
-        if (qualityCheck.getQualitySuite() == null) {
-            getUseCaseLogger().warn(String.format("%s Quality Check validation failed: A valid quality suite must be provided for the check. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
-        }
     }
 
     private void validateQualityCheckStrategyParameters(QualityCheck qualityCheck) {
