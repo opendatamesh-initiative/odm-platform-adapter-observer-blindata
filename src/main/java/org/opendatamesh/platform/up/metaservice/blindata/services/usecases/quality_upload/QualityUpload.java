@@ -55,6 +55,7 @@ class QualityUpload implements UseCase {
             getUseCaseLogger().info(String.format("%s Data Product: %s extracted  %s quality checks.", USE_CASE_PREFIX, dataProductVersion.getInfo().getFullyQualifiedName(), qualityChecks.size()));
 
             qualityChecks = removeMalformedReferences(qualityChecks);
+            validateQualityChecks(qualityChecks);
             BDQualitySuiteRes qualitySuite = buildQualitySuite(dataProductVersion);
 
             //ISSUE POLICIES & CAMPAIGN
@@ -62,7 +63,6 @@ class QualityUpload implements UseCase {
             updateIssuePoliciesOnQualityChecks(qualityChecks, issueCampaign, dataProductVersion);
 
             addQualitySuiteCodeToQualityChecksCode(qualitySuite, qualityChecks);
-            validateQualityChecks(qualityChecks);
 
             BDQualityUploadResultsRes uploadResult = blindataOutboundPort.uploadQuality(qualitySuite, qualityChecks);
 
