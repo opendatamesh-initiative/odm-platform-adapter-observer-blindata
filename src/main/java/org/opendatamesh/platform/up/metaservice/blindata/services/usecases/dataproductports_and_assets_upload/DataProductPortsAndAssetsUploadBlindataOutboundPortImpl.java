@@ -28,6 +28,11 @@ class DataProductPortsAndAssetsUploadBlindataOutboundPortImpl implements DataPro
     }
 
     @Override
+    public void updateDataProduct(BDDataProductRes bdDataProductRes) {
+        bdDataProductClient.patchDataProduct(bdDataProductRes);
+    }
+
+    @Override
     public void updateDataProductPorts(BDDataProductRes dataProduct) {
         bdDataProductClient.patchDataProduct(dataProduct);
     }

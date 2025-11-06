@@ -21,6 +21,11 @@ public class DataProductPortsAndAssetsUploadBlindataOutboundPortMock implements 
     }
 
     @Override
+    public void updateDataProduct(BDDataProductRes bdDataProductRes) {
+        //DO NOTHING
+    }
+
+    @Override
     public void updateDataProductPorts(BDDataProductRes dataProduct) {
         //DO NOTHING
     }

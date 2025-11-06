@@ -148,4 +148,40 @@ public class DataProductPortsAndAssetsUploadTest {
         });
     }
 
+    @Test
+    public void testDataProductVersionUploadUpdatesVersion() throws IOException, UseCaseExecutionException {
+        DataProductVersionUploadInitialState initialState = objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("initial_state_1.json")),
+                DataProductVersionUploadInitialState.class
+        );
+
+        // Set an initial version in Blindata that differs from ODM version
+        String initialVersionInBlindata = "0.5.0";
+        String odmVersion = initialState.getDataProductDescriptor().getInfo().getVersion(); // "1.0.30"
+        initialState.getExistentDataProduct().setVersion(initialVersionInBlindata);
+
+        DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort = new DataProductPortsAndAssetsUploadOdmOutboundPortMock(initialState);
+        DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort = spy(new DataProductPortsAndAssetsUploadBlindataOutboundPortMock(initialState));
+
+        new DataProductPortsAndAssetsUpload(blindataOutboundPort, odmOutboundPort).execute();
+
+        verify(blindataOutboundPort, times(1)).findDataProduct(initialState.getExistentDataProduct().getIdentifier());
+        verify(blindataOutboundPort, times(1)).updateDataProductPorts(any());
+        verify(blindataOutboundPort, times(1)).createDataProductAssets(any());
+
+        // capture arguments passed to updateDataProduct to verify version is updated
+        ArgumentCaptor<BDDataProductRes> updateCaptor = ArgumentCaptor.forClass(BDDataProductRes.class);
+        verify(blindataOutboundPort, times(1)).updateDataProduct(updateCaptor.capture());
+
+        // inspect the captured DataProduct for version update
+        BDDataProductRes updatedDp = updateCaptor.getValue();
+        assertThat(updatedDp).isNotNull();
+        
+        // Verify that the version is updated from ODM, not preserved from Blindata
+        assertThat(updatedDp.getVersion())
+                .as("Version should be updated from ODM data product version, not preserved from Blindata")
+                .isEqualTo(odmVersion)
+                .isNotEqualTo(initialVersionInBlindata);
+    }
+
 }

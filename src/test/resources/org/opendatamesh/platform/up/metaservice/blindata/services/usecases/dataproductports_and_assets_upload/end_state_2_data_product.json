@@ -4,7 +4,7 @@
   "displayName": null,
   "identifier": "urn:dpds:it.quantyca:dataproducts:sampleDomain:tripExecution",
   "description": null,
-  "version": null,
+  "version": "1.0.30",
   "domain": null,
   "additionalProperties": null,
   "ports": [

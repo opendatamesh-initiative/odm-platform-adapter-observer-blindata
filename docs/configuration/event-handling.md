@@ -53,14 +53,16 @@ For every subscription, it is possible to specify a set of actions that the obse
 
 | Action                                    | Description                                                                                                                 | Supported Event Types                                             |
 |-------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
-| `DATA_PRODUCT_UPLOAD`                     | Uploads the main information of the data product to Blindata and assigns ownership responsibilities to the designated user. | `DATA_PRODUCT_CREATED`, `DATA_PRODUCT_VERSION_CREATED`            |
-| `DATA_PRODUCT_VERSION_UPLOAD`             | Uploads the data product's ports metadata along with the assets specified in the descriptor API definitions.                | `DATA_PRODUCT_VERSION_CREATED`, `DATA_PRODUCT_ACTIVITY_COMPLETED` |
+| `DATA_PRODUCT_UPLOAD`                     | Uploads the main information of the data product to Blindata and assigns ownership responsibilities to the designated user. When updating an existing data product, the version number is **not** updated and is preserved from the existing Blindata product. | `DATA_PRODUCT_CREATED`, `DATA_PRODUCT_VERSION_CREATED`            |
+| `DATA_PRODUCT_VERSION_UPLOAD`             | Uploads the data product's ports metadata along with the assets specified in the descriptor API definitions. Also updates the data product version number in Blindata from the ODM descriptor. | `DATA_PRODUCT_VERSION_CREATED`, `DATA_PRODUCT_ACTIVITY_COMPLETED` |
 | `QUALITY_UPLOAD`                          | Uploads the quality checks specified in the data product's ports metadata.                                                  | `DATA_PRODUCT_VERSION_CREATED`, `DATA_PRODUCT_ACTIVITY_COMPLETED` |
 | `STAGES_UPLOAD`                           | Uploads the data product's stages which are defined inside the lifecycleInfo of the descriptor.                             | `DATA_PRODUCT_VERSION_CREATED`, `DATA_PRODUCT_ACTIVITY_COMPLETED` |
 | `DATA_PRODUCT_REMOVAL`                    | Removes the data product from Blindata.                                                                                     | `DATA_PRODUCT_DELETED`                                            |
 | `POLICIES_UPLOAD`                         | Gathers all policy evaluation results for the specified data product and uploads them to Blindata.                          | `DATA_PRODUCT_VERSION_CREATED`, `DATA_PRODUCT_ACTIVITY_COMPLETED` |
 | `POLICIES_ALIGN`                          | Aligns Blindata Governance Policy Suites, Policies, and Policies Implementations using Odm Policy External Context field.   | `POLICY_CREATED`, `POLICY_UPDATED`, `POLICY_DELETED`              |
 | `MARKETPLACE_ACCESS_REQUEST_PORTS_UPDATE` | Updates the grant status of the provider data product's ports in Blindata based on the result received from the platform.   | `MARKETPLACE_EXECUTOR_RESULT_RECEIVED`                            |
+
+**Note:** The version number handling differs between upload actions: `DATA_PRODUCT_UPLOAD` preserves the version when updating an existing product, while `DATA_PRODUCT_VERSION_UPLOAD` updates the version from the ODM descriptor.
 
 ## Examples
 
