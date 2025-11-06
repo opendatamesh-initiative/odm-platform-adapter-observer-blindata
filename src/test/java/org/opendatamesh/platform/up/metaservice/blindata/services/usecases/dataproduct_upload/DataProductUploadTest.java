@@ -241,4 +241,40 @@ public class DataProductUploadTest {
         assertThat(singleProp.getValue()).isEqualTo("singleValue");
     }
 
+    @Test
+    public void testDataProductUpdatePreservesVersion() throws UseCaseExecutionException, IOException {
+        // load initial state for update scenario
+        DataProductUploadInitialState initialState = objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("initial_state_3.json")),
+                DataProductUploadInitialState.class
+        );
+
+        // Set an existing version in Blindata that differs from ODM version
+        String existingVersionInBlindata = "0.5.0";
+        String odmVersion = initialState.getDataProductInfo().getVersion(); // "1.0.0"
+        initialState.getExistentDataProduct().setVersion(existingVersionInBlindata);
+
+        DataProductUploadOdmOutboundPort odmOutboundPort = new DataProductUploadOdmOutboundPortMock(initialState);
+        DataProductUploadBlindataOutboundPort blindataOutboundPort = spy(new DataProductUploadBlindataOutboundPortMock(initialState));
+
+        new DataProductUpload(odmOutboundPort, blindataOutboundPort).execute();
+
+        // capture arguments passed to updateDataProduct
+        ArgumentCaptor<BDDataProductRes> updateCaptor = ArgumentCaptor.forClass(BDDataProductRes.class);
+
+        // verify update called once, create never called
+        verify(blindataOutboundPort, times(0)).createDataProduct(any());
+        verify(blindataOutboundPort, times(1)).updateDataProduct(updateCaptor.capture());
+
+        // inspect the captured DataProduct for update
+        BDDataProductRes updatedDp = updateCaptor.getValue();
+        assertThat(updatedDp).isNotNull();
+        
+        // Verify that the version is preserved from the old product, not updated from ODM
+        assertThat(updatedDp.getVersion())
+                .as("Version should be preserved from existing Blindata product, not updated from ODM")
+                .isEqualTo(existingVersionInBlindata)
+                .isNotEqualTo(odmVersion);
+    }
+
 }

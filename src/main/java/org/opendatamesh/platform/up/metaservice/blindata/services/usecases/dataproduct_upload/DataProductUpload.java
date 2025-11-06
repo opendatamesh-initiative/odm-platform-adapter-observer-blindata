@@ -104,6 +104,7 @@ class DataProductUpload implements UseCase {
         }
 
         if (!StringUtils.hasText(odmDataProduct.getVersion())) {
+            //Setting default data product version and status
             blindataDataProduct.setVersion("0.0.0");
             blindataDataProduct.setProductStatus("DRAFT");
         }
@@ -179,6 +180,8 @@ class DataProductUpload implements UseCase {
     private void updateDataProduct(BDDataProductRes oldBdDataProduct) {
         BDDataProductRes newBdDataProduct = odmToBlindataDataProduct(odmOutboundPort.getDataProductInfo());
         newBdDataProduct.setUuid(oldBdDataProduct.getUuid());
+        //Not updating version here, just the Data Product Head
+        newBdDataProduct.setVersion(oldBdDataProduct.getVersion());
 
         newBdDataProduct.addOldAdditionalProperties(oldBdDataProduct);
         newBdDataProduct = blindataOutboundPort.updateDataProduct(newBdDataProduct);

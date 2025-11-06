@@ -1,6 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.opendatamesh.dpds.model.info.Info;
 import org.opendatamesh.dpds.model.interfaces.InterfaceComponents;
 import org.opendatamesh.dpds.model.interfaces.Port;
 import org.opendatamesh.dpds.model.interfaces.Promises;
@@ -54,10 +55,20 @@ class DataProductPortsAndAssetsUpload implements UseCase {
             blindataOutboundPort.updateDataProductPorts(existentDataProduct.get());
             getUseCaseLogger().info(String.format("%s Data product: %s, updated ports on Blindata.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier()));
 
+            String versionNumber = Optional.ofNullable(odmOutboundPort.getDataProductVersion().getInfo()).map(Info::getVersion).orElse(null);
+            if (StringUtils.hasText(versionNumber)) {
+                getUseCaseLogger().info(USE_CASE_PREFIX + " Updating data product version number on Blindata. Version: " + versionNumber);
+                existentDataProduct.get().setVersion(versionNumber);
+                blindataOutboundPort.updateDataProduct(existentDataProduct.get());
+            } else {
+                getUseCaseLogger().warn(USE_CASE_PREFIX + " Impossible to retrieve Data Product version number from Odm Data Product Version.");
+            }
+
+
             getUseCaseLogger().info(USE_CASE_PREFIX + " Extracting data product ports assets");
             List<BDDataProductPortAssetDetailRes> dataProductPortAssets = extractBdAssetsFromDpPorts(interfaceComponents);
             getUseCaseLogger().info(String.format("%s Data product: %s, found %s ports to update assets.", USE_CASE_PREFIX, existentDataProduct.get().getIdentifier(), dataProductPortAssets.size()));
-            
+
             getUseCaseLogger().info(USE_CASE_PREFIX + " Validating data product ports assets");
             validateDataProductPortsAssets(dataProductPortAssets);
             getUseCaseLogger().info(USE_CASE_PREFIX + " Validating data product ports assets completed");
@@ -197,9 +208,10 @@ class DataProductPortsAndAssetsUpload implements UseCase {
 
     /**
      * Utility method to extract additional properties from JsonNode values, handling both single values and arrays
+     *
      * @param additionalProperties the list to add the extracted properties to
-     * @param propName the name of the property
-     * @param value the JsonNode value to extract from
+     * @param propName             the name of the property
+     * @param value                the JsonNode value to extract from
      */
     private void addAdditionalPropertyValue(List<BDAdditionalPropertiesRes> additionalProperties, String propName, JsonNode value) {
         if (value.isArray()) {
