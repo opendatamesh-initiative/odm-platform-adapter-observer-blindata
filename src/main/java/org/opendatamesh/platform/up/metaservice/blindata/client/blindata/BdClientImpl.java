@@ -378,7 +378,8 @@ public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, B
     @Override
     public BDQualityUploadResultsRes uploadQuality(BDQualityUploadRes qualityUpload) {
         try {
-            return restUtils.genericPost(
+            RestUtils rest = credentials.getEnableAsync() ? asyncRestUtils : restUtils;
+            return rest.genericPost(
                     String.format("%s/api/v1/data-quality/suites/*/import-objects%s", credentials.getBlindataUrl(), dataProductClientConfig.isAssetsCleanup() ? "?cleanup=true" : ""),
                     null,
                     qualityUpload,
