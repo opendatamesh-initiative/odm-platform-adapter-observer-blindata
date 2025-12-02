@@ -175,6 +175,7 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
 
             BDIssuePolicyRes issuePolicy = new BDIssuePolicyRes();
             issuePolicy.setName(qualityIssuePolicy.getName());
+            issuePolicy.setDescription(qualityIssuePolicy.getDescription());
             issuePolicy.setPolicyType(BDIssuePolicyType.valueOf(qualityIssuePolicy.getPolicyType()));
             issuePolicy.setActive(true);
 
