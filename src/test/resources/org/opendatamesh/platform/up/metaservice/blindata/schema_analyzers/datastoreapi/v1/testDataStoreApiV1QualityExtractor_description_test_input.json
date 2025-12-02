@@ -1,0 +1,66 @@
+{
+  "datastoreapi": "1.0.0",
+  "info": {
+    "title": "",
+    "summary": "",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "schema": {
+    "databaseName": "test_db",
+    "databaseSchemaName": "test_schema",
+    "tables": [
+      {
+        "name": "test_table",
+        "version": "1.0.0",
+        "description": "Test table",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "definition": {
+          "name": "test_table",
+          "version": "1.0.0",
+          "fullyQualifiedName": "urn:dpds:test:dataproducts:test:1:1.0.0:outputPorts:outputPortName:tables:test_db.test_schema.test_table",
+          "displayName": "Test Table",
+          "description": "Test table",
+          "physicalType": "TABLE",
+          "type": "object",
+          "quality": [
+            {
+              "name": "Test Quality Check",
+              "description": "Test quality check description",
+              "dimension": "Validity",
+              "unit": "percent",
+              "type": "custom",
+              "engine": "greatExpectations",
+              "implementation": {
+                "type": "ExpectColumnValuesToBeInSet",
+                "kwargs": {
+                  "column": "test_column",
+                  "value_set": ["value1", "value2"]
+                }
+              },
+              "customProperties": {
+                "scoreStrategy": "PERCENTAGE",
+                "scoreWarningThreshold": 95,
+                "scoreSuccessThreshold": 100,
+                "isCheckEnabled": true,
+                "issuePolicies": [
+                  {
+                    "name": "Test Issue Policy",
+                    "description": "This is a test issue policy description",
+                    "policyType": "RECURRENT_RESULT_SEMAPHORE",
+                    "semaphoreColor": "RED",
+                    "semaphoresNumber": 1,
+                    "autoClose": true,
+                    "severity": "INFO"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+

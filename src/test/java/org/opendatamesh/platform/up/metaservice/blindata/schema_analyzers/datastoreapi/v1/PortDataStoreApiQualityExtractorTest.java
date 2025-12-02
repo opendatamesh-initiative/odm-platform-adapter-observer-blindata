@@ -134,6 +134,29 @@ class PortDataStoreApiQualityExtractorTest {
     }
 
     @Test
+    void testDatastoreApiV1QualityExtractorWithIssuePolicyDescription() throws IOException {
+        StandardDefinition portStandardDefinition = new StandardDefinition();
+        portStandardDefinition.setSpecification("datastoreapi");
+        portStandardDefinition.setSpecificationVersion("1.0.0");
+        portStandardDefinition.setDefinition(objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("testDataStoreApiV1QualityExtractor_description_test_input.json")),
+                ComponentBase.class
+        ));
+        assertThat(portStandardDefinitionAnalyzer.supports(portStandardDefinition)).isTrue();
+
+        List<QualityCheck> extractedQualityChecks = portStandardDefinitionAnalyzer.extractQualityChecks(portStandardDefinition);
+
+        // Verify that issue policy description is correctly extracted
+        List<BDIssuePolicyRes> issuePolicies = extractedQualityChecks.stream()
+                .flatMap(qualityCheck -> qualityCheck.getIssuePolicies().stream())
+                .collect(Collectors.toList());
+
+        assertThat(issuePolicies).hasSize(1);
+        BDIssuePolicyRes issuePolicy = issuePolicies.get(0);
+        assertThat(issuePolicy.getDescription()).isEqualTo("This is a test issue policy description");
+    }
+
+    @Test
     void testDatastoreApiV1QualityExtractorIssue90() throws IOException {
         // Backup the original logger
         UseCaseLogger originalLogger = UseCaseLoggerContext.getUseCaseLogger();
