@@ -16,7 +16,7 @@ interface DataProductPortsAndAssetsUploadBlindataOutboundPort {
 
     void createDataProductAssets(BDProductPortAssetsRes dataProductPortsAssets);
 
-    Optional<BDSystemRes> getSystemDependency(String portDependency);
+    Optional<BDSystemRes> getSystemDependency(String systemName);
 
     String getDataProductAdditionalPropertiesRegex();
 }

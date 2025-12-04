@@ -1,25 +1,24 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload;
 
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdSystemClient;
 import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDSystemRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDProductPortAssetsRes;
 
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 class DataProductPortsAndAssetsUploadBlindataOutboundPortImpl implements DataProductPortsAndAssetsUploadBlindataOutboundPort {
 
     private final BdDataProductClient bdDataProductClient;
-    private final String systemDependencyRegex;
     private final BdDataProductConfig dataProductConfig;
+    private final BdSystemClient bdSystemClient;
 
-    public DataProductPortsAndAssetsUploadBlindataOutboundPortImpl(BdDataProductClient bdDataProductClient, String systemDependencyRegex, BdDataProductConfig dataProductConfig) {
+    public DataProductPortsAndAssetsUploadBlindataOutboundPortImpl(BdDataProductClient bdDataProductClient,  BdDataProductConfig dataProductConfig, BdSystemClient bdSystemClient) {
         this.bdDataProductClient = bdDataProductClient;
-        this.systemDependencyRegex = systemDependencyRegex;
         this.dataProductConfig = dataProductConfig;
+        this.bdSystemClient = bdSystemClient;
     }
 
     @Override
@@ -43,19 +42,8 @@ class DataProductPortsAndAssetsUploadBlindataOutboundPortImpl implements DataPro
     }
 
     @Override
-    public Optional<BDSystemRes> getSystemDependency(String portDependency) {
-        Pattern pattern = Pattern.compile(systemDependencyRegex);
-        Matcher matcher = pattern.matcher(portDependency);
-
-        if (matcher.find()) {
-            //regex example blindata:systems:(.+)
-            String systemName = matcher.groupCount() > 0 ? matcher.group(1) : matcher.group();
-            BDSystemRes systemRes = new BDSystemRes();
-            systemRes.setName(systemName);
-            return Optional.of(systemRes);
-        }
-
-        return Optional.empty();
+    public Optional<BDSystemRes> getSystemDependency(String systemName) {
+        return bdSystemClient.getSystem(systemName);
     }
 
     @Override

@@ -74,4 +74,9 @@ public class BdClientConfigs {
     public BdMarketplaceAccessRequestsUploadResultClient bdMarketplaceAccessRequestsUploadResultClient() {
         return new BdClientImpl(bdCredentials, bdDataProductConfig, getRestTemplate());
     }
+
+    @Bean
+    public BdSystemClient bdSystemClient() {
+        return new BdClientImpl(bdCredentials, bdDataProductConfig, getRestTemplate());
+    }
 }
