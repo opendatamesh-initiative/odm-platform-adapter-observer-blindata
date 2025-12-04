@@ -15,6 +15,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issu
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignsSearchOptions;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.marketplace.BDMarketplaceAccessRequestsUploadRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDSystemRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDSystemSearchOptions;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
@@ -28,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, BdUserClient, BdPolicyEvaluationResultClient, BdSemanticLinkingClient, BdQualityClient, BdIssueCampaignClient, BdGovernancePolicyClient, BdGovernancePolicySuiteClient, BdGovernancePolicyImplementationClient, BdMarketplaceAccessRequestsUploadResultClient {
+public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, BdUserClient, BdPolicyEvaluationResultClient, BdSemanticLinkingClient, BdQualityClient, BdIssueCampaignClient, BdGovernancePolicyClient, BdGovernancePolicySuiteClient, BdGovernancePolicyImplementationClient, BdMarketplaceAccessRequestsUploadResultClient, BdSystemClient {
 
     private final BdCredentials credentials;
     private final BdDataProductConfig dataProductClientConfig;
@@ -631,6 +633,24 @@ public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, B
                     bdMarketplaceAccessRequestsUploadRes,
                     BDMarketplaceAccessRequestPortStatusUploadResultsRes.class
             );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Optional<BDSystemRes> getSystem(String systemName) {
+        BDSystemSearchOptions searchOptions = new BDSystemSearchOptions(systemName);
+        try {
+            return restUtils.getPage(
+                    String.format("%s/api/v1/systems", credentials.getBlindataUrl()),
+                    null,
+                    Pageable.ofSize(1),
+                    searchOptions,
+                    BDSystemRes.class
+            ).stream().findFirst();
         } catch (ClientException e) {
             throw new BlindataClientException(e.getCode(), e.getResponseBody());
         } catch (ClientResourceMappingException e) {

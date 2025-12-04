@@ -36,7 +36,7 @@ public class DataProductPortsAndAssetsUploadBlindataOutboundPortMock implements 
     }
 
     @Override
-    public Optional<BDSystemRes> getSystemDependency(String portDependency) {
+    public Optional<BDSystemRes> getSystemDependency(String systemName) {
         return Optional.empty();
     }
 
