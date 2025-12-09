@@ -115,7 +115,6 @@
                                   "assetKwargs": {},
                                   "issuePolicies": [
                                     {
-                                      "description": "PLACEHOLDER",
                                       "policyType": "RECURRENT_RESULT_SEMAPHORE",
                                       "semaphoreColor": "RED",
                                       "semaphoresNumber": "1",
