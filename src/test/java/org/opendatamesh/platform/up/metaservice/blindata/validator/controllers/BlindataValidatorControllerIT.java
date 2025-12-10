@@ -10,12 +10,14 @@ import org.opendatamesh.platform.up.metaservice.blindata.ObserverBlindataAppIT;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdSemanticLinkingClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdStewardshipClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdSystemClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdUserClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.odm.OdmRegistryClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipRoleRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDDataCategoryRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalNamespaceRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDSystemRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.OdmValidatorPolicyEvaluationRequestRes;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.OdmValidatorPolicyEvaluationResultRes;
@@ -41,6 +43,8 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
     @MockBean
     private BdSemanticLinkingClient bdSemanticLinkingClient;
     @MockBean
+    private BdSystemClient bdSystemClient;
+    @MockBean
     private OdmRegistryClient odmRegistryClient;
 
     @BeforeEach
@@ -50,6 +54,7 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
                 bdStewardshipClient,
                 bdUserClient,
                 bdSemanticLinkingClient,
+                bdSystemClient,
                 odmRegistryClient
         );
     }
@@ -110,6 +115,11 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         existingDataProduct.setVersion("1.0.0");
         existingDataProduct.setDomain("test");
         when(bdDataProductClient.getDataProduct(any())).thenReturn(Optional.of(existingDataProduct));
+
+        // Mock system client to return the system (found) - this allows validation to pass
+        BDSystemRes system = new BDSystemRes();
+        system.setName("PostgreSQL - Film Rental Inc.");
+        when(bdSystemClient.getSystem(any())).thenReturn(Optional.of(system));
 
         // Call the validator endpoint
         ResponseEntity<OdmValidatorPolicyEvaluationResultRes> response = rest.postForEntity(
@@ -697,7 +707,7 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
         Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
         Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
-                .contains("[\"Namespace not found for identifier: https://demo.blindata.io/logical/namespaces/name/filmRentalInc#\",\"Namespace not found for identifier: https://demo.blindata.io/logical/namespaces/name/filmRentalInc#\"]");
+                .contains("[\"[DataProductVersionUpload]: System: PostgreSQL - Film Rental Inc. not found in Blindata.\",\"Namespace not found for identifier: https://demo.blindata.io/logical/namespaces/name/filmRentalInc#\",\"Namespace not found for identifier: https://demo.blindata.io/logical/namespaces/name/filmRentalInc#\"]");
     }
 
     private JsonNode findObjectByFullyQualifiedName(JsonNode root, String identifier) {

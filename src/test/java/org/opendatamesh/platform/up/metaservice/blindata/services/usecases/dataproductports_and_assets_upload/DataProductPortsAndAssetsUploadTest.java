@@ -30,7 +30,7 @@ public class DataProductPortsAndAssetsUploadTest {
         DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort = new DataProductPortsAndAssetsUploadOdmOutboundPortMock(initialState);
         DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort = spy(new DataProductPortsAndAssetsUploadBlindataOutboundPortMock(initialState));
 
-        new DataProductPortsAndAssetsUpload(blindataOutboundPort, odmOutboundPort).execute();
+        new DataProductPortsAndAssetsUpload(blindataOutboundPort, odmOutboundPort, "blindata:systems:(.+)").execute();
         verify(blindataOutboundPort, times(1)).findDataProduct(initialState.getExistentDataProduct().getIdentifier());
         verify(blindataOutboundPort, times(1)).updateDataProductPorts(any());
         verify(blindataOutboundPort, times(1)).createDataProductAssets(any());
@@ -48,7 +48,7 @@ public class DataProductPortsAndAssetsUploadTest {
         DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort =
                 spy(new DataProductPortsAndAssetsUploadBlindataOutboundPortMock(initialState));
 
-        new DataProductPortsAndAssetsUpload(blindataOutboundPort, odmOutboundPort).execute();
+        new DataProductPortsAndAssetsUpload(blindataOutboundPort, odmOutboundPort, "blindata:systems:(.+)").execute();
 
         verify(blindataOutboundPort, times(1))
                 .findDataProduct(initialState.getExistentDataProduct().getIdentifier());
@@ -82,7 +82,7 @@ public class DataProductPortsAndAssetsUploadTest {
         DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort = new DataProductPortsAndAssetsUploadOdmOutboundPortMock(initialState);
         DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort = spy(new DataProductPortsAndAssetsUploadBlindataOutboundPortMock(initialState));
 
-        new DataProductPortsAndAssetsUpload(new DataProductPortsAndAssetsUploadBlindataOutboundPortDryRunImpl(blindataOutboundPort), odmOutboundPort).execute();
+        new DataProductPortsAndAssetsUpload(new DataProductPortsAndAssetsUploadBlindataOutboundPortDryRunImpl(blindataOutboundPort), odmOutboundPort, "blindata:systems:(.+)").execute();
         verify(blindataOutboundPort, times(1)).findDataProduct(initialState.getExistentDataProduct().getIdentifier());
         verify(blindataOutboundPort, times(0)).updateDataProductPorts(any());
         verify(blindataOutboundPort, times(0)).createDataProductAssets(any());
@@ -98,7 +98,7 @@ public class DataProductPortsAndAssetsUploadTest {
         DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort = new DataProductPortsAndAssetsUploadOdmOutboundPortMock(initialState);
         DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort = spy(new DataProductPortsAndAssetsUploadBlindataOutboundPortMock(initialState));
 
-        new DataProductPortsAndAssetsUpload(new DataProductPortsAndAssetsUploadBlindataOutboundPortDryRunImpl(blindataOutboundPort), odmOutboundPort).execute();
+        new DataProductPortsAndAssetsUpload(new DataProductPortsAndAssetsUploadBlindataOutboundPortDryRunImpl(blindataOutboundPort), odmOutboundPort, "blindata:systems:(.+)").execute();
         verify(blindataOutboundPort, times(1)).findDataProduct(initialState.getExistentDataProduct().getIdentifier());
         BDDataProductRes generatedDataProduct = objectMapper.readValue(
                 Resources.toByteArray(getClass().getResource("end_state_2_data_product.json")),
@@ -120,7 +120,7 @@ public class DataProductPortsAndAssetsUploadTest {
         DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort =
                 spy(new DataProductPortsAndAssetsUploadBlindataOutboundPortMock(initialState));
 
-        new DataProductPortsAndAssetsUpload(blindataOutboundPort, odmOutboundPort).execute();
+        new DataProductPortsAndAssetsUpload(blindataOutboundPort, odmOutboundPort, "blindata:systems:(.+)").execute();
 
         verify(blindataOutboundPort, times(1))
                 .findDataProduct(initialState.getExistentDataProduct().getIdentifier());
@@ -163,7 +163,7 @@ public class DataProductPortsAndAssetsUploadTest {
         DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort = new DataProductPortsAndAssetsUploadOdmOutboundPortMock(initialState);
         DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort = spy(new DataProductPortsAndAssetsUploadBlindataOutboundPortMock(initialState));
 
-        new DataProductPortsAndAssetsUpload(blindataOutboundPort, odmOutboundPort).execute();
+        new DataProductPortsAndAssetsUpload(blindataOutboundPort, odmOutboundPort, "blindata:systems:(.+)").execute();
 
         verify(blindataOutboundPort, times(1)).findDataProduct(initialState.getExistentDataProduct().getIdentifier());
         verify(blindataOutboundPort, times(1)).updateDataProductPorts(any());

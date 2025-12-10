@@ -36,8 +36,8 @@ class DataProductPortsAndAssetsUploadBlindataOutboundPortDryRunImpl implements D
     }
 
     @Override
-    public Optional<BDSystemRes> getSystemDependency(String portDependency) {
-        return outboundPort.getSystemDependency(portDependency);
+    public Optional<BDSystemRes> getSystemDependency(String systemName) {
+        return outboundPort.getSystemDependency(systemName);
     }
 
     @Override
