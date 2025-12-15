@@ -30,7 +30,7 @@
               "description": "inputPortDescription",
               "componentGroup": null,
               "x-prop": null,
-              "dependsOn": "blindata:systems:PostgreSQL - Film Rental Inc.",
+              "dependsOn": null,
               "slo": null,
               "expectations": null,
               "contracts": null,

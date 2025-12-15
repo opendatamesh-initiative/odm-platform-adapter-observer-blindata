@@ -641,8 +641,7 @@ public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, B
     }
 
     @Override
-    public Optional<BDSystemRes> getSystem(String systemName) {
-        BDSystemSearchOptions searchOptions = new BDSystemSearchOptions(systemName);
+    public Optional<BDSystemRes> getSystem(BDSystemSearchOptions searchOptions) {
         try {
             return restUtils.getPage(
                     String.format("%s/api/v1/systems", credentials.getBlindataUrl()),

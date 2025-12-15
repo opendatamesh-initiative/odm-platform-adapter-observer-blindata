@@ -710,6 +710,104 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
                 .contains("[\"[DataProductVersionUpload]: System: PostgreSQL - Film Rental Inc. not found in Blindata.\",\"Namespace not found for identifier: https://demo.blindata.io/logical/namespaces/name/filmRentalInc#\",\"Namespace not found for identifier: https://demo.blindata.io/logical/namespaces/name/filmRentalInc#\"]");
     }
 
+    @Test
+    public void testValidateDataProductVersionWithSystemFound() throws IOException {
+        // Load test data from JSON file with system dependency
+        OdmValidatorPolicyEvaluationRequestRes request = mapper.readValue(
+                Resources.toByteArray(getClass().getResource("valid_data_product_version_with_system_dependency.json")),
+                OdmValidatorPolicyEvaluationRequestRes.class
+        );
+
+        BDShortUserRes owner = new BDShortUserRes();
+        owner.setUsername("owner@default.blindata.io");
+        owner.setFullName("owner@default.blindata.io");
+        when(bdUserClient.getBlindataUser(any())).thenReturn(Optional.of(owner));
+
+        BDStewardshipRoleRes role = new BDStewardshipRoleRes();
+        role.setUuid("test-role-uuid");
+        role.setName("test-role-name");
+        when(bdStewardshipClient.getRole(any())).thenReturn(role);
+
+        BDDataProductRes existingDataProduct = new BDDataProductRes();
+        existingDataProduct.setUuid("dp-uuid");
+        existingDataProduct.setName("test1");
+        existingDataProduct.setIdentifier("urn:dpds:qualityDemo:dataproducts:test1:1");
+        existingDataProduct.setVersion("1.0.0");
+        existingDataProduct.setDomain("test");
+        when(bdDataProductClient.getDataProduct(any())).thenReturn(Optional.of(existingDataProduct));
+
+        // Mock system client to return the system (found) - validation should pass
+        BDSystemRes system = new BDSystemRes();
+        system.setName("TestSystem");
+        when(bdSystemClient.getSystem(any())).thenReturn(Optional.of(system));
+
+        // Call the validator endpoint
+        ResponseEntity<OdmValidatorPolicyEvaluationResultRes> response = rest.postForEntity(
+                "http://localhost:" + port + "/api/v1/up/validator/evaluate-policy",
+                request,
+                OdmValidatorPolicyEvaluationResultRes.class
+        );
+
+        // Verify the system client was called
+        verify(bdSystemClient, times(1)).getSystem(any());
+
+        // Verify the response - validation should pass because system was found
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getBody()).isNotNull();
+        Assertions.assertThat(response.getBody().getPolicyEvaluationId()).isEqualTo(11L);
+        Assertions.assertThat(response.getBody().getEvaluationResult()).isTrue();
+        Assertions.assertThat(response.getBody().getOutputObject().getMessage()).isNull();
+    }
+
+    @Test
+    public void testValidateDataProductVersionWithSystemNotFound() throws IOException {
+        // Load test data from JSON file with system dependency
+        OdmValidatorPolicyEvaluationRequestRes request = mapper.readValue(
+                Resources.toByteArray(getClass().getResource("valid_data_product_version_with_system_dependency.json")),
+                OdmValidatorPolicyEvaluationRequestRes.class
+        );
+
+        BDShortUserRes owner = new BDShortUserRes();
+        owner.setUsername("owner@default.blindata.io");
+        owner.setFullName("owner@default.blindata.io");
+        when(bdUserClient.getBlindataUser(any())).thenReturn(Optional.of(owner));
+
+        BDStewardshipRoleRes role = new BDStewardshipRoleRes();
+        role.setUuid("test-role-uuid");
+        role.setName("test-role-name");
+        when(bdStewardshipClient.getRole(any())).thenReturn(role);
+
+        BDDataProductRes existingDataProduct = new BDDataProductRes();
+        existingDataProduct.setUuid("dp-uuid");
+        existingDataProduct.setName("test1");
+        existingDataProduct.setIdentifier("urn:dpds:qualityDemo:dataproducts:test1:1");
+        existingDataProduct.setVersion("1.0.0");
+        existingDataProduct.setDomain("test");
+        when(bdDataProductClient.getDataProduct(any())).thenReturn(Optional.of(existingDataProduct));
+
+        // Mock system client to return empty (system not found) - this will trigger a warning
+        when(bdSystemClient.getSystem(any())).thenReturn(Optional.empty());
+
+        // Call the validator endpoint
+        ResponseEntity<OdmValidatorPolicyEvaluationResultRes> response = rest.postForEntity(
+                "http://localhost:" + port + "/api/v1/up/validator/evaluate-policy",
+                request,
+                OdmValidatorPolicyEvaluationResultRes.class
+        );
+
+        // Verify the system client was called
+        verify(bdSystemClient, times(1)).getSystem(any());
+
+        // Verify the response - validation should fail because system was not found (warning logged)
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getBody()).isNotNull();
+        Assertions.assertThat(response.getBody().getPolicyEvaluationId()).isEqualTo(11L);
+        Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
+        Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
+        Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
+                .contains("[DataProductVersionUpload]: System: TestSystem not found in Blindata.");
+    }
+
     private JsonNode findObjectByFullyQualifiedName(JsonNode root, String identifier) {
         if (root == null || root.isValueNode()) {
             return null;

@@ -2,17 +2,17 @@ package org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.phy
 
 public class BDSystemSearchOptions {
 
-    private String search;
+    private String name;
 
-    public String getSearch() {
-        return search;
+    public String getName() {
+        return name;
     }
 
-    public void setSearch(String search) {
-        this.search = search;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public BDSystemSearchOptions(String search) {
-        this.search = search;
+        this.name = search;
     }
 }

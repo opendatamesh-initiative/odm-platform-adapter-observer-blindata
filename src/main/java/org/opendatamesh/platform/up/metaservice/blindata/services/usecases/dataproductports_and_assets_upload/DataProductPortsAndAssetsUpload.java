@@ -32,12 +32,10 @@ class DataProductPortsAndAssetsUpload implements UseCase {
 
     private final DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort;
     private final DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort;
-    private final String systemDependencyRegex;
 
-    DataProductPortsAndAssetsUpload(DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort, DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort, String systemDependencyRegex) {
+    DataProductPortsAndAssetsUpload(DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort, DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort) {
         this.blindataOutboundPort = blindataOutboundPort;
         this.odmOutboundPort = odmOutboundPort;
-        this.systemDependencyRegex = systemDependencyRegex;
     }
 
     @Override
@@ -242,25 +240,21 @@ class DataProductPortsAndAssetsUpload implements UseCase {
         // Prioritize 'dependsOn' if it exists; otherwise, use 'x-dependsOn'
         String portDependency = dependsOn != null ? dependsOn : xDependsOn;
         if (StringUtils.hasText(portDependency)) {
-            Pattern pattern = Pattern.compile(systemDependencyRegex);
-            Matcher matcher = pattern.matcher(portDependency);
-            if (matcher.find()) {
-                //regex example blindata:systems:(.+)
-                String systemName = matcher.groupCount() > 0 ? matcher.group(1) : matcher.group();
-                Optional<BDSystemRes> system = blindataOutboundPort.getSystemDependency(systemName);
+            Optional<String> systemName = blindataOutboundPort.findSystemName(portDependency);
+            if (!systemName.isEmpty()) {
+                Optional<BDSystemRes> system = blindataOutboundPort.findExistingSystem(systemName.get());
                 if (system.isPresent()) {
                     port.setDependsOnSystem(system.get());
                 } else {
-                    getUseCaseLogger().warn(String.format("%s: System: %s not found in Blindata.", USE_CASE_PREFIX, systemName));
+                    getUseCaseLogger().warn(String.format("%s: System: %s not found in Blindata.", USE_CASE_PREFIX, systemName.get()));
                     BDSystemRes systemRes = new BDSystemRes();
-                    systemRes.setName(systemName);
+                    systemRes.setName(systemName.get());
                     port.setDependsOnSystem(systemRes);
                 }
             } else {
                 port.setDependsOnIdentifier(portDependency);
             }
         }
-
     }
 
     private List<BDAdditionalPropertiesRes> extractAdditionalProperties(Promises promises) {

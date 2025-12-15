@@ -29,7 +29,7 @@
               "description": "inputPortDescription",
               "componentGroup": null,
               "x-prop": null,
-              "dependsOn": "blindata:systems:PostgreSQL - Film Rental Inc.",
+              "dependsOn": null,
               "slo": null,
               "expectations": null,
               "contracts": null,
@@ -109,10 +109,7 @@
                                   "type": "ExpectColumnValuesToBeInSet",
                                   "kwargs": {
                                     "column": "Macrozona",
-                                    "value_set": [
-                                      "NORD",
-                                      "SUD"
-                                    ]
+                                    "value_set": ["NORD", "SUD"]
                                   }
                                 },
                                 "customProperties": {
@@ -272,7 +269,7 @@
               "description": "inputPortDescription",
               "componentGroup": null,
               "x-prop": null,
-              "dependsOn": "blindata:systems:PostgreSQL - Film Rental Inc.",
+              "dependsOn": null,
               "slo": null,
               "expectations": null,
               "contracts": null,
@@ -352,10 +349,7 @@
                                   "type": "ExpectColumnValuesToBeInSet",
                                   "kwargs": {
                                     "column": "Macrozona",
-                                    "value_set": [
-                                      "NORD",
-                                      "SUD"
-                                    ]
+                                    "value_set": ["NORD", "SUD"]
                                   }
                                 },
                                 "customProperties": {
