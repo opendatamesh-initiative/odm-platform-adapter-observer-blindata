@@ -36,8 +36,19 @@ public class DataProductPortsAndAssetsUploadBlindataOutboundPortMock implements 
     }
 
     @Override
-    public Optional<BDSystemRes> getSystemDependency(String portDependency) {
+    public Optional<BDSystemRes> findExistingSystem(String systemName) {
         return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> findSystemName(String portDependency) {
+        // Use the same regex pattern as in the real implementation
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("blindata:systems:(.+)");
+        java.util.regex.Matcher matcher = pattern.matcher(portDependency);
+        if (!matcher.find()) return Optional.empty();
+        return Optional.ofNullable(
+                matcher.groupCount() > 0 ? matcher.group(1) : matcher.group()
+        );
     }
 
     @Override
