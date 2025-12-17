@@ -23,7 +23,7 @@
         "interfaceComponents": {
           "inputPorts": [
             {
-              "rawContent": "{\"fullyQualifiedName\":\"urn:dpds:qualityDemo:dataproducts:test1:1:1.0.1:inputPorts:inputPortName\",\"name\":\"inputPortName\",\"version\":\"1.0.1\",\"displayName\":\"inputPortDisplayName\",\"description\":\"inputPortDescription\",\"componentGroup\":null,\"x-prop\":null,\"dependsOn\":null,\"slo\":null,\"expectations\":null,\"contracts\":null,\"tags\":[],\"entityType\":\"inputport\",\"id\":\"2e46769d-5b93-304f-8428-0978c2e7c3f4\"}",
+              "rawContent": "{\"fullyQualifiedName\":\"urn:dpds:qualityDemo:dataproducts:test1:1:1.0.1:inputPorts:inputPortName\",\"name\":\"inputPortName\",\"version\":\"1.0.1\",\"displayName\":\"inputPortDisplayName\",\"description\":\"inputPortDescription\",\"componentGroup\":null,\"x-prop\":null,\"dependsOn\":\"blindata:systems:PostgreSQL - Film Rental Inc.\",\"slo\":null,\"expectations\":null,\"contracts\":null,\"tags\":[],\"entityType\":\"inputport\",\"id\":\"2e46769d-5b93-304f-8428-0978c2e7c3f4\"}",
               "externalReference": false,
               "id": "2e46769d-5b93-304f-8428-0978c2e7c3f4",
               "fullyQualifiedName": "urn:dpds:qualityDemo:dataproducts:test1:1:1.0.1:inputPorts:inputPortName",

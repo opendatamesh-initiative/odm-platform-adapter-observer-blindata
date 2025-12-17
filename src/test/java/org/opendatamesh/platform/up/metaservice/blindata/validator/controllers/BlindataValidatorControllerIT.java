@@ -91,6 +91,10 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
                 OdmValidatorPolicyEvaluationRequestRes.class
         );
 
+        BDSystemRes systemRes = new BDSystemRes();
+        systemRes.setName("PostgreSQL - Film Rental Inc.");
+        when(bdSystemClient.getSystem(any())).thenReturn(Optional.of(systemRes));
+
         BDShortUserRes owner = new BDShortUserRes();
         owner.setUsername("owner@default.blindata.io");
         owner.setFullName("owner@default.blindata.io");
@@ -662,6 +666,10 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
                 Resources.toByteArray(getClass().getResource("valid_data_product_version_not_in_registry.json")),
                 OdmValidatorPolicyEvaluationRequestRes.class
         );
+
+        BDSystemRes systemRes = new BDSystemRes();
+        systemRes.setName("PostgreSQL - Film Rental Inc.");
+        when(bdSystemClient.getSystem(any())).thenReturn(Optional.of(systemRes));
 
         BDShortUserRes owner = new BDShortUserRes();
         owner.setUsername("owner@default.blindata.io");
