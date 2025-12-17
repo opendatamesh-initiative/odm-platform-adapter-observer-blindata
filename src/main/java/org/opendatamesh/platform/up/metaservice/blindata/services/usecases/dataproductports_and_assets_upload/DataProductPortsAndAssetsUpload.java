@@ -240,13 +240,21 @@ class DataProductPortsAndAssetsUpload implements UseCase {
         // Prioritize 'dependsOn' if it exists; otherwise, use 'x-dependsOn'
         String portDependency = dependsOn != null ? dependsOn : xDependsOn;
         if (StringUtils.hasText(portDependency)) {
-            blindataOutboundPort.getSystemDependency(portDependency)
-                    .ifPresentOrElse(
-                            port::setDependsOnSystem,
-                            () -> port.setDependsOnIdentifier(portDependency)
-                    );
+            Optional<String> systemName = blindataOutboundPort.findSystemName(portDependency);
+            if (!systemName.isEmpty()) {
+                Optional<BDSystemRes> system = blindataOutboundPort.findExistingSystem(systemName.get());
+                if (system.isPresent()) {
+                    port.setDependsOnSystem(system.get());
+                } else {
+                    getUseCaseLogger().warn(String.format("%s: System: %s not found in Blindata.", USE_CASE_PREFIX, systemName.get()));
+                    BDSystemRes systemRes = new BDSystemRes();
+                    systemRes.setName(systemName.get());
+                    port.setDependsOnSystem(systemRes);
+                }
+            } else {
+                port.setDependsOnIdentifier(portDependency);
+            }
         }
-
     }
 
     private List<BDAdditionalPropertiesRes> extractAdditionalProperties(Promises promises) {

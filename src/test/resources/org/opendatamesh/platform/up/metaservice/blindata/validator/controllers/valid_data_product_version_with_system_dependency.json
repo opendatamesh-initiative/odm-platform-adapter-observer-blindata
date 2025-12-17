@@ -1,0 +1,73 @@
+{
+  "policyEvaluationId": 11,
+  "objectToEvaluate": {
+    "currentState": {
+      "dataProductVersion": {
+        "dataProductDescriptor": "1.0.0",
+        "info": {
+          "fullyQualifiedName": "urn:dpds:qualityDemo:dataproducts:test1:1",
+          "domain": "test",
+          "name": "test1",
+          "version": "1.0.0",
+          "displayName": "test1",
+          "description": "",
+          "owner": {
+            "id": "owner@default.blindata.io",
+            "name": "owner@default.blindata.io"
+          },
+          "contactPoints": []
+        },
+        "interfaceComponents": {
+          "inputPorts": [
+            {
+              "fullyQualifiedName": "urn:dpds:qualityDemo:dataproducts:test1:1:1.0.0:inputPorts:inputPortName",
+              "name": "inputPortName",
+              "version": "1.0.0",
+              "displayName": "inputPortDisplayName",
+              "description": "inputPortDescription",
+              "dependsOn": "blindata:systems:TestSystem"
+            }
+          ],
+          "outputPorts": [],
+          "controlPorts": [],
+          "discoveryPorts": [],
+          "observabilityPorts": []
+        }
+      }
+    },
+    "afterState": {
+      "dataProductVersion": {
+        "dataProductDescriptor": "1.0.0",
+        "info": {
+          "fullyQualifiedName": "urn:dpds:qualityDemo:dataproducts:test1:1",
+          "domain": "test",
+          "name": "test1",
+          "version": "1.0.0",
+          "displayName": "test1",
+          "description": "",
+          "owner": {
+            "id": "owner@default.blindata.io",
+            "name": "owner@default.blindata.io"
+          },
+          "contactPoints": []
+        },
+        "interfaceComponents": {
+          "inputPorts": [
+            {
+              "fullyQualifiedName": "urn:dpds:qualityDemo:dataproducts:test1:1:1.0.0:inputPorts:inputPortName",
+              "name": "inputPortName",
+              "version": "1.0.0",
+              "displayName": "inputPortDisplayName",
+              "description": "inputPortDescription",
+              "dependsOn": "blindata:systems:TestSystem"
+            }
+          ],
+          "outputPorts": [],
+          "controlPorts": [],
+          "discoveryPorts": [],
+          "observabilityPorts": []
+        }
+      }
+    }
+  }
+}

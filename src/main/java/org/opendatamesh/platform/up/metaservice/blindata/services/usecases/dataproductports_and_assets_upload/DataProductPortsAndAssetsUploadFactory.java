@@ -5,6 +5,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventTyp
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.ActivityEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.DataProductVersionEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdSystemClient;
 import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.services.DataProductPortAssetAnalyzer;
 import org.opendatamesh.platform.up.metaservice.blindata.services.notificationevents.BlindataProperties;
@@ -28,6 +29,8 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory, U
     private BlindataProperties blindataProperties;
     @Autowired
     private BdDataProductConfig dataProductConfig;
+    @Autowired
+    private BdSystemClient bdSystemClient;
 
     private final Set<EventType> supportedEventTypes = Set.of(
             EventType.DATA_PRODUCT_VERSION_CREATED,
@@ -40,7 +43,7 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory, U
             throw new UseCaseInitException("Failed to init DataProductVersionUpload use case, unsupported event type: " + event.getEventType());
         }
         try {
-            DataProductPortsAndAssetsUploadBlindataOutboundPort bdOutboundPort = new DataProductPortsAndAssetsUploadBlindataOutboundPortImpl(bdDataProductClient, blindataProperties.getDependsOnSystemNameRegex(), dataProductConfig);
+            DataProductPortsAndAssetsUploadBlindataOutboundPort bdOutboundPort = new DataProductPortsAndAssetsUploadBlindataOutboundPortImpl(bdDataProductClient, blindataProperties.getDependsOnSystemNameRegex(), dataProductConfig, bdSystemClient);
             DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
 
             return new DataProductPortsAndAssetsUpload(
@@ -58,7 +61,7 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory, U
             throw new UseCaseInitException("Failed to init DataProductVersionUpload use case, unsupported event type: " + event.getEventType());
         }
         try {
-            DataProductPortsAndAssetsUploadBlindataOutboundPort bdOutboundPort = new DataProductPortsAndAssetsUploadBlindataOutboundPortDryRunImpl(new DataProductPortsAndAssetsUploadBlindataOutboundPortImpl(bdDataProductClient, blindataProperties.getDependsOnSystemNameRegex(), dataProductConfig));
+            DataProductPortsAndAssetsUploadBlindataOutboundPort bdOutboundPort = new DataProductPortsAndAssetsUploadBlindataOutboundPortDryRunImpl(new DataProductPortsAndAssetsUploadBlindataOutboundPortImpl(bdDataProductClient, blindataProperties.getDependsOnSystemNameRegex(), dataProductConfig, bdSystemClient));
             DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
 
             return new DataProductPortsAndAssetsUpload(
