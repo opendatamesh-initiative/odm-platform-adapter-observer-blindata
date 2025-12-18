@@ -9,6 +9,32 @@ blindata:
   clientId: test-client-id
   clientSecret: test-client-secret
   roleUuid: test-role-uuid
+  eventHandlers:
+    - eventType: DATA_PRODUCT_CREATED
+      filter: ""
+      activeUseCases:
+        - DATA_PRODUCT_UPLOAD
+    - eventType: DATA_PRODUCT_VERSION_CREATED
+      filter: ""
+      activeUseCases:
+        - DATA_PRODUCT_UPLOAD
+        - DATA_PRODUCT_VERSION_UPLOAD
+        - QUALITY_UPLOAD
+        - STAGES_UPLOAD
+        - POLICIES_UPLOAD
+    - eventType: DATA_PRODUCT_ACTIVITY_COMPLETED
+      filter: ""
+      activeUseCases:
+        - STAGES_UPLOAD
+        - POLICIES_UPLOAD
+    - eventType: DATA_PRODUCT_DELETED
+      filter: ""
+      activeUseCases:
+        - DATA_PRODUCT_REMOVAL
+    - eventType: DATA_PRODUCT_VERSION_DELETED
+      filter: ""
+      activeUseCases:
+        - DATA_PRODUCT_VERSION_REMOVAL
 
 odm:
   productPlane:

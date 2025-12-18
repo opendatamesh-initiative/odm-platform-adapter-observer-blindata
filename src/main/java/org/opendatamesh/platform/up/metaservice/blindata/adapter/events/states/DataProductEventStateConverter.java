@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
-import org.opendatamesh.platform.up.metaservice.blindata.adapter.DataProductConverter;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventStatus;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType;
@@ -64,7 +63,7 @@ public class DataProductEventStateConverter implements EventStateConverter {
         event.setDataProduct(odmState.getDataProduct());
 
         if (stateNode.has("dataProductVersion")) {
-            event.setDataProductVersion(DataProductConverter.oldToNewVersion(stateNode.get("dataProductVersion").toString()));
+            log.warn("Field 'dataProductVersion' is present in DataProductEventState payload but will be ignored: {}", stateNode);
         }
 
         return event;

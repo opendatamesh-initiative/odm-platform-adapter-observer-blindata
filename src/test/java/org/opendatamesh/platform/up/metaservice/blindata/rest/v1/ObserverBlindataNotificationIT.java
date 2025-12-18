@@ -12,7 +12,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdUserC
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.OdmEventNotificationResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.OdmEventNotificationStatus;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -21,13 +21,13 @@ import java.util.Optional;
 
 public class ObserverBlindataNotificationIT extends ObserverBlindataAppIT {
 
-    @MockBean
+    @Autowired
     private BdDataProductClient bdDataProductClient;
 
-    @MockBean
+    @Autowired
     private BdUserClient bdUserClient;
 
-    @MockBean
+    @Autowired
     private BdStewardshipClient bdStewardshipClient;
 
     @BeforeEach

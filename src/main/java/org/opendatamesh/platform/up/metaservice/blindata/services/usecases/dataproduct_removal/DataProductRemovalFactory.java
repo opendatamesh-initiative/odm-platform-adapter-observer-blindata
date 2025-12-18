@@ -1,7 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_removal;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Set;
+
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.DataProductEventState;
@@ -11,8 +11,10 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCa
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-import java.util.Set;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class DataProductRemovalFactory implements UseCaseFactory {
@@ -52,14 +54,10 @@ public class DataProductRemovalFactory implements UseCaseFactory {
             throw new UseCaseInitException("The event: " + event.getEventType() + " has not DataProductEventState as beforeState.");
         }
         DataProductEventState dataProductEventState = (DataProductEventState) event.getBeforeState();
-        String fullyQualifiedName;
-        if (dataProductEventState.getDataProduct() != null) {
-            fullyQualifiedName = dataProductEventState.getDataProduct().getFullyQualifiedName();
-        } else if (dataProductEventState.getDataProductVersion() != null) {
-            fullyQualifiedName = dataProductEventState.getDataProductVersion().getInfo().getFullyQualifiedName();
-        } else {
-            throw new UseCaseInitException("Impossible to retrieve fullyQualifiedName on DATA_PRODUCT_DELETE event: " + objectMapper.writeValueAsString(event));
+        if (dataProductEventState.getDataProduct() == null || !StringUtils.hasText(dataProductEventState.getDataProduct().getFullyQualifiedName())) {
+            throw new UseCaseInitException("Impossible to retrieve fullyQualifiedName on DATA_PRODUCT_DELETED event: " + objectMapper.writeValueAsString(event));
         }
+        String fullyQualifiedName = dataProductEventState.getDataProduct().getFullyQualifiedName();
         return new DataProductRemovalOdmOutboundPortImpl(fullyQualifiedName);
     }
 }

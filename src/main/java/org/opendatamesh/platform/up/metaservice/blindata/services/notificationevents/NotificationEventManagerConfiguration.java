@@ -1,6 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.notificationevents;
 
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_removal.DataProductRemovalFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_version_removal.DataProductVersionRemovalFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload.DataProductUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload.DataProductPortsAndAssetsUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.marketplace_portupdater.MarketplaceAccessRequestsPortUpdateFactory;
@@ -38,6 +39,8 @@ public class NotificationEventManagerConfiguration {
     @Autowired
     private DataProductRemovalFactory dataProductRemovalFactory;
     @Autowired
+    private DataProductVersionRemovalFactory dataProductVersionRemovalFactory;
+    @Autowired
     private StagesUploadFactory stagesUploadFactory;
     @Autowired
     private MarketplaceAccessRequestsPortUpdateFactory marketplaceAccessRequestsPortUpdateFactory;
@@ -62,6 +65,7 @@ public class NotificationEventManagerConfiguration {
                     eventHandler.getActiveUseCases().contains("POLICIES_ALIGN") ? policiesAlignFactory : null,
                     eventHandler.getActiveUseCases().contains("POLICIES_UPLOAD") ? policiesUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("DATA_PRODUCT_REMOVAL") ? dataProductRemovalFactory : null,
+                    eventHandler.getActiveUseCases().contains("DATA_PRODUCT_VERSION_REMOVAL") ? dataProductVersionRemovalFactory : null,
                     eventHandler.getActiveUseCases().contains("MARKETPLACE_ACCESS_REQUEST_PORTS_UPDATE") ? marketplaceAccessRequestsPortUpdateFactory : null,
                     eventHandler.getEventType(),
                     eventHandler.getFilter()

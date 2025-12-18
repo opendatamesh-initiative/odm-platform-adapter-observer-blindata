@@ -1,0 +1,32 @@
+{
+  "id": 2,
+  "event": {
+    "id": 2,
+    "type": "DATA_PRODUCT_DELETED",
+    "entityId": "dp1-id",
+    "beforeState": {
+      "dataProduct": {
+        "id": "dp1-id",
+        "fullyQualifiedName": "odm://domain.dp1",
+        "description": "Test data product dp1",
+        "domain": "test-domain"
+      }
+    },
+    "afterState": null,
+    "time": 1724231283969
+  },
+  "status": "PROCESSING",
+  "processingOutput": null,
+  "observer": {
+    "createdAt": 1724230976004,
+    "updatedAt": 1724230976004,
+    "id": 1,
+    "name": "BLINDATA",
+    "displayName": "Blindata",
+    "observerServerBaseUrl": "http://localhost:9002"
+  },
+  "receivedAt": null,
+  "processedAt": null
+}
+
+
