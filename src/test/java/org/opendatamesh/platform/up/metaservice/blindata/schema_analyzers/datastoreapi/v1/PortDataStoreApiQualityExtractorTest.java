@@ -153,7 +153,7 @@ class PortDataStoreApiQualityExtractorTest {
 
         assertThat(issuePolicies).hasSize(1);
         BDIssuePolicyRes issuePolicy = issuePolicies.get(0);
-        assertThat(issuePolicy.getDescription()).isEqualTo("This is a test issue policy description");
+        assertThat(issuePolicy.getIssueTemplate().getDescription()).isEqualTo("This is a test issue policy description");
     }
 
     @Test

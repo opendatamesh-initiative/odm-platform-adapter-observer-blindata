@@ -175,7 +175,6 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
 
             BDIssuePolicyRes issuePolicy = new BDIssuePolicyRes();
             issuePolicy.setName(qualityIssuePolicy.getName());
-            issuePolicy.setDescription(qualityIssuePolicy.getDescription());
             issuePolicy.setPolicyType(BDIssuePolicyType.valueOf(qualityIssuePolicy.getPolicyType()));
             issuePolicy.setActive(true);
 
@@ -206,6 +205,7 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
             issueTemplate.setIssueStatus(BDIssueStatusRes.TO_DO);
             issueTemplate.setSeverity(StringUtils.hasText(qualityIssuePolicy.getSeverity()) ? BDIssueSeverityLevelRes.valueOf(qualityIssuePolicy.getSeverity()) : BDIssueSeverityLevelRes.INFO);
             issueTemplate.setPriorityOrder(3);
+            issueTemplate.setDescription(qualityIssuePolicy.getIssueDescription());
 
             if (StringUtils.hasText(qualityIssuePolicy.getIssueOwner())) {
                 BDShortUserRes ownerUser = new BDShortUserRes();

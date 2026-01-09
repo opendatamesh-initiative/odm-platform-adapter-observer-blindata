@@ -70,7 +70,7 @@
                 "issuePolicies": [
                   {
                     "name": "ScambiMWh ExpectColumnValuesToBeBetween",
-                    "description": "PLACEHOLDER",
+                    "issueDescription": "PLACEHOLDER",
                     "policyType": "RECURRENT_RESULT_SEMAPHORE",
                     "semaphoreColor": "RED",
                     "semaphoresNumber": "1",

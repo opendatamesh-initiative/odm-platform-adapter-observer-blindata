@@ -14,7 +14,7 @@
     {
       "uuid": null,
       "name": "ScambiMWh ExpectColumnValuesToBeBetween",
-      "description": "PLACEHOLDER",
+      "issueDescription": null,
       "resourceIdentifier": null,
       "resourceType": null,
       "resourceName": null,
@@ -28,7 +28,7 @@
       },
       "issueTemplate": {
         "name": "Quality Alert - ScambiMWh ExpectColumnValuesToBeBetween",
-        "description": null,
+        "description": "PLACEHOLDER",
         "issueType": "ALERT",
         "campaign": {
           "uuid": null,

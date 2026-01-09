@@ -4,7 +4,7 @@ import org.opendatamesh.dpds.model.core.ComponentBase;
 
 public class QualityIssuePolicy extends ComponentBase {
     private String name;
-    private String description;
+    private String issueDescription;
     private String policyType;
     private String semaphoreColor;
     private Integer semaphoresNumber;
@@ -25,12 +25,12 @@ public class QualityIssuePolicy extends ComponentBase {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public String getIssueDescription() {
+        return issueDescription;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setIssueDescription(String issueDescription) {
+        this.issueDescription = issueDescription;
     }
 
     public String getPolicyType() {
