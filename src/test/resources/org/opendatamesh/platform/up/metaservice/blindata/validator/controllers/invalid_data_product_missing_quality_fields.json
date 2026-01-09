@@ -116,7 +116,7 @@
                                   "issuePolicies": [
                                     {
                                       "name": "ScambiMWh ExpectColumnValuesToBeBetween",
-                                      "description": "PLACEHOLDER",
+                                      "issueDescription": null,
                                       "policyType": "RECURRENT_RESULT_SEMAPHORE",
                                       "semaphoreColor": "RED",
                                       "semaphoresNumber": "1",
@@ -130,7 +130,7 @@
                               },
                               {
                                 "name": "ScambiMWh ExpectColumnValuesToBeBetween",
-                                "description": "",
+                                "issueDescription": null,
                                 "dimension": "Consistency",
                                 "unit": "percent",
                                 "type": "custom",
