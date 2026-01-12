@@ -257,7 +257,6 @@
           "resourceIdentifier": null,
           "resourceType": null,
           "resourceName": null,
-          "issueDescription": null,
           "policyType": "RECURRENT_RESULT_SEMAPHORE",
           "policyContent": {
             "semaphores": [
