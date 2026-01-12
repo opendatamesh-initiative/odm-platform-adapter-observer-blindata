@@ -257,7 +257,6 @@
           "resourceIdentifier": null,
           "resourceType": null,
           "resourceName": null,
-          "description": "PLACEHOLDER",
           "policyType": "RECURRENT_RESULT_SEMAPHORE",
           "policyContent": {
             "semaphores": [
@@ -268,7 +267,7 @@
           },
           "issueTemplate": {
             "name": "Quality Alert - ScambiMWh ExpectColumnValuesToBeBetween",
-            "description": null,
+            "description": "PLACEHOLDER",
             "issueType": "ALERT",
             "campaign": null,
             "issueStatus": "TO_DO",

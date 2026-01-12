@@ -6,7 +6,6 @@ import java.util.Date;
 public class BDIssuePolicyRes {
     private String uuid;
     private String name;
-    private String description;
     private String resourceIdentifier;
     private BDResourceTypeRes resourceType;
     private String resourceName;
@@ -51,14 +50,6 @@ public class BDIssuePolicyRes {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getResourceIdentifier() {
@@ -122,7 +113,6 @@ public class BDIssuePolicyRes {
         return "BDIssuePolicyRes{" +
                 "uuid='" + uuid + '\'' +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
                 ", resourceIdentifier='" + resourceIdentifier + '\'' +
                 ", resourceType=" + resourceType +
                 ", resourceName='" + resourceName + '\'' +

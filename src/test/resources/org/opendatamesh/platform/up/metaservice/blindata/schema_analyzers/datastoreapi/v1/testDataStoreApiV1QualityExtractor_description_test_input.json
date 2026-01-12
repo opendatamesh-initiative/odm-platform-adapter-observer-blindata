@@ -47,7 +47,7 @@
                 "issuePolicies": [
                   {
                     "name": "Test Issue Policy",
-                    "description": "This is a test issue policy description",
+                    "issueDescription": "This is a test issue policy description",
                     "policyType": "RECURRENT_RESULT_SEMAPHORE",
                     "semaphoreColor": "RED",
                     "semaphoresNumber": 1,
