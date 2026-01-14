@@ -57,7 +57,7 @@ public class PortDatastoreApiEntitiesExtractor implements PortStandardDefinition
                 return qualityChecks;
             }
             DataStoreApiVisitor visitor = new DataStoreApiVisitorImpl(semanticLinkManager, NO_OP_ENTITIES(), qualityChecks::add, bdDataProductConfig);
-            visitor.visit(dataStoreApi.getSchema());
+            dataStoreApi.getSchema().accept(visitor);
             return qualityChecks;
         } catch (MismatchedInputException e) {
             getUseCaseLogger().warn("Malformed port schema definition: " + e.getMessage(), e);
@@ -80,7 +80,7 @@ public class PortDatastoreApiEntitiesExtractor implements PortStandardDefinition
                 return physicalEntities;
             }
             DataStoreApiVisitor visitor = new DataStoreApiVisitorImpl(semanticLinkManager, physicalEntities::add, NO_OP_QUALITY_DEFINITIONS(), bdDataProductConfig);
-            visitor.visit(dataStoreApi.getSchema());
+            dataStoreApi.getSchema().accept(visitor);
             return physicalEntities;
         } catch (MismatchedInputException e) {
             getUseCaseLogger().warn("Malformed port schema definition: " + e.getMessage(), e);
