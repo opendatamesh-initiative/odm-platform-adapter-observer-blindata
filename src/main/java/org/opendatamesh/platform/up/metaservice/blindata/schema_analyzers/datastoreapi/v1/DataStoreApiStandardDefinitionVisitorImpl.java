@@ -5,7 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import org.opendatamesh.dpds.datastoreapi.v1.extensions.DataStoreApiStandardDefinitionVisitor;
+import org.opendatamesh.dpds.model.core.ExternalDocs;
+import org.opendatamesh.dpds.visitors.core.StandardDefinitionVisitor;
 import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAdditionalPropertiesRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
@@ -33,7 +34,7 @@ import java.util.regex.PatternSyntaxException;
 
 import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
 
-class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefinitionVisitor<DataStoreApiBlindataDefinition> {
+class DataStoreApiStandardDefinitionVisitorImpl implements StandardDefinitionVisitor<DataStoreApiBlindataDefinition> {
 
     private final DataStoreApiVisitorEntitiesPresenter physicalEntityPresenter;
     private final DataStoreApiVisitorQualityDefinitionsPresenter qualityCheckPresenter;
@@ -48,7 +49,6 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
             String databaseSchemaName,
             BdDataProductConfig bdDataProductConfig
     ) {
-        super(DataStoreApiBlindataDefinition.class);
         this.physicalEntityPresenter = entitiesPresenter;
         this.qualityCheckPresenter = qualityCheckPresenter;
         this.semanticLinkManager = semanticLinkManager;
@@ -57,7 +57,7 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
     }
 
     @Override
-    protected void visitDefinition(DataStoreApiBlindataDefinition definition) {
+    public void visit(DataStoreApiBlindataDefinition definition) {
         BDPhysicalEntityRes physicalEntity = definitionToPhysicalEntity(definition);
 
         //Handle physical fields
@@ -451,5 +451,10 @@ class DataStoreApiStandardDefinitionVisitorImpl extends DataStoreApiStandardDefi
                     value.isTextual() ? value.asText() : value.toString()
             ));
         }
+    }
+
+    @Override
+    public void visit(ExternalDocs externalDocs) {
+        //DO NOTHING
     }
 }

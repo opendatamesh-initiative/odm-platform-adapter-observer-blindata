@@ -1,11 +1,11 @@
 package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1;
 
-import org.opendatamesh.dpds.datastoreapi.v1.extensions.DataStoreApiStandardDefinitionVisitor;
 import org.opendatamesh.dpds.datastoreapi.v1.model.DataStoreApiDatabaseService;
 import org.opendatamesh.dpds.datastoreapi.v1.model.DataStoreApiInfo;
 import org.opendatamesh.dpds.datastoreapi.v1.model.DataStoreApiSchema;
 import org.opendatamesh.dpds.datastoreapi.v1.model.DataStoreApiStandardDefinitionObject;
 import org.opendatamesh.dpds.datastoreapi.v1.visitor.DataStoreApiVisitor;
+import org.opendatamesh.dpds.visitors.core.StandardDefinitionVisitor;
 import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1.model.DataStoreApiBlindataDefinition;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
@@ -42,13 +42,17 @@ class DataStoreApiVisitorImpl implements DataStoreApiVisitor {
 
         if (dataStoreApiSchema.getTables() != null) {
             for (DataStoreApiStandardDefinitionObject table : dataStoreApiSchema.getTables()) {
-                DataStoreApiStandardDefinitionVisitor<DataStoreApiBlindataDefinition> visitor =
+                StandardDefinitionVisitor<DataStoreApiBlindataDefinition> visitor =
                         new DataStoreApiStandardDefinitionVisitorImpl(entitiesPresenter, qualityPresenter, semanticLinkManager, databaseSchemaName, bdDataProductConfig);
                 if (table.getDefinition() == null) {
                     getUseCaseLogger().warn("Missing definition on datastore api table: " + table.getName());
                     continue;
                 }
-                visitor.visit(table.getDefinition());
+                if (table.getDefinition() instanceof DataStoreApiBlindataDefinition) {
+                    table.getDefinition().accept(visitor);
+                } else {
+                    getUseCaseLogger().warn("Malformed definition on datastore api table: " + table.getName());
+                }
             }
         }
     }
