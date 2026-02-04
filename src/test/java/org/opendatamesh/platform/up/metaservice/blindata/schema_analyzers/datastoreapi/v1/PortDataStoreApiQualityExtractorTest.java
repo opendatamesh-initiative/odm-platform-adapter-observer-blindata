@@ -14,8 +14,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataPr
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssuePolicyRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.quality.QualityCheck;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLogger;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext;
+import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.exceptions.UseCaseLogger;
+import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.exceptions.UseCaseLoggerContext;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -125,10 +125,10 @@ class PortDataStoreApiQualityExtractorTest {
         // Verify that issue policies have the correct owner and reporter
         assertThat(issuePolicies).hasSize(1);
         BDIssuePolicyRes issuePolicy = issuePolicies.get(0);
-        
+
         assertThat(issuePolicy.getIssueTemplate().getAssignee()).isNotNull();
         assertThat(issuePolicy.getIssueTemplate().getAssignee().getUsername()).isEqualTo("test.owner@example.com");
-        
+
         assertThat(issuePolicy.getIssueTemplate().getReporter()).isNotNull();
         assertThat(issuePolicy.getIssueTemplate().getReporter().getUsername()).isEqualTo("test.reporter@example.com");
     }

@@ -59,6 +59,15 @@ blindata:
       filter: ""
       activeUseCases:
         - MARKETPLACE_ACCESS_REQUEST_PORTS_UPDATE
+    # V2-only event types
+    # - eventType: DATA_PRODUCT_INITIALIZATION_REQUESTED
+    #   filter: ""
+    #   activeUseCases:
+    #     - DATA_PRODUCT_UPLOAD
+    # - eventType: DATA_PRODUCT_VERSION_PUBLICATION_REQUESTED
+    #   filter: ""
+    #   activeUseCases:
+    #     - DATA_PRODUCT_VERSION_UPLOAD
 
 #############################
 # ODM projects configurations

@@ -35,6 +35,15 @@ blindata:
       filter: ""
       activeUseCases:
         - DATA_PRODUCT_VERSION_REMOVAL
+    # V2-only event types (for /api/v2/up/observer/notifications)
+    - eventType: DATA_PRODUCT_INITIALIZATION_REQUESTED
+      filter: ""
+      activeUseCases:
+        - DATA_PRODUCT_UPLOAD
+    - eventType: DATA_PRODUCT_VERSION_PUBLICATION_REQUESTED
+      filter: ""
+      activeUseCases:
+        - DATA_PRODUCT_VERSION_UPLOAD
 
 odm:
   productPlane:

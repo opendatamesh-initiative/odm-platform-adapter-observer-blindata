@@ -1,0 +1,20 @@
+{
+  "sequenceId": 5,
+  "status": "PROCESSING",
+  "event": {
+    "sequenceId": 5,
+    "resourceType": "dataProductVersion",
+    "resourceIdentifier": "dp1-id:1.0.0",
+    "type": "DATA_PRODUCT_VERSION_DELETED",
+    "eventTypeVersion": "2.0",
+    "eventContent": {},
+    "time": 1724231283969
+  },
+  "subscription": {
+    "uuid": "sub-1",
+    "name": "BLINDATA",
+    "displayName": "Blindata",
+    "observerBaseUrl": "http://localhost:9002",
+    "observerApiVersion": "V2"
+  }
+}

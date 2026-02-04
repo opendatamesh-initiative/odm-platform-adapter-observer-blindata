@@ -1,8 +1,9 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtilsFactory;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.OdmEventNotificationResource;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.OdmEventNotificationSearchOptions;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmEventNotificationResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmEventNotificationSearchOptions;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.OdmEventNotificationResourceV2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,12 @@ public class OdmEventNotificationClientConfigs {
                 @Override
                 public OdmEventNotificationResource updateEventNotification(Long notificationId, OdmEventNotificationResource eventNotificationResource) {
                     log.warn("updateEventNotification called but notification client is disabled. No update performed for notificationId {}.", notificationId);
+                    return null;
+                }
+
+                @Override
+                public OdmEventNotificationResourceV2 updateEventNotificationV2(Long sequenceId, OdmEventNotificationResourceV2 eventNotificationResource) {
+                    log.warn("updateEventNotificationV2 called but notification client is disabled. No update performed for sequenceId {}.", sequenceId);
                     return null;
                 }
 

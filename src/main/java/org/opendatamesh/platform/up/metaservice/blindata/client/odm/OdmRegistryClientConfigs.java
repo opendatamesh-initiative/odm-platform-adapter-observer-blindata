@@ -2,7 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.OdmExternalComponentResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.v1.OdmExternalComponentResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,9 @@ public class OdmRegistryClientConfigs {
     @Value("${odm.productPlane.registryService.active}")
     private boolean active;
 
+    @Value("${odm.productPlane.registryService.apiVersion:v1}")
+    private String apiVersion;
+
     @Autowired
     private RestTemplateBuilder restTemplateBuilder;
 
@@ -36,10 +39,32 @@ public class OdmRegistryClientConfigs {
     @Bean
     public OdmRegistryClient odmRegistryClient() {
         if (active) {
-            return new OdmRegistryClientImpl(
-                    getRestTemplate(),
-                    address
-            );
+            if (apiVersion.toUpperCase().equals("V1")) {
+                return new OdmRegistryClientImpl(
+                        getRestTemplate(),
+                        address
+                );
+            } else {
+                return new OdmRegistryClient() {
+                    @Override
+                    public List<OdmExternalComponentResource> getApis(String apiName, String apiVersion) {
+                        log.warn("unused method");
+                        return List.of();
+                    }
+    
+                    @Override
+                    public Optional<JsonNode> getApi(String identifier) {
+                        log.warn("using registry V2 this method should never be called, descriptor should always be available in full, but it was called for API with id: {}.", identifier);
+                        return Optional.empty();
+                    }
+    
+                    @Override
+                    public JsonNode getDataProductVersion(String dataProductId, String versionNumber) {
+                        log.warn("unused method");
+                        return null;
+                    }
+                };
+            }
         } else {
             log.warn("ODM Registry Client is not enabled in the configuration.");
             return new OdmRegistryClient() {

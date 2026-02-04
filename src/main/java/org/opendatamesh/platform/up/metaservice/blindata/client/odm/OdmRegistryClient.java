@@ -1,7 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.OdmExternalComponentResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.v1.OdmExternalComponentResource;
 
 import java.util.List;
 import java.util.Optional;

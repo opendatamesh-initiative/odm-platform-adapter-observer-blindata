@@ -1,0 +1,27 @@
+{
+  "sequenceId": 1,
+  "status": "PROCESSING",
+  "event": {
+    "sequenceId": 1,
+    "resourceType": "dataProduct",
+    "resourceIdentifier": "ca8802b6-bc59-3ad8-8436-fdfe79c9c512",
+    "type": "DATA_PRODUCT_INITIALIZATION_REQUESTED",
+    "eventTypeVersion": "2.0",
+    "eventContent": {
+      "dataProduct": {
+        "uuid": "ca8802b6-bc59-3ad8-8436-fdfe79c9c512",
+        "fqn": "urn:org.opendatamesh:dataproducts:tripExecution",
+        "description": "This is prod-1",
+        "domain": "sampleDomain"
+      }
+    },
+    "time": 1724231283969
+  },
+  "subscription": {
+    "uuid": "sub-1",
+    "name": "BLINDATA",
+    "displayName": "Blindata",
+    "observerBaseUrl": "http://localhost:9002",
+    "observerApiVersion": "V2"
+  }
+}
