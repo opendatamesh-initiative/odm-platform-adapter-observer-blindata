@@ -77,7 +77,6 @@ odm:
     registryService:
       active: true
       address: http://localhost:8081
-      apiVersion: v1
     policyService:
       active: true
       address: http://localhost:8005

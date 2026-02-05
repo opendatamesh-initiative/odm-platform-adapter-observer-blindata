@@ -5,19 +5,19 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
-import org.opendatamesh.platform.up.metaservice.blindata.adapter.v1.events.EventAdapter;
-import org.opendatamesh.platform.up.metaservice.blindata.adapter.v1.events.Event;
+import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventAdapter;
+import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.exceptions.OdmPlatformBadRequestException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.exceptions.OdmPlatformInternalServerException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmEventNotificationResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmEventResource;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.dataproduct_upload.DataProductUploadFactory;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.dataproductports_and_assets_upload.DataProductPortsAndAssetsUploadFactory;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.exceptions.RunWithUseCaseLogger;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.exceptions.UseCaseExecutionException;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.exceptions.UseCaseInitException;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.exceptions.ValidatorUseCaseLogger;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.quality_upload.QualityUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload.DataProductUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload.DataProductPortsAndAssetsUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.RunWithUseCaseLogger;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.ValidatorUseCaseLogger;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload.QualityUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.OdmValidatorPolicyEvaluationRequestRes;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.OdmValidatorPolicyEvaluationResultRes;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static org.opendatamesh.platform.up.metaservice.blindata.adapter.v1.events.EventType.DATA_PRODUCT_VERSION_CREATED;
+import static org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType.DATA_PRODUCT_VERSION_CREATED;
 
 @Service
 public class BlindataValidatorService {

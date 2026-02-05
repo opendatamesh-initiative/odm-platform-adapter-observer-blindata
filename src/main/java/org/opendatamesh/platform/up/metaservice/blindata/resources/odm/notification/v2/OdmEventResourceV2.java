@@ -3,16 +3,13 @@ package org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notifica
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.Date;
-
 public class OdmEventResourceV2 {
     private Long sequenceId;
     private String resourceType;
     private String resourceIdentifier;
     private String type;
     private String eventTypeVersion;
-    private JsonNode eventContent; // TODO: or String?
-    private Date time;
+    private JsonNode eventContent;
 
     public OdmEventResourceV2() {
     }
@@ -25,7 +22,6 @@ public class OdmEventResourceV2 {
         this.resourceIdentifier = other.resourceIdentifier;
         this.type = other.type;
         this.eventTypeVersion = other.eventTypeVersion;
-        this.time = (other.time != null) ? new Date(other.time.getTime()) : null;
 
         // Deep copy JsonNode using ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
@@ -84,14 +80,6 @@ public class OdmEventResourceV2 {
         this.eventContent = eventContent;
     }
 
-    public Date getTime() {
-        return time;
-    }
-
-    public void setTime(Date time) {
-        this.time = time;
-    }
-
     @Override
     public String toString() {
         return "OdmEventResource{" +
@@ -101,7 +89,6 @@ public class OdmEventResourceV2 {
                 ", eventTypeVersion='" + eventTypeVersion + '\'' +
                 ", type='" + type + '\'' +
                 ", eventContent=" + eventContent +
-                ", time=" + time +
                 '}';
     }
 }

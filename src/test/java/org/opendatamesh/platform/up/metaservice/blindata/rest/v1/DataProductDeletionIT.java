@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.opendatamesh.platform.up.metaservice.blindata.ObserverBlindataAppIT;
-import org.opendatamesh.platform.up.metaservice.blindata.adapter.v1.events.states.DataProductEventState;
+import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.DataProductEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmEventNotificationResource;

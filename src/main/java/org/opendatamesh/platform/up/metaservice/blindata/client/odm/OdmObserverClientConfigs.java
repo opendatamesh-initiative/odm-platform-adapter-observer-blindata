@@ -1,11 +1,10 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
-import org.opendatamesh.platform.up.metaservice.blindata.adapter.v1.events.EventType;
-import org.opendatamesh.platform.up.metaservice.blindata.adapter.v2.events.EventTypeV2;
+import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtilsFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmObserverResource;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmObserverSearchOptions;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.OdmObserverSubscribeResponseResourceV2;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventTypeV2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Set;
@@ -97,29 +94,6 @@ public class OdmObserverClientConfigs {
                 public OdmObserverSubscribeResponseResourceV2 subscribeObserverV2(OdmObserverSubscribeResponseResourceV2.OdmObserverSubscribeResourceV2 observerSubscribeResource) {
                     log.warn("subscribeObserverV2 called but notification client is disabled. Observer '{}' not registered.", observerSubscribeResource.getName());
                     return null;
-                }
-
-                @Override
-                public OdmObserverResource updateObserver(Long id, OdmObserverResource observerResource) {
-                    log.warn("updateObserver called but notification client is disabled. No update performed for observer id {}.", id);
-                    return null;
-                }
-
-                @Override
-                public Page<OdmObserverResource> getObservers(Pageable pageable, OdmObserverSearchOptions searchOptions) {
-                    log.warn("getObservers called but notification client is disabled. Returning an empty page.");
-                    return Page.empty();
-                }
-
-                @Override
-                public OdmObserverResource getObserver(Long id) {
-                    log.warn("getObserver called but notification client is disabled. No observer found for id {}.", id);
-                    return null;
-                }
-
-                @Override
-                public void removeObserver(Long id) {
-                    log.warn("removeObserver called but notification client is disabled. No observer removed for id {}.", id);
                 }
             };
         }

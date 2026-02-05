@@ -1,14 +1,14 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.v1.notificationevents;
 
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.dataproduct_removal.DataProductRemovalFactory;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.dataproduct_upload.DataProductUploadFactory;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.dataproduct_version_removal.DataProductVersionRemovalFactory;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.dataproductports_and_assets_upload.DataProductPortsAndAssetsUploadFactory;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.marketplace_portupdater.MarketplaceAccessRequestsPortUpdateFactory;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.policies_align.PoliciesAlignFactory;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.policies_upload.PoliciesUploadFactory;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.quality_upload.QualityUploadFactory;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.stages_upload.StagesUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_removal.DataProductRemovalFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload.DataProductUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_version_removal.DataProductVersionRemovalFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproductports_and_assets_upload.DataProductPortsAndAssetsUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.marketplace_portupdater.MarketplaceAccessRequestsPortUpdateFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_align.PoliciesAlignFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload.PoliciesUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload.QualityUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.stages_upload.StagesUploadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

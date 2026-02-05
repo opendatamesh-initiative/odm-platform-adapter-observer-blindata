@@ -20,7 +20,6 @@ odm:
     registryService:
       active: true
       address: The address of ODM Registry Service
-      apiVersion: v1 OR v2
 ```
 
 ## Notification Service
@@ -43,7 +42,6 @@ odm:
 |                      | `address`           | string  | -       | Policy service endpoint URL                                                  |
 | Registry Service     | `active`            | boolean | false   | Enable/disable registry service connection                                   |
 |                      | `address`           | string  | -       | Registry service endpoint URL                                                |
-|                      | `apiVersion`        | string  | v1      | The version of the registry service api                                  |
 | Notification Service | `active`            | boolean | false   | Enable/disable notification service connection                               |
 |                      | `address`           | string  | -       | Notification service endpoint URL                                            |
 |                      | `subscribeWithName` | string  | -       | The name used by the observer when it subscribes to the notification service |

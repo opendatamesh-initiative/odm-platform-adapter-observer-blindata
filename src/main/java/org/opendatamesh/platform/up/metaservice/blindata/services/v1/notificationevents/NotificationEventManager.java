@@ -3,8 +3,8 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.v1.notificati
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import org.opendatamesh.platform.up.metaservice.blindata.adapter.v1.events.EventStatus;
-import org.opendatamesh.platform.up.metaservice.blindata.adapter.v1.events.Event;
+import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventStatus;
+import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;

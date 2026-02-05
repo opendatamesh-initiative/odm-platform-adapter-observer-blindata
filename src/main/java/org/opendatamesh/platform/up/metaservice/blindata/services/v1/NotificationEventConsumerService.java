@@ -1,7 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.v1;
 
-import org.opendatamesh.platform.up.metaservice.blindata.adapter.v1.events.EventAdapter;
-import org.opendatamesh.platform.up.metaservice.blindata.adapter.v1.events.Event;
+import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventAdapter;
+import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.client.odm.OdmEventNotificationClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmEventNotificationResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmEventNotificationStatus;

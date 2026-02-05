@@ -1,8 +1,0 @@
-package org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.marketplace_portupdater;
-
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.marketplace.BDMarketplaceAccessRequestsUploadRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDMarketplaceAccessRequestPortStatusUploadResultsRes;
-
-interface MarketplaceAccessRequestsPortUpdaterBlindataOutboundPort {
-    BDMarketplaceAccessRequestPortStatusUploadResultsRes uploadPortStatuses(BDMarketplaceAccessRequestsUploadRes bdMarketplaceAccessRequestsUploadRes);
-}

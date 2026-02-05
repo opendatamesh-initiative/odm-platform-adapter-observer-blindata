@@ -14,8 +14,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataPr
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssuePolicyRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.quality.QualityCheck;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.exceptions.UseCaseLogger;
-import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.exceptions.UseCaseLoggerContext;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLogger;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext;
 
 import java.io.IOException;
 import java.util.ArrayList;

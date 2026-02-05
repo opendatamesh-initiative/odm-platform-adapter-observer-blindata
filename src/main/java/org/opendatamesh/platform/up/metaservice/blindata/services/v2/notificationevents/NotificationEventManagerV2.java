@@ -1,7 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.v2.notificationevents;
 
-import org.opendatamesh.platform.up.metaservice.blindata.adapter.v2.events.EventStatusV2;
-import org.opendatamesh.platform.up.metaservice.blindata.adapter.v2.events.EventV2;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventStatusV2;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventV2;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;

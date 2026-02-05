@@ -1,12 +1,12 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.v2;
 
-import org.opendatamesh.platform.up.metaservice.blindata.adapter.v2.events.EventStatusV2;
-import org.opendatamesh.platform.up.metaservice.blindata.adapter.v2.events.EventTypeV2;
-import org.opendatamesh.platform.up.metaservice.blindata.adapter.v2.events.EventV2;
 import org.opendatamesh.platform.up.metaservice.blindata.client.odm.OdmEventNotificationClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.OdmEventNotificationResourceV2;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.OdmEventNotificationStatusV2;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.OdmEventResourceV2;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventStatusV2;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventTypeV2;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventV2;
 import org.opendatamesh.platform.up.metaservice.blindata.services.v2.notificationevents.NotificationEventManagerV2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
