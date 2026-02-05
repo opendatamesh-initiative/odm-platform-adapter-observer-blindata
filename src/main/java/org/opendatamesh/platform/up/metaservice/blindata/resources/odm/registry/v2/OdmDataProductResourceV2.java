@@ -2,11 +2,12 @@ package org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry
 
 public class OdmDataProductResourceV2 {
 
-    // TODO: add other fields from DataProductRes ?
     private String uuid;
     private String fqn;
     private String description;
     private String domain;
+    private String name;
+    private String displayName;
 
     public OdmDataProductResourceV2() {
     }
@@ -41,5 +42,21 @@ public class OdmDataProductResourceV2 {
 
     public void setDomain(String domain) {
         this.domain = domain;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 }

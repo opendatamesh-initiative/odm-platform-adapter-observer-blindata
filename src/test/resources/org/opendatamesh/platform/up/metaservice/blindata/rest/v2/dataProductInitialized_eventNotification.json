@@ -5,7 +5,7 @@
     "sequenceId": 1,
     "resourceType": "dataProduct",
     "resourceIdentifier": "ca8802b6-bc59-3ad8-8436-fdfe79c9c512",
-    "type": "DATA_PRODUCT_INITIALIZATION_REQUESTED",
+    "type": "DATA_PRODUCT_INITIALIZED",
     "eventTypeVersion": "2.0",
     "eventContent": {
       "dataProduct": {

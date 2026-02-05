@@ -9,6 +9,9 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.da
 import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.dataproductports_and_assets_upload.DataProductPortsAndAssetsUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.exceptions.UseCaseExecutionException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.exceptions.UseCaseInitException;
+import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.policies_upload.PoliciesUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.quality_upload.QualityUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.stages_upload.StagesUploadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.ExpressionParser;
@@ -27,6 +30,9 @@ public class UseCasesExecutionTemplateV2 implements NotificationEventHandlerV2 {
     private final Optional<DataProductPortsAndAssetsUploadFactory> dataProductVersionCreation;
     private final Optional<DataProductRemovalFactory> dataProductDeletion;
     private final Optional<DataProductVersionRemovalFactory> dataProductVersionDeletion;
+    private final Optional<QualityUploadFactory> qualityUpload;
+    private final Optional<StagesUploadFactory> stagesUploadFactory;
+    private final Optional<PoliciesUploadFactory> policiesUploadFactory;
 
     private final String eventType;
     private final String filter;
@@ -36,13 +42,18 @@ public class UseCasesExecutionTemplateV2 implements NotificationEventHandlerV2 {
             DataProductPortsAndAssetsUploadFactory dataProductVersionCreation,
             DataProductRemovalFactory dataProductDeletion,
             DataProductVersionRemovalFactory dataProductVersionDeletion,
-
+            QualityUploadFactory qualityUpload,
+            StagesUploadFactory stagesUploadFactory,
+            PoliciesUploadFactory policiesUploadFactory,
             String eventType,
             String filter) {
         this.dataProductCreation = Optional.ofNullable(dataProductCreation);
         this.dataProductVersionCreation = Optional.ofNullable(dataProductVersionCreation);
         this.dataProductDeletion = Optional.ofNullable(dataProductDeletion);
         this.dataProductVersionDeletion = Optional.ofNullable(dataProductVersionDeletion);
+        this.qualityUpload = Optional.ofNullable(qualityUpload);
+        this.stagesUploadFactory = Optional.ofNullable(stagesUploadFactory);
+        this.policiesUploadFactory = Optional.ofNullable(policiesUploadFactory);
         this.eventType = eventType;
         this.filter = filter;
     }
@@ -55,6 +66,15 @@ public class UseCasesExecutionTemplateV2 implements NotificationEventHandlerV2 {
             }
             if (dataProductVersionCreation.isPresent()) {
                 dataProductVersionCreation.get().getUseCaseV2(event).execute();
+            }
+            if (qualityUpload.isPresent()) {
+                qualityUpload.get().getUseCaseV2(event).execute();
+            }
+            if (stagesUploadFactory.isPresent()) {
+                stagesUploadFactory.get().getUseCaseV2(event).execute();
+            }
+            if (policiesUploadFactory.isPresent()) {
+                policiesUploadFactory.get().getUseCaseV2(event).execute();
             }
             if (dataProductVersionDeletion.isPresent()) {
                 dataProductVersionDeletion.get().getUseCaseV2(event).execute();

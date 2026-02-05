@@ -25,6 +25,8 @@ class DataProductUploadOdmOutboundPortImpl implements DataProductUploadOdmOutbou
         info.setDomain(odmDataProduct.getDomain());
         info.setFullyQualifiedName(odmDataProduct.getFqn());
         info.setDescription(odmDataProduct.getDescription());
+        info.setName(odmDataProduct.getName());
+        info.setDisplayName(odmDataProduct.getDisplayName());
         this.dataProductInfo = info;
     }
 

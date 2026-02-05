@@ -36,7 +36,7 @@ public class ObserverBlindataNotificationV2IT extends ObserverBlindataAppIT {
     }
 
     @Test
-    public void testDataProductInitializationRequested() throws IOException {
+    public void testDataProductInitialized() throws IOException {
         // Mock BDDataProductClient behavior
         BDDataProductRes dataProduct = new BDDataProductRes();
         dataProduct.setName("Test Data Product");
@@ -48,7 +48,7 @@ public class ObserverBlindataNotificationV2IT extends ObserverBlindataAppIT {
         Mockito.when(bdDataProductClient.getDataProduct(Mockito.anyString())).thenReturn(Optional.empty());
 
         OdmEventNotificationResourceV2 notificationResource = mapper.readValue(
-                Resources.toByteArray(getClass().getResource("dataProductInitialization_requested_eventNotification.json")),
+                Resources.toByteArray(getClass().getResource("dataProductInitialized_eventNotification.json")),
                 OdmEventNotificationResourceV2.class
         );
 

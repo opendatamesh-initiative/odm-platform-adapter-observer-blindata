@@ -2,27 +2,18 @@ package org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notifica
 
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.v2.OdmDataProductVersionResourceV2;
 
-public class DataProductVersionPublicationRequestedEventContentResource {
+public class DataProductVersionPublishedEventContentResource {
     private OdmDataProductVersionResourceV2 dataProductVersion;
-    private OdmDataProductVersionResourceV2 previousDataProductVersion;
 
-    DataProductVersionPublicationRequestedEventContentResource() {
+    DataProductVersionPublishedEventContentResource() {
         //DO NOTHING
     }
 
     public OdmDataProductVersionResourceV2 getDataProductVersion() {
         return dataProductVersion;
     }
-    
+
     public void setDataProductVersion(OdmDataProductVersionResourceV2 dataProductVersion) {
         this.dataProductVersion = dataProductVersion;
-    }
-
-    public OdmDataProductVersionResourceV2 getPreviousDataProductVersion() {
-        return previousDataProductVersion;
-    }
-    
-    public void setPreviousDataProductVersion(OdmDataProductVersionResourceV2 previousDataProductVersion) {
-        this.previousDataProductVersion = previousDataProductVersion;
     }
 }

@@ -64,7 +64,7 @@ public class ConcurrentObserverBlindataNotificationV2IT extends ObserverBlindata
         Mockito.when(bdDataProductClient.getDataProduct(Mockito.anyString())).thenReturn(Optional.empty());
 
         OdmEventNotificationResourceV2 baseNotification = mapper.readValue(
-                Resources.toByteArray(getClass().getResource("dataProductInitialization_requested_eventNotification.json")),
+                Resources.toByteArray(getClass().getResource("dataProductInitialized_eventNotification.json")),
                 OdmEventNotificationResourceV2.class
         );
 

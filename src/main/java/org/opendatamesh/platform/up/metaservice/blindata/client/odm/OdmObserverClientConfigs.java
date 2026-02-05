@@ -61,9 +61,9 @@ public class OdmObserverClientConfigs {
     );
 
     private final Set<EventTypeV2> eventTypesV2ToSubscribe = Set.of(
-            EventTypeV2.DATA_PRODUCT_INITIALIZATION_REQUESTED,
+            EventTypeV2.DATA_PRODUCT_INITIALIZED,
             EventTypeV2.DATA_PRODUCT_DELETED,
-            EventTypeV2.DATA_PRODUCT_VERSION_PUBLICATION_REQUESTED,
+            EventTypeV2.DATA_PRODUCT_VERSION_PUBLISHED,
             EventTypeV2.DATA_PRODUCT_VERSION_DELETED
     );
 

@@ -2,10 +2,10 @@ package org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notifica
 
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.v2.OdmDataProductResourceV2;
 
-public class DataProductInitializationRequestedEventContentResource {
+public class DataProductInitializedEventContentResource {
     private OdmDataProductResourceV2 dataProduct;
 
-    DataProductInitializationRequestedEventContentResource() {
+    DataProductInitializedEventContentResource() {
         //DO NOTHING
     }
 

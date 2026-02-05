@@ -60,11 +60,11 @@ blindata:
       activeUseCases:
         - MARKETPLACE_ACCESS_REQUEST_PORTS_UPDATE
     # V2-only event types
-    # - eventType: DATA_PRODUCT_INITIALIZATION_REQUESTED
+    # - eventType: DATA_PRODUCT_INITIALIZED
     #   filter: ""
     #   activeUseCases:
     #     - DATA_PRODUCT_UPLOAD
-    # - eventType: DATA_PRODUCT_VERSION_PUBLICATION_REQUESTED
+    # - eventType: DATA_PRODUCT_VERSION_PUBLISHED
     #   filter: ""
     #   activeUseCases:
     #     - DATA_PRODUCT_VERSION_UPLOAD
@@ -76,7 +76,8 @@ odm:
   productPlane:
     registryService:
       active: true
-      address: http://localhost:8001
+      address: http://localhost:8081
+      apiVersion: v1
     policyService:
       active: true
       address: http://localhost:8005
@@ -84,3 +85,4 @@ odm:
       active: true
       address: http://localhost:8006
       subscribeWithName: BLINDATA
+      apiVersion: v1

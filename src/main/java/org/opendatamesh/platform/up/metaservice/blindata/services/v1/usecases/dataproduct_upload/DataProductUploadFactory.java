@@ -13,7 +13,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataP
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdStewardshipClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdUserClient;
 import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.events.DataProductInitializationRequestedEventContentResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.events.DataProductInitializedEventContentResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.events.DataProductVersionPublishedEventContentResource;
 import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.UseCaseDryRunFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.UseCaseFactory;
@@ -26,7 +27,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import static org.opendatamesh.platform.up.metaservice.blindata.adapter.v1.events.EventType.*;
-import static org.opendatamesh.platform.up.metaservice.blindata.adapter.v2.events.EventTypeV2.DATA_PRODUCT_INITIALIZATION_REQUESTED;
+import static org.opendatamesh.platform.up.metaservice.blindata.adapter.v2.events.EventTypeV2.*;
 
 @Component
 public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFactory {
@@ -52,7 +53,8 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
     );
 
     private final Set<EventTypeV2> supportedEventTypesV2 = Set.of(
-            DATA_PRODUCT_INITIALIZATION_REQUESTED
+            DATA_PRODUCT_INITIALIZED,
+            DATA_PRODUCT_VERSION_PUBLISHED
     );
 
 
@@ -90,7 +92,7 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
                     bdStewardshipClient,
                     dataProductConfig,
                     roleUuid);
-            DataProductUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
+            DataProductUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPortV2(event);
             return new DataProductUpload(
                     odmOutboundPort,
                     blindataOutboundPort
@@ -125,16 +127,26 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
         return converter.apply(expectedClass.cast(afterState));
     }
 
-    private DataProductUploadOdmOutboundPort initOdmOutboundPort(EventV2 event) throws UseCaseInitException {
+    private DataProductUploadOdmOutboundPort initOdmOutboundPortV2(EventV2 event) throws UseCaseInitException {
         Object eventContent = event.getEventContent();
         if (eventContent == null) {
             throw new UseCaseInitException("Event content is null for event type: " + event.getEventType());
         }
         try {
-            DataProductInitializationRequestedEventContentResource dataProductInitializationRequestedEventContentResource = objectMapper.readValue(eventContent.toString(), DataProductInitializationRequestedEventContentResource.class);
-            return new DataProductUploadOdmOutboundPortImpl(dataProductInitializationRequestedEventContentResource.getDataProduct());
+            switch(event.getEventType()) {
+                case DATA_PRODUCT_INITIALIZED: {
+                    DataProductInitializedEventContentResource dataProductInitializedEventContentResource = objectMapper.readValue(eventContent.toString(), DataProductInitializedEventContentResource.class);
+                    return new DataProductUploadOdmOutboundPortImpl(dataProductInitializedEventContentResource.getDataProduct());
+                }
+                case DATA_PRODUCT_VERSION_PUBLISHED: {
+                    DataProductVersionPublishedEventContentResource dataProductVersionPublishedEventContentResource = objectMapper.readValue(eventContent.toString(), DataProductVersionPublishedEventContentResource.class);
+                    return new DataProductUploadOdmOutboundPortImpl(dataProductVersionPublishedEventContentResource.getDataProductVersion().getDataProduct());
+                }
+                default:
+                    throw new UseCaseInitException("Unsupported event type: " + event.getEventType());
+            }
         } catch (JsonProcessingException e) {
-            throw new UseCaseInitException("Failed to parse event content to DataProductInitializedEventResource." + e.getMessage(), e);
+            throw new UseCaseInitException("Failed to parse event content, " + e.getMessage(), e);
         }
     }
 

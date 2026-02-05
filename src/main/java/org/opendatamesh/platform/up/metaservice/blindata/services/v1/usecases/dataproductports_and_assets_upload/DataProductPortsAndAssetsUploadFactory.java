@@ -12,7 +12,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.adapter.v2.events.Event
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdSystemClient;
 import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.events.DataProductVersionPublicationRequestedEventContentResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.events.DataProductVersionPublishedEventContentResource;
 import org.opendatamesh.platform.up.metaservice.blindata.services.v1.DataProductPortAssetAnalyzer;
 import org.opendatamesh.platform.up.metaservice.blindata.services.v1.notificationevents.BlindataProperties;
 import org.opendatamesh.platform.up.metaservice.blindata.services.v1.usecases.UseCase;
@@ -46,7 +46,7 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory, U
     );
 
     private final Set<EventTypeV2> supportedEventTypesV2 = Set.of(
-            EventTypeV2.DATA_PRODUCT_VERSION_PUBLICATION_REQUESTED
+            EventTypeV2.DATA_PRODUCT_VERSION_PUBLISHED
     );
 
     @Override
@@ -74,7 +74,7 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory, U
         }
         try {
             DataProductPortsAndAssetsUploadBlindataOutboundPort bdOutboundPort = new DataProductPortsAndAssetsUploadBlindataOutboundPortImpl(bdDataProductClient, blindataProperties.getDependsOnSystemNameRegex(), dataProductConfig, bdSystemClient);
-            DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
+            DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPortV2(event);
 
             return new DataProductPortsAndAssetsUpload(
                     bdOutboundPort,
@@ -123,16 +123,16 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory, U
         }
     }
 
-    private DataProductPortsAndAssetsUploadOdmOutboundPort initOdmOutboundPort(EventV2 event) throws UseCaseInitException {
+    private DataProductPortsAndAssetsUploadOdmOutboundPort initOdmOutboundPortV2(EventV2 event) throws UseCaseInitException {
         Object eventContent = event.getEventContent();
         if (eventContent == null) {
             throw new UseCaseInitException("Event content is null for event type: " + event.getEventType());
         }
         try {
             switch (event.getEventType()) {
-                case DATA_PRODUCT_VERSION_PUBLICATION_REQUESTED: {
-                    DataProductVersionPublicationRequestedEventContentResource dataProductVersionPublicationRequestedEventContentResource = objectMapper.readValue(eventContent.toString(), DataProductVersionPublicationRequestedEventContentResource.class);
-                    DataProductVersion dataProductVersion = objectMapper.readValue(dataProductVersionPublicationRequestedEventContentResource.getDataProductVersion().getContent().toString(), DataProductVersion.class);
+                case DATA_PRODUCT_VERSION_PUBLISHED: {
+                    DataProductVersionPublishedEventContentResource dataProductVersionPublishedEventContentResource = objectMapper.readValue(eventContent.toString(), DataProductVersionPublishedEventContentResource.class);
+                    DataProductVersion dataProductVersion = objectMapper.readValue(dataProductVersionPublishedEventContentResource.getDataProductVersion().getContent().toString(), DataProductVersion.class);
                     return new DataProductPortsAndAssetsUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, dataProductVersion);
                 }
                 default:
