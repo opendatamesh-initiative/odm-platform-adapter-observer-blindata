@@ -8,7 +8,6 @@ subscriptions with two levels of granularity:
 To use **V2 events**, set in the [ODM Platform configuration](odm-platform-configurations.md):
 
 - `odm.productPlane.notificationService.apiVersion: v2`
-- `odm.productPlane.registryService.apiVersion: v2` (recommended for consistency when using notification v2)
 
 When notification service `apiVersion` is **v2**, the adapter uses a dual subscription model for backward compatibility:
 
