@@ -21,6 +21,9 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.qual
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1.PortDatastoreApiEntitiesExtractor;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload.QualityUpload;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload.QualityUploadBlindataOutboundPort;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload.QualityUploadOdmOutboundPort;
 
 import java.io.IOException;
 import java.util.List;
@@ -126,19 +129,19 @@ public class QualityUploadTest {
             qualityCheck.getIssuePolicies().clear(); // Clear existing issue policies
             BDIssuePolicyRes issuePolicy = new BDIssuePolicyRes();
             issuePolicy.setName("Test Policy");
-            
+
             // Create issue template with valid users
             BDIssueRes issueTemplate = new BDIssueRes();
             issueTemplate.setName("Test Issue");
-            
+
             BDShortUserRes owner = new BDShortUserRes();
             owner.setUsername("valid.owner@example.com");
             issueTemplate.setAssignee(owner);
-            
+
             BDShortUserRes reporter = new BDShortUserRes();
             reporter.setUsername("valid.reporter@example.com");
             issueTemplate.setReporter(reporter);
-            
+
             issuePolicy.setIssueTemplate(issueTemplate);
             qualityCheck.getIssuePolicies().add(issuePolicy);
         }
@@ -150,11 +153,11 @@ public class QualityUploadTest {
         BDShortUserRes validOwner = new BDShortUserRes();
         validOwner.setUsername("valid.owner@example.com");
         validOwner.setUuid("owner-uuid");
-        
+
         BDShortUserRes validReporter = new BDShortUserRes();
         validReporter.setUsername("valid.reporter@example.com");
         validReporter.setUuid("reporter-uuid");
-        
+
         when(blindataOutboundPort.findUser("valid.owner@example.com")).thenReturn(Optional.of(validOwner));
         when(blindataOutboundPort.findUser("valid.reporter@example.com")).thenReturn(Optional.of(validReporter));
         when(blindataOutboundPort.findIssueCampaign(any())).thenReturn(Optional.empty());
@@ -187,14 +190,14 @@ public class QualityUploadTest {
             qualityCheck.getIssuePolicies().clear(); // Clear existing issue policies
             BDIssuePolicyRes issuePolicy = new BDIssuePolicyRes();
             issuePolicy.setName("Test Policy");
-            
+
             BDIssueRes issueTemplate = new BDIssueRes();
             issueTemplate.setName("Test Issue");
-            
+
             BDShortUserRes invalidOwner = new BDShortUserRes();
             invalidOwner.setUsername("invalid.owner@example.com");
             issueTemplate.setAssignee(invalidOwner);
-            
+
             issuePolicy.setIssueTemplate(issueTemplate);
             qualityCheck.getIssuePolicies().add(issuePolicy);
         }
@@ -235,14 +238,14 @@ public class QualityUploadTest {
             qualityCheck.getIssuePolicies().clear(); // Clear existing issue policies
             BDIssuePolicyRes issuePolicy = new BDIssuePolicyRes();
             issuePolicy.setName("Test Policy");
-            
+
             BDIssueRes issueTemplate = new BDIssueRes();
             issueTemplate.setName("Test Issue");
-            
+
             BDShortUserRes invalidReporter = new BDShortUserRes();
             invalidReporter.setUsername("invalid.reporter@example.com");
             issueTemplate.setReporter(invalidReporter);
-            
+
             issuePolicy.setIssueTemplate(issueTemplate);
             qualityCheck.getIssuePolicies().add(issuePolicy);
         }
@@ -285,12 +288,12 @@ public class QualityUploadTest {
             qualityCheck.getIssuePolicies().clear(); // Clear existing issue policies
             BDIssuePolicyRes issuePolicy = new BDIssuePolicyRes();
             issuePolicy.setName("Test Policy");
-            
+
             BDIssueRes issueTemplate = new BDIssueRes();
             issueTemplate.setName("Test Issue");
             // No assignee set - should default to data product owner
             // No reporter set - should default to null
-            
+
             issuePolicy.setIssueTemplate(issueTemplate);
             qualityCheck.getIssuePolicies().add(issuePolicy);
         }
@@ -302,7 +305,7 @@ public class QualityUploadTest {
         BDShortUserRes dataProductOwner = new BDShortUserRes();
         dataProductOwner.setUsername("owner@default.blindata.io");
         dataProductOwner.setUuid("dpo-uuid");
-        
+
         when(blindataOutboundPort.findUser("owner@default.blindata.io")).thenReturn(Optional.of(dataProductOwner));
         when(blindataOutboundPort.findIssueCampaign(any())).thenReturn(Optional.empty());
         when(blindataOutboundPort.createIssueCampaign(any()))
@@ -312,7 +315,7 @@ public class QualityUploadTest {
         new QualityUpload(blindataOutboundPort, odmOutboundPort).execute();
 
         verify(blindataOutboundPort, times(1)).uploadQuality(any(), any());
-        
+
         // Verify that the assignee was set to the data product owner
         // and that the reporter defaults to null
         ArgumentCaptor<BDQualitySuiteRes> qualitySuiteArg = ArgumentCaptor.forClass(BDQualitySuiteRes.class);
@@ -320,11 +323,11 @@ public class QualityUploadTest {
         ArgumentCaptor<List<QualityCheck>> qualityChecksArg = ArgumentCaptor.forClass(List.class);
         verify(blindataOutboundPort, times(1))
                 .uploadQuality(qualitySuiteArg.capture(), qualityChecksArg.capture());
-        
+
         List<BDIssuePolicyRes> issuePolicies = qualityChecksArg.getValue().stream()
                 .flatMap(qualityCheck -> qualityCheck.getIssuePolicies().stream())
                 .collect(Collectors.toList());
-        
+
         assertThat(issuePolicies).hasSize(2); // 2 quality checks, each with 1 issue policy
         assertThat(issuePolicies.get(0).getIssueTemplate().getAssignee()).isNotNull();
         assertThat(issuePolicies.get(0).getIssueTemplate().getAssignee().getUsername()).isEqualTo("owner@default.blindata.io");
@@ -354,14 +357,14 @@ public class QualityUploadTest {
             qualityCheck.getIssuePolicies().clear(); // Clear existing issue policies
             BDIssuePolicyRes issuePolicy = new BDIssuePolicyRes();
             issuePolicy.setName("Test Policy");
-            
+
             BDIssueRes issueTemplate = new BDIssueRes();
             issueTemplate.setName("Test Issue");
-            
+
             BDShortUserRes owner = new BDShortUserRes();
             owner.setUsername("None");
             issueTemplate.setAssignee(owner);
-            
+
             issuePolicy.setIssueTemplate(issueTemplate);
             qualityCheck.getIssuePolicies().add(issuePolicy);
         }
@@ -378,18 +381,18 @@ public class QualityUploadTest {
         new QualityUpload(blindataOutboundPort, odmOutboundPort).execute();
 
         verify(blindataOutboundPort, times(1)).uploadQuality(any(), any());
-        
+
         // Verify that the assignee was set to null (not assigned)
         ArgumentCaptor<BDQualitySuiteRes> qualitySuiteArg = ArgumentCaptor.forClass(BDQualitySuiteRes.class);
         @SuppressWarnings("unchecked")
         ArgumentCaptor<List<QualityCheck>> qualityChecksArg = ArgumentCaptor.forClass(List.class);
         verify(blindataOutboundPort, times(1))
                 .uploadQuality(qualitySuiteArg.capture(), qualityChecksArg.capture());
-        
+
         List<BDIssuePolicyRes> issuePolicies = qualityChecksArg.getValue().stream()
                 .flatMap(qualityCheck -> qualityCheck.getIssuePolicies().stream())
                 .collect(Collectors.toList());
-        
+
         assertThat(issuePolicies).hasSize(2); // 2 quality checks, each with 1 issue policy
         assertThat(issuePolicies.get(0).getIssueTemplate().getAssignee()).isNull();
         assertThat(issuePolicies.get(1).getIssueTemplate().getAssignee()).isNull();

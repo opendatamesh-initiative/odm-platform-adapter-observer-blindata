@@ -125,10 +125,10 @@ class PortDataStoreApiQualityExtractorTest {
         // Verify that issue policies have the correct owner and reporter
         assertThat(issuePolicies).hasSize(1);
         BDIssuePolicyRes issuePolicy = issuePolicies.get(0);
-        
+
         assertThat(issuePolicy.getIssueTemplate().getAssignee()).isNotNull();
         assertThat(issuePolicy.getIssueTemplate().getAssignee().getUsername()).isEqualTo("test.owner@example.com");
-        
+
         assertThat(issuePolicy.getIssueTemplate().getReporter()).isNotNull();
         assertThat(issuePolicy.getIssueTemplate().getReporter().getUsername()).isEqualTo("test.reporter@example.com");
     }

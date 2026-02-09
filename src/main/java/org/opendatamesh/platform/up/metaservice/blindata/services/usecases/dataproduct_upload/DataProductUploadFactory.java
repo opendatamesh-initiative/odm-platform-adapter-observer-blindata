@@ -1,5 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.ActivityEventState;
@@ -9,6 +11,10 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataP
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdStewardshipClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdUserClient;
 import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.eventcontents.DataProductInitializedEventContentResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.eventcontents.DataProductVersionPublishedEventContentResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventTypeV2;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventV2;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseDryRunFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseFactory;
@@ -21,6 +27,8 @@ import java.util.Set;
 import java.util.function.Function;
 
 import static org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType.*;
+import static org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventTypeV2.DATA_PRODUCT_INITIALIZED;
+import static org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventTypeV2.DATA_PRODUCT_VERSION_PUBLISHED;
 
 @Component
 public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFactory {
@@ -33,6 +41,8 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
     private BdStewardshipClient bdStewardshipClient;
     @Autowired
     private BdDataProductConfig dataProductConfig;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Value("${blindata.roleUuid}")
     private String roleUuid;
@@ -41,6 +51,11 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
             DATA_PRODUCT_CREATED,
             DATA_PRODUCT_VERSION_CREATED,
             DATA_PRODUCT_ACTIVITY_COMPLETED
+    );
+
+    private final Set<EventTypeV2> supportedEventTypesV2 = Set.of(
+            DATA_PRODUCT_INITIALIZED,
+            DATA_PRODUCT_VERSION_PUBLISHED
     );
 
 
@@ -57,6 +72,28 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
                     dataProductConfig,
                     roleUuid);
             DataProductUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
+            return new DataProductUpload(
+                    odmOutboundPort,
+                    blindataOutboundPort
+            );
+        } catch (Exception e) {
+            throw new UseCaseInitException("Failed to init DataProductUpload use case." + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public UseCase getUseCaseV2(EventV2 event) throws UseCaseInitException {
+        if (!supportedEventTypesV2.contains(event.getEventType())) {
+            throw new UseCaseInitException("Failed to init DataProductUpload use case, unsupported event type: " + event.getEventType());
+        }
+        try {
+            DataProductUploadBlindataOutboundPort blindataOutboundPort = new DataProductUploadBlindataOutboundPortImpl(
+                    bdUserClient,
+                    bdDataProductClient,
+                    bdStewardshipClient,
+                    dataProductConfig,
+                    roleUuid);
+            DataProductUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPortV2(event);
             return new DataProductUpload(
                     odmOutboundPort,
                     blindataOutboundPort
@@ -89,6 +126,29 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
                     afterState.getClass().getTypeName());
         }
         return converter.apply(expectedClass.cast(afterState));
+    }
+
+    private DataProductUploadOdmOutboundPort initOdmOutboundPortV2(EventV2 event) throws UseCaseInitException {
+        Object eventContent = event.getEventContent();
+        if (eventContent == null) {
+            throw new UseCaseInitException("Event content is null for event type: " + event.getEventType());
+        }
+        try {
+            switch (event.getEventType()) {
+                case DATA_PRODUCT_INITIALIZED: {
+                    DataProductInitializedEventContentResource dataProductInitializedEventContentResource = objectMapper.readValue(eventContent.toString(), DataProductInitializedEventContentResource.class);
+                    return new DataProductUploadOdmOutboundPortImpl(dataProductInitializedEventContentResource.getDataProduct());
+                }
+                case DATA_PRODUCT_VERSION_PUBLISHED: {
+                    DataProductVersionPublishedEventContentResource dataProductVersionPublishedEventContentResource = objectMapper.readValue(eventContent.toString(), DataProductVersionPublishedEventContentResource.class);
+                    return new DataProductUploadOdmOutboundPortImpl(dataProductVersionPublishedEventContentResource.getDataProductVersion().getDataProduct());
+                }
+                default:
+                    throw new UseCaseInitException("Unsupported event type: " + event.getEventType());
+            }
+        } catch (JsonProcessingException e) {
+            throw new UseCaseInitException("Failed to parse event content, " + e.getMessage(), e);
+        }
     }
 
 

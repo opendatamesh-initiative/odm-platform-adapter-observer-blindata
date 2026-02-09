@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states;
 
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.OdmDataProductResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.v1.OdmDataProductResource;
 
 public class DataProductEventState implements EventState {
 

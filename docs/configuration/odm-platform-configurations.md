@@ -29,8 +29,9 @@ odm:
   productPlane:
     notificationService:
       active: true
-      address: Te address of ODM Notification Service
+      address: The address of ODM Notification Service
       subscribeWithName: "BLINDATA"  # Observer subscription name
+      apiVersion: v1 OR v2
 ```
 
 ## Configuration Parameters
@@ -44,6 +45,7 @@ odm:
 | Notification Service | `active`            | boolean | false   | Enable/disable notification service connection                               |
 |                      | `address`           | string  | -       | Notification service endpoint URL                                            |
 |                      | `subscribeWithName` | string  | -       | The name used by the observer when it subscribes to the notification service |
+|                      | `apiVersion`        | string  | v1      | The version of the notification service api. When set to `v2`, the adapter subscribes to both V1 and V2 events (the V2 observer name uses the suffix `-V2`); see [Event Handling Configuration](event-handling.md) for supported events and use cases. |
 
 ## Service Roles
 

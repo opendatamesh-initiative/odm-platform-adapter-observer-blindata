@@ -1,5 +1,8 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.opendatamesh.dpds.model.DataProductVersion;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.ActivityEventState;
@@ -9,6 +12,9 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdQuali
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdUserClient;
 import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdIssueManagementConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.QualityCheckMapper;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.eventcontents.DataProductVersionPublishedEventContentResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventTypeV2;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventV2;
 import org.opendatamesh.platform.up.metaservice.blindata.services.DataProductPortAssetAnalyzer;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseDryRunFactory;
@@ -34,12 +40,17 @@ public class QualityUploadFactory implements UseCaseFactory, UseCaseDryRunFactor
     private QualityCheckMapper qualityCheckMapper;
     @Autowired
     private DataProductPortAssetAnalyzer dataProductPortAssetAnalyzer;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private final Set<EventType> supportedEventTypes = Set.of(
             EventType.DATA_PRODUCT_VERSION_CREATED,
             EventType.DATA_PRODUCT_ACTIVITY_COMPLETED
     );
 
+    private final Set<EventTypeV2> supportedEventTypesV2 = Set.of(
+            EventTypeV2.DATA_PRODUCT_VERSION_PUBLISHED
+    );
 
     @Override
     public UseCase getUseCase(Event event) throws UseCaseInitException {
@@ -49,6 +60,20 @@ public class QualityUploadFactory implements UseCaseFactory, UseCaseDryRunFactor
         try {
             QualityUploadBlindataOutboundPort blindataOutboundPort = new QualityUploadBlindataOutboundPortImpl(bdQualityClient, bdIssueCampaignClient, bdUserClient, issuePolicyConfig, qualityCheckMapper);
             QualityUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
+            return new QualityUpload(blindataOutboundPort, odmOutboundPort);
+        } catch (Exception e) {
+            throw new UseCaseInitException("Failed to init QualityUpload use case: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public UseCase getUseCaseV2(EventV2 event) throws UseCaseInitException {
+        if (!supportedEventTypesV2.contains(event.getEventType())) {
+            throw new UseCaseInitException("Failed to init QualityUpload use case, unsupported event type: " + event.getEventType());
+        }
+        try {
+            QualityUploadBlindataOutboundPort blindataOutboundPort = new QualityUploadBlindataOutboundPortImpl(bdQualityClient, bdIssueCampaignClient, bdUserClient, issuePolicyConfig, qualityCheckMapper);
+            QualityUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPortV2(event);
             return new QualityUpload(blindataOutboundPort, odmOutboundPort);
         } catch (Exception e) {
             throw new UseCaseInitException("Failed to init QualityUpload use case: " + e.getMessage(), e);
@@ -86,6 +111,26 @@ public class QualityUploadFactory implements UseCaseFactory, UseCaseDryRunFactor
             }
             default:
                 throw new UseCaseInitException("Failed to init odmOutboundPort on QualityUpload use case.");
+        }
+    }
+
+    private QualityUploadOdmOutboundPort initOdmOutboundPortV2(EventV2 event) throws UseCaseInitException {
+        Object eventContent = event.getEventContent();
+        if (eventContent == null) {
+            throw new UseCaseInitException("Event content is null for event type: " + event.getEventType());
+        }
+        try {
+            switch (event.getEventType()) {
+                case DATA_PRODUCT_VERSION_PUBLISHED: {
+                    DataProductVersionPublishedEventContentResource dataProductVersionPublishedEventContentResource = objectMapper.readValue(eventContent.toString(), DataProductVersionPublishedEventContentResource.class);
+                    DataProductVersion dataProductVersion = objectMapper.readValue(dataProductVersionPublishedEventContentResource.getDataProductVersion().getContent().toString(), DataProductVersion.class);
+                    return new QualityUploadOdmOutboundPortImpl(dataProductPortAssetAnalyzer, dataProductVersion);
+                }
+                default:
+                    throw new UseCaseInitException("Unsupported event type: " + event.getEventType());
+            }
+        } catch (JsonProcessingException e) {
+            throw new UseCaseInitException("Failed to parse event content, " + e.getMessage(), e);
         }
     }
 

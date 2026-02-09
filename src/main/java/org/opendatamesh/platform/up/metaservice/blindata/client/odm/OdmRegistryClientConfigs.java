@@ -2,7 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.OdmExternalComponentResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.v1.OdmExternalComponentResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

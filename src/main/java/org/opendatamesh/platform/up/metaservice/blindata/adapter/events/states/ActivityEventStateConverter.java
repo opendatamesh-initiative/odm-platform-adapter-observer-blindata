@@ -9,8 +9,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.adapter.DataProductConv
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventStatus;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.OdmEventNotificationResource;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.eventstates.OdmDataProductActivityEventState;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmEventNotificationResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.eventstates.OdmDataProductActivityEventState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

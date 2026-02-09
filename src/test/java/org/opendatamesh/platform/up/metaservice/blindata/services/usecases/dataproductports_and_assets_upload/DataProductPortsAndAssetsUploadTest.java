@@ -176,7 +176,7 @@ public class DataProductPortsAndAssetsUploadTest {
         // inspect the captured DataProduct for version update
         BDDataProductRes updatedDp = updateCaptor.getValue();
         assertThat(updatedDp).isNotNull();
-        
+
         // Verify that the version is updated from ODM, not preserved from Blindata
         assertThat(updatedDp.getVersion())
                 .as("Version should be updated from ODM data product version, not preserved from Blindata")

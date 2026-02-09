@@ -2,6 +2,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.mark
 
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.marketplace.BDMarketplaceAccessRequestsUploadRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDMarketplaceAccessRequestPortStatusUploadResultsRes;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.marketplace_portupdater.MarketplaceAccessRequestsPortUpdaterBlindataOutboundPort;
 
 public class MarketplaceAccessRequestsPortUpdaterBlindataOutboundPortMock implements MarketplaceAccessRequestsPortUpdaterBlindataOutboundPort {
 

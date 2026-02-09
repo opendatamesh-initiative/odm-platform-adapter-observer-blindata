@@ -10,8 +10,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataP
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdStewardshipClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdUserClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.OdmEventNotificationResource;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.OdmEventNotificationStatus;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmEventNotificationResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmEventNotificationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

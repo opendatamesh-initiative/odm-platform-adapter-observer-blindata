@@ -1,7 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.adapter.events;
 
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.EventStateConverter;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.OdmEventNotificationResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmEventNotificationResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

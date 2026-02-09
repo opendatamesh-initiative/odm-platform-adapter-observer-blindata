@@ -269,7 +269,7 @@ public class DataProductUploadTest {
         // inspect the captured DataProduct for update
         BDDataProductRes updatedDp = updateCaptor.getValue();
         assertThat(updatedDp).isNotNull();
-        
+
         // Verify that the version is preserved from the old product, not updated from ODM
         assertThat(updatedDp.getVersion())
                 .as("Version should be preserved from existing Blindata product, not updated from ODM")
