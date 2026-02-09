@@ -35,7 +35,6 @@ public class DataProductVersionRemovalFactory implements UseCaseFactory {
         if (!supportedEventTypesV2.contains(event.getEventType())) {
             throw new UseCaseInitException("Failed to init DataProductVersionRemoval use case, unsupported event type: " + event.getEventType().name());
         }
-        // TODO: ?
         Event eventV1 = new Event();
         eventV1.setEventType(EventType.DATA_PRODUCT_VERSION_DELETED);
         return new DataProductVersionRemoval(eventV1);
