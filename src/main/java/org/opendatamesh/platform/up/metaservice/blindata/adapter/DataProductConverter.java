@@ -9,9 +9,7 @@ import org.opendatamesh.dpds.model.DataProductVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -58,36 +56,50 @@ public abstract class DataProductConverter {
         if (node.isObject()) {
             ObjectNode objectNode = (ObjectNode) node;
 
-            // First, recurse into all children so that deepest rawContent gets processed first.
-            Iterator<JsonNode> elements = objectNode.elements();
-            while (elements.hasNext()) {
-                flattenJsonNode(elements.next());
-            }
-
-            // Then, handle rawContent for the current node.
+            // 1) Handle rawContent first (so merged content will be visited)
             if (objectNode.has("rawContent") && !objectNode.get("rawContent").isNull()) {
                 JsonNode rawContentNode = objectNode.get("rawContent");
+
+                // If it's a textual JSON, parse it; if it's already an object, use it directly.
+                JsonNode parsedRawContent = null;
                 if (rawContentNode.isTextual()) {
                     String rawContentStr = rawContentNode.asText().trim();
                     if (!rawContentStr.isEmpty()) {
-                        JsonNode parsedRawContent = mapper.readTree(rawContentStr);
-                        // Remove rawContent field from current node.
-                        objectNode.remove("rawContent");
-                        if (parsedRawContent.isObject()) {
-                            // Merge parsedRawContent into the current node using deepMerge.
-                            deepMerge(objectNode, (ObjectNode) parsedRawContent);
-                        }
+                        parsedRawContent = mapper.readTree(rawContentStr);
+                    }
+                } else if (rawContentNode.isObject() || rawContentNode.isArray()) {
+                    parsedRawContent = rawContentNode;
+                }
+
+                if (parsedRawContent != null) {
+                    // remove the original rawContent string/object from current node
+                    objectNode.remove("rawContent");
+
+                    // if parsed content is an object, merge it into the current node
+                    if (parsedRawContent.isObject()) {
+                        deepMerge(objectNode, (ObjectNode) parsedRawContent);
+                    } else {
+                        // If parsedRawContent is an array or primitive, preserve it under the same key
+                        objectNode.set("rawContent", parsedRawContent);
                     }
                 }
             }
+
+            // 2) Recurse into children using a snapshot of values to avoid modification issues
+            List<JsonNode> children = new ArrayList<>();
+            objectNode.fields().forEachRemaining(entry -> children.add(entry.getValue()));
+            for (JsonNode child : children) {
+                flattenJsonNode(child);
+            }
+
         } else if (node.isArray()) {
-            // For arrays, process each element.
             for (JsonNode element : node) {
                 flattenJsonNode(element);
             }
         }
-        // Other node types remain unchanged.
+        // other node types stay as they are
     }
+
 
     /**
      * Recursively merges all fields from the source node into the target node.

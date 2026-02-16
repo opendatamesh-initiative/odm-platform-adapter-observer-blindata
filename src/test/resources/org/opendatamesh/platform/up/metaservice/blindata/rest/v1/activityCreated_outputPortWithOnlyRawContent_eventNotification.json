@@ -1,0 +1,155 @@
+{
+  "id": 82,
+  "event": {
+    "id": 28,
+    "type": "DATA_PRODUCT_ACTIVITY_COMPLETED",
+    "entityId": "3",
+    "beforeState": null,
+    "afterState": {
+      "activity": {
+        "id": 3,
+        "dataProductId": "348fa788-ad59-3586-a28a-2a4acf7036a1",
+        "dataProductVersion": "1.0.3",
+        "stage": "prod",
+        "status": "PROCESSED",
+        "results": "{\"task_1\":{\"message\":\"Task Completed\"}}",
+        "createdAt": "2026-02-16T12:12:07.000+00:00",
+        "startedAt": "2026-02-16T12:12:23.000+00:00",
+        "finishedAt": "2026-02-16T12:12:28.000+00:00"
+      },
+      "dataProductVersion": {
+        "dataProductDescriptor": "1.0.0",
+        "info": {
+          "id": "348fa788-ad59-3586-a28a-2a4acf7036a1",
+          "fullyQualifiedName": "urn:dpds:blindata:dataproducts:testOdm:1",
+          "entityType": "dataproduct",
+          "name": "testOdm",
+          "version": "1.0.3",
+          "displayName": "TestODM",
+          "domain": "TestODM",
+          "owner": {
+            "id": "gabriele.fantini@blindata.io",
+            "name": "Gabriele Fantini"
+          },
+          "contactPoints": []
+        },
+        "interfaceComponents": {
+          "outputPorts": [
+            {
+              "rawContent": "{\"id\":\"54d98e95-8d11-3c7e-ace0-85d49d54933b\",\"fullyQualifiedName\":\"urn:dpds:blindata:dataproducts:testOdm:1:outputports:testOutput\",\"entityType\":\"outputport\",\"name\":\"testOutput\",\"version\":\"1.0.0\",\"displayName\":\"TestOutput\",\"description\":\"fsdfsdfsdf\",\"promises\":{\"platform\":\"ApacheCalcite:TO_DELETE:\",\"servicesType\":\"streaming-services\"}}",
+              "externalReference": false,
+              "id": "54d98e95-8d11-3c7e-ace0-85d49d54933b",
+              "fullyQualifiedName": "urn:dpds:blindata:dataproducts:testOdm:1:outputports:testOutput",
+              "entityType": "outputport",
+              "name": "testOutput",
+              "version": "1.0.0",
+              "displayName": "TestOutput",
+              "description": "fsdfsdfsdf",
+              "tags": [],
+              "promises": {
+                "platform": "ApacheCalcite:TO_DELETE:",
+                "servicesType": "streaming-services",
+                "api": {
+                  "rawContent": "{\"id\":\"f3b45e58-579e-30ad-8ddb-c77c2369b524\",\"fullyQualifiedName\":\"urn:dpds:blindata:apis:testOdmtestOutputApi:1.0.0\",\"entityType\":\"api\",\"name\":\"testOdmtestOutputApi\",\"version\":\"1.0.0\",\"specification\":\"datastoreapi\",\"specificationVersion\":\"1.0.0\"}",
+                  "externalReference": false,
+                  "id": "f3b45e58-579e-30ad-8ddb-c77c2369b524",
+                  "fullyQualifiedName": "urn:dpds:blindata:apis:testOdmtestOutputApi:1.0.0",
+                  "entityType": "api",
+                  "name": "testOdmtestOutputApi",
+                  "version": "1.0.0",
+                  "tags": [],
+                  "specification": "datastoreapi",
+                  "specificationVersion": "1.0.0",
+                  "definition": {
+                    "rawContent": "{\"schema\":{\"databaseSchemaName\":\"test\",\"tables\":[{\"version\":\"1.0.3\",\"specification\":\"json-schema\",\"specificationVersion\":\"1\",\"definition\":{\"name\":\"aaa\",\"displayName\":\"aaa\",\"description\":\"\",\"physicalType\":\"BASE_TABLE\",\"properties\":{}}}],\"databaseName\":\"\"},\"info\":{\"title\":\"\",\"version\":\"\"}}",
+                    "resolvedRef": false,
+                    "inline": true
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "internalComponents": {
+          "applicationComponents": [],
+          "infrastructuralComponents": [],
+          "lifecycleInfo": {
+            "tasksInfo": [
+              {
+                "name": "dev:task:1",
+                "stageName": "dev",
+                "order": 1,
+                "service": {
+                  "$href": "gitlab"
+                },
+                "template": {
+                  "rawContent": "{\"entityType\":\"template\",\"fullyQualifiedName\":\"urn:org.opendatamesh:templates:99914b93-2bd3-3a50-b983-c5e7c90ae93b:1.0.0\",\"id\":\"605e8898-f529-3b84-b68c-b15c4b7a092f\"}",
+                  "externalReference": false,
+                  "id": "605e8898-f529-3b84-b68c-b15c4b7a092f",
+                  "fullyQualifiedName": "urn:org.opendatamesh:templates:99914b93-2bd3-3a50-b983-c5e7c90ae93b:1.0.0",
+                  "entityType": "template",
+                  "name": "99914b93-2bd3-3a50-b983-c5e7c90ae93b",
+                  "version": "1.0.0",
+                  "tags": [],
+                  "definition": {
+                    "rawContent": "{}",
+                    "resolvedRef": false,
+                    "inline": true
+                  }
+                },
+                "configurations": {
+                  "params": {}
+                },
+                "rawContent": "{\"name\":\"deploy\",\"order\":1,\"service\":{\"$href\":\"gitlab\"},\"template\":{\"definition\":{}},\"configurations\":{\"params\":{}},\"stageName\":\"dev\"}"
+              },
+              {
+                "name": "prod:task:1",
+                "stageName": "prod",
+                "order": 1,
+                "service": {
+                  "$href": "gitlab"
+                },
+                "template": {
+                  "rawContent": "{\"entityType\":\"template\",\"fullyQualifiedName\":\"urn:org.opendatamesh:templates:99914b93-2bd3-3a50-b983-c5e7c90ae93b:1.0.0\",\"id\":\"605e8898-f529-3b84-b68c-b15c4b7a092f\"}",
+                  "externalReference": false,
+                  "id": "605e8898-f529-3b84-b68c-b15c4b7a092f",
+                  "fullyQualifiedName": "urn:org.opendatamesh:templates:99914b93-2bd3-3a50-b983-c5e7c90ae93b:1.0.0",
+                  "entityType": "template",
+                  "name": "99914b93-2bd3-3a50-b983-c5e7c90ae93b",
+                  "version": "1.0.0",
+                  "tags": [],
+                  "definition": {
+                    "rawContent": "{}",
+                    "resolvedRef": false,
+                    "inline": true
+                  }
+                },
+                "configurations": {
+                  "params": {}
+                },
+                "rawContent": "{\"name\":\"deploy\",\"order\":1,\"service\":{\"$href\":\"gitlab\"},\"template\":{\"definition\":{}},\"configurations\":{\"params\":{}},\"stageName\":\"prod\"}"
+              }
+            ],
+            "stageNames": [
+              "dev",
+              "prod"
+            ]
+          }
+        },
+        "tags": [],
+        "rawContent": "{\n  \"dataProductDescriptor\" : \"1.0.0\",\n  \"info\" : {\n    \"id\" : \"348fa788-ad59-3586-a28a-2a4acf7036a1\",\n    \"fullyQualifiedName\" : \"urn:dpds:blindata:dataproducts:testOdm:1\",\n    \"entityType\" : \"dataproduct\",\n    \"name\" : \"testOdm\",\n    \"version\" : \"1.0.3\",\n    \"displayName\" : \"TestODM\",\n    \"domain\" : \"TestODM\",\n    \"owner\" : {\n      \"id\" : \"gabriele.fantini@blindata.io\",\n      \"name\" : \"Gabriele Fantini\"\n    },\n    \"contactPoints\" : [ ]\n  },\n  \"interfaceComponents\" : {\n    \"outputPorts\" : [ {\n      \"rawContent\" : \"{\\\"id\\\":\\\"54d98e95-8d11-3c7e-ace0-85d49d54933b\\\",\\\"fullyQualifiedName\\\":\\\"urn:dpds:blindata:dataproducts:testOdm:1:outputports:testOutput\\\",\\\"entityType\\\":\\\"outputport\\\",\\\"name\\\":\\\"testOutput\\\",\\\"version\\\":\\\"1.0.0\\\",\\\"displayName\\\":\\\"TestOutput\\\",\\\"description\\\":\\\"fsdfsdfsdf\\\",\\\"promises\\\":{\\\"platform\\\":\\\"ApacheCalcite:TO_DELETE:\\\",\\\"servicesType\\\":\\\"streaming-services\\\"}}\",\n      \"externalReference\" : false,\n      \"id\" : \"54d98e95-8d11-3c7e-ace0-85d49d54933b\",\n      \"fullyQualifiedName\" : \"urn:dpds:blindata:dataproducts:testOdm:1:outputports:testOutput\",\n      \"entityType\" : \"outputport\",\n      \"name\" : \"testOutput\",\n      \"version\" : \"1.0.0\",\n      \"displayName\" : \"TestOutput\",\n      \"description\" : \"fsdfsdfsdf\",\n      \"tags\" : [ ],\n      \"promises\" : {\n        \"platform\" : \"ApacheCalcite:TO_DELETE:\",\n        \"servicesType\" : \"streaming-services\",\n        \"api\" : {\n          \"rawContent\" : \"{\\\"id\\\":\\\"f3b45e58-579e-30ad-8ddb-c77c2369b524\\\",\\\"fullyQualifiedName\\\":\\\"urn:dpds:blindata:apis:testOdmtestOutputApi:1.0.0\\\",\\\"entityType\\\":\\\"api\\\",\\\"name\\\":\\\"testOdmtestOutputApi\\\",\\\"version\\\":\\\"1.0.0\\\",\\\"specification\\\":\\\"datastoreapi\\\",\\\"specificationVersion\\\":\\\"1.0.0\\\"}\",\n          \"externalReference\" : false,\n          \"id\" : \"f3b45e58-579e-30ad-8ddb-c77c2369b524\",\n          \"fullyQualifiedName\" : \"urn:dpds:blindata:apis:testOdmtestOutputApi:1.0.0\",\n          \"entityType\" : \"api\",\n          \"name\" : \"testOdmtestOutputApi\",\n          \"version\" : \"1.0.0\",\n          \"tags\" : [ ],\n          \"specification\" : \"datastoreapi\",\n          \"specificationVersion\" : \"1.0.0\",\n          \"definition\" : {\n            \"rawContent\" : \"{\\\"schema\\\":{\\\"databaseSchemaName\\\":\\\"test\\\",\\\"tables\\\":[{\\\"version\\\":\\\"1.0.3\\\",\\\"specification\\\":\\\"json-schema\\\",\\\"specificationVersion\\\":\\\"1\\\",\\\"definition\\\":{\\\"name\\\":\\\"aaa\\\",\\\"displayName\\\":\\\"aaa\\\",\\\"description\\\":\\\"\\\",\\\"physicalType\\\":\\\"BASE_TABLE\\\",\\\"properties\\\":{}}}],\\\"databaseName\\\":\\\"\\\"},\\\"info\\\":{\\\"title\\\":\\\"\\\",\\\"version\\\":\\\"\\\"}}\",\n            \"resolvedRef\" : false,\n            \"inline\" : true,\n            \"endpoints\" : [ ]\n          }\n        }\n      }\n    } ]\n  },\n  \"internalComponents\" : {\n    \"applicationComponents\" : [ ],\n    \"infrastructuralComponents\" : [ ],\n    \"lifecycleInfo\" : {\n      \"tasksInfo\" : [ {\n        \"name\" : \"dev:task:1\",\n        \"stageName\" : \"dev\",\n        \"order\" : 1,\n        \"service\" : {\n          \"$href\" : \"gitlab\"\n        },\n        \"template\" : {\n          \"rawContent\" : \"{\\\"entityType\\\":\\\"template\\\",\\\"fullyQualifiedName\\\":\\\"urn:org.opendatamesh:templates:99914b93-2bd3-3a50-b983-c5e7c90ae93b:1.0.0\\\",\\\"id\\\":\\\"605e8898-f529-3b84-b68c-b15c4b7a092f\\\"}\",\n          \"externalReference\" : false,\n          \"id\" : \"605e8898-f529-3b84-b68c-b15c4b7a092f\",\n          \"fullyQualifiedName\" : \"urn:org.opendatamesh:templates:99914b93-2bd3-3a50-b983-c5e7c90ae93b:1.0.0\",\n          \"entityType\" : \"template\",\n          \"name\" : \"99914b93-2bd3-3a50-b983-c5e7c90ae93b\",\n          \"version\" : \"1.0.0\",\n          \"tags\" : [ ],\n          \"definition\" : {\n            \"rawContent\" : \"{}\",\n            \"resolvedRef\" : false,\n            \"inline\" : true\n          }\n        },\n        \"configurations\" : {\n          \"params\" : { }\n        },\n        \"rawContent\" : \"{\\\"name\\\":\\\"deploy\\\",\\\"order\\\":1,\\\"service\\\":{\\\"$href\\\":\\\"gitlab\\\"},\\\"template\\\":{\\\"definition\\\":{}},\\\"configurations\\\":{\\\"params\\\":{}},\\\"stageName\\\":\\\"dev\\\"}\"\n      }, {\n        \"name\" : \"prod:task:1\",\n        \"stageName\" : \"prod\",\n        \"order\" : 1,\n        \"service\" : {\n          \"$href\" : \"gitlab\"\n        },\n        \"template\" : {\n          \"rawContent\" : \"{\\\"entityType\\\":\\\"template\\\",\\\"fullyQualifiedName\\\":\\\"urn:org.opendatamesh:templates:99914b93-2bd3-3a50-b983-c5e7c90ae93b:1.0.0\\\",\\\"id\\\":\\\"605e8898-f529-3b84-b68c-b15c4b7a092f\\\"}\",\n          \"externalReference\" : false,\n          \"id\" : \"605e8898-f529-3b84-b68c-b15c4b7a092f\",\n          \"fullyQualifiedName\" : \"urn:org.opendatamesh:templates:99914b93-2bd3-3a50-b983-c5e7c90ae93b:1.0.0\",\n          \"entityType\" : \"template\",\n          \"name\" : \"99914b93-2bd3-3a50-b983-c5e7c90ae93b\",\n          \"version\" : \"1.0.0\",\n          \"tags\" : [ ],\n          \"definition\" : {\n            \"rawContent\" : \"{}\",\n            \"resolvedRef\" : false,\n            \"inline\" : true\n          }\n        },\n        \"configurations\" : {\n          \"params\" : { }\n        },\n        \"rawContent\" : \"{\\\"name\\\":\\\"deploy\\\",\\\"order\\\":1,\\\"service\\\":{\\\"$href\\\":\\\"gitlab\\\"},\\\"template\\\":{\\\"definition\\\":{}},\\\"configurations\\\":{\\\"params\\\":{}},\\\"stageName\\\":\\\"prod\\\"}\"\n      } ],\n      \"stageNames\" : [ \"dev\", \"prod\" ]\n    }\n  },\n  \"tags\" : [ ],\n  \"rawContent\" : \"{\\\"dataProductDescriptor\\\":\\\"1.0.0\\\",\\\"info\\\":{\\\"id\\\":\\\"348fa788-ad59-3586-a28a-2a4acf7036a1\\\",\\\"fullyQualifiedName\\\":\\\"urn:dpds:blindata:dataproducts:testOdm:1\\\",\\\"entityType\\\":\\\"dataproduct\\\",\\\"name\\\":\\\"testOdm\\\",\\\"version\\\":\\\"1.0.3\\\",\\\"displayName\\\":\\\"TestODM\\\",\\\"domain\\\":\\\"TestODM\\\",\\\"owner\\\":{\\\"id\\\":\\\"gabriele.fantini@blindata.io\\\",\\\"name\\\":\\\"Gabriele Fantini\\\"}}}\"\n}"
+      }
+    },
+    "time": 1771240349104
+  },
+  "status": "PROCESSING",
+  "processingOutput": "",
+  "observer": {
+    "id": null,
+    "name": "BLINDATA",
+    "displayName": "BLINDATA",
+    "observerServerBaseUrl": "http://localhost:9002"
+  },
+  "receivedAt": 1771240349133,
+  "processedAt": 1771240349133
+}
