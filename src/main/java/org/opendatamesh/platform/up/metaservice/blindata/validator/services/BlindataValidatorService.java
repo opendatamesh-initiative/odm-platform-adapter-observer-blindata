@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
-import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventAdapter;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
+import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventAdapter;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.exceptions.OdmPlatformBadRequestException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.exceptions.OdmPlatformInternalServerException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmEventNotificationResource;
@@ -77,9 +77,15 @@ public class BlindataValidatorService {
             } catch (UseCaseExecutionException e) {
                 evaluationResult.getOutputObject().setMessage(String.format("Use case failed due an internal use case error: %s", e.getMessage()));
                 evaluationResult.getOutputObject().setRawError(objectMapper.valueToTree(e));
-                log.warn("[Blindata Policy Validator]: Blindata policy failed to validate data product due an internal use case error: {} .", e.getMessage());
+                log.warn("[Blindata Policy Validator]: Blindata policy failed to validate data product due an internal use case error: {} ." +
+                                " Received event: {}",
+                        e.getMessage(), toJsonString(evaluationRequest)
+                );
             } catch (UseCaseInitException e) {
-                log.warn("[Blindata Policy Validator]: Failed to init use case: {}", e.getMessage(), e);
+                log.warn("[Blindata Policy Validator]: Failed to init use case: {}" +
+                                " Received event: {}",
+                        e.getMessage(), toJsonString(evaluationRequest), e
+                );
                 throw new OdmPlatformInternalServerException(e);
             }
         }).run();
@@ -88,11 +94,7 @@ public class BlindataValidatorService {
             evaluationResult.setEvaluationResult(false);
             evaluationResult.getOutputObject().setMessage("[Blindata Policy Validator]: Blindata policy failed to validate data product.");
             evaluationResult.getOutputObject().setRawError(objectMapper.valueToTree(validatorUseCaseLogger.getWarnings()));
-            try {
-                log.info("[Blindata Policy Validator]: Blindata policy failed to validate data product: {}", objectMapper.writeValueAsString(evaluationResult.getOutputObject().getRawError()));
-            } catch (JsonProcessingException e) {
-                log.error(e.getMessage(), e);
-            }
+            log.info("[Blindata Policy Validator]: Blindata policy failed to validate data product: {}", toJsonString(evaluationResult.getOutputObject().getRawError()));
         }
 
         return evaluationResult;
@@ -106,6 +108,15 @@ public class BlindataValidatorService {
         OdmValidatorPolicyEvaluationResultRes.OutputObject resultOutput = new OdmValidatorPolicyEvaluationResultRes.OutputObject();
         evaluationResult.setOutputObject(resultOutput);
         return evaluationResult;
+    }
+
+    private String toJsonString(Object value) {
+        try {
+            return value != null ? objectMapper.writeValueAsString(value) : "null";
+        } catch (JsonProcessingException e) {
+            log.debug("Could not serialize value for logging: {}", e.getMessage(), e);
+            return value.toString();
+        }
     }
 
     private void validateEvaluationRequest(OdmValidatorPolicyEvaluationRequestRes evaluationRequest) {
