@@ -197,8 +197,12 @@ public class DataProductPortAssetAnalyzer {
     private BDSystemRes getSystem(Port port) {
         BDSystemRes systemRes = new BDSystemRes();
         String platform = port.getPromises().getPlatform();
-        systemRes.setName(extractSystemName(platform));
-        systemRes.setTechnology(extractSystemTechnology(platform));
+        if (StringUtils.hasText(platform)) {
+            systemRes.setName(extractSystemName(platform));
+            systemRes.setTechnology(extractSystemTechnology(platform));
+        } else {
+            getUseCaseLogger().warn("Missing  platform field on port: " + port.getFullyQualifiedName());
+        }
         return systemRes;
     }
 
