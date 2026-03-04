@@ -77,7 +77,7 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
                     blindataOutboundPort
             );
         } catch (Exception e) {
-            throw new UseCaseInitException("Failed to init DataProductUpload use case." + e.getMessage(), e);
+            throw new UseCaseInitException("Failed to init DataProductUpload use case.", e);
         }
     }
 
@@ -99,7 +99,7 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
                     blindataOutboundPort
             );
         } catch (Exception e) {
-            throw new UseCaseInitException("Failed to init DataProductUpload use case." + e.getMessage(), e);
+            throw new UseCaseInitException("Failed to init DataProductUpload use case.", e);
         }
     }
 
@@ -147,7 +147,7 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
                     throw new UseCaseInitException("Unsupported event type: " + event.getEventType());
             }
         } catch (JsonProcessingException e) {
-            throw new UseCaseInitException("Failed to parse event content, " + e.getMessage(), e);
+            throw new UseCaseInitException("Failed to parse event content.", e);
         }
     }
 
@@ -170,7 +170,7 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
                     new DataProductUploadBlindataOutboundPortDryRunImpl(blindataOutboundPort)
             );
         } catch (Exception e) {
-            throw new UseCaseInitException("Failed to init DataProductUpload use case." + e.getMessage(), e);
+            throw new UseCaseInitException("Failed to init DataProductUpload use case.", e);
         }
     }
 }

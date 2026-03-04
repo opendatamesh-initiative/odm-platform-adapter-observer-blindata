@@ -139,7 +139,7 @@ public class DataProductPortsAndAssetsUploadFactory implements UseCaseFactory, U
                     throw new UseCaseInitException("Failed to init odmOutboundPort on DataProductVersionUpload use case.");
             }
         } catch (JsonProcessingException e) {
-            throw new UseCaseInitException("Failed to parse event content, " + e.getMessage(), e);
+            throw new UseCaseInitException("Failed to parse event content.", e);
         }
     }
 

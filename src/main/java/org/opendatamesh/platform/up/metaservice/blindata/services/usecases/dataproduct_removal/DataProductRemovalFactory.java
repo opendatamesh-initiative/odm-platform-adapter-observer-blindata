@@ -51,7 +51,7 @@ public class DataProductRemovalFactory implements UseCaseFactory {
                     blindataOutboundPort
             );
         } catch (Exception e) {
-            throw new UseCaseInitException("Failed to init DataProductRemoval use case." + e.getMessage(), e);
+            throw new UseCaseInitException("Failed to init DataProductRemoval use case.", e);
         }
     }
 
@@ -70,7 +70,7 @@ public class DataProductRemovalFactory implements UseCaseFactory {
                     blindataOutboundPort
             );
         } catch (Exception e) {
-            throw new UseCaseInitException("Failed to init DataProductRemoval use case." + e.getMessage(), e);
+            throw new UseCaseInitException("Failed to init DataProductRemoval use case.", e);
         }
     }
 
@@ -96,7 +96,7 @@ public class DataProductRemovalFactory implements UseCaseFactory {
             String fullyQualifiedName = dataProductDeletedEventContentResource.getDataProductFqn();
             return new DataProductRemovalOdmOutboundPortImpl(fullyQualifiedName);
         } catch (JsonProcessingException e) {
-            throw new UseCaseInitException("Failed to parse event content to DataProductDeletedEventResource." + e.getMessage(), e);
+            throw new UseCaseInitException("Failed to parse event content to DataProductDeletedEventResource.", e);
         }
     }
 }

@@ -79,6 +79,7 @@ public class BlindataValidatorService {
                 evaluationResult.getOutputObject().setRawError(objectMapper.valueToTree(e));
                 log.warn("[Blindata Policy Validator]: Blindata policy failed to validate data product due an internal use case error: {} .", e.getMessage());
             } catch (UseCaseInitException e) {
+                log.warn("[Blindata Policy Validator]: Failed to init use case: {}", e.getMessage(), e);
                 throw new OdmPlatformInternalServerException(e);
             }
         }).run();

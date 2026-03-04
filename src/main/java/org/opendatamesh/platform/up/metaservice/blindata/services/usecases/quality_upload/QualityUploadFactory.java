@@ -62,7 +62,7 @@ public class QualityUploadFactory implements UseCaseFactory, UseCaseDryRunFactor
             QualityUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
             return new QualityUpload(blindataOutboundPort, odmOutboundPort);
         } catch (Exception e) {
-            throw new UseCaseInitException("Failed to init QualityUpload use case: " + e.getMessage(), e);
+            throw new UseCaseInitException("Failed to init QualityUpload use case.", e);
         }
     }
 
@@ -76,7 +76,7 @@ public class QualityUploadFactory implements UseCaseFactory, UseCaseDryRunFactor
             QualityUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPortV2(event);
             return new QualityUpload(blindataOutboundPort, odmOutboundPort);
         } catch (Exception e) {
-            throw new UseCaseInitException("Failed to init QualityUpload use case: " + e.getMessage(), e);
+            throw new UseCaseInitException("Failed to init QualityUpload use case.", e);
         }
     }
 
@@ -90,7 +90,7 @@ public class QualityUploadFactory implements UseCaseFactory, UseCaseDryRunFactor
             QualityUploadOdmOutboundPort odmOutboundPort = initOdmOutboundPort(event);
             return new QualityUpload(blindataOutboundPort, odmOutboundPort);
         } catch (Exception e) {
-            throw new UseCaseInitException("Failed to init QualityUpload use case: " + e.getMessage(), e);
+            throw new UseCaseInitException("Failed to init QualityUpload use case.", e);
         }
     }
 
@@ -130,7 +130,7 @@ public class QualityUploadFactory implements UseCaseFactory, UseCaseDryRunFactor
                     throw new UseCaseInitException("Unsupported event type: " + event.getEventType());
             }
         } catch (JsonProcessingException e) {
-            throw new UseCaseInitException("Failed to parse event content, " + e.getMessage(), e);
+            throw new UseCaseInitException("Failed to parse event content.", e);
         }
     }
 

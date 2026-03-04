@@ -96,7 +96,7 @@ public class StagesUploadFactory implements UseCaseFactory {
                     throw new UseCaseInitException("Unsupported event type: " + event.getEventType());
             }
         } catch (JsonProcessingException e) {
-            throw new UseCaseInitException("Failed to parse event content, " + e.getMessage(), e);
+            throw new UseCaseInitException("Failed to parse event content.", e);
         }
     }
 
