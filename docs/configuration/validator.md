@@ -7,7 +7,7 @@ In the configuration, the policy can be set to blocking, ensuring that the data 
 compliance requirements. It verifies that the data product contains all necessary elements required by Blindata and can
 be uploaded without issues.
 
-When validation fails, the validator returns a list of warning messages. Each message is prefixed with a unique **error code tag** (e.g. `[#82]`, `[#100]`) so you can look up the meaning in the [Validator Error Codes](validator-error-codes.md) documentation.
+When validation fails, the validator returns a list of warning messages. Each message is prefixed with a unique **error code tag** (e.g. `[#82]`, `[#100]`) so you can look up the meaning in the [Validator Error Codes](../validator-error-codes.md) documentation.
 
 ## Basic Validator Configuration
 
