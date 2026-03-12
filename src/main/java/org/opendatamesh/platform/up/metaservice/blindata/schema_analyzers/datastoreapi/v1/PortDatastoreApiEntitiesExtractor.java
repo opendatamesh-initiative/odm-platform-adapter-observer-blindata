@@ -53,17 +53,17 @@ public class PortDatastoreApiEntitiesExtractor implements PortStandardDefinition
 
             List<QualityCheck> qualityChecks = new ArrayList<>();
             if (dataStoreApi.getSchema() == null) {
-                getUseCaseLogger().warn("Data product port has empty schema, skipping quality checks extraction");
+                getUseCaseLogger().warn("[#114] Data product port has empty schema, skipping quality checks extraction");
                 return qualityChecks;
             }
             DataStoreApiVisitor visitor = new DataStoreApiVisitorImpl(semanticLinkManager, NO_OP_ENTITIES(), qualityChecks::add, bdDataProductConfig);
             dataStoreApi.getSchema().accept(visitor);
             return qualityChecks;
         } catch (MismatchedInputException e) {
-            getUseCaseLogger().warn("Malformed port schema definition: " + e.getMessage(), e);
+            getUseCaseLogger().warn("[#115] Malformed port schema definition: " + e.getMessage(), e);
             return Collections.emptyList();
         } catch (IOException e) {
-            getUseCaseLogger().warn(e.getMessage(), e);
+            getUseCaseLogger().warn("[#116] " + e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -76,17 +76,17 @@ public class PortDatastoreApiEntitiesExtractor implements PortStandardDefinition
             DataStoreApi dataStoreApi = parser.deserialize(new ObjectMapper().valueToTree(portStandardDefinition.getDefinition()));
             List<BDPhysicalEntityRes> physicalEntities = new ArrayList<>();
             if (dataStoreApi.getSchema() == null) {
-                getUseCaseLogger().warn("Data product port has empty schema, skipping entities extraction");
+                getUseCaseLogger().warn("[#117] Data product port has empty schema, skipping entities extraction");
                 return physicalEntities;
             }
             DataStoreApiVisitor visitor = new DataStoreApiVisitorImpl(semanticLinkManager, physicalEntities::add, NO_OP_QUALITY_DEFINITIONS(), bdDataProductConfig);
             dataStoreApi.getSchema().accept(visitor);
             return physicalEntities;
         } catch (MismatchedInputException e) {
-            getUseCaseLogger().warn("Malformed port schema definition: " + e.getMessage(), e);
+            getUseCaseLogger().warn("[#118] Malformed port schema definition: " + e.getMessage(), e);
             return Collections.emptyList();
         } catch (IOException e) {
-            getUseCaseLogger().warn(e.getMessage(), e);
+            getUseCaseLogger().warn("[#119] " + e.getMessage(), e);
             return Collections.emptyList();
         }
     }

@@ -86,7 +86,7 @@ class DataStoreApiStandardDefinitionVisitorImpl implements StandardDefinitionVis
 
                 QualityCheck qualityCheck = qualityToQualityCheck(quality);
                 if (!StringUtils.hasText(qualityCheck.getCode())) {
-                    getUseCaseLogger().warn("Quality check does not have code.");
+                    getUseCaseLogger().warn("[#103] Quality check does not have code.");
                     continue;
                 }
                 qualityCheck.setPhysicalEntities(Lists.newArrayList(physicalEntity));
@@ -102,7 +102,7 @@ class DataStoreApiStandardDefinitionVisitorImpl implements StandardDefinitionVis
 
                 QualityCheck qualityCheck = qualityToQualityCheck(quality);
                 if (!StringUtils.hasText(qualityCheck.getCode())) {
-                    getUseCaseLogger().warn("Quality check does not have code.");
+                    getUseCaseLogger().warn("[#104] Quality check does not have code.");
                     continue;
                 }
                 qualityCheck.setPhysicalFields(Lists.newArrayList(physicalField));
@@ -116,9 +116,9 @@ class DataStoreApiStandardDefinitionVisitorImpl implements StandardDefinitionVis
         boolean isNotValid = !StringUtils.hasText(quality.getName()) && !isReference(quality);
         if (isNotValid) {
             try {
-                getUseCaseLogger().warn("Quality object inside datastoreApi is not valid: " + new ObjectMapper().setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL).writeValueAsString(quality));
+                getUseCaseLogger().warn("[#105] Quality object inside datastoreApi is not valid: " + new ObjectMapper().setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL).writeValueAsString(quality));
             } catch (JsonProcessingException e) {
-                getUseCaseLogger().warn(e.getMessage(), e);
+                getUseCaseLogger().warn("[#106] " + e.getMessage(), e);
             }
         }
         return isNotValid;
@@ -196,7 +196,7 @@ class DataStoreApiStandardDefinitionVisitorImpl implements StandardDefinitionVis
                     issuePolicy.setPolicyContent(recurrentPolicy);
                     break;
                 default:
-                    getUseCaseLogger().warn("Unsupported issue policy type: " + issuePolicy.getPolicyType());
+                    getUseCaseLogger().warn("[#107] Unsupported issue policy type: " + issuePolicy.getPolicyType());
             }
 
             BDIssueRes issueTemplate = new BDIssueRes();
@@ -234,11 +234,11 @@ class DataStoreApiStandardDefinitionVisitorImpl implements StandardDefinitionVis
 
     private boolean qualityIssuePolicyIsNotValid(QualityCheck qualityCheck, QualityIssuePolicy qualityIssuePolicy) {
         if (!StringUtils.hasText(qualityIssuePolicy.getName())) {
-            getUseCaseLogger().warn("Missing quality issue policy name for quality check: " + qualityCheck.getName());
+            getUseCaseLogger().warn("[#108] Missing quality issue policy name for quality check: " + qualityCheck.getName());
             return true;
         }
         if (!StringUtils.hasText(qualityIssuePolicy.getPolicyType())) {
-            getUseCaseLogger().warn("Missing quality issue policy type for quality check: " + qualityCheck.getName());
+            getUseCaseLogger().warn("[#109] Missing quality issue policy type for quality check: " + qualityCheck.getName());
             return true;
         }
         return false;
@@ -354,7 +354,7 @@ class DataStoreApiStandardDefinitionVisitorImpl implements StandardDefinitionVis
                 });
             }
         } catch (PatternSyntaxException e) {
-            getUseCaseLogger().warn("Invalid regex for additional properties: " + addPropRegex, e);
+            getUseCaseLogger().warn("[#110] Invalid regex for additional properties: " + addPropRegex, e);
         }
     }
 
@@ -373,7 +373,7 @@ class DataStoreApiStandardDefinitionVisitorImpl implements StandardDefinitionVis
                 });
             }
         } catch (PatternSyntaxException e) {
-            getUseCaseLogger().warn("Invalid regex for additional properties: " + addPropRegex, e);
+            getUseCaseLogger().warn("[#111] Invalid regex for additional properties: " + addPropRegex, e);
         }
     }
 

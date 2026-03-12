@@ -125,26 +125,26 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
 
     private Optional<BDLogicalNamespaceRes> resolveDefaultNamespace(String defaultNamespaceIdentifier) {
         if (!StringUtils.hasText(defaultNamespaceIdentifier)) {
-            getUseCaseLogger().warn("No default namespace identifier provided.");
+            getUseCaseLogger().warn("[#85] No default namespace identifier provided.");
             return Optional.empty();
         }
 
         Optional<BDLogicalNamespaceRes> resolvedNamespace = client.getLogicalNamespaceByIdentifier(defaultNamespaceIdentifier);
         if (resolvedNamespace.isEmpty()) {
-            getUseCaseLogger().warn("Namespace not found for identifier: " + defaultNamespaceIdentifier);
+            getUseCaseLogger().warn("[#86] Namespace not found for identifier: " + defaultNamespaceIdentifier);
         }
         return resolvedNamespace;
     }
 
     private Optional<BDDataCategoryRes> resolveDefaultDataCategory(String defaultDataCategoryName, BDLogicalNamespaceRes defaultNamespace) {
         if (!StringUtils.hasText(defaultDataCategoryName)) {
-            getUseCaseLogger().warn("No default data category name provided.");
+            getUseCaseLogger().warn("[#87] No default data category name provided.");
             return Optional.empty();
         }
 
         Optional<BDDataCategoryRes> resolvedDataCategory = client.getDataCategoryByNameAndNamespaceUuid(defaultDataCategoryName, defaultNamespace.getUuid());
         if (resolvedDataCategory.isEmpty()) {
-            getUseCaseLogger().warn("Data category: " + defaultDataCategoryName + " not found in namespace " + defaultNamespace.getIdentifier());
+            getUseCaseLogger().warn("[#88] Data category: " + defaultDataCategoryName + " not found in namespace " + defaultNamespace.getIdentifier());
         }
         return resolvedDataCategory;
     }
@@ -154,7 +154,7 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
                 .map(dataCategoryName -> {
                     Optional<BDDataCategoryRes> resolved = client.getDataCategoryByNameAndNamespaceUuid(dataCategoryName, defaultNamespace.getUuid());
                     if (resolved.isEmpty()) {
-                        getUseCaseLogger().warn("Data category: " + dataCategoryName + " not found");
+                        getUseCaseLogger().warn("[#89] Data category: " + dataCategoryName + " not found");
                     }
                     return resolved;
                 })
@@ -171,7 +171,7 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
 
                     BDLogicalFieldSemanticLinkRes resolvedSemanticLink = client.getSemanticLinkElements(semanticLink.getSemanticLinkString(), semanticLink.getDefaultNamespaceIdentifier());
                     if (resolvedSemanticLink == null) {
-                        getUseCaseLogger().warn("Unable to resolve semantic elements for semantic link path: " + semanticLink.getSemanticLinkString());
+                        getUseCaseLogger().warn("[#90] Unable to resolve semantic elements for semantic link path: " + semanticLink.getSemanticLinkString());
                         return field; // Return unmodified if resolution fails
                     }
 
@@ -271,7 +271,7 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
             if (e.getCode() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 throw e;
             } else {
-                getUseCaseLogger().warn(e.getMessage(), e);
+                getUseCaseLogger().warn("[#91] " + e.getMessage(), e);
             }
         }
     }

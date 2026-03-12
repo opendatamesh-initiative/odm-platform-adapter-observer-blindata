@@ -2,6 +2,8 @@ package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.data
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.opendatamesh.dpds.model.DataProductVersion;
+import org.opendatamesh.dpds.parser.ParserFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.ActivityEventState;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -141,12 +144,13 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
                 }
                 case DATA_PRODUCT_VERSION_PUBLISHED: {
                     DataProductVersionPublishedEventContentResource dataProductVersionPublishedEventContentResource = objectMapper.readValue(eventContent.toString(), DataProductVersionPublishedEventContentResource.class);
-                    return new DataProductUploadOdmOutboundPortImpl(dataProductVersionPublishedEventContentResource.getDataProductVersion().getDataProduct());
+                    DataProductVersion dataProductVersion = ParserFactory.getParser().deserialize(dataProductVersionPublishedEventContentResource.getDataProductVersion().getContent());
+                    return new DataProductUploadOdmOutboundPortImpl(dataProductVersion.getInfo());
                 }
                 default:
                     throw new UseCaseInitException("Unsupported event type: " + event.getEventType());
             }
-        } catch (JsonProcessingException e) {
+        } catch (IOException e) {
             throw new UseCaseInitException("Failed to parse event content.", e);
         }
     }

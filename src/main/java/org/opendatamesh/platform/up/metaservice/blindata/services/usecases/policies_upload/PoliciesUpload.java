@@ -33,12 +33,12 @@ class PoliciesUpload implements UseCase {
         try {
             Optional<BDDataProductRes> blindataDataProduct = blindataOutboundPort.findDataProduct(odmOutboundPort.getDataProductInfo().getFullyQualifiedName());
             if (blindataDataProduct.isEmpty()) {
-                getUseCaseLogger().warn(String.format("%s Data product: %s has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName()));
+                getUseCaseLogger().warn(String.format("[#9] %s Data product: %s has not been created yet on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName()));
                 return;
             }
             List<OdmPolicyEvaluationResultResource> odmPolicyEvaluationResults = odmOutboundPort.getDataProductPoliciesEvaluationResults(odmOutboundPort.getDataProductInfo());
             if (odmPolicyEvaluationResults.isEmpty()) {
-                getUseCaseLogger().warn(String.format("%s Data product: %s has not policies evaluation results.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName()));
+                getUseCaseLogger().warn(String.format("[#10] %s Data product: %s has not policies evaluation results.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName()));
                 return;
             }
 
@@ -62,7 +62,7 @@ class PoliciesUpload implements UseCase {
             uploadResultsMessage.getErrors().stream().filter(error -> StringUtils.hasText(error.getMessage()))
                     .forEach(error ->
                             getUseCaseLogger().warn(
-                                    String.format("%s Data product: %s error on policy result upload: %s.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), error.getMessage())
+                                    String.format("[#11] %s Data product: %s error on policy result upload: %s.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), error.getMessage())
                             )
                     );
         }

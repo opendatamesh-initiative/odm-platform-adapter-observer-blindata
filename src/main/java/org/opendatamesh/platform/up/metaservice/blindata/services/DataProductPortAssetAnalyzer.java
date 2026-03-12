@@ -63,7 +63,7 @@ public class DataProductPortAssetAnalyzer {
                         .findFirst();
                 if (portQualityExtractor.isEmpty()) {
                     getUseCaseLogger().warn(
-                            String.format("Quality extraction for data product port: %s with specification: %s and version: %s is not supported.",
+                            String.format("[#1] Quality extraction for data product port: %s with specification: %s and version: %s is not supported.",
                                     port.getFullyQualifiedName(), standardDefinition.get().getSpecification(), standardDefinition.get().getSpecificationVersion()
                             ));
                     continue;
@@ -78,7 +78,7 @@ public class DataProductPortAssetAnalyzer {
 
             return mergeQualityChecksWithSameCode(qualityChecks);
         } catch (Exception e) {
-            getUseCaseLogger().warn(e.getMessage(), e);
+            getUseCaseLogger().warn("[#2] " + e.getMessage(), e);
         }
         return qualityChecks;
     }
@@ -96,7 +96,7 @@ public class DataProductPortAssetAnalyzer {
 
                 Optional<PortStandardDefinitionEntitiesExtractor> portStandardDefinitionAnalyzer = getPortStandardDefinitionAnalyzer(standardDefinition.get());
                 if (portStandardDefinitionAnalyzer.isEmpty()) {
-                    getUseCaseLogger().warn(String.format(
+                    getUseCaseLogger().warn("[#3] " + String.format(
                             "Data product port: %s with specification: %s and version: %s is not supported.",
                             port.getFullyQualifiedName(), standardDefinition.get().getSpecification(), standardDefinition.get().getSpecificationVersion())
                     );
@@ -125,7 +125,7 @@ public class DataProductPortAssetAnalyzer {
                 dataProductPortAssetDetailRes.add(bdDataProductPortAssetDetail);
             }
         } catch (Exception e) {
-            getUseCaseLogger().warn(e.getMessage(), e);
+            getUseCaseLogger().warn("[#4] " + e.getMessage(), e);
         }
         return dataProductPortAssetDetailRes;
     }
@@ -148,7 +148,7 @@ public class DataProductPortAssetAnalyzer {
             }
             return Optional.of(standardDefinition);
         } catch (Exception e) {
-            getUseCaseLogger().warn(String.format("Failed to parse standard definition for port %s: %s", port.getFullyQualifiedName(), e.getMessage()));
+            getUseCaseLogger().warn(String.format("[#5] Failed to parse standard definition for port %s: %s", port.getFullyQualifiedName(), e.getMessage()));
             return Optional.empty();
         }
     }
@@ -167,11 +167,11 @@ public class DataProductPortAssetAnalyzer {
 
     private boolean portIsNotValid(Port port, StandardDefinition standardDefinition) {
         if (!StringUtils.hasText(standardDefinition.getSpecification())) {
-            getUseCaseLogger().warn("Missing specification on port: " + port.getFullyQualifiedName());
+            getUseCaseLogger().warn("[#6] Missing specification on port: " + port.getFullyQualifiedName());
             return true;
         }
         if (!StringUtils.hasText(standardDefinition.getSpecificationVersion())) {
-            getUseCaseLogger().warn("Missing specification version on port: " + port.getFullyQualifiedName());
+            getUseCaseLogger().warn("[#7] Missing specification version on port: " + port.getFullyQualifiedName());
             return true;
         }
         return false;
@@ -201,7 +201,7 @@ public class DataProductPortAssetAnalyzer {
             systemRes.setName(extractSystemName(platform));
             systemRes.setTechnology(extractSystemTechnology(platform));
         } else {
-            getUseCaseLogger().warn("Missing  platform field on port: " + port.getFullyQualifiedName());
+            getUseCaseLogger().warn("[#8] Missing  platform field on port: " + port.getFullyQualifiedName());
         }
         return systemRes;
     }

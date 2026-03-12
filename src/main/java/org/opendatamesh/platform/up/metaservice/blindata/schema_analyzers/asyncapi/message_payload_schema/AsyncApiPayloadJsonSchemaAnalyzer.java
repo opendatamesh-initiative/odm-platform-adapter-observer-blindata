@@ -55,7 +55,7 @@ class AsyncApiPayloadJsonSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
             } while (!propertiesToVisit.isEmpty());
             return bdPhysicalFields;
         } catch (JsonProcessingException e) {
-            getUseCaseLogger().warn(e.getMessage(), e);
+            getUseCaseLogger().warn("[#99] " + e.getMessage(), e);
             return bdPhysicalFields;
         }
     }

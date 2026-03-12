@@ -21,7 +21,7 @@ class AsyncApiPayloadAvroSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
 
         Schema schema = new Parser().parse(rawSchema);
         if (schema.getType() != Type.RECORD) {
-            getUseCaseLogger().warn(String.format("Avro root schema must be a RECORD instead of %s", schema.getType().getName()));
+            getUseCaseLogger().warn(String.format("[#100] Avro root schema must be a RECORD instead of %s", schema.getType().getName()));
             return mappedPhysicalFieldsList;
         }
 
@@ -67,7 +67,7 @@ class AsyncApiPayloadAvroSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
         } else if (isPrimitiveSchema(avroSchema.getType())) {
             fieldType = avroSchema.getType().getName();
         } else {
-            getUseCaseLogger().warn(String.format("Avro schema %s of type %s is not supported", schemaName, avroSchema.getType().getName()));
+            getUseCaseLogger().warn(String.format("[#101] Avro schema %s of type %s is not supported", schemaName, avroSchema.getType().getName()));
         }
         return new AvscField(schemaName, fieldType);
     }
@@ -109,7 +109,7 @@ class AsyncApiPayloadAvroSchemaAnalyzer implements AsyncApiPayloadSchemaAnalyzer
                 }
                 break;
             default:
-                getUseCaseLogger().warn(String.format("Schema %s of type %s is not supported", schemaName, avroSchema.getType().getName()));
+                getUseCaseLogger().warn(String.format("[#102] Schema %s of type %s is not supported", schemaName, avroSchema.getType().getName()));
         }
 
         return new AvscField(fieldName, fieldType, nestedFields);

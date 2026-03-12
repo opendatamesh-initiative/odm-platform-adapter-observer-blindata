@@ -26,7 +26,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -206,9 +210,12 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
         Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
         Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
-                .contains("[DataProductUpload] Missing odm data product info fully qualified name")
-                .contains("[DataProductVersionUpload] Missing interface components on data product")
-                .contains("[QualityUpload] Missing info fields on data product");
+                .contains("[#82]")
+                .contains("Missing odm data product info fully qualified name")
+                .contains("[#22]")
+                .contains("Missing interface components on data product")
+                .contains("[#43]")
+                .contains("Missing info fields on data product");
     }
 
     @Test
@@ -554,6 +561,122 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
                 .contains("role: test-role-uuid not found on Blindata");
     }
 
+    /** Scenario: Validator logs a standard warning message with a tag (specs.md) */
+    @Test
+    public void testValidatorLogsWarningWithTag() throws IOException {
+        OdmValidatorPolicyEvaluationRequestRes request = mapper.readValue(
+                Resources.toByteArray(getClass().getResource("valid_data_product_with_semantic_linking.json")),
+                OdmValidatorPolicyEvaluationRequestRes.class
+        );
+
+        BDShortUserRes owner = new BDShortUserRes();
+        owner.setUsername("owner@default.blindata.io");
+        owner.setFullName("owner@default.blindata.io");
+        when(bdUserClient.getBlindataUser(any())).thenReturn(Optional.of(owner));
+
+        BDStewardshipRoleRes role = new BDStewardshipRoleRes();
+        role.setUuid("test-role-uuid");
+        role.setName("test-role-name");
+        when(bdStewardshipClient.getRole(any())).thenReturn(role);
+
+        when(odmRegistryClient.getApi(any()))
+                .thenAnswer(invocation -> {
+                    String identifier = invocation.getArgument(0);
+                    return Optional.ofNullable(findObjectByFullyQualifiedName(
+                            request.getObjectToEvaluate(), identifier));
+                });
+
+        BDDataProductRes existingDataProduct = new BDDataProductRes();
+        existingDataProduct.setUuid("dp-uuid");
+        existingDataProduct.setName("test1");
+        existingDataProduct.setIdentifier("urn:dpds:qualityDemo:dataproducts:test1:1");
+        existingDataProduct.setVersion("1.0.0");
+        existingDataProduct.setDomain("test");
+        when(bdDataProductClient.getDataProduct(any())).thenReturn(Optional.of(existingDataProduct));
+
+        when(bdSemanticLinkingClient.getLogicalNamespaceByIdentifier(any())).thenReturn(Optional.empty());
+
+        ResponseEntity<OdmValidatorPolicyEvaluationResultRes> response = rest.postForEntity(
+                "http://localhost:" + port + "/api/v1/up/validator/evaluate-policy",
+                request,
+                OdmValidatorPolicyEvaluationResultRes.class
+        );
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getBody()).isNotNull();
+        Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
+        JsonNode rawError = response.getBody().getOutputObject().getRawError();
+        Assertions.assertThat(rawError).isNotNull();
+        Assertions.assertThat(rawError.isArray()).isTrue();
+        Assertions.assertThat(rawError.isEmpty()).isFalse();
+
+        Pattern tagPattern = Pattern.compile("^\\[#(\\d+)\\].*");
+        Set<Integer> seenTags = new HashSet<>();
+        for (JsonNode msgNode : rawError) {
+            String msg = msgNode.asText();
+            Matcher m = tagPattern.matcher(msg);
+            Assertions.assertThat(m.matches())
+                    .as("Warning message must start with tag [#<id>]: %s", msg)
+                    .isTrue();
+            seenTags.add(Integer.parseInt(m.group(1)));
+        }
+        Assertions.assertThat(seenTags).contains(86);
+    }
+
+    /** Scenario: Validator logs multiple distinct warnings (specs.md) */
+    @Test
+    public void testValidatorLogsMultipleDistinctWarnings() throws IOException {
+        OdmValidatorPolicyEvaluationRequestRes request = mapper.readValue(
+                Resources.toByteArray(getClass().getResource("invalid_data_product_missing_required.json")),
+                OdmValidatorPolicyEvaluationRequestRes.class
+        );
+
+        BDShortUserRes owner = new BDShortUserRes();
+        owner.setUsername("owner@default.blindata.io");
+        owner.setFullName("owner@default.blindata.io");
+        when(bdUserClient.getBlindataUser(any())).thenReturn(Optional.of(owner));
+
+        BDStewardshipRoleRes role = new BDStewardshipRoleRes();
+        role.setUuid("test-role-uuid");
+        role.setName("test-role-name");
+        when(bdStewardshipClient.getRole(any())).thenReturn(role);
+
+        when(odmRegistryClient.getApi(any()))
+                .thenAnswer(invocation -> {
+                    String identifier = invocation.getArgument(0);
+                    return Optional.ofNullable(findObjectByFullyQualifiedName(
+                            request.getObjectToEvaluate(), identifier));
+                });
+
+        when(bdDataProductClient.getDataProduct(any())).thenReturn(Optional.empty());
+
+        ResponseEntity<OdmValidatorPolicyEvaluationResultRes> response = rest.postForEntity(
+                "http://localhost:" + port + "/api/v1/up/validator/evaluate-policy",
+                request,
+                OdmValidatorPolicyEvaluationResultRes.class
+        );
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getBody()).isNotNull();
+        Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
+        JsonNode rawError = response.getBody().getOutputObject().getRawError();
+        Assertions.assertThat(rawError).isNotNull();
+        Assertions.assertThat(rawError.isArray()).isTrue();
+        Assertions.assertThat(rawError.size()).isGreaterThanOrEqualTo(2);
+
+        Pattern tagPattern = Pattern.compile("^\\[#(\\d+)\\].*");
+        Set<Integer> distinctTags = new HashSet<>();
+        for (JsonNode msgNode : rawError) {
+            String msg = msgNode.asText();
+            Matcher m = tagPattern.matcher(msg);
+            Assertions.assertThat(m.matches())
+                    .as("Every warning must include unique tag [#<id>]: %s", msg)
+                    .isTrue();
+            distinctTags.add(Integer.parseInt(m.group(1)));
+        }
+        Assertions.assertThat(distinctTags.size()).isGreaterThanOrEqualTo(2);
+    }
+
     @Test
     public void testValidateDataProductWithMissingQualityCheckFields() throws IOException {
         // Load test data from JSON file
@@ -603,9 +726,9 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
         Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
                 //Missing refName on a quality reference object
-                .contains("Quality object inside datastoreApi is not valid: {\\\"customProperties\\\":{\\\"issuePolicies\\\":[]}}")
+                .contains("[#105] Quality object inside datastoreApi is not valid: {\\\"customProperties\\\":{\\\"issuePolicies\\\":[]}}")
                 //Missing name field on a quality object
-                .contains("Quality object inside datastoreApi is not valid: {\\\"description\\\":\\\"PLACEHOLDER\\\",\\\"dimension\\\":\\\"Validity\\\",\\\"unit\\\":\\\"percent\\\",\\\"type\\\":\\\"custom\\\",\\\"engine\\\":\\\"greatExpectations\\\",\\\"customProperties\\\":{\\\"scoreStrategy\\\":\\\"PERCENTAGE\\\",\\\"scoreWarningThreshold\\\":95.0,\\\"scoreSuccessThreshold\\\":100.0,\\\"issuePolicies\\\":[{\\\"name\\\":\\\"ScambiMWh ExpectColumnValuesToBeBetween\\\",\\\"policyType\\\":\\\"RECURRENT_RESULT_SEMAPHORE\\\",\\\"semaphoreColor\\\":\\\"RED\\\",\\\"semaphoresNumber\\\":1,\\\"autoClose\\\":true,\\\"severity\\\":\\\"INFO\\\",\\\"blindataCustomProp-jiraAssigneeAccountID\\\":\\\"111111\\\",\\\"blindataCustomProp-jiraProjectKey\\\":\\\"ABCD\\\"}],\\\"checkEnabled\\\":true,\\\"isCheckEnabled\\\":true,\\\"assetKwargs\\\":{}},\\\"implementation\\\":{\\\"type\\\":\\\"ExpectColumnValuesToBeInSet\\\",\\\"kwargs\\\":{\\\"column\\\":\\\"Macrozona\\\",\\\"value_set\\\":[\\\"NORD\\\",\\\"SUD\\\"]}}}\",\"Quality object inside datastoreApi is not valid: {\\\"customProperties\\\":{\\\"issuePolicies\\\":[]}}\",\"Quality object inside datastoreApi is not valid: {\\\"description\\\":\\\"PLACEHOLDER\\\",\\\"dimension\\\":\\\"Validity\\\",\\\"unit\\\":\\\"percent\\\",\\\"type\\\":\\\"custom\\\",\\\"engine\\\":\\\"greatExpectations\\\",\\\"customProperties\\\":{\\\"scoreStrategy\\\":\\\"PERCENTAGE\\\",\\\"scoreWarningThreshold\\\":95.0,\\\"scoreSuccessThreshold\\\":100.0,\\\"issuePolicies\\\":[{\\\"name\\\":\\\"ScambiMWh ExpectColumnValuesToBeBetween\\\",\\\"policyType\\\":\\\"RECURRENT_RESULT_SEMAPHORE\\\",\\\"semaphoreColor\\\":\\\"RED\\\",\\\"semaphoresNumber\\\":1,\\\"autoClose\\\":true,\\\"severity\\\":\\\"INFO\\\",\\\"blindataCustomProp-jiraAssigneeAccountID\\\":\\\"111111\\\",\\\"blindataCustomProp-jiraProjectKey\\\":\\\"ABCD\\\"}],\\\"checkEnabled\\\":true,\\\"isCheckEnabled\\\":true,\\\"assetKwargs\\\":{}},\\\"implementation\\\":{\\\"type\\\":\\\"ExpectColumnValuesToBeInSet\\\",\\\"kwargs\\\":{\\\"column\\\":\\\"Macrozona\\\",\\\"value_set\\\":[\\\"NORD\\\",\\\"SUD\\\"]}}}");
+                .contains("[#105] Quality object inside datastoreApi is not valid: {\\\"description\\\":\\\"PLACEHOLDER\\\",\\\"dimension\\\":\\\"Validity\\\",\\\"unit\\\":\\\"percent\\\",\\\"type\\\":\\\"custom\\\",\\\"engine\\\":\\\"greatExpectations\\\",\\\"customProperties\\\":{\\\"scoreStrategy\\\":\\\"PERCENTAGE\\\",\\\"scoreWarningThreshold\\\":95.0,\\\"scoreSuccessThreshold\\\":100.0,\\\"issuePolicies\\\":[{\\\"name\\\":\\\"ScambiMWh ExpectColumnValuesToBeBetween\\\",\\\"policyType\\\":\\\"RECURRENT_RESULT_SEMAPHORE\\\",\\\"semaphoreColor\\\":\\\"RED\\\",\\\"semaphoresNumber\\\":1,\\\"autoClose\\\":true,\\\"severity\\\":\\\"INFO\\\",\\\"blindataCustomProp-jiraAssigneeAccountID\\\":\\\"111111\\\",\\\"blindataCustomProp-jiraProjectKey\\\":\\\"ABCD\\\"}],\\\"checkEnabled\\\":true,\\\"isCheckEnabled\\\":true,\\\"assetKwargs\\\":{}},\\\"implementation\\\":{\\\"type\\\":\\\"ExpectColumnValuesToBeInSet\\\",\\\"kwargs\\\":{\\\"column\\\":\\\"Macrozona\\\",\\\"value_set\\\":[\\\"NORD\\\",\\\"SUD\\\"]}}}\",\"[#105] Quality object inside datastoreApi is not valid: {\\\"customProperties\\\":{\\\"issuePolicies\\\":[]}}\",\"[#105] Quality object inside datastoreApi is not valid: {\\\"description\\\":\\\"PLACEHOLDER\\\",\\\"dimension\\\":\\\"Validity\\\",\\\"unit\\\":\\\"percent\\\",\\\"type\\\":\\\"custom\\\",\\\"engine\\\":\\\"greatExpectations\\\",\\\"customProperties\\\":{\\\"scoreStrategy\\\":\\\"PERCENTAGE\\\",\\\"scoreWarningThreshold\\\":95.0,\\\"scoreSuccessThreshold\\\":100.0,\\\"issuePolicies\\\":[{\\\"name\\\":\\\"ScambiMWh ExpectColumnValuesToBeBetween\\\",\\\"policyType\\\":\\\"RECURRENT_RESULT_SEMAPHORE\\\",\\\"semaphoreColor\\\":\\\"RED\\\",\\\"semaphoresNumber\\\":1,\\\"autoClose\\\":true,\\\"severity\\\":\\\"INFO\\\",\\\"blindataCustomProp-jiraAssigneeAccountID\\\":\\\"111111\\\",\\\"blindataCustomProp-jiraProjectKey\\\":\\\"ABCD\\\"}],\\\"checkEnabled\\\":true,\\\"isCheckEnabled\\\":true,\\\"assetKwargs\\\":{}},\\\"implementation\\\":{\\\"type\\\":\\\"ExpectColumnValuesToBeInSet\\\",\\\"kwargs\\\":{\\\"column\\\":\\\"Macrozona\\\",\\\"value_set\\\":[\\\"NORD\\\",\\\"SUD\\\"]}}}");
     }
 
     @Test
@@ -710,7 +833,8 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
         Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
         Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
-                .contains("[\"Namespace not found for identifier: https://demo.blindata.io/logical/namespaces/name/filmRentalInc#\",\"Namespace not found for identifier: https://demo.blindata.io/logical/namespaces/name/filmRentalInc#\"]");
+                .contains("[#86]")
+                .contains("Namespace not found for identifier: https://demo.blindata.io/logical/namespaces/name/filmRentalInc#");
     }
 
     @Test
@@ -808,7 +932,8 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
         Assertions.assertThat(response.getBody().getOutputObject().getMessage()).contains("Blindata policy failed to validate data product");
         Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
-                .contains("[DataProductVersionUpload]: System: TestSystem not found in Blindata.");
+                .contains("[#35]")
+                .contains("System: TestSystem not found in Blindata.");
     }
 
     private JsonNode findObjectByFullyQualifiedName(JsonNode root, String identifier) {

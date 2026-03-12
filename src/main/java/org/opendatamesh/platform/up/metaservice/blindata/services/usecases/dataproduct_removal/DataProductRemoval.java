@@ -33,7 +33,7 @@ class DataProductRemoval implements UseCase {
             if (dataProduct.isPresent()) {
                 blindataOutboundPort.deleteDataProduct(dataProduct.get().getUuid());
             } else {
-                getUseCaseLogger().warn(String.format("%s Data Product with Fully Qualified Name: %s not found on Blindata.", USE_CASE_PREFIX, fullyQualifiedName));
+                getUseCaseLogger().warn(String.format("[#12] %s Data Product with Fully Qualified Name: %s not found on Blindata.", USE_CASE_PREFIX, fullyQualifiedName));
                 return;
             }
         });
@@ -46,7 +46,7 @@ class DataProductRemoval implements UseCase {
             if (e.getCode() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 throw e;
             } else {
-                getUseCaseLogger().warn(e.getMessage(), e);
+                getUseCaseLogger().warn("[#13] " + e.getMessage(), e);
             }
         } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);
