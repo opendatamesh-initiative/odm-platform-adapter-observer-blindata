@@ -69,13 +69,13 @@ class DataProductUpload implements UseCase {
         }
         Optional<BDShortUserRes> blindataUser = blindataOutboundPort.findUser(odmOutboundPort.getDataProductInfo().getOwner().getId());
         if (blindataUser.isEmpty()) {
-            getUseCaseLogger().warn(String.format("%s Impossible to assign responsibility on data product: %s, user: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), odmOutboundPort.getDataProductInfo().getOwner().getId()));
+            getUseCaseLogger().warn(String.format("[#76] %s Impossible to assign responsibility on data product: %s, user: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), odmOutboundPort.getDataProductInfo().getOwner().getId()));
             return;
         }
 
         BDStewardshipRoleRes dataProductRole = blindataOutboundPort.findDataProductRole(blindataOutboundPort.getDefaultRoleUuid());
         if (dataProductRole == null) {
-            getUseCaseLogger().warn(String.format("%s Impossible to assign responsibility on data product: %s, role: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), blindataOutboundPort.getDefaultRoleUuid()));
+            getUseCaseLogger().warn(String.format("[#77] %s Impossible to assign responsibility on data product: %s, role: %s not found on Blindata.", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), blindataOutboundPort.getDefaultRoleUuid()));
             return;
         }
 
@@ -115,7 +115,7 @@ class DataProductUpload implements UseCase {
                         if (productType.isTextual()) {
                             blindataDataProduct.setProductType(productType.asText());
                         } else {
-                            getUseCaseLogger().warn(String.format("%s Product Type is not a textual value: %s", USE_CASE_PREFIX, productType));
+                            getUseCaseLogger().warn(String.format("[#78] %s Product Type is not a textual value: %s", USE_CASE_PREFIX, productType));
                         }
                     });
         }
@@ -139,7 +139,7 @@ class DataProductUpload implements UseCase {
                 blindataDataProduct.getAdditionalProperties()
                         .add(new BDAdditionalPropertiesRes("contactPoints", contactPointsJson));
             } catch (JsonProcessingException e) {
-                getUseCaseLogger().warn(String.format("%s Failed to serialize contactPoints", USE_CASE_PREFIX));
+                getUseCaseLogger().warn(String.format("[#79] %s Failed to serialize contactPoints", USE_CASE_PREFIX));
             }
         }
         try {
@@ -157,7 +157,7 @@ class DataProductUpload implements UseCase {
                 });
             }
         } catch (PatternSyntaxException e) {
-            getUseCaseLogger().warn(String.format("%s Invalid regex for additional properties: %s", USE_CASE_PREFIX, addPropRegex), e);
+            getUseCaseLogger().warn(String.format("[#80] %s Invalid regex for additional properties: %s", USE_CASE_PREFIX, addPropRegex), e);
         }
     }
 
@@ -201,14 +201,14 @@ class DataProductUpload implements UseCase {
 
     private void validateDataProductInfo(Info odmDataProductInfo) {
         if (odmDataProductInfo == null) {
-            getUseCaseLogger().warn(String.format("%s Missing odm data product info", USE_CASE_PREFIX));
+            getUseCaseLogger().warn(String.format("[#81] %s Missing odm data product info", USE_CASE_PREFIX));
             return;
         }
         if (!StringUtils.hasText(odmDataProductInfo.getFullyQualifiedName())) {
-            getUseCaseLogger().warn(String.format("%s Missing odm data product info fully qualified name.", USE_CASE_PREFIX));
+            getUseCaseLogger().warn(String.format("[#82] %s Missing odm data product info fully qualified name.", USE_CASE_PREFIX));
         }
         if (!StringUtils.hasText(odmDataProductInfo.getDomain())) {
-            getUseCaseLogger().warn(String.format("%s Missing odm data product info domain.", USE_CASE_PREFIX));
+            getUseCaseLogger().warn(String.format("[#83] %s Missing odm data product info domain.", USE_CASE_PREFIX));
         }
     }
 
@@ -219,7 +219,7 @@ class DataProductUpload implements UseCase {
             if (e.getCode() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 throw e;
             } else {
-                getUseCaseLogger().warn(e.getMessage(), e);
+                getUseCaseLogger().warn("[#84] " + e.getMessage(), e);
             }
         } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);

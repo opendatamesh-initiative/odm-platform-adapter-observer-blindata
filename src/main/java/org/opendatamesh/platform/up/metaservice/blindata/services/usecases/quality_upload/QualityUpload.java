@@ -68,7 +68,7 @@ class QualityUpload implements UseCase {
 
             getUseCaseLogger().info(String.format("%s Quality Checks created: %s updated: %s discarded: %s", USE_CASE_PREFIX, uploadResult.getRowCreated(), uploadResult.getRowUpdated(), uploadResult.getRowDiscarded()));
             if (StringUtils.hasText(uploadResult.getMessage())) {
-                getUseCaseLogger().warn(String.format("%s Quality Checks upload error: %s", USE_CASE_PREFIX, uploadResult.getMessage()));
+                getUseCaseLogger().warn(String.format("[#37] %s Quality Checks upload error: %s", USE_CASE_PREFIX, uploadResult.getMessage()));
             }
         });
     }
@@ -97,7 +97,7 @@ class QualityUpload implements UseCase {
                         // Validate assignee exists in Blindata
                         Optional<BDShortUserRes> owner = blindataOutboundPort.findUser(issueTemplate.getAssignee().getUsername());
                         if (owner.isEmpty()) {
-                            getUseCaseLogger().warn(String.format("%s Issue owner '%s' not found in Blindata for issue policy '%s'.",
+                            getUseCaseLogger().warn(String.format("[#38] %s Issue owner '%s' not found in Blindata for issue policy '%s'.",
                                     USE_CASE_PREFIX, issueTemplate.getAssignee().getUsername(), issuePolicy.getName()));
                         } else {
                             // Update with full user information
@@ -109,7 +109,7 @@ class QualityUpload implements UseCase {
                     if (issueTemplate.getReporter() != null && StringUtils.hasText(issueTemplate.getReporter().getUsername())) {
                         Optional<BDShortUserRes> reporter = blindataOutboundPort.findUser(issueTemplate.getReporter().getUsername());
                         if (reporter.isEmpty()) {
-                            getUseCaseLogger().warn(String.format("%s Issue reporter '%s' not found in Blindata for issue policy '%s'.",
+                            getUseCaseLogger().warn(String.format("[#39] %s Issue reporter '%s' not found in Blindata for issue policy '%s'.",
                                     USE_CASE_PREFIX, issueTemplate.getReporter().getUsername(), issuePolicy.getName()));
                         } else {
                             // Update with full user information
@@ -129,11 +129,11 @@ class QualityUpload implements UseCase {
             if (dataProductOwner.isPresent()) {
                 issueTemplate.setAssignee(dataProductOwner.get());
             } else {
-                getUseCaseLogger().warn(String.format("%s Data product owner '%s' not found in Blindata for data product: %s.",
+                getUseCaseLogger().warn(String.format("[#40] %s Data product owner '%s' not found in Blindata for data product: %s.",
                         USE_CASE_PREFIX, dataProductVersion.getInfo().getOwner().getId(), dataProductVersion.getInfo().getFullyQualifiedName()));
             }
         } else {
-            getUseCaseLogger().warn(String.format("%s Missing data product owner on data product: %s, skipping assignee on issue policies.",
+            getUseCaseLogger().warn(String.format("[#41] %s Missing data product owner on data product: %s, skipping assignee on issue policies.",
                     USE_CASE_PREFIX, dataProductVersion.getInfo().getFullyQualifiedName()));
         }
     }
@@ -153,7 +153,7 @@ class QualityUpload implements UseCase {
         return qualityChecks.stream()
                 .filter(qualityCheck -> {
                     if (qualityCheck.isReference()) {
-                        getUseCaseLogger().warn(String.format("%s Quality Check: %s is a reference and does not have a main declaration.", USE_CASE_PREFIX, qualityCheck.getCode()));
+                        getUseCaseLogger().warn(String.format("[#42] %s Quality Check: %s is a reference and does not have a main declaration.", USE_CASE_PREFIX, qualityCheck.getCode()));
                         return false;
                     }
                     return true;
@@ -168,7 +168,7 @@ class QualityUpload implements UseCase {
                 !StringUtils.hasText(dataProductVersion.getInfo().getDomain()) ||
                 !StringUtils.hasText(dataProductVersion.getInfo().getName())
         ) {
-            getUseCaseLogger().warn(String.format("%s Missing info fields on data product", USE_CASE_PREFIX));
+            getUseCaseLogger().warn(String.format("[#43] %s Missing info fields on data product", USE_CASE_PREFIX));
         }
     }
 
@@ -201,7 +201,7 @@ class QualityUpload implements UseCase {
                         CollectionUtils.isEmpty(interfaceComponents.getInputPorts()) &&
                         CollectionUtils.isEmpty(interfaceComponents.getDiscoveryPorts()))
         ) {
-            getUseCaseLogger().warn(String.format("%s Missing interface components on data product: %s", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName()));
+            getUseCaseLogger().warn(String.format("[#44] %s Missing interface components on data product: %s", USE_CASE_PREFIX, odmOutboundPort.getDataProductVersion().getInfo().getFullyQualifiedName()));
         }
     }
 
@@ -213,7 +213,7 @@ class QualityUpload implements UseCase {
             if (e.getCode() != HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 throw e;
             } else {
-                getUseCaseLogger().warn(e.getMessage(), e);
+                getUseCaseLogger().warn("[#45] " + e.getMessage(), e);
             }
         } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);
@@ -233,24 +233,24 @@ class QualityUpload implements UseCase {
     private void validateQualityCheckRequiredParameters(QualityCheck qualityCheck) {
         String qualityCheckCode = qualityCheck.getCode() != null ? qualityCheck.getCode() : "unknown";
         if (!StringUtils.hasText(qualityCheck.getCode())) {
-            getUseCaseLogger().warn(String.format("%s Quality Check validation failed: A valid code must be provided for the check. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+            getUseCaseLogger().warn(String.format("[#46] %s Quality Check validation failed: A valid code must be provided for the check. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
         }
         if (!StringUtils.hasText(qualityCheck.getName())) {
-            getUseCaseLogger().warn(String.format("%s Quality Check validation failed: A valid name must be provided for the check. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+            getUseCaseLogger().warn(String.format("[#47] %s Quality Check validation failed: A valid name must be provided for the check. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
         }
         if (qualityCheck.getSuccessThreshold() == null || qualityCheck.getWarningThreshold() == null) {
-            getUseCaseLogger().warn(String.format("%s Quality Check validation failed: Thresholds must be defined. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+            getUseCaseLogger().warn(String.format("[#48] %s Quality Check validation failed: Thresholds must be defined. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
         } else {
             if (qualityCheck.getSuccessThreshold().compareTo(BigDecimal.ZERO) <= 0 || qualityCheck.getSuccessThreshold().compareTo(BigDecimal.valueOf(100)) > 0) {
-                getUseCaseLogger().warn(String.format("%s Quality Check validation failed: Success threshold must be between 0 and 100 included. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+                getUseCaseLogger().warn(String.format("[#49] %s Quality Check validation failed: Success threshold must be between 0 and 100 included. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
             }
 
             if (qualityCheck.getWarningThreshold().compareTo(BigDecimal.ZERO) <= 0 || qualityCheck.getWarningThreshold().compareTo(BigDecimal.valueOf(100)) > 0) {
-                getUseCaseLogger().warn(String.format("%s Quality Check validation failed: Warning threshold must be between 0 and 100 included. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+                getUseCaseLogger().warn(String.format("[#50] %s Quality Check validation failed: Warning threshold must be between 0 and 100 included. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
             }
 
             if (qualityCheck.getWarningThreshold().compareTo(qualityCheck.getSuccessThreshold()) > 0) {
-                getUseCaseLogger().warn(String.format("%s Quality Check validation failed: Warning threshold must be lower than or equal to the success threshold. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+                getUseCaseLogger().warn(String.format("[#51] %s Quality Check validation failed: Warning threshold must be lower than or equal to the success threshold. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
             }
         }
     }
@@ -275,47 +275,47 @@ class QualityUpload implements UseCase {
                 validateDistanceStrategy(qualityCheck, qualityCheckCode);
                 break;
             default:
-                getUseCaseLogger().warn(String.format("%s Quality Check validation failed: Unknown score strategy '%s'. Quality Check: %s", USE_CASE_PREFIX, strategy, qualityCheckCode));
+                getUseCaseLogger().warn(String.format("[#52] %s Quality Check validation failed: Unknown score strategy '%s'. Quality Check: %s", USE_CASE_PREFIX, strategy, qualityCheckCode));
         }
     }
 
     private void validateMinimumStrategy(QualityCheck qualityCheck, String qualityCheckCode) {
         if (qualityCheck.getScoreExpectedValue() == null) {
-            getUseCaseLogger().warn(String.format("%s Quality Check validation failed: To properly calculate the score an expected value is mandatory for MINIMUM strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+            getUseCaseLogger().warn(String.format("[#53] %s Quality Check validation failed: To properly calculate the score an expected value is mandatory for MINIMUM strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
         }
 
         if (qualityCheck.getScoreLeftValue() == null) {
-            getUseCaseLogger().warn(String.format("%s Quality Check validation failed: To properly calculate the score a lowest acceptable value is mandatory for MINIMUM strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+            getUseCaseLogger().warn(String.format("[#54] %s Quality Check validation failed: To properly calculate the score a lowest acceptable value is mandatory for MINIMUM strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
         } else if (qualityCheck.getScoreExpectedValue() != null && qualityCheck.getScoreLeftValue().compareTo(qualityCheck.getScoreExpectedValue()) > 0) {
-            getUseCaseLogger().warn(String.format("%s Quality Check validation failed: The lowest acceptable value must be lower than or equal to the expected value for MINIMUM strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+            getUseCaseLogger().warn(String.format("[#55] %s Quality Check validation failed: The lowest acceptable value must be lower than or equal to the expected value for MINIMUM strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
         }
     }
 
     private void validateMaximumStrategy(QualityCheck qualityCheck, String qualityCheckCode) {
         if (qualityCheck.getScoreExpectedValue() == null) {
-            getUseCaseLogger().warn(String.format("%s Quality Check validation failed: To properly calculate the score an expected value is mandatory for MAXIMUM strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+            getUseCaseLogger().warn(String.format("[#56] %s Quality Check validation failed: To properly calculate the score an expected value is mandatory for MAXIMUM strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
         }
         if (qualityCheck.getScoreRightValue() == null) {
-            getUseCaseLogger().warn(String.format("%s Quality Check validation failed: To properly calculate the score a highest acceptable value is mandatory for MAXIMUM strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+            getUseCaseLogger().warn(String.format("[#57] %s Quality Check validation failed: To properly calculate the score a highest acceptable value is mandatory for MAXIMUM strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
         } else if (qualityCheck.getScoreExpectedValue() != null && qualityCheck.getScoreRightValue().compareTo(qualityCheck.getScoreExpectedValue()) < 0) {
-            getUseCaseLogger().warn(String.format("%s Quality Check validation failed: The highest acceptable value must be greater than or equal to the expected value for MAXIMUM strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+            getUseCaseLogger().warn(String.format("[#58] %s Quality Check validation failed: The highest acceptable value must be greater than or equal to the expected value for MAXIMUM strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
         }
     }
 
     private void validateDistanceStrategy(QualityCheck qualityCheck, String qualityCheckCode) {
         if (qualityCheck.getScoreExpectedValue() == null) {
-            getUseCaseLogger().warn(String.format("%s Quality Check validation failed: To properly calculate the score an expected value is mandatory for DISTANCE strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+            getUseCaseLogger().warn(String.format("[#59] %s Quality Check validation failed: To properly calculate the score an expected value is mandatory for DISTANCE strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
         }
         if (qualityCheck.getScoreLeftValue() == null) {
-            getUseCaseLogger().warn(String.format("%s Quality Check validation failed: To properly calculate the score a lowest acceptable value is mandatory for DISTANCE strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+            getUseCaseLogger().warn(String.format("[#60] %s Quality Check validation failed: To properly calculate the score a lowest acceptable value is mandatory for DISTANCE strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
         } else if (qualityCheck.getScoreExpectedValue() != null && qualityCheck.getScoreLeftValue().compareTo(qualityCheck.getScoreExpectedValue()) > 0) {
-            getUseCaseLogger().warn(String.format("%s Quality Check validation failed: The lowest acceptable value must be lower than or equal to the expected value for DISTANCE strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+            getUseCaseLogger().warn(String.format("[#61] %s Quality Check validation failed: The lowest acceptable value must be lower than or equal to the expected value for DISTANCE strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
         }
 
         if (qualityCheck.getScoreRightValue() == null) {
-            getUseCaseLogger().warn(String.format("%s Quality Check validation failed: To properly calculate the score a highest acceptable value is mandatory for DISTANCE strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+            getUseCaseLogger().warn(String.format("[#62] %s Quality Check validation failed: To properly calculate the score a highest acceptable value is mandatory for DISTANCE strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
         } else if (qualityCheck.getScoreExpectedValue() != null && qualityCheck.getScoreRightValue().compareTo(qualityCheck.getScoreExpectedValue()) < 0) {
-            getUseCaseLogger().warn(String.format("%s Quality Check validation failed: The highest acceptable value must be greater than or equal to the expected value for DISTANCE strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
+            getUseCaseLogger().warn(String.format("[#63] %s Quality Check validation failed: The highest acceptable value must be greater than or equal to the expected value for DISTANCE strategy. Quality Check: %s", USE_CASE_PREFIX, qualityCheckCode));
         }
     }
 }

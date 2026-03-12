@@ -45,7 +45,7 @@ public class PortAsyncApi2EntitiesExtractor implements PortStandardDefinitionEnt
         try {
             return extractSchemaPropertiesFromSchemaContent(portStandardDefinition);
         } catch (JsonProcessingException e) {
-            getUseCaseLogger().warn(e.getMessage(), e);
+            getUseCaseLogger().warn("[#95] " + e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -57,7 +57,7 @@ public class PortAsyncApi2EntitiesExtractor implements PortStandardDefinitionEnt
         List<BDPhysicalEntityRes> extractedPhysicalEntities = new ArrayList<>();
         for (Map.Entry<String, AsyncApiChannelItem> channel : asyncAPI.getChannels().entrySet()) {
             if (channel.getValue().getRef() != null) {
-                getUseCaseLogger().warn(String.format("Channel: %s, unsupported ref for AsyncApi port standard definition.", channel.getKey()));
+                getUseCaseLogger().warn(String.format("[#96] Channel: %s, unsupported ref for AsyncApi port standard definition.", channel.getKey()));
             }
 
             BDPhysicalEntityRes physicalEntity = new BDPhysicalEntityRes();
@@ -90,7 +90,7 @@ public class PortAsyncApi2EntitiesExtractor implements PortStandardDefinitionEnt
         extractedPhysicalFields.add(rootPhysicalField);
 
         if (!StringUtils.hasText(message.getSchemaFormat())) {
-            getUseCaseLogger().warn(String.format("Missing schema format on message: %s, default AsyncApi Schema Object is not supported", message.getTitle()));
+            getUseCaseLogger().warn(String.format("[#97] Missing schema format on message: %s, default AsyncApi Schema Object is not supported", message.getTitle()));
             return extractedPhysicalFields;
         }
 
@@ -100,7 +100,7 @@ public class PortAsyncApi2EntitiesExtractor implements PortStandardDefinitionEnt
             List<BDPhysicalFieldRes> avroPhysicalFields = payloadSchemaAnalyzer.payloadSchemaToBlindataPhysicalFields(payload, rootPhysicalField.getName());
             extractedPhysicalFields.addAll(avroPhysicalFields);
         } catch (UnsupportedSchemaFormatException | UnsupportedFileEncodingException e) {
-            getUseCaseLogger().warn(e.getMessage(), e);
+            getUseCaseLogger().warn("[#98] " + e.getMessage(), e);
         }
 
         return extractedPhysicalFields;

@@ -47,7 +47,7 @@ class MarketplaceAccessRequestsPortUpdate implements UseCase {
 
     private boolean isValidMarketplaceAccessRequestPortUpdateResult(OdmExecutorResultReceivedEventExecutorResponse odmMarketplaceAccessRequestPortUploadResult) {
         if (!StringUtils.hasText(odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier())) {
-            getUseCaseLogger().warn(String.format("%s Missing Access Request identifier.", USE_CASE_PREFIX));
+            getUseCaseLogger().warn(String.format("[#15] %s Missing Access Request identifier.", USE_CASE_PREFIX));
             return false;
         }
         if (odmMarketplaceAccessRequestPortUploadResult.getStatus() == null) {
@@ -59,12 +59,12 @@ class MarketplaceAccessRequestsPortUpdate implements UseCase {
             return false;
         }
         if (odmMarketplaceAccessRequestPortUploadResult.getProvider() == null) {
-            getUseCaseLogger().warn(String.format("%s Marketplace Access Request: %s Missing Provider.", USE_CASE_PREFIX, odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier()));
+            getUseCaseLogger().warn(String.format("[#16] %s Marketplace Access Request: %s Missing Provider.", USE_CASE_PREFIX, odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier()));
             return false;
         }
         List<String> providerDataProductPortsFqn = odmMarketplaceAccessRequestPortUploadResult.getProvider().getDataProductPortsFqn();
         if (providerDataProductPortsFqn == null || providerDataProductPortsFqn.isEmpty()) {
-            getUseCaseLogger().warn(String.format("%s Marketplace Access Request: %s Missing Provider ports.", USE_CASE_PREFIX, odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier()));
+            getUseCaseLogger().warn(String.format("[#17] %s Marketplace Access Request: %s Missing Provider ports.", USE_CASE_PREFIX, odmMarketplaceAccessRequestPortUploadResult.getAccessRequestIdentifier()));
             return false;
         }
         return true;
@@ -110,7 +110,7 @@ class MarketplaceAccessRequestsPortUpdate implements UseCase {
             uploadResultsMessage.getErrors().stream().filter(error -> StringUtils.hasText(error.getMessage()))
                     .forEach(error ->
                             getUseCaseLogger().warn(
-                                    String.format("%s Access Request: %s error on port update result upload: %s.", USE_CASE_PREFIX, odmOutboundPort.getOdmMarketplaceAccessRequestPortUploadResult().getAccessRequestIdentifier(), error.getMessage())
+                                    String.format("[#18] %s Access Request: %s error on port update result upload: %s.", USE_CASE_PREFIX, odmOutboundPort.getOdmMarketplaceAccessRequestPortUploadResult().getAccessRequestIdentifier(), error.getMessage())
                             )
                     );
         }
@@ -123,7 +123,7 @@ class MarketplaceAccessRequestsPortUpdate implements UseCase {
             if (e.getCode() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 throw e;
             } else {
-                getUseCaseLogger().warn(e.getMessage(), e);
+                getUseCaseLogger().warn("[#19] " + e.getMessage(), e);
             }
         } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);

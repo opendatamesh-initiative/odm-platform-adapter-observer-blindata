@@ -45,13 +45,13 @@ class DataStoreApiVisitorImpl implements DataStoreApiVisitor {
                 StandardDefinitionVisitor<DataStoreApiBlindataDefinition> visitor =
                         new DataStoreApiStandardDefinitionVisitorImpl(entitiesPresenter, qualityPresenter, semanticLinkManager, databaseSchemaName, bdDataProductConfig);
                 if (table.getDefinition() == null) {
-                    getUseCaseLogger().warn("Missing definition on datastore api table: " + table.getName());
+                    getUseCaseLogger().warn("[#112] Missing definition on datastore api table: " + table.getName());
                     continue;
                 }
                 if (table.getDefinition() instanceof DataStoreApiBlindataDefinition) {
                     table.getDefinition().accept(visitor);
                 } else {
-                    getUseCaseLogger().warn("Malformed definition on datastore api table: " + table.getName());
+                    getUseCaseLogger().warn("[#113] Malformed definition on datastore api table: " + table.getName());
                 }
             }
         }

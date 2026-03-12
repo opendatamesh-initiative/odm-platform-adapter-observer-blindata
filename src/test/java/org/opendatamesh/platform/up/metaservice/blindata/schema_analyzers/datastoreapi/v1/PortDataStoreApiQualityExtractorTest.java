@@ -178,7 +178,7 @@ class PortDataStoreApiQualityExtractorTest {
             // Capture and verify the log
             ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
             verify(mockLogger).warn(captor.capture());
-            assertThat(captor.getValue()).isEqualTo("Quality object inside datastoreApi is not valid: {\"customProperties\":{\"issuePolicies\":[],\"ref\":\"sapIess-PrezzoSbilanciamento-PrezzoBase-ExpectColumnPairValuesAToBeGreaterThanB\"}}");
+            assertThat(captor.getValue()).isEqualTo("[#105] Quality object inside datastoreApi is not valid: {\"customProperties\":{\"issuePolicies\":[],\"ref\":\"sapIess-PrezzoSbilanciamento-PrezzoBase-ExpectColumnPairValuesAToBeGreaterThanB\"}}");
         } finally {
             // Restore the original logger after the test
             UseCaseLoggerContext.setUseCaseLogger(originalLogger);

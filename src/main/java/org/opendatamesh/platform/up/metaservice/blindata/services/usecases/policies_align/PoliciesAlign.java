@@ -89,7 +89,7 @@ class PoliciesAlign implements UseCase {
 
     private boolean extractedPolicyImplementationIsNotValid(BDPolicyImplementationRes extractedPolicyImplementation, OdmPolicyResource odmPolicy) {
         if (extractedPolicyImplementation == null || !StringUtils.hasText(extractedPolicyImplementation.getName())) {
-            getUseCaseLogger().warn(String.format("%s Invalid Policy Implementation built from Odm Policy: %s", USE_CASE_PREFIX, odmPolicy.getName()));
+            getUseCaseLogger().warn(String.format("[#70] %s Invalid Policy Implementation built from Odm Policy: %s", USE_CASE_PREFIX, odmPolicy.getName()));
             return true;
         }
         return false;
@@ -97,7 +97,7 @@ class PoliciesAlign implements UseCase {
 
     private boolean extractedPolicySuiteIsNotValid(BDPolicySuiteRes extractedSuite, OdmPolicyResource odmPolicy) {
         if (extractedSuite == null || !StringUtils.hasText(extractedSuite.getName())) {
-            getUseCaseLogger().warn(String.format("%s External context policy is missing suite for Odm Policy: %s", USE_CASE_PREFIX, odmPolicy.getName()));
+            getUseCaseLogger().warn(String.format("[#71] %s External context policy is missing suite for Odm Policy: %s", USE_CASE_PREFIX, odmPolicy.getName()));
             return true;
         }
         return false;
@@ -105,7 +105,7 @@ class PoliciesAlign implements UseCase {
 
     private boolean extractedPolicyIsNotValid(BDPolicyRes extractedPolicy, OdmPolicyResource odmPolicy) {
         if (extractedPolicy == null || !StringUtils.hasText(extractedPolicy.getName())) {
-            getUseCaseLogger().warn(String.format("%s External context policy is not valid for Odm Policy: %s", USE_CASE_PREFIX, odmPolicy.getName()));
+            getUseCaseLogger().warn(String.format("[#72] %s External context policy is not valid for Odm Policy: %s", USE_CASE_PREFIX, odmPolicy.getName()));
             return true;
         }
         return false;
@@ -116,14 +116,14 @@ class PoliciesAlign implements UseCase {
             return new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                     .treeToValue(externalContext, BDPolicyImplementationRes.class);
         } catch (JacksonException e) {
-            getUseCaseLogger().warn(String.format("%s Error mapping external context to Blindata Policy Implementation: %s", USE_CASE_PREFIX, e.getMessage()), e);
+            getUseCaseLogger().warn(String.format("[#73] %s Error mapping external context to Blindata Policy Implementation: %s", USE_CASE_PREFIX, e.getMessage()), e);
             return null;
         }
     }
 
     private boolean externalContextIsNotValid(ObjectNode externalContext, OdmPolicyResource odmPolicy) {
         if (externalContext == null || externalContext.isEmpty()) {
-            getUseCaseLogger().warn(String.format("%s Empty external context for Odm Policy: %s", USE_CASE_PREFIX, odmPolicy.getName()));
+            getUseCaseLogger().warn(String.format("[#74] %s Empty external context for Odm Policy: %s", USE_CASE_PREFIX, odmPolicy.getName()));
             return true;
         }
         return false;
@@ -136,7 +136,7 @@ class PoliciesAlign implements UseCase {
             if (e.getCode() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 throw e;
             } else {
-                getUseCaseLogger().warn(e.getMessage(), e);
+                getUseCaseLogger().warn("[#75] " + e.getMessage(), e);
             }
         } catch (Exception e) {
             throw new UseCaseExecutionException(e.getMessage(), e);

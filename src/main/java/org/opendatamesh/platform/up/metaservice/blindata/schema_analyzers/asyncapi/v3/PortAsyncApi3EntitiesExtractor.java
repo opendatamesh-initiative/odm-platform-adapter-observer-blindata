@@ -44,7 +44,7 @@ public class PortAsyncApi3EntitiesExtractor implements PortStandardDefinitionEnt
         try {
             return extractSchemaPropertiesFromSchemaContent(portStandardDefinition);
         } catch (JsonProcessingException e) {
-            getUseCaseLogger().warn(e.getMessage(), e);
+            getUseCaseLogger().warn("[#92] " + e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -76,7 +76,7 @@ public class PortAsyncApi3EntitiesExtractor implements PortStandardDefinitionEnt
         extractedPhysicalFields.add(rootPhysicalField);
 
         if (message.getPayload() == null || !StringUtils.hasText(message.getPayload().getSchemaFormat())) {
-            getUseCaseLogger().warn(String.format("Missing schema format on message: %s, default AsyncApi Schema Object is not supported", message.getTitle()));
+            getUseCaseLogger().warn(String.format("[#93] Missing schema format on message: %s, default AsyncApi Schema Object is not supported", message.getTitle()));
             return extractedPhysicalFields;
         }
 
@@ -86,7 +86,7 @@ public class PortAsyncApi3EntitiesExtractor implements PortStandardDefinitionEnt
             List<BDPhysicalFieldRes> avroPhysicalFields = payloadSchemaAnalyzer.payloadSchemaToBlindataPhysicalFields(payload, rootPhysicalField.getName());
             extractedPhysicalFields.addAll(avroPhysicalFields);
         } catch (UnsupportedSchemaFormatException e) {
-            getUseCaseLogger().warn(e.getMessage(), e);
+            getUseCaseLogger().warn("[#94] " + e.getMessage(), e);
         }
 
         return extractedPhysicalFields;
