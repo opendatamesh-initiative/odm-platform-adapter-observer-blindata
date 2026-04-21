@@ -5,5 +5,7 @@ public enum BDQualityStrategyRes {
     MINIMUM,
     MAXIMUM,
     DISTANCE,
-    PERCENTAGE_DEVIATION
+    PERCENTAGE_DEVIATION,
+    /** Scores supplied externally (odcs31 / contract-driven checks). */
+    EXTERNAL
 }

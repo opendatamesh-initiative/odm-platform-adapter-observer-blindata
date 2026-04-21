@@ -1,0 +1,29 @@
+# ODCS 3.1 → Blindata additionalProperties (_contract.*)
+# ODCS vocabulary: https://bitol-io.github.io/open-data-contract-standard/v3.1.0/data-quality/
+# Normative UI keys: design-odm-observer-kqi-odcs-ingestion.md section 6
+
+mappings:
+  - descriptorField: id
+    target: "(short segment of Quality Check code for odcs31 mapping; not an additionalProperty)"
+  - descriptorField: name
+    target: "KQI display name (odcs31 mapping)"
+  - descriptorField: type
+    target: "_contract.ruleType"
+  - descriptorField: unit
+    target: "_contract.unit"
+  - descriptorField: engine
+    target: "_contract.engine"
+  - descriptorField: implementation
+    target: "_contract.implementation (JSON string)"
+  - descriptorField: query
+    target: "_contract.query"
+  - descriptorField: metric
+    target: "_contract.metric"
+  - descriptorField: arguments
+    target: "_contract.arguments (JSON string, if present)"
+  - note: |
+      ODCS does not define a standalone "operator" key. Comparison is expressed with keys such as
+      mustBe, mustNotBe, mustBeGreaterThan, mustBeGreaterOrEqualTo, mustBeLessThan, mustBeLessOrEqualTo,
+      mustBeBetween (array), mustNotBeBetween (array). The observer sets _contract.operator to that key id
+      and _contract.bounds to the corresponding value(s) (single number or JSON array), including mapping
+      mustBeGreaterOrEqualTo + mustBeLessOrEqualTo together to operator mustBeBetween per ODCS equivalence.

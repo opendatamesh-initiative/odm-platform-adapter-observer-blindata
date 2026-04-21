@@ -1,0 +1,48 @@
+{
+  "qualityChecks": [
+    {
+      "code": "RuleWithoutThresholds",
+      "name": "RuleWithoutThresholds",
+      "description": "legacy rule with scoreStrategy but no scoreWarningThreshold / scoreSuccessThreshold",
+      "warningThreshold": 100,
+      "successThreshold": 100,
+      "scoreStrategy": "PERCENTAGE",
+      "isEnabled": true,
+      "physicalEntities": [
+        {
+          "schema": "dwh",
+          "name": "Customer",
+          "additionalProperties": [],
+          "physicalFields": [
+            {
+              "name": "ID",
+              "type": "VARCHAR",
+              "ordinalPosition": 0,
+              "additionalProperties": []
+            }
+          ]
+        }
+      ],
+      "physicalFields": [],
+      "additionalProperties": [
+        {
+          "name": "dimension",
+          "value": "Validity"
+        },
+        {
+          "name": "unit",
+          "value": "percent"
+        },
+        {
+          "name": "constraint_type",
+          "value": "custom"
+        },
+        {
+          "name": "quality_engine",
+          "value": "greatExpectations"
+        }
+      ],
+      "reference": false
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "datastoreapi": "1.0.0",
+  "info": {
+    "title": "odcs31_custom_no_thresholds",
+    "summary": "summary",
+    "description": "Test fixture for PortDataStoreApiQualityExtractorTest.testDatastoreApiV1QualityExtractorOdcs31WithCustomPropertiesButNoThresholds: odcs31 rule with customProperties (e.g. displayName only) and no score thresholds; expects default 100/100 and EXTERNAL.",
+    "termsOfService": "https://example.com/terms/",
+    "version": "1.0.0",
+    "datastoreName": "odcs31_ds",
+    "contact": {
+      "name": "API Support",
+      "url": "https://www.example.com/support",
+      "email": "support@example.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "nameSpace": "nome_schema"
+  },
+  "services": {
+    "development": {
+      "name": "svc",
+      "description": "svc",
+      "serverInfo": {},
+      "variables": {
+        "host": {
+          "default": "127.0.0.1"
+        }
+      }
+    }
+  },
+  "schema": {
+    "databaseName": "flightdb",
+    "databaseSchemaName": "dwh",
+    "tables": [
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "definition": {
+          "name": "Customer",
+          "type": "object",
+          "quality": [
+            {
+              "id": "odcs-rule-custom-no-thresholds",
+              "name": "odcs31 display name",
+              "description": "ODCS rule with customProperties but no score thresholds",
+              "type": "custom",
+              "unit": "percent",
+              "engine": "greatExpectations",
+              "mustBeBetween": [0, 100],
+              "customProperties": {
+                "displayName": "Display From Custom"
+              },
+              "implementation": {
+                "type": "ExpectColumnValuesToBeInSet",
+                "kwargs": {
+                  "column": "c"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "name": "ID",
+              "physicalType": "VARCHAR",
+              "ordinalPosition": 0
+            }
+          }
+        }
+      }
+    ]
+  }
+}

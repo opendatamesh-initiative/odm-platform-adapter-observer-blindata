@@ -1,0 +1,80 @@
+{
+  "datastoreapi": "1.0.0",
+  "info": {
+    "title": "legacy_missing_thresholds",
+    "summary": "summary",
+    "description": "Test fixture for PortDataStoreApiQualityExtractorTest.testDatastoreApiV1QualityExtractorLegacyMissingThresholdsInCustomProperties: legacy rule with scoreStrategy but without scoreWarningThreshold/scoreSuccessThreshold; expects default 100/100 thresholds.",
+    "termsOfService": "https://example.com/terms/",
+    "version": "1.0.0",
+    "datastoreName": "legacy_missing_thresholds_ds",
+    "contact": {
+      "name": "API Support",
+      "url": "https://www.example.com/support",
+      "email": "support@example.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "nameSpace": "nome_schema"
+  },
+  "services": {
+    "development": {
+      "name": "svc",
+      "description": "svc",
+      "serverInfo": {},
+      "variables": {
+        "host": {
+          "default": "127.0.0.1"
+        }
+      }
+    }
+  },
+  "schema": {
+    "databaseName": "flightdb",
+    "databaseSchemaName": "dwh",
+    "tables": [
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "definition": {
+          "name": "Customer",
+          "type": "object",
+          "quality": [
+            {
+              "name": "RuleWithoutThresholds",
+              "description": "legacy rule with scoreStrategy but no scoreWarningThreshold / scoreSuccessThreshold",
+              "dimension": "Validity",
+              "unit": "percent",
+              "type": "custom",
+              "engine": "greatExpectations",
+              "customProperties": {
+                "scoreStrategy": "PERCENTAGE",
+                "isCheckEnabled": true
+              },
+              "implementation": {
+                "type": "ExpectColumnValuesToBeInSet",
+                "kwargs": {
+                  "column": "c",
+                  "value_set": ["A", "B"]
+                }
+              }
+            }
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "name": "ID",
+              "physicalType": "VARCHAR",
+              "ordinalPosition": 0
+            }
+          }
+        }
+      }
+    ]
+  }
+}

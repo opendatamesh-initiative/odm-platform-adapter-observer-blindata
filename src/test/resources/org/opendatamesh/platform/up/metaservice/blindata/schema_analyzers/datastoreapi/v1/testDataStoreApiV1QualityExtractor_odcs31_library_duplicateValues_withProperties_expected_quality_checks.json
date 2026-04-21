@@ -1,0 +1,29 @@
+{
+  "qualityChecks": [
+    {
+      "code": "orders_unique_tenant_order",
+      "name": "orders_unique_tenant_order",
+      "description": "The combination of tenant_id and order_id must be unique",
+      "warningThreshold": 100,
+      "successThreshold": 100,
+      "scoreStrategy": "EXTERNAL",
+      "isEnabled": true,
+      "physicalEntities": [
+        {
+          "schema": "dwh",
+          "name": "Orders",
+          "additionalProperties": []
+        }
+      ],
+      "physicalFields": [],
+      "additionalProperties": [
+        { "name": "_contract.operator", "value": "mustBe" },
+        { "name": "_contract.bounds", "value": "0.0" },
+        { "name": "_contract.metric", "value": "duplicateValues" },
+        { "name": "_contract.ruleType", "value": "library" },
+        { "name": "_contract.arguments", "value": "{\"properties\":[\"tenant_id\",\"order_id\"]}" }
+      ],
+      "reference": false
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "qualityChecks": [
+    {
+      "code": "sql_count_not_null",
+      "name": "sql_count_not_null",
+      "warningThreshold": 100,
+      "successThreshold": 100,
+      "scoreStrategy": "EXTERNAL",
+      "isEnabled": true,
+      "physicalEntities": [
+        {
+          "schema": "dwh",
+          "name": "Customer",
+          "additionalProperties": []
+        }
+      ],
+      "physicalFields": [],
+      "additionalProperties": [
+        { "name": "_contract.operator", "value": "mustBeLessThan" },
+        { "name": "_contract.bounds", "value": "3600.0" },
+        { "name": "_contract.ruleType", "value": "sql" },
+        { "name": "_contract.query", "value": "SELECT COUNT(*) FROM {object} WHERE {property} IS NOT NULL" }
+      ],
+      "reference": false
+    }
+  ]
+}

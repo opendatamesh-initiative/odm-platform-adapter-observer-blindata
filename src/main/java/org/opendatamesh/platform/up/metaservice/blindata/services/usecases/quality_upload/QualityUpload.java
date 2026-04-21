@@ -265,6 +265,8 @@ class QualityUpload implements UseCase {
             case PERCENTAGE:
             case PERCENTAGE_DEVIATION:
                 break;
+            case EXTERNAL:
+                break;
             case MINIMUM:
                 validateMinimumStrategy(qualityCheck, qualityCheckCode);
                 break;

@@ -1,0 +1,57 @@
+{
+  "datastoreapi": "1.0.0",
+  "info": {
+    "title": "odcs31_library_nullValues",
+    "summary": "summary",
+    "description": "ODCS 3.1 library metric nullValues on a column, operator mustBe 0, unit rows.",
+    "version": "1.0.0",
+    "datastoreName": "odcs31_ds"
+  },
+  "services": {
+    "development": {
+      "name": "svc",
+      "description": "svc",
+      "serverInfo": {},
+      "variables": {
+        "host": { "default": "127.0.0.1" }
+      }
+    }
+  },
+  "schema": {
+    "databaseName": "flightdb",
+    "databaseSchemaName": "dwh",
+    "tables": [
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "definition": {
+          "name": "Customer",
+          "type": "object",
+          "quality": [
+            {
+              "id": "customer_id_no_nulls",
+              "name": "customer_id_no_nulls",
+              "description": "There must be no null values in the column.",
+              "type": "library",
+              "metric": "nullValues",
+              "unit": "rows",
+              "mustBe": 0
+            }
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "name": "ID",
+              "physicalType": "VARCHAR",
+              "ordinalPosition": 0
+            }
+          }
+        }
+      }
+    ]
+  }
+}
