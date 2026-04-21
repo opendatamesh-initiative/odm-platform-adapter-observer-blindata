@@ -150,9 +150,10 @@ When the Blindata policy validator evaluates a data product, it logs warning mes
 | `[#85]` | No default namespace identifier provided. |
 | `[#86]` | Namespace not found for identifier. |
 | `[#87]` | No default data category name provided. |
-| `[#88]` | Data category not found in namespace. |
-| `[#89]` | Data category not found. |
+| `[#88]` | Data category not found for the default root concept (message includes category name and namespace label). |
+| `[#89]` | Data category not found for a referenced concept after namespace resolution. |
 | `[#90]` | Unable to resolve semantic elements for semantic link path. |
+| `[#120]` | No unique logical namespace found for prefix (namespace lookup returned none or more than one match). |
 
 ### AsyncAPI and message schema
 

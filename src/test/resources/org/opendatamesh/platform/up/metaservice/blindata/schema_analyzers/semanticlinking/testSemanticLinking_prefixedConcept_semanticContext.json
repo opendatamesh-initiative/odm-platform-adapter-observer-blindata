@@ -1,0 +1,5 @@
+{
+  "s-base": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+  "s-type": "[Movie]",
+  "cross_field": "[other:ConceptB].other:attribute2FromConceptB"
+}

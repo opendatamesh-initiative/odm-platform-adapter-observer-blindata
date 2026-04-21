@@ -1,0 +1,18 @@
+{
+  "system": {
+    "name": "PostgreSQL - Film Rental Inc.",
+    "description": "The Film Rental Inc organization's operational database",
+    "technology": "PostgreSQL"
+  },
+  "schema": "demo",
+  "name": "prefixed_concept_demo",
+  "description": "Table used to validate prefixed root concept resolution.",
+  "tableType": "BASE_TABLE",
+  "physicalFields": [
+    {
+      "name": "cross_field",
+      "type": "varchar",
+      "ordinalPosition": 1
+    }
+  ]
+}

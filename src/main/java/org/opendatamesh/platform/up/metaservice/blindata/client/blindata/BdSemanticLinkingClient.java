@@ -13,4 +13,6 @@ public interface BdSemanticLinkingClient {
     Optional<BDDataCategoryRes> getDataCategoryByNameAndNamespaceUuid(String dataCategoryName, String namespaceUuid);
 
     Optional<BDLogicalNamespaceRes> getLogicalNamespaceByIdentifier(String identifier);
+
+    Optional<BDLogicalNamespaceRes> getLogicalNamespaceByPrefix(String prefix);
 }

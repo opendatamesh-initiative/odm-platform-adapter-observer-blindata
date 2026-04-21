@@ -61,6 +61,7 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
                 bdSystemClient,
                 odmRegistryClient
         );
+        lenient().when(bdSemanticLinkingClient.getLogicalNamespaceByPrefix(any())).thenReturn(Optional.empty());
     }
 
     @Test

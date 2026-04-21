@@ -378,6 +378,33 @@ public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, B
     }
 
     @Override
+    public Optional<BDLogicalNamespaceRes> getLogicalNamespaceByPrefix(String prefix) {
+        if (!StringUtils.hasText(prefix)) {
+            return Optional.empty();
+        }
+        try {
+            BDNamespaceSearchOptions filters = new BDNamespaceSearchOptions();
+            filters.setPrefix(prefix);
+            Page<BDLogicalNamespaceRes> page = restUtils.getPage(
+                    credentials.getBlindataUrl() + "/api/v1/logical/namespaces",
+                    null,
+                    PageRequest.ofSize(2),
+                    filters,
+                    BDLogicalNamespaceRes.class
+            );
+            List<BDLogicalNamespaceRes> matches = page.getContent();
+            if (matches.size() != 1) {
+                return Optional.empty();
+            }
+            return Optional.of(matches.get(0));
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
     public BDQualityUploadResultsRes uploadQuality(BDQualityUploadRes qualityUpload) {
         try {
             RestUtils rest = credentials.getEnableAsync() ? asyncRestUtils : restUtils;

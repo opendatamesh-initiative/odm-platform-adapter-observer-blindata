@@ -1,0 +1,5 @@
+{
+  "s-base": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+  "s-type": "[Movie]",
+  "orphan_field": "[unknown:SomeConcept].unknown:attr"
+}
