@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  */
 final class BracketConceptRef {
 
-    private static final Pattern PREFIXED_INNER = Pattern.compile("^([A-Za-z0-9_]+):(.+)$");
+    private static final Pattern PREFIXED_INNER = Pattern.compile("^([^:]+):(.+)$");
 
     private final Optional<String> namespacePrefix;
     private final String conceptName;
