@@ -31,11 +31,11 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
             Optional<BDLogicalNamespaceRes> resolvedDefaultNamespace = resolveDefaultNamespace(parsedSemanticContext.getDefaultNamespaceIdentifier());
             if (resolvedDefaultNamespace.isEmpty()) return;
 
-            Optional<BDDataCategoryRes> resolvedDefaultDataCategory = resolveDefaultDataCategory(parsedSemanticContext.getDefaultDataCategoryName(), resolvedDefaultNamespace.get());
+            Optional<BDDataCategoryRes> resolvedDefaultDataCategory = resolveDefaultDataCategory(parsedSemanticContext.getDefaultDataCategoryInner(), resolvedDefaultNamespace.get());
             if (resolvedDefaultDataCategory.isEmpty()) return;
 
             Set<BDDataCategoryRes> resolvedDataCategories =
-                    resolveDataCategories(parsedSemanticContext.getDataCategories(), resolvedDefaultNamespace.get());
+                    resolveDataCategories(parsedSemanticContext.getReferencedConcepts(), resolvedDefaultNamespace.get());
             Set<BDPhysicalFieldRes> enrichedPhysicalFields = enrichPhysicalFieldsWithSemanticLinks(physicalEntity.getPhysicalFields(), parsedSemanticContext.getSemanticLinks());
             physicalEntity.setDataCategories(resolvedDataCategories);
             physicalEntity.setPhysicalFields(enrichedPhysicalFields);
@@ -44,13 +44,16 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
 
     private SemanticContext parseSemanticContext(Map<String, Object> semanticContext) {
         String defaultNamespaceIdentifier = Optional.ofNullable((String) semanticContext.get("s-base")).orElse("");
-        String defaultDataCategoryName = Optional.ofNullable((String) semanticContext.get("s-type")).orElse("").replaceAll("[\\[\\]]", "");
+        String defaultDataCategoryInner = Optional.ofNullable((String) semanticContext.get("s-type")).orElse("").replaceAll("[\\[\\]]", "");
+        BracketConceptRef defaultRootRef = BracketConceptRef.parse(defaultDataCategoryInner);
+        Set<BracketConceptRef> initialRefs = new HashSet<>();
+        initialRefs.add(defaultRootRef);
 
         return semanticContext.entrySet().stream()
                 .filter(entry -> !"s-base".equals(entry.getKey()) && !"s-type".equals(entry.getKey()))
-                .map(entry -> parseFieldContext(entry.getKey(), entry.getValue(), "", defaultNamespaceIdentifier, defaultDataCategoryName))
+                .map(entry -> parseFieldContext(entry.getKey(), entry.getValue(), "", defaultNamespaceIdentifier, defaultDataCategoryInner))
                 .reduce(
-                        new SemanticContext(defaultNamespaceIdentifier, defaultDataCategoryName, new HashMap<>(), Set.of(defaultDataCategoryName)),
+                        new SemanticContext(defaultNamespaceIdentifier, defaultDataCategoryInner, new HashMap<>(), initialRefs),
                         SemanticContext::merge
                 );
     }
@@ -60,12 +63,12 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
             Object fieldContext,
             String parentPath,
             String defaultNamespaceIdentifier,
-            String defaultDataCategoryName) {
+            String defaultDataCategoryInner) {
 
         if (fieldContext instanceof String) {
-            return handleSimpleSemanticPath(fieldName, (String) fieldContext, parentPath, defaultNamespaceIdentifier, defaultDataCategoryName);
+            return handleSimpleSemanticPath(fieldName, (String) fieldContext, parentPath, defaultNamespaceIdentifier, defaultDataCategoryInner);
         } else if (fieldContext instanceof Map) {
-            return handleNestedSemanticPath(fieldName, (Map<String, Object>) fieldContext, parentPath, defaultNamespaceIdentifier, defaultDataCategoryName);
+            return handleNestedSemanticPath(fieldName, (Map<String, Object>) fieldContext, parentPath, defaultNamespaceIdentifier, defaultDataCategoryInner);
         }
         return new SemanticContext();
     }
@@ -75,16 +78,16 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
             String semanticPath,
             String parentPath,
             String defaultNamespaceIdentifier,
-            String defaultDataCategoryName
+            String defaultDataCategoryInner
     ) {
         String fullPath = isAbsoluteSemanticPath(semanticPath) ? semanticPath : (parentPath.isEmpty() ? semanticPath : parentPath + "." + semanticPath);
 
-        Set<String> dataCategories = new HashSet<>();
+        Set<BracketConceptRef> referencedConcepts = new HashSet<>();
         if (isAbsoluteSemanticPath(fullPath)) {
-            String startingConcept = fullPath.substring(0, fullPath.indexOf("]") + 1).replaceAll("[\\[\\]]", "");
-            dataCategories.add(startingConcept);
+            String startingInner = fullPath.substring(0, fullPath.indexOf("]") + 1).replaceAll("[\\[\\]]", "");
+            referencedConcepts.add(BracketConceptRef.parse(startingInner));
         } else {
-            fullPath = StringUtils.hasText(defaultDataCategoryName) ? "[" + defaultDataCategoryName + "]" + "." + fullPath : fullPath;
+            fullPath = StringUtils.hasText(defaultDataCategoryInner) ? "[" + defaultDataCategoryInner + "]" + "." + fullPath : fullPath;
         }
 
         BDSemanticLink semanticLink = new BDSemanticLink();
@@ -92,7 +95,7 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
         semanticLink.setSemanticLinkString(fullPath);
         Map<String, BDSemanticLink> semanticLinks = Map.of(fieldName, semanticLink);
 
-        return new SemanticContext(defaultNamespaceIdentifier, defaultDataCategoryName, semanticLinks, dataCategories);
+        return new SemanticContext(defaultNamespaceIdentifier, defaultDataCategoryInner, semanticLinks, referencedConcepts);
     }
 
     // Used for nested field, like in AVRO
@@ -107,7 +110,7 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
             Map<String, Object> nestedContext,
             String parentPath,
             String defaultNamespaceIdentifier,
-            String defaultDataCategoryName
+            String defaultDataCategoryInner
     ) {
         SemanticContext semanticContext = new SemanticContext();
 
@@ -116,7 +119,7 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
             if (!"s-type".equals(entry.getKey())) {
                 String nestedFieldName = entry.getKey();
                 String effectiveParentPath = parentPath.isEmpty() ? nestedType : parentPath + "." + nestedType;
-                SemanticContext childContext = parseFieldContext(fieldName + "." + nestedFieldName, entry.getValue(), effectiveParentPath, defaultNamespaceIdentifier, defaultDataCategoryName);
+                SemanticContext childContext = parseFieldContext(fieldName + "." + nestedFieldName, entry.getValue(), effectiveParentPath, defaultNamespaceIdentifier, defaultDataCategoryInner);
                 semanticContext = semanticContext.merge(childContext);
             }
         }
@@ -136,25 +139,53 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
         return resolvedNamespace;
     }
 
-    private Optional<BDDataCategoryRes> resolveDefaultDataCategory(String defaultDataCategoryName, BDLogicalNamespaceRes defaultNamespace) {
-        if (!StringUtils.hasText(defaultDataCategoryName)) {
+    private Optional<BDDataCategoryRes> resolveDefaultDataCategory(String defaultDataCategoryInner, BDLogicalNamespaceRes defaultNamespace) {
+        BracketConceptRef ref = BracketConceptRef.parse(defaultDataCategoryInner);
+        if (!StringUtils.hasText(ref.getConceptName())) {
             getUseCaseLogger().warn("[#87] No default data category name provided.");
             return Optional.empty();
         }
 
-        Optional<BDDataCategoryRes> resolvedDataCategory = client.getDataCategoryByNameAndNamespaceUuid(defaultDataCategoryName, defaultNamespace.getUuid());
+        Optional<String> targetNamespaceUuid = resolveNamespaceUuidForConceptRef(ref, defaultNamespace);
+
+        Optional<BDDataCategoryRes> resolvedDataCategory = client.getDataCategoryByNameAndNamespaceUuid(ref.getConceptName(), targetNamespaceUuid.orElse(null));
         if (resolvedDataCategory.isEmpty()) {
-            getUseCaseLogger().warn("[#88] Data category: " + defaultDataCategoryName + " not found in namespace " + defaultNamespace.getIdentifier());
+            String namespaceLabel = ref.getNamespacePrefix().map(p -> "prefix " + p).orElseGet(defaultNamespace::getIdentifier);
+            getUseCaseLogger().warn("[#88] Data category: " + ref.getConceptName() + " not found in namespace " + namespaceLabel);
         }
         return resolvedDataCategory;
     }
 
-    private Set<BDDataCategoryRes> resolveDataCategories(Set<String> dataCategories, BDLogicalNamespaceRes defaultNamespace) {
-        return dataCategories.stream()
-                .map(dataCategoryName -> {
-                    Optional<BDDataCategoryRes> resolved = client.getDataCategoryByNameAndNamespaceUuid(dataCategoryName, defaultNamespace.getUuid());
+    private Optional<String> resolveNamespaceUuidForConceptRef(BracketConceptRef ref, BDLogicalNamespaceRes defaultNamespace) {
+        if (ref.getNamespacePrefix().isEmpty()) {
+            return Optional.ofNullable(defaultNamespace.getUuid());
+        }
+        String prefix = ref.getNamespacePrefix().get();
+        Optional<BDLogicalNamespaceRes> resolved = client.getLogicalNamespaceByPrefix(prefix);
+        if (resolved.isEmpty()) {
+            getUseCaseLogger().warn("[#120] No unique logical namespace found for prefix: " + prefix);
+            return Optional.empty();
+        }
+        if (resolved.get().getUuid() == null) {
+            getUseCaseLogger().warn("[#120] No unique logical namespace found for prefix: " + prefix);
+            return Optional.empty();
+        }
+        return Optional.of(resolved.get().getUuid());
+    }
+
+    private Set<BDDataCategoryRes> resolveDataCategories(Set<BracketConceptRef> referencedConcepts, BDLogicalNamespaceRes defaultNamespace) {
+        return referencedConcepts.stream()
+                .map(ref -> {
+                    if (!StringUtils.hasText(ref.getConceptName())) {
+                        return Optional.<BDDataCategoryRes>empty();
+                    }
+                    Optional<String> namespaceUuid = resolveNamespaceUuidForConceptRef(ref, defaultNamespace);
+                    if (namespaceUuid.isEmpty()) {
+                        return Optional.<BDDataCategoryRes>empty();
+                    }
+                    Optional<BDDataCategoryRes> resolved = client.getDataCategoryByNameAndNamespaceUuid(ref.getConceptName(), namespaceUuid.get());
                     if (resolved.isEmpty()) {
-                        getUseCaseLogger().warn("[#89] Data category: " + dataCategoryName + " not found");
+                        getUseCaseLogger().warn("[#89] Data category: " + ref.getConceptName() + " not found");
                     }
                     return resolved;
                 })
@@ -197,18 +228,18 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
     private class SemanticContext {
 
         String defaultNamespaceIdentifier;
-        String defaultDataCategoryName;
+        String defaultDataCategoryInner;
         Map<String, BDSemanticLink> semanticLinks;
-        Set<String> dataCategories;
+        Set<BracketConceptRef> referencedConcepts;
 
         public SemanticContext() {
         }
 
-        public SemanticContext(String defaultNamespaceIdentifier, String defaultDataCategoryName, Map<String, BDSemanticLink> semanticLinks, Set<String> dataCategories) {
+        public SemanticContext(String defaultNamespaceIdentifier, String defaultDataCategoryInner, Map<String, BDSemanticLink> semanticLinks, Set<BracketConceptRef> referencedConcepts) {
             this.defaultNamespaceIdentifier = defaultNamespaceIdentifier;
-            this.defaultDataCategoryName = defaultDataCategoryName;
+            this.defaultDataCategoryInner = defaultDataCategoryInner;
             this.semanticLinks = semanticLinks;
-            this.dataCategories = dataCategories;
+            this.referencedConcepts = referencedConcepts;
         }
 
         public String getDefaultNamespaceIdentifier() {
@@ -219,12 +250,12 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
             this.defaultNamespaceIdentifier = defaultNamespaceIdentifier;
         }
 
-        public String getDefaultDataCategoryName() {
-            return defaultDataCategoryName;
+        public String getDefaultDataCategoryInner() {
+            return defaultDataCategoryInner;
         }
 
-        public void setDefaultDataCategoryName(String defaultDataCategoryName) {
-            this.defaultDataCategoryName = defaultDataCategoryName;
+        public void setDefaultDataCategoryInner(String defaultDataCategoryInner) {
+            this.defaultDataCategoryInner = defaultDataCategoryInner;
         }
 
         public Map<String, BDSemanticLink> getSemanticLinks() {
@@ -235,32 +266,32 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
             this.semanticLinks = semanticLinks;
         }
 
-        public Set<String> getDataCategories() {
-            return dataCategories;
+        public Set<BracketConceptRef> getReferencedConcepts() {
+            return referencedConcepts;
         }
 
-        public void setDataCategories(Set<String> dataCategories) {
-            this.dataCategories = dataCategories;
+        public void setReferencedConcepts(Set<BracketConceptRef> referencedConcepts) {
+            this.referencedConcepts = referencedConcepts;
         }
 
         public SemanticContext merge(SemanticContext other) {
             String mergedNamespaceIdentifier =
                     other.defaultNamespaceIdentifier != null ? other.defaultNamespaceIdentifier : this.defaultNamespaceIdentifier;
 
-            String mergedDataCategoryName =
-                    other.defaultDataCategoryName != null ? other.defaultDataCategoryName : this.defaultDataCategoryName;
+            String mergedDataCategoryInner =
+                    other.defaultDataCategoryInner != null ? other.defaultDataCategoryInner : this.defaultDataCategoryInner;
 
             Map<String, BDSemanticLink> mergedLinks = new HashMap<>(this.semanticLinks != null ? this.semanticLinks : Map.of());
             if (other.semanticLinks != null) {
                 mergedLinks.putAll(other.semanticLinks);
             }
 
-            Set<String> mergedCategories = new HashSet<>(this.dataCategories != null ? this.dataCategories : Set.of());
-            if (other.dataCategories != null) {
-                mergedCategories.addAll(other.dataCategories);
+            Set<BracketConceptRef> mergedRefs = new HashSet<>(this.referencedConcepts != null ? this.referencedConcepts : Set.of());
+            if (other.referencedConcepts != null) {
+                mergedRefs.addAll(other.referencedConcepts);
             }
 
-            return new SemanticContext(mergedNamespaceIdentifier, mergedDataCategoryName, mergedLinks, mergedCategories);
+            return new SemanticContext(mergedNamespaceIdentifier, mergedDataCategoryInner, mergedLinks, mergedRefs);
         }
     }
 

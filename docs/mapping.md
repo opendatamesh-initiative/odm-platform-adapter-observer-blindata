@@ -623,6 +623,20 @@ In this example:
 - The `ProductSku` concept is in the luxury namespace (prefixed with `lux:`)
 - The relationship `refersTo` connects concepts across different namespaces
 
+#### Leading bracket with namespace prefix (root segment)
+
+When a field path (or `s-type`) starts with an absolute segment of the form **`[prefix:ConceptName]`**, the adapter resolves **`ConceptName`** as a concept in the logical namespace whose Blindata **prefix** matches **`prefix`**, using `s-base` only as the default namespace for Blindata’s `resolvefield` call (the path string passed to Blindata stays exactly as written in the descriptor). Unprefixed roots **`[ConceptName]`** still resolve `ConceptName` in the namespace identified by `s-base`. Example:
+
+```json
+{
+  "s-base": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+  "s-type": "[Movie]",
+  "cross_ref": "[other:ConceptB].other:attribute2FromConceptB"
+}
+```
+
+Here `ConceptB` is loaded from the namespace whose prefix is `other`, not from the default film-rental namespace.
+
 ### Complete Example: Customer Payment System
 
 Here's a comprehensive example showing how semantic linking can be used in a customer payment system:

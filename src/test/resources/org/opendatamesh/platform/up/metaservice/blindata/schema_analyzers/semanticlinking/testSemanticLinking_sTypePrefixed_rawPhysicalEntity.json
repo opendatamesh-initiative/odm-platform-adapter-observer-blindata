@@ -1,0 +1,17 @@
+{
+  "system": {
+    "name": "PostgreSQL - Film Rental Inc.",
+    "description": "Test",
+    "technology": "PostgreSQL"
+  },
+  "schema": "demo",
+  "name": "stype_prefixed_demo",
+  "tableType": "BASE_TABLE",
+  "physicalFields": [
+    {
+      "name": "field1",
+      "type": "varchar",
+      "ordinalPosition": 1
+    }
+  ]
+}

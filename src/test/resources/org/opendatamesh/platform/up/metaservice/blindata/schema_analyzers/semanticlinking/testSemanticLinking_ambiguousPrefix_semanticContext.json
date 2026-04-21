@@ -1,0 +1,5 @@
+{
+  "s-base": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+  "s-type": "[Movie]",
+  "dup_field": "[dup:AmbiguousConcept].dup:attr"
+}

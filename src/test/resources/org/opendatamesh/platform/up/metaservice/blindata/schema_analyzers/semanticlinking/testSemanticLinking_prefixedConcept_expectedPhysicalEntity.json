@@ -1,0 +1,66 @@
+{
+  "system": {
+    "name": "PostgreSQL - Film Rental Inc.",
+    "description": "The Film Rental Inc organization's operational database",
+    "technology": "PostgreSQL"
+  },
+  "schema": "demo",
+  "name": "prefixed_concept_demo",
+  "description": "Table used to validate prefixed root concept resolution.",
+  "tableType": "BASE_TABLE",
+  "physicalFields": [
+    {
+      "name": "cross_field",
+      "type": "varchar",
+      "ordinalPosition": 1,
+      "logicalFields": [
+        {
+          "semanticLink": {
+            "defaultNamespaceIdentifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+            "semanticLinkString": "[other:ConceptB].other:attribute2FromConceptB",
+            "semanticLinkElements": [
+              {
+                "sequenceId": 1,
+                "resourceType": "DATA_CATEGORY",
+                "resourceName": "ConceptB",
+                "ordinalPosition": 0
+              },
+              {
+                "sequenceId": 2,
+                "resourceType": "LOGICAL_FIELD",
+                "resourceName": "attribute2FromConceptB",
+                "ordinalPosition": 1
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "dataCategories": [
+    {
+      "namespace": {
+        "name": "FilmRentalInc",
+        "displayName": "Film Rental Inc",
+        "identifier": "https://demo.blindata.io/logical/namespaces/name/filmRentalInc#",
+        "prefix": "fri",
+        "description": "Namespace for the business ontology of Film Rental Inc"
+      },
+      "name": "Movie",
+      "displayName": "Movie",
+      "description": "Movie data such as title, release year, length, rating, etc."
+    },
+    {
+      "namespace": {
+        "name": "OtherOntology",
+        "displayName": "Other ontology",
+        "identifier": "https://demo.blindata.io/logical/namespaces/name/otherOntology#",
+        "prefix": "other",
+        "description": "Separate logical namespace reached via prefix other"
+      },
+      "name": "ConceptB",
+      "displayName": "Concept B",
+      "description": "Concept used for cross-namespace prefixed path tests."
+    }
+  ]
+}
