@@ -39,7 +39,7 @@ When a data product descriptor contains **`quality`** annotations, the platform 
 
 ### 2.2 Reference implementation (this repository)
 
-The **`odm-platform-adapter-observer-blindata`** service implements the **Datastore API** observer path: **`QualityUpload`** use case, **`DataProductPortAssetAnalyzer`**, **`PortDatastoreApiEntitiesExtractor`** (`datastoreapi` / `1.*.*`), and **`DataStoreApiStandardDefinitionVisitorImpl`** (maps descriptor **`quality`** entries to internal **`QualityCheck`**). **`docs/mapping.md`** documents the legacy mapping for stakeholders; section 4 below is the **normative baseline** for retrocompat work.
+The **`odm-platform-adapter-observer-blindata`** service implements the **Datastore API** observer path: **`QualityUpload`** use case, **`DataProductPortAssetAnalyzer`**, **`PortDatastoreApiEntitiesExtractor`** (`datastoreapi` / `1.*.*`), and **`DataStoreApiStandardDefinitionVisitorImpl`** (maps descriptor **`quality`** entries to internal **`QualityCheck`**). **`docs/mapping.md`** documents the public quality mapping for stakeholders, including both **legacy** and **odcs31** paths; section 4 below is the **normative baseline** for retrocompat work.
 
 **Legacy baseline in automated tests (authoritative for “as-is”):** Legacy descriptors and expected **`QualityCheck`** outcomes are **pinned** by existing tests — no need to duplicate that inventory in prose before implementation.
 
@@ -57,28 +57,26 @@ Section **5** retrocompat **sign-off** still requires **explicit** before/after 
 
 ### 3.1 Parser and domain model
 
-- Deserialization uses a **narrow Java model** (`Quality`, `QualityCustomProperty`) with fields such as `name`, `description`, `dimension`, `unit`, `type`, `engine`, `mustBe*`, and **`customProperties`** for Blindata-specific overrides. **Structured ODCS 3.1 concepts** (e.g. library **`metric`**, **`arguments`**, discriminated **`ruleType`**, full **`query`**, full **`implementation`** body) are **not first-class** on that type.
-- JSON fields present in real descriptors but **not** mapped into the model are typically **dropped** at `ObjectMapper` deserialization unless the model is extended or a **raw `JsonNode` / parallel parse** retains them.
-- The pipeline uses **`DataStoreApiParser`** plus **`DataStoreApiBlindataDefinitionConverter`** to materialize **`DataStoreApiBlindataDefinition`**; extension for full ODCS support likely requires **model extension** and/or **retaining raw `quality[]` nodes** per rule for lossless **`_contract.implementation`** / **`_contract.query`**.
+- Deserialization uses the **`Quality`** / **`QualityCustomProperty`** Java model. This branch extends that model with ODCS 3.1 fields needed by the mapping: **`id`**, **`metric`**, **`arguments`**, **`query`**, **`implementation`**, **`mustNotBe`**, **`mustBeGreaterThan`**, **`mustBeLessThan`**, **`mustBeBetween`**, and **`mustNotBeBetween`**.
+- Structured ODCS fields that must be retained for the UI are stored as `JsonNode` where needed and serialized into **`_contract.*`** additional properties by **`ContractAdditionalPropertiesBuilder`**.
+- The pipeline still uses **`DataStoreApiParser`** plus **`DataStoreApiBlindataDefinitionConverter`** to materialize **`DataStoreApiBlindataDefinition`**; unmapped JSON fields outside the modeled quality vocabulary can still be dropped by deserialization.
 
 ### 3.2 Mapping today (legacy / legacy-style)
 
-- **No `_contract.*` keys** are emitted. Descriptor `unit` and `type` map to legacy additional property names such as **`unit`** and **`constraint_type`**; `dimension`, `quality_engine`, etc. are aligned with **`docs/mapping.md`**, not section 6 of this document.
-- **`implementation` (custom rule body, e.g. Great Expectations)** appears in real descriptors and test fixtures, but the **`Quality`** Java model **does not** declare it, so it is **dropped** at deserialization and **never** reaches **`QualityCheck`** today. **odcs31** must **preserve** it via **`_contract.implementation`** (section 6, section 7.1).
-- **Intervals:** `mustBeGreaterOrEqualTo` / `mustBeLessOrEqualTo` / `mustBe` populate **`scoreLeftValue`**, **`scoreRightValue`**, **`scoreExpectedValue`** when present.
-- **Strategy and thresholds** come from **`customProperties`** (`scoreStrategy`, `scoreWarningThreshold`, `scoreSuccessThreshold`).
+- **Legacy mapping:** Descriptor `dimension`, `unit`, `type`, and `engine` map to legacy additional property names such as **`dimension`**, **`unit`**, **`constraint_type`**, and **`quality_engine`**. Legacy intervals (`mustBeGreaterOrEqualTo`, `mustBeLessOrEqualTo`, `mustBe`) populate **`scoreLeftValue`**, **`scoreRightValue`**, and **`scoreExpectedValue`**. **Strategy** comes from **`customProperties.scoreStrategy`**.
+- **odcs31 mapping:** Rules without **`customProperties.scoreStrategy`** emit **`scoreStrategy: EXTERNAL`** and **`_contract.*`** keys. **`implementation`** is preserved as **`_contract.implementation`**, **`query`** as **`_contract.query`**, **`metric`** as **`_contract.metric`**, **`arguments`** as **`_contract.arguments`**, and ODCS comparison keys are converted to **`_contract.operator`** / **`_contract.bounds`**.
+- **Thresholds:** Both paths apply descriptor threshold overrides when present and default missing warning/success thresholds to **100 / 100** so upload validation passes.
 
 ### 3.3 Validation and strategy enum (blockers for odcs31 only)
 
-- The observer **does not default** `scoreStrategy` when **`customProperties.scoreStrategy`** is omitted; **`QualityCheck.scoreStrategy`** stays **null** unless set from the descriptor. In practice, **Blindata upload fails** for checks built on the **legacy** path when **`scoreStrategy`** is missing — so successfully ingested **legacy** rules in production **typically declare** **`customProperties.scoreStrategy`**. That motivates the **retrocompat discriminant** in **section 5.1** (absent → odcs31, present → legacy).
-- **`QualityUpload`** validates that **warning and success thresholds** are set (and within 0–100) for extracted checks; it also applies **strategy-specific** rules when **`scoreStrategy`** is `MINIMUM`, `MAXIMUM`, or `DISTANCE`.
-- The internal **`BDQualityStrategyRes`** enum (as of this writing) lists strategies such as **`PERCENTAGE`**, **`MINIMUM`**, **`MAXIMUM`**, **`DISTANCE`**, **`PERCENTAGE_DEVIATION`** — **`EXTERNAL` is absent**. odcs31 requires **`EXTERNAL`** to be supported end-to-end (enum + API + validation branch that does **not** require interval fields for built-in scoring).
+- The observer now routes **full** rules with omitted **`customProperties.scoreStrategy`** to **odcs31**, setting **`scoreStrategy: EXTERNAL`**. Full rules with **`customProperties.scoreStrategy`** present stay on the **legacy** path.
+- **`QualityUpload`** validates that **warning and success thresholds** are set (and within 0–100) for extracted checks; it applies **strategy-specific** interval rules for built-in strategies and skips those interval requirements for **`EXTERNAL`**.
+- The internal **`BDQualityStrategyRes`** enum includes **`EXTERNAL`**.
 
 ### 3.4 Stable identifiers and suite
 
 - **Quality suite:** `code` = `{domain} - {dataProductName}`; **name** uses **displayName** when set.
-- **Legacy path (unchanged):** the short segment used in the check **`code`** (before suite prefix) is **`quality[].name`**. **`customProperties.displayName`** overrides the **KQI display name** only, not the **`code`** segment.
-- **odcs31 path (new version only):** when **`quality[].id`** is **present**, it **must** be used as the short segment for the Quality Check **`code`** (after the usual **`{suiteCode} - `** prefix). When **`id`** is absent, fall back to the same segment rule as legacy (**`name`**). Descriptor **`quality[].name`** maps to the **display name** of the check (KQI **`name`** field), not to the **`code`** segment when **`id`** is present.
+- **Legacy and odcs31 paths:** when **`quality[].id`** is **present**, it is used as the short segment for the Quality Check **`code`** (after the usual **`{suiteCode} - `** prefix). When **`id`** is absent, **`quality[].name`** is used. **`customProperties.displayName`** overrides the **KQI display name** only, not the **`code`** segment.
 - **References:** `customProperties.refName` creates a **reference** check merged by **`code`** with the main rule’s physical links.
 
 **Implication:** Full **Bitol ODCS 3.1** support needs a **deliberate dual path**: **legacy mapping** unchanged for non-ODCS / non-migrated descriptors, and **odcs31 mapping** for classified ODCS rules, with validation and enums updated accordingly.
@@ -92,11 +90,11 @@ This subsection records how the **current codebase** aligns with the analysis ab
 | Topic | Implementation |
 |-------|----------------|
 | **Single quality extractor** | Only **`PortDatastoreApiEntitiesExtractor`** implements **`PortStandardDefinitionQualityExtractor`** — **Datastore API** spec **`1.*.*`** only. |
-| **Legacy mapping** | **`DataStoreApiStandardDefinitionVisitorImpl.qualityToQualityCheck`** implements legacy-style fields, **`refName`**, issue policies. |
+| **Dual quality mapping** | **`DataStoreApiStandardDefinitionVisitorImpl.qualityToQualityCheck`** routes **`refName`** stubs first, then **legacy** when **`customProperties.scoreStrategy`** is present, otherwise **odcs31**. |
 | **Suite and check code** | **`QualityUpload.buildQualitySuite`** / **`addQualitySuiteCodeToQualityChecksCode`**. |
-| **`scoreStrategy` unset by default** | Set only when **`customProperties.scoreStrategy`** is present. |
-| **Validation** | **`QualityUpload.validateQualityCheckStrategyParameters`** skips interval rules when **`scoreStrategy`** is **null**; thresholds validated separately. |
-| **`EXTERNAL` missing** | **`BDQualityStrategyRes`** has no **`EXTERNAL`** until added. |
+| **odcs31 score strategy** | **`DataStoreApiStandardDefinitionVisitorImpl.odcs31QualityToQualityCheck`** sets **`scoreStrategy: EXTERNAL`**. |
+| **Validation** | **`QualityUpload.validateQualityCheckStrategyParameters`** skips built-in interval rules for **`EXTERNAL`**; thresholds validated separately. |
+| **`EXTERNAL` strategy** | **`BDQualityStrategyRes`** includes **`EXTERNAL`**. |
 | **Blindata upload** | **`BdClientImpl.uploadQuality`** → **`POST .../data-quality/suites/*/import-objects`** with optional **`?cleanup=true`** (see gaps below). |
 | **`additionalProperties` shape** | **`BDAdditionalPropertiesRes`** is **`name` + `value` (string)**; **`_contract.*`** values must be serialized (JSON string for **`_contract.implementation`**). |
 
@@ -110,7 +108,7 @@ This subsection records how the **current codebase** aligns with the analysis ab
 
 4. **Merge ordering (`refName` + odcs31)** — **`mergeQualityChecksWithSameCode`** uses a **`HashMap`**; merge **order** affects which **`QualityCheck`** instance wins when combining **main** and **reference** rows for the same **`code`**. For stable **legacy vs odcs31** classification after merge, require **deterministic ordering** (e.g. process **non-reference** definitions before **reference** stubs, or **`LinkedHashMap`**, or resolve **`refName`** before applying **`scoreStrategy`** routing). Document in implementation and tests (**section 8.6**).
 
-5. **`isCheckEnabled` default pitfall** — **`handleQualityCustomProperties`** sets **`isEnabled`** from **`Boolean.TRUE.equals(getCheckEnabled())`**. If **`customProperties`** exists but **`isCheckEnabled`** is omitted, the check becomes **disabled** (`false`), which can contradict the intended default **enabled**. Fixtures often set **`isCheckEnabled` explicitly**; migration tests should cover partial **`customProperties`**.
+5. **`isCheckEnabled` default** — Both mapping paths default **`isEnabled`** to **`true`** when **`customProperties.isCheckEnabled`** is omitted.
 
 6. **Import `cleanup` query parameter** — Upload may pass **`cleanup=true`**, which can remove catalog objects not present in the import. Relate product decisions on **deletion vs disable** (**section 11.2**) to this API behavior and tenant expectations.
 
@@ -219,6 +217,8 @@ Routing is driven by **descriptor-visible** signals (**`scoreStrategy`**, **`ref
 
 Use **dotted** keys under the **`_contract.`** prefix (leading underscore; same key **suffixes** the **UI** should consume — align [design-kqi-detail-contract-metadata-ui.md](./design-kqi-detail-contract-metadata-ui.md)):
 
+ODCS vocabulary reference: <https://bitol-io.github.io/open-data-contract-standard/v3.1.0/data-quality/>.
+
 | Key | Content |
 |-----|---------|
 | `_contract.operator` | Operator id (e.g. `mustBeBetween`). |
@@ -230,6 +230,36 @@ Use **dotted** keys under the **`_contract.`** prefix (leading underscore; same 
 | `_contract.engine` | Engine name for `custom` rules. |
 | `_contract.implementation` | **Full** custom implementation body for `custom` rules (descriptor **`implementation`**; **required** in odcs31 — **not** dropped as in legacy, section 3.2). |
 
+### 6.1 ODCS 3.1 to Blindata mapping matrix
+
+Routing is decided before this matrix is applied. Full rules with **`customProperties.scoreStrategy`** present use the
+**legacy** mapping. Full rules without **`customProperties.scoreStrategy`** use **odcs31** and **`scoreStrategy:
+EXTERNAL`**. Reference-only rules with **`customProperties.refName`** keep reference / merge behavior and are not routed
+to odcs31 solely because the stub lacks a score strategy.
+
+| Descriptor field | Target |
+|------------------|--------|
+| `id` | Short segment of Quality Check `code` for odcs31 mapping when present; not an additional property. |
+| `name` | KQI display name; fallback short code segment when `id` is absent. |
+| `customProperties.displayName` | KQI display-name override. |
+| `customProperties.scoreWarningThreshold` | `warningThreshold` override; defaults to `100` when absent. |
+| `customProperties.scoreSuccessThreshold` | `successThreshold` override; defaults to `100` when absent. |
+| `customProperties.isCheckEnabled` | `isEnabled` override; defaults to `true` when absent. |
+| `customProperties.blindataCustomProp-*` | Blindata `additionalProperties` with the prefix removed. |
+| `type` | `_contract.ruleType`. |
+| `unit` | `_contract.unit`. |
+| `engine` | `_contract.engine`. |
+| `query` | `_contract.query`. |
+| `metric` | `_contract.metric`. |
+| `arguments` | `_contract.arguments` as a JSON string when present. |
+| `implementation` | `_contract.implementation` as a JSON string when present. |
+
+ODCS does not define a standalone `operator` key. Comparison is expressed with keys such as `mustBe`, `mustNotBe`,
+`mustBeGreaterThan`, `mustBeGreaterOrEqualTo`, `mustBeLessThan`, `mustBeLessOrEqualTo`, `mustBeBetween`, and
+`mustNotBeBetween`. The observer sets `_contract.operator` to that key id and `_contract.bounds` to the corresponding
+value: a single number or JSON array. When `mustBeGreaterOrEqualTo` and `mustBeLessOrEqualTo` are both present, the
+observer maps them together to `_contract.operator = mustBeBetween` with a two-value `_contract.bounds` JSON array.
+
 ---
 
 ## 7. Requirements
@@ -240,8 +270,8 @@ For each **`quality`** item the observer creates or updates a **Quality Check** 
 
 | Quality Check field | Value |
 |---------------------|--------|
-| **`code`** (short segment, before suite prefix) | **New version (odcs31) only:** if **`quality.id`** is present, use it as the segment that is concatenated after **`{suiteCode} - `**. If **`id`** is absent, use **`quality.name`** (same as legacy). |
-| **`name`** (display name) | **New version (odcs31) only:** **`quality.name`** is the **display name** of the check (KQI **name**). |
+| **`code`** (short segment, before suite prefix) | If **`quality.id`** is present, use it as the segment that is concatenated after **`{suiteCode} - `**. If **`id`** is absent, use **`quality.name`**. |
+| **`name`** (display name) | **`customProperties.displayName`** when present, else **`quality.name`**, else **`quality.id`**. |
 | **`description`** | From **`quality.description`** when present. |
 | `scoreStrategy` | **`EXTERNAL`**. |
 | `scoreLeftValue`, `scoreRightValue`, `scoreExpectedValue` | **Unset** or **null** (or platform default empty) — **do not** fabricate **DISTANCE** / **MINIMUM** numbers to mimic the rule. |
