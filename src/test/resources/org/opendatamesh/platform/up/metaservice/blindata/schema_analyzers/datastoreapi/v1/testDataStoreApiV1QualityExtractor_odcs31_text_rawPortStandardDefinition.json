@@ -1,0 +1,52 @@
+{
+  "datastoreapi": "1.0.0",
+  "info": {
+    "title": "odcs31_text",
+    "summary": "summary",
+    "description": "ODCS 3.1 text rule (human-readable only; no operator, no metric).",
+    "version": "1.0.0",
+    "datastoreName": "odcs31_ds"
+  },
+  "services": {
+    "development": {
+      "name": "svc",
+      "description": "svc",
+      "serverInfo": {},
+      "variables": { "host": { "default": "127.0.0.1" } }
+    }
+  },
+  "schema": {
+    "databaseName": "flightdb",
+    "databaseSchemaName": "dwh",
+    "tables": [
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "definition": {
+          "name": "Customer",
+          "type": "object",
+          "quality": [
+            {
+              "id": "email_verified_text",
+              "name": "email_verified_text",
+              "type": "text",
+              "description": "The email address was verified by the system."
+            }
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "name": "ID",
+              "physicalType": "VARCHAR",
+              "ordinalPosition": 0
+            }
+          }
+        }
+      }
+    ]
+  }
+}

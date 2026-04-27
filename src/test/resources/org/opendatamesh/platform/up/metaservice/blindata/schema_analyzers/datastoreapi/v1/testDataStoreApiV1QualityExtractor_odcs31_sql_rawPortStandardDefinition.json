@@ -1,0 +1,53 @@
+{
+  "datastoreapi": "1.0.0",
+  "info": {
+    "title": "odcs31_sql",
+    "summary": "summary",
+    "description": "ODCS 3.1 SQL rule with query and operator mustBeLessThan.",
+    "version": "1.0.0",
+    "datastoreName": "odcs31_ds"
+  },
+  "services": {
+    "development": {
+      "name": "svc",
+      "description": "svc",
+      "serverInfo": {},
+      "variables": { "host": { "default": "127.0.0.1" } }
+    }
+  },
+  "schema": {
+    "databaseName": "flightdb",
+    "databaseSchemaName": "dwh",
+    "tables": [
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "definition": {
+          "name": "Customer",
+          "type": "object",
+          "quality": [
+            {
+              "id": "sql_count_not_null",
+              "name": "sql_count_not_null",
+              "type": "sql",
+              "query": "SELECT COUNT(*) FROM {object} WHERE {property} IS NOT NULL",
+              "mustBeLessThan": 3600
+            }
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "name": "ID",
+              "physicalType": "VARCHAR",
+              "ordinalPosition": 0
+            }
+          }
+        }
+      }
+    ]
+  }
+}

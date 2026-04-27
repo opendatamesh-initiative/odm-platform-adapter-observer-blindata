@@ -1,0 +1,25 @@
+{
+  "qualityChecks": [
+    {
+      "code": "email_verified_text",
+      "name": "email_verified_text",
+      "description": "The email address was verified by the system.",
+      "warningThreshold": 100,
+      "successThreshold": 100,
+      "scoreStrategy": "EXTERNAL",
+      "isEnabled": true,
+      "physicalEntities": [
+        {
+          "schema": "dwh",
+          "name": "Customer",
+          "additionalProperties": []
+        }
+      ],
+      "physicalFields": [],
+      "additionalProperties": [
+        { "name": "_contract.ruleType", "value": "text" }
+      ],
+      "reference": false
+    }
+  ]
+}

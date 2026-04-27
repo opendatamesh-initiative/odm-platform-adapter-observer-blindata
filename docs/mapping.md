@@ -341,6 +341,16 @@ All quality checks derived from the annotations are included in this Quality Sui
 
 ##### Quality Checks
 
+The Datastore API quality extractor supports two mapping paths:
+
+- **legacy**: applied when a full quality rule declares `customProperties.scoreStrategy`.
+- **odcs31**: applied when a full quality rule does not declare `customProperties.scoreStrategy`; the check is created with
+  `scoreStrategy: EXTERNAL` and ODCS rule metadata is stored in `_contract.*` additional properties.
+
+Reference-only rules that declare `customProperties.refName` are handled before this routing. They attach the current
+entity or field to another quality check identified by `refName` and are merged with that main check; they are not routed
+to odcs31 only because the stub has no `scoreStrategy`.
+
 **Placement of Quality Annotations**
 
 The `quality` property can be defined at two different levels within the schema:
@@ -353,26 +363,53 @@ The `quality` property can be defined at two different levels within the schema:
 
 **Structure of the `quality` Property**
 
-The `quality` property is an array consisting of the following objects:
+Each non-reference quality object must provide `name`; `id` is optional and is used as the stable short code segment
+when present.
 
-| Quality Object Property                            | Quality Check Property                | Description                                                                                                                                                                                                         | Mandatory |
-|----------------------------------------------------|---------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
-| `name`                                             | code, name                            | The quality check code will be a concatenation of the code of its Quality Suite and the vale of this property. KQI check name (uses `customProperties.displayName` if not specified)                                | ✔️        |
-| `description`                                      | description                           | KQI description                                                                                                                                                                                                     |           |
-| `dimension`                                        | additionalProperty: "dimension"       | If present, mapped into a Blindata Additional Property named "dimension", otherwise ignored                                                                                                                         |           |
-| `unit`                                             | additionalProperty: "unit"            | If present, mapped into a Blindata Additional Property named "unit", otherwise ignored                                                                                                                              |           |
-| `type`                                             | additionalProperty: "constraint_type" | If present, mapped into a Blindata Additional Property named "constraint_type", otherwise ignored                                                                                                                   |           |
-| `engine`                                           | additionalProperty: "quality_engine"  | If present, mapped into a Blindata Additional Property named "quality_engine", otherwise ignored                                                                                                                    |           |
-| `mustBeGreaterOrEqualTo`                           | scoreLeftValue                        | KQI Lowest Acceptable Value (used only for score strategies: MINIMUM, DISTANCE)                                                                                                                                     |           |
-| `mustBeLessOrEqualTo`                              | scoreRightValue                       | KQI Highest Acceptable Value (used only for score strategies: MAXIMUM, DISTANCE)                                                                                                                                    |           |
-| `mustBe`                                           | expectedValue                         | KQI Expected Value (used only for score strategies: MAXIMUM, MINIMUM, DISTANCE)                                                                                                                                     |           |
-| `customProperties.displayName`                     | name                                  | KQI name                                                                                                                                                                                                            |           |
-| `customProperties.scoreStrategy`                   | scoreStrategy                         | KQI score strategy                                                                                                                                                                                                  |           |
-| `customProperties.scoreWarningThreshold`           | warningThreshold                      | KQI warning threshold                                                                                                                                                                                               |           |
-| `customProperties.scoreSuccessThreshold`           | successThreshold                      | KQI success threshold                                                                                                                                                                                               |           |
-| `customProperties.isCheckEnabled`                  | isEnabled (default true)              | KQI Is Check Enabled                                                                                                                                                                                                |           |
-| `customProperties.blindataCustomProp-propertyName` | additionalProperty: "propertyName"    | If present, all the properties that starts with `blindataCustomProp-` are mapped into Blindata Additional Properties. E.g. `blindataCustomProp-IssueOwner` is mapped into an additional property named `IssueOwner` |           |
-| `customProperties.refName`                         |                                       | Use this property to reference another quality definition code. The associated physical field or physical entity will then be included in the quality check.                                                        |           |
+Common mapping for both paths:
+
+| Quality Object Property                            | Quality Check Property             | Description                                                                                                                                                                                                         | Mandatory |
+|----------------------------------------------------|------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `id`                                               | code segment                       | If present, used as the short Quality Check `code` segment before the Quality Suite prefix is added. If absent, `name` is used.                                                                                      |           |
+| `name`                                             | code segment fallback, name        | Required for full rules. Used as the code segment only when `id` is absent. Used as the display name unless `customProperties.displayName` is present.                                                              | ✔️        |
+| `description`                                      | description                        | KQI description.                                                                                                                                                                                                    |           |
+| `customProperties.displayName`                     | name                               | Optional display-name override.                                                                                                                                                                                     |           |
+| `customProperties.scoreWarningThreshold`           | warningThreshold                   | KQI warning threshold. If omitted, the observer defaults it to `100`.                                                                                                                                                |           |
+| `customProperties.scoreSuccessThreshold`           | successThreshold                   | KQI success threshold. If omitted, the observer defaults it to `100`.                                                                                                                                                |           |
+| `customProperties.isCheckEnabled`                  | isEnabled                          | KQI enabled flag. Defaults to `true` when omitted.                                                                                                                                                                  |           |
+| `customProperties.blindataCustomProp-propertyName` | additionalProperty: "propertyName" | If present, all properties that start with `blindataCustomProp-` are mapped into Blindata Additional Properties. E.g. `blindataCustomProp-IssueOwner` is mapped into an additional property named `IssueOwner`.      |           |
+| `customProperties.refName`                         | reference code                     | Reference-only rule: attach the associated physical field or entity to another quality definition code during merge.                                                                                                 |           |
+
+Legacy mapping (`customProperties.scoreStrategy` present):
+
+| Quality Object Property                  | Quality Check Property                | Description |
+|------------------------------------------|---------------------------------------|-------------|
+| `customProperties.scoreStrategy`         | scoreStrategy                         | Blindata scoring strategy (`PERCENTAGE`, `MINIMUM`, `MAXIMUM`, `DISTANCE`, `PERCENTAGE_DEVIATION`, ...). |
+| `dimension`                              | additionalProperty: "dimension"       | Legacy additional property. |
+| `unit`                                   | additionalProperty: "unit"            | Legacy additional property. |
+| `type`                                   | additionalProperty: "constraint_type" | Legacy additional property. |
+| `engine`                                 | additionalProperty: "quality_engine"  | Legacy additional property. |
+| `mustBeGreaterOrEqualTo`                 | scoreLeftValue                        | Lowest acceptable value for built-in scoring strategies. |
+| `mustBeLessOrEqualTo`                    | scoreRightValue                       | Highest acceptable value for built-in scoring strategies. |
+| `mustBe`                                 | scoreExpectedValue                    | Expected value for built-in scoring strategies. |
+
+odcs31 mapping (`customProperties.scoreStrategy` absent on a full rule):
+
+| Quality Object Property        | Quality Check Property                         | Description |
+|--------------------------------|------------------------------------------------|-------------|
+| -                              | scoreStrategy                                  | Always `EXTERNAL`; scores are supplied by an external rule engine or integration. |
+| `type`                         | additionalProperty: `_contract.ruleType`       | ODCS rule type, e.g. `library`, `sql`, `text`, `custom`. |
+| `metric`                       | additionalProperty: `_contract.metric`         | ODCS library metric, e.g. `nullValues`, `missingValues`, `invalidValues`, `rowCount`, `duplicateValues`. |
+| `arguments`                    | additionalProperty: `_contract.arguments`      | Stored as a JSON string when present. |
+| `unit`                         | additionalProperty: `_contract.unit`           | ODCS unit, e.g. `rows`, `percent`. |
+| `query`                        | additionalProperty: `_contract.query`          | SQL query for `sql` rules. |
+| `engine`                       | additionalProperty: `_contract.engine`         | Engine name for `custom` rules. |
+| `implementation`               | additionalProperty: `_contract.implementation` | Full custom implementation body, stored as a JSON string when structured. |
+| ODCS comparison key and value  | additionalProperties: `_contract.operator`, `_contract.bounds` | The observer derives `_contract.operator` from ODCS keys such as `mustBe`, `mustNotBe`, `mustBeGreaterThan`, `mustBeGreaterOrEqualTo`, `mustBeLessThan`, `mustBeLessOrEqualTo`, `mustBeBetween`, and `mustNotBeBetween`; the related value is stored in `_contract.bounds` as a scalar or JSON array string. |
+
+When both `mustBeGreaterOrEqualTo` and `mustBeLessOrEqualTo` are present in odcs31, the observer stores
+`_contract.operator = mustBeBetween` and `_contract.bounds` as the two-value JSON array. Built-in score interval fields
+(`scoreLeftValue`, `scoreRightValue`, `scoreExpectedValue`) are not populated by odcs31 rules.
 
 ##### Issue Policies
 
