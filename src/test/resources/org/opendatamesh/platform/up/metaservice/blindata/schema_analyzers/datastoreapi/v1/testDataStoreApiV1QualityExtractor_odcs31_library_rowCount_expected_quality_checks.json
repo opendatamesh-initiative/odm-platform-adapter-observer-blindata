@@ -1,0 +1,27 @@
+{
+  "qualityChecks": [
+    {
+      "code": "orders_row_count",
+      "name": "orders_row_count",
+      "warningThreshold": 100,
+      "successThreshold": 100,
+      "scoreStrategy": "EXTERNAL",
+      "isEnabled": true,
+      "physicalEntities": [
+        {
+          "schema": "dwh",
+          "name": "Orders",
+          "additionalProperties": []
+        }
+      ],
+      "physicalFields": [],
+      "additionalProperties": [
+        { "name": "_contract.operator", "value": "mustBeBetween" },
+        { "name": "_contract.bounds", "value": "[100,120]" },
+        { "name": "_contract.metric", "value": "rowCount" },
+        { "name": "_contract.ruleType", "value": "library" }
+      ],
+      "reference": false
+    }
+  ]
+}

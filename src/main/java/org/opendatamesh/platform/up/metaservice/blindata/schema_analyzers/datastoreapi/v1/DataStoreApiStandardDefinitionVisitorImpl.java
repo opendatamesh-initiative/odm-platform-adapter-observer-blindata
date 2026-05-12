@@ -18,7 +18,9 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.qual
 import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.quality.QualityCheck;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1.model.DataStoreApiBlindataDefinition;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1.model.DataStoreApiBlindataDefinitionProperty;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1.model.quality.ContractAdditionalPropertiesBuilder;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1.model.quality.Quality;
+import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1.model.quality.QualityCustomProperty;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.datastoreapi.v1.model.quality.QualityIssuePolicy;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking.SemanticLinkManager;
 import org.springframework.util.CollectionUtils;
@@ -111,9 +113,12 @@ class DataStoreApiStandardDefinitionVisitorImpl implements StandardDefinitionVis
         }
     }
 
-    //It should have the name, or it should be a reference
+    /** Full rule must have {@code name}; reference stubs use {@code refName} only. */
     private boolean qualityIsNotValid(Quality quality) {
-        boolean isNotValid = !StringUtils.hasText(quality.getName()) && !isReference(quality);
+        if (isReference(quality)) {
+            return false;
+        }
+        boolean isNotValid = !StringUtils.hasText(quality.getName());
         if (isNotValid) {
             try {
                 getUseCaseLogger().warn("[#105] Quality object inside datastoreApi is not valid: " + new ObjectMapper().setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL).writeValueAsString(quality));
@@ -135,15 +140,28 @@ class DataStoreApiStandardDefinitionVisitorImpl implements StandardDefinitionVis
     }
 
     private QualityCheck qualityToQualityCheck(Quality quality) {
-        QualityCheck qualityCheck = new QualityCheck();
         if (isReference(quality)) {
+            QualityCheck qualityCheck = new QualityCheck();
             qualityCheck.setCode(quality.getCustomProperties().getRefName());
             qualityCheck.setReference(true);
             return qualityCheck;
         }
+        if (isLegacyQualityRule(quality)) {
+            return legacyQualityToQualityCheck(quality);
+        }
+        return odcs31QualityToQualityCheck(quality);
+    }
+
+    private boolean isLegacyQualityRule(Quality quality) {
+        return quality.getCustomProperties() != null
+                && StringUtils.hasText(quality.getCustomProperties().getScoreStrategy());
+    }
+
+    private QualityCheck legacyQualityToQualityCheck(Quality quality) {
+        QualityCheck qualityCheck = new QualityCheck();
         qualityCheck.setIsEnabled(true); //Default, overwritten if customProperty field is present
-        qualityCheck.setCode(quality.getName());
-        qualityCheck.setName(quality.getName());
+        qualityCheck.setCode(qualityCheckCodeSegment(quality));
+        qualityCheck.setName(qualityCheckDisplayName(quality));
         qualityCheck.setDescription(quality.getDescription());
 
         if (quality.getMustBeGreaterOrEqualTo() != null) {
@@ -161,9 +179,63 @@ class DataStoreApiStandardDefinitionVisitorImpl implements StandardDefinitionVis
         addIfPresent(qualityCheck.getAdditionalProperties(), "constraint_type", quality.getType());
         addIfPresent(qualityCheck.getAdditionalProperties(), "quality_engine", quality.getEngine());
 
-        handleQualityCustomProperties(quality, qualityCheck);
+        applyLegacyCustomProperties(quality, qualityCheck);
+        applyDefaultThresholdsWhenAbsentInDescriptor(qualityCheck);
         handleQualityIssuePolicies(quality, qualityCheck);
         return qualityCheck;
+    }
+
+    private QualityCheck odcs31QualityToQualityCheck(Quality quality) {
+        QualityCheck qualityCheck = new QualityCheck();
+        qualityCheck.setIsEnabled(true);
+        qualityCheck.setCode(qualityCheckCodeSegment(quality));
+        qualityCheck.setName(qualityCheckDisplayName(quality));
+        qualityCheck.setDescription(quality.getDescription());
+        qualityCheck.setScoreStrategy(BDQualityStrategyRes.EXTERNAL);
+        qualityCheck.setWarningThreshold(BigDecimal.valueOf(100));
+        qualityCheck.setSuccessThreshold(BigDecimal.valueOf(100));
+        applyOdcs31CustomProperties(quality, qualityCheck);
+        applyDefaultThresholdsWhenAbsentInDescriptor(qualityCheck);
+        handleQualityIssuePolicies(quality, qualityCheck);
+        ContractAdditionalPropertiesBuilder.appendContractProperties(quality, qualityCheck.getAdditionalProperties());
+        return qualityCheck;
+    }
+
+    /**
+     * When {@code customProperties} omits {@code scoreWarningThreshold} / {@code scoreSuccessThreshold}, use 100 / 100
+     * so semaphores stay neutral (no yellow band) and upload validation passes.
+     */
+    private void applyDefaultThresholdsWhenAbsentInDescriptor(QualityCheck qualityCheck) {
+        if (qualityCheck.getWarningThreshold() == null) {
+            qualityCheck.setWarningThreshold(BigDecimal.valueOf(100));
+        }
+        if (qualityCheck.getSuccessThreshold() == null) {
+            qualityCheck.setSuccessThreshold(BigDecimal.valueOf(100));
+        }
+    }
+
+    private void applyOdcs31CustomProperties(Quality quality, QualityCheck qualityCheck) {
+        if (quality.getCustomProperties() == null) {
+            return;
+        }
+        QualityCustomProperty customProperties = quality.getCustomProperties();
+        if (customProperties.getScoreWarningThreshold() != null) {
+            qualityCheck.setWarningThreshold(BigDecimal.valueOf(customProperties.getScoreWarningThreshold()));
+        }
+        if (customProperties.getScoreSuccessThreshold() != null) {
+            qualityCheck.setSuccessThreshold(BigDecimal.valueOf(customProperties.getScoreSuccessThreshold()));
+        }
+        Boolean checkEnabled = customProperties.getCheckEnabled();
+        qualityCheck.setIsEnabled(checkEnabled == null || Boolean.TRUE.equals(checkEnabled));
+        if (customProperties.getAdditionalProperties() != null) {
+            customProperties.getAdditionalProperties()
+                    .forEach((name, value) -> {
+                        if (name.startsWith("blindataCustomProp-")) {
+                            String propName = name.replace("blindataCustomProp-", "");
+                            addAdditionalPropertyValue(qualityCheck.getAdditionalProperties(), propName, value);
+                        }
+                    });
+        }
     }
 
     private void handleQualityIssuePolicies(Quality quality, QualityCheck qualityCheck) {
@@ -244,13 +316,9 @@ class DataStoreApiStandardDefinitionVisitorImpl implements StandardDefinitionVis
         return false;
     }
 
-    private void handleQualityCustomProperties(Quality quality, QualityCheck qualityCheck) {
+    private void applyLegacyCustomProperties(Quality quality, QualityCheck qualityCheck) {
         if (quality.getCustomProperties() == null) {
             return;
-        }
-
-        if (StringUtils.hasText(quality.getCustomProperties().getDisplayName())) {
-            qualityCheck.setName(quality.getCustomProperties().getDisplayName());
         }
 
         String strategy = quality.getCustomProperties().getScoreStrategy();
@@ -268,8 +336,8 @@ class DataStoreApiStandardDefinitionVisitorImpl implements StandardDefinitionVis
             qualityCheck.setSuccessThreshold(BigDecimal.valueOf(successThreshold));
         }
 
-        boolean isCheckEnabled = Boolean.TRUE.equals(quality.getCustomProperties().getCheckEnabled());
-        qualityCheck.setIsEnabled(isCheckEnabled);
+        Boolean checkEnabled = quality.getCustomProperties().getCheckEnabled();
+        qualityCheck.setIsEnabled(checkEnabled == null || Boolean.TRUE.equals(checkEnabled));
 
         //Handling Blindata Additional Properties
         if (quality.getCustomProperties().getAdditionalProperties() != null) {
@@ -286,6 +354,27 @@ class DataStoreApiStandardDefinitionVisitorImpl implements StandardDefinitionVis
 
     private boolean isReference(Quality quality) {
         return quality.getCustomProperties() != null && StringUtils.hasText(quality.getCustomProperties().getRefName());
+    }
+
+    /**
+     * Quality Check short {@code code} (suite prefix added later): use ODCS {@code id} verbatim when present, else {@code name}.
+     */
+    private String qualityCheckCodeSegment(Quality quality) {
+        return StringUtils.hasText(quality.getId()) ? quality.getId() : quality.getName();
+    }
+
+    /**
+     * KQI display name priority: {@code customProperties.displayName} > {@code name} > {@code id}.
+     */
+    private String qualityCheckDisplayName(Quality quality) {
+        if (quality.getCustomProperties() != null
+                && StringUtils.hasText(quality.getCustomProperties().getDisplayName())) {
+            return quality.getCustomProperties().getDisplayName();
+        }
+        if (StringUtils.hasText(quality.getName())) {
+            return quality.getName();
+        }
+        return quality.getId();
     }
 
     private BDPhysicalFieldRes definitionPropertyToPhysicalField(DataStoreApiBlindataDefinitionProperty schema) {

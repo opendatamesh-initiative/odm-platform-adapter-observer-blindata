@@ -1,0 +1,31 @@
+{
+  "qualityChecks": [
+    {
+      "code": "customer_id_no_nulls",
+      "name": "customer_id_no_nulls",
+      "description": "There must be no null values in the column.",
+      "warningThreshold": 100,
+      "successThreshold": 100,
+      "scoreStrategy": "EXTERNAL",
+      "isEnabled": true,
+      "physicalEntities": [],
+      "physicalFields": [
+        {
+          "name": "ID",
+          "type": "VARCHAR",
+          "ordinalPosition": 0,
+          "additionalProperties": [],
+          "logicalFields": []
+        }
+      ],
+      "additionalProperties": [
+        { "name": "_contract.operator", "value": "mustBe" },
+        { "name": "_contract.bounds", "value": "0.0" },
+        { "name": "_contract.metric", "value": "nullValues" },
+        { "name": "_contract.unit", "value": "rows" },
+        { "name": "_contract.ruleType", "value": "library" }
+      ],
+      "reference": false
+    }
+  ]
+}

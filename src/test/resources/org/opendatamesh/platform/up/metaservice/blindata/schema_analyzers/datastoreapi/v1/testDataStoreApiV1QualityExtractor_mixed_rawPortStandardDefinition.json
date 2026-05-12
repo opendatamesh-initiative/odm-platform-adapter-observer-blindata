@@ -1,0 +1,87 @@
+{
+  "datastoreapi": "1.0.0",
+  "info": {
+    "title": "mixed_test",
+    "summary": "summary",
+    "description": "Test fixture for PortDataStoreApiQualityExtractorTest.testDatastoreApiV1QualityExtractorMixedLegacyAndOdcs31: one table with two rules—legacy (scoreStrategy set) and odcs31 (no scoreStrategy)—in the same suite.",
+    "termsOfService": "https://example.com/terms/",
+    "version": "1.0.0",
+    "datastoreName": "mixed_ds",
+    "contact": {
+      "name": "API Support",
+      "url": "https://www.example.com/support",
+      "email": "support@example.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "nameSpace": "nome_schema"
+  },
+  "services": {
+    "development": {
+      "name": "svc",
+      "description": "svc",
+      "serverInfo": {},
+      "variables": {
+        "host": {
+          "default": "127.0.0.1"
+        }
+      }
+    }
+  },
+  "schema": {
+    "databaseName": "flightdb",
+    "databaseSchemaName": "dwh",
+    "tables": [
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "definition": {
+          "name": "Customer",
+          "type": "object",
+          "quality": [
+            {
+              "name": "Legacy Rule Name",
+              "description": "legacy",
+              "dimension": "Validity",
+              "unit": "percent",
+              "type": "custom",
+              "engine": "greatExpectations",
+              "customProperties": {
+                "scoreStrategy": "PERCENTAGE",
+                "scoreWarningThreshold": 95,
+                "scoreSuccessThreshold": 100,
+                "isCheckEnabled": true
+              }
+            },
+            {
+              "id": "odcs-mixed-2",
+              "name": "odcs31 rule",
+              "description": "odcs",
+              "type": "sql",
+              "unit": "rows",
+              "query": "SELECT 1",
+              "customProperties": {
+                "scoreWarningThreshold": 90,
+                "scoreSuccessThreshold": 99
+              }
+            }
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "name": "ID",
+              "physicalType": "VARCHAR",
+              "ordinalPosition": 0
+            }
+          }
+        }
+      }
+    ]
+  }
+}

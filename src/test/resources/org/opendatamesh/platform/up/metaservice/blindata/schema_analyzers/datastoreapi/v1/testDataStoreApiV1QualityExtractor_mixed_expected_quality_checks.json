@@ -1,0 +1,72 @@
+{
+  "qualityChecks": [
+    {
+      "code": "Legacy Rule Name",
+      "name": "Legacy Rule Name",
+      "description": "legacy",
+      "warningThreshold": 95.0,
+      "successThreshold": 100.0,
+      "scoreStrategy": "PERCENTAGE",
+      "isEnabled": true,
+      "physicalEntities": [
+        {
+          "schema": "dwh",
+          "name": "Customer",
+          "additionalProperties": []
+        }
+      ],
+      "physicalFields": [],
+      "additionalProperties": [
+        {
+          "name": "dimension",
+          "value": "Validity"
+        },
+        {
+          "name": "unit",
+          "value": "percent"
+        },
+        {
+          "name": "constraint_type",
+          "value": "custom"
+        },
+        {
+          "name": "quality_engine",
+          "value": "greatExpectations"
+        }
+      ],
+      "reference": false
+    },
+    {
+      "code": "odcs-mixed-2",
+      "name": "odcs31 rule",
+      "description": "odcs",
+      "warningThreshold": 90.0,
+      "successThreshold": 99.0,
+      "scoreStrategy": "EXTERNAL",
+      "isEnabled": true,
+      "physicalEntities": [
+        {
+          "schema": "dwh",
+          "name": "Customer",
+          "additionalProperties": []
+        }
+      ],
+      "physicalFields": [],
+      "additionalProperties": [
+        {
+          "name": "_contract.unit",
+          "value": "rows"
+        },
+        {
+          "name": "_contract.ruleType",
+          "value": "sql"
+        },
+        {
+          "name": "_contract.query",
+          "value": "SELECT 1"
+        }
+      ],
+      "reference": false
+    }
+  ]
+}

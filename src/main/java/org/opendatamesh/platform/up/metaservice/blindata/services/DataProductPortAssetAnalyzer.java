@@ -76,7 +76,7 @@ public class DataProductPortAssetAnalyzer {
                 qualityChecks.addAll(extractedQualityChecks);
             }
 
-            return mergeQualityChecksWithSameCode(qualityChecks);
+            return mergeQualityChecksWithSameCode(sortQualityChecksForDeterministicMerge(qualityChecks));
         } catch (Exception e) {
             getUseCaseLogger().warn("[#2] " + e.getMessage(), e);
         }
@@ -228,8 +228,17 @@ public class DataProductPortAssetAnalyzer {
         return platform;
     }
 
+    /**
+     * Non-reference checks first so merge by code prefers main definitions over {@code refName} stubs.
+     */
+    private List<QualityCheck> sortQualityChecksForDeterministicMerge(List<QualityCheck> extractedQualityChecks) {
+        List<QualityCheck> ordered = new ArrayList<>(extractedQualityChecks);
+        ordered.sort(Comparator.comparing(QualityCheck::isReference));
+        return ordered;
+    }
+
     private List<QualityCheck> mergeQualityChecksWithSameCode(List<QualityCheck> extractedQualityChecks) {
-        Map<String, QualityCheck> mergedQualityChecks = new HashMap<>();
+        Map<String, QualityCheck> mergedQualityChecks = new LinkedHashMap<>();
         extractedQualityChecks.forEach(qualityCheck -> {
             if (mergedQualityChecks.containsKey(qualityCheck.getCode())) {
                 QualityCheck encounteredQualityCheck = mergedQualityChecks.get(qualityCheck.getCode());

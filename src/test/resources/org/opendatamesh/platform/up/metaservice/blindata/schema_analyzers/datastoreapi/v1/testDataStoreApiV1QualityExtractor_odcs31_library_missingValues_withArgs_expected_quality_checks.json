@@ -1,0 +1,29 @@
+{
+  "qualityChecks": [
+    {
+      "code": "email_missing_values",
+      "name": "email_missing_values",
+      "warningThreshold": 100,
+      "successThreshold": 100,
+      "scoreStrategy": "EXTERNAL",
+      "isEnabled": true,
+      "physicalEntities": [
+        {
+          "schema": "dwh",
+          "name": "Customer",
+          "additionalProperties": []
+        }
+      ],
+      "physicalFields": [],
+      "additionalProperties": [
+        { "name": "_contract.operator", "value": "mustBeLessThan" },
+        { "name": "_contract.bounds", "value": "100.0" },
+        { "name": "_contract.metric", "value": "missingValues" },
+        { "name": "_contract.unit", "value": "rows" },
+        { "name": "_contract.ruleType", "value": "library" },
+        { "name": "_contract.arguments", "value": "{\"missingValues\":[null,\"\",\"N/A\",\"n/a\"]}" }
+      ],
+      "reference": false
+    }
+  ]
+}

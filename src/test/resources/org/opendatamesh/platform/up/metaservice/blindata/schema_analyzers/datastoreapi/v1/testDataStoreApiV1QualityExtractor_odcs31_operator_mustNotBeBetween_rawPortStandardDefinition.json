@@ -1,0 +1,53 @@
+{
+  "datastoreapi": "1.0.0",
+  "info": {
+    "title": "odcs31_operator_mustNotBeBetween",
+    "summary": "summary",
+    "description": "ODCS 3.1 rule with mustNotBeBetween operator (inverted interval).",
+    "version": "1.0.0",
+    "datastoreName": "odcs31_ds"
+  },
+  "services": {
+    "development": {
+      "name": "svc",
+      "description": "svc",
+      "serverInfo": {},
+      "variables": { "host": { "default": "127.0.0.1" } }
+    }
+  },
+  "schema": {
+    "databaseName": "flightdb",
+    "databaseSchemaName": "dwh",
+    "tables": [
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "definition": {
+          "name": "Customer",
+          "type": "object",
+          "quality": [
+            {
+              "id": "score_not_in_danger_zone",
+              "name": "score_not_in_danger_zone",
+              "type": "library",
+              "metric": "invalidValues",
+              "mustNotBeBetween": [0, 5]
+            }
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "name": "ID",
+              "physicalType": "VARCHAR",
+              "ordinalPosition": 0
+            }
+          }
+        }
+      }
+    ]
+  }
+}

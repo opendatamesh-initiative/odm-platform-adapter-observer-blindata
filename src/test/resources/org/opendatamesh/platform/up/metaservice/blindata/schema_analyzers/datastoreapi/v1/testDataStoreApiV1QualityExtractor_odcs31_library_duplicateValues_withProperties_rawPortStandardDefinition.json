@@ -1,0 +1,57 @@
+{
+  "datastoreapi": "1.0.0",
+  "info": {
+    "title": "odcs31_library_duplicateValues_withProperties",
+    "summary": "summary",
+    "description": "ODCS 3.1 schema-level duplicateValues metric with properties arguments array.",
+    "version": "1.0.0",
+    "datastoreName": "odcs31_ds"
+  },
+  "services": {
+    "development": {
+      "name": "svc",
+      "description": "svc",
+      "serverInfo": {},
+      "variables": { "host": { "default": "127.0.0.1" } }
+    }
+  },
+  "schema": {
+    "databaseName": "flightdb",
+    "databaseSchemaName": "dwh",
+    "tables": [
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "definition": {
+          "name": "Orders",
+          "type": "object",
+          "quality": [
+            {
+              "id": "orders_unique_tenant_order",
+              "name": "orders_unique_tenant_order",
+              "description": "The combination of tenant_id and order_id must be unique",
+              "type": "library",
+              "metric": "duplicateValues",
+              "mustBe": 0,
+              "arguments": {
+                "properties": ["tenant_id", "order_id"]
+              }
+            }
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "name": "ID",
+              "physicalType": "VARCHAR",
+              "ordinalPosition": 0
+            }
+          }
+        }
+      }
+    ]
+  }
+}

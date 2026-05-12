@@ -1,0 +1,54 @@
+{
+  "datastoreapi": "1.0.0",
+  "info": {
+    "title": "odcs31_operator_betweenCombined",
+    "summary": "summary",
+    "description": "ODCS 3.1 rule using mustBeGreaterOrEqualTo and mustBeLessOrEqualTo together; the _contract.operator must be derived as mustBeBetween with combined bounds.",
+    "version": "1.0.0",
+    "datastoreName": "odcs31_ds"
+  },
+  "services": {
+    "development": {
+      "name": "svc",
+      "description": "svc",
+      "serverInfo": {},
+      "variables": { "host": { "default": "127.0.0.1" } }
+    }
+  },
+  "schema": {
+    "databaseName": "flightdb",
+    "databaseSchemaName": "dwh",
+    "tables": [
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "definition": {
+          "name": "Customer",
+          "type": "object",
+          "quality": [
+            {
+              "id": "score_within_range",
+              "name": "score_within_range",
+              "type": "library",
+              "metric": "nullValues",
+              "mustBeGreaterOrEqualTo": 1,
+              "mustBeLessOrEqualTo": 10
+            }
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "name": "ID",
+              "physicalType": "VARCHAR",
+              "ordinalPosition": 0
+            }
+          }
+        }
+      }
+    ]
+  }
+}

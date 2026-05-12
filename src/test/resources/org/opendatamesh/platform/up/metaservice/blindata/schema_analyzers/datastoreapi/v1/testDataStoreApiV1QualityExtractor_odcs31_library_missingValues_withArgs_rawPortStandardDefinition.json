@@ -1,0 +1,57 @@
+{
+  "datastoreapi": "1.0.0",
+  "info": {
+    "title": "odcs31_library_missingValues_withArgs",
+    "summary": "summary",
+    "description": "ODCS 3.1 library metric missingValues with arguments object, operator mustBeLessThan, unit rows.",
+    "version": "1.0.0",
+    "datastoreName": "odcs31_ds"
+  },
+  "services": {
+    "development": {
+      "name": "svc",
+      "description": "svc",
+      "serverInfo": {},
+      "variables": { "host": { "default": "127.0.0.1" } }
+    }
+  },
+  "schema": {
+    "databaseName": "flightdb",
+    "databaseSchemaName": "dwh",
+    "tables": [
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "definition": {
+          "name": "Customer",
+          "type": "object",
+          "quality": [
+            {
+              "id": "email_missing_values",
+              "name": "email_missing_values",
+              "type": "library",
+              "metric": "missingValues",
+              "unit": "rows",
+              "mustBeLessThan": 100,
+              "arguments": {
+                "missingValues": [null, "", "N/A", "n/a"]
+              }
+            }
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "name": "ID",
+              "physicalType": "VARCHAR",
+              "ordinalPosition": 0
+            }
+          }
+        }
+      }
+    ]
+  }
+}

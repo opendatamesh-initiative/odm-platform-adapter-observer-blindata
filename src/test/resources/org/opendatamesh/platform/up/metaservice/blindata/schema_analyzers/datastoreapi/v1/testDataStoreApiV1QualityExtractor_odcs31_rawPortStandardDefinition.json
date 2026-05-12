@@ -1,0 +1,76 @@
+{
+  "datastoreapi": "1.0.0",
+  "info": {
+    "title": "odcs31_test",
+    "summary": "summary",
+    "description": "Test fixture for PortDataStoreApiQualityExtractorTest.testDatastoreApiV1QualityExtractorOdcs31: single odcs31 rule (no customProperties.scoreStrategy) with id, mustBeBetween, implementation; expects EXTERNAL strategy and _contract.* metadata.",
+    "termsOfService": "https://example.com/terms/",
+    "version": "1.0.0",
+    "datastoreName": "odcs31_ds",
+    "contact": {
+      "name": "API Support",
+      "url": "https://www.example.com/support",
+      "email": "support@example.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "nameSpace": "nome_schema"
+  },
+  "services": {
+    "development": {
+      "name": "svc",
+      "description": "svc",
+      "serverInfo": {},
+      "variables": {
+        "host": {
+          "default": "127.0.0.1"
+        }
+      }
+    }
+  },
+  "schema": {
+    "databaseName": "flightdb",
+    "databaseSchemaName": "dwh",
+    "tables": [
+      {
+        "id": "identifier",
+        "name": "name",
+        "version": "1.0.0",
+        "description": "description",
+        "specification": "json-schema",
+        "specificationVersion": "1",
+        "definition": {
+          "name": "Customer",
+          "type": "object",
+          "quality": [
+            {
+              "id": "odcs-rule-1",
+              "name": "odcs31 display name",
+              "description": "ODCS rule",
+              "type": "custom",
+              "unit": "percent",
+              "engine": "greatExpectations",
+              "mustBeBetween": [0, 100],
+              "implementation": {
+                "type": "ExpectColumnValuesToBeInSet",
+                "kwargs": {
+                  "column": "c"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "name": "ID",
+              "physicalType": "VARCHAR",
+              "ordinalPosition": 0
+            }
+          }
+        }
+      }
+    ]
+  }
+}

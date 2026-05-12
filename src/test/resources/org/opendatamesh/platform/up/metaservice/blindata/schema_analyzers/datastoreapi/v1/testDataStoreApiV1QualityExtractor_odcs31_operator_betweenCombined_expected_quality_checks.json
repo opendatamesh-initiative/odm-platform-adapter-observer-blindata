@@ -1,0 +1,27 @@
+{
+  "qualityChecks": [
+    {
+      "code": "score_within_range",
+      "name": "score_within_range",
+      "warningThreshold": 100,
+      "successThreshold": 100,
+      "scoreStrategy": "EXTERNAL",
+      "isEnabled": true,
+      "physicalEntities": [
+        {
+          "schema": "dwh",
+          "name": "Customer",
+          "additionalProperties": []
+        }
+      ],
+      "physicalFields": [],
+      "additionalProperties": [
+        { "name": "_contract.operator", "value": "mustBeBetween" },
+        { "name": "_contract.bounds", "value": "[1.0,10.0]" },
+        { "name": "_contract.metric", "value": "nullValues" },
+        { "name": "_contract.ruleType", "value": "library" }
+      ],
+      "reference": false
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "qualityChecks": [
+    {
+      "code": "odcs-rule-1",
+      "name": "odcs31 display name",
+      "description": "ODCS rule",
+      "warningThreshold": 100,
+      "successThreshold": 100,
+      "scoreStrategy": "EXTERNAL",
+      "isEnabled": true,
+      "physicalEntities": [
+        {
+          "schema": "dwh",
+          "name": "Customer",
+          "additionalProperties": [],
+          "physicalFields": [
+            {
+              "name": "ID",
+              "type": "VARCHAR",
+              "ordinalPosition": 0,
+              "additionalProperties": []
+            }
+          ]
+        }
+      ],
+      "physicalFields": [],
+      "additionalProperties": [
+        {
+          "name": "_contract.operator",
+          "value": "mustBeBetween"
+        },
+        {
+          "name": "_contract.bounds",
+          "value": "[0,100]"
+        },
+        {
+          "name": "_contract.unit",
+          "value": "percent"
+        },
+        {
+          "name": "_contract.ruleType",
+          "value": "custom"
+        },
+        {
+          "name": "_contract.engine",
+          "value": "greatExpectations"
+        },
+        {
+          "name": "_contract.implementation",
+          "value": "{\"type\":\"ExpectColumnValuesToBeInSet\",\"kwargs\":{\"column\":\"c\"}}"
+        }
+      ],
+      "reference": false
+    }
+  ]
+}

@@ -157,6 +157,196 @@ class PortDataStoreApiQualityExtractorTest {
     }
 
     @Test
+    void testDatastoreApiV1QualityExtractorOdcs31() throws IOException {
+        StandardDefinition portStandardDefinition = new StandardDefinition();
+        portStandardDefinition.setSpecification("datastoreapi");
+        portStandardDefinition.setSpecificationVersion("1.0.0");
+        portStandardDefinition.setDefinition(objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("testDataStoreApiV1QualityExtractor_odcs31_rawPortStandardDefinition.json")),
+                ComponentBase.class
+        ));
+        assertThat(portStandardDefinitionAnalyzer.supports(portStandardDefinition)).isTrue();
+
+        List<QualityCheck> extractedQualityChecks = portStandardDefinitionAnalyzer.extractQualityChecks(portStandardDefinition);
+
+        ExpectedQualityChecks expectedQualityChecks = objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("testDataStoreApiV1QualityExtractor_odcs31_expected_quality_checks.json")),
+                ExpectedQualityChecks.class
+        );
+
+        assertThat(extractedQualityChecks)
+                .usingRecursiveComparison()
+                .ignoringCollectionOrder()
+                .ignoringFields("physicalFields.physicalEntity.physicalFields")
+                .ignoringFields("physicalEntities.physicalFields")
+                .isEqualTo(expectedQualityChecks.getQualityChecks());
+    }
+
+    @Test
+    void testDatastoreApiV1QualityExtractorLegacyMissingThresholdsInCustomProperties() throws IOException {
+        StandardDefinition portStandardDefinition = new StandardDefinition();
+        portStandardDefinition.setSpecification("datastoreapi");
+        portStandardDefinition.setSpecificationVersion("1.0.0");
+        portStandardDefinition.setDefinition(objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("testDataStoreApiV1QualityExtractor_legacy_missing_thresholds_rawPortStandardDefinition.json")),
+                ComponentBase.class
+        ));
+        assertThat(portStandardDefinitionAnalyzer.supports(portStandardDefinition)).isTrue();
+
+        List<QualityCheck> extractedQualityChecks = portStandardDefinitionAnalyzer.extractQualityChecks(portStandardDefinition);
+
+        ExpectedQualityChecks expectedQualityChecks = objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("testDataStoreApiV1QualityExtractor_legacy_missing_thresholds_expected_quality_checks.json")),
+                ExpectedQualityChecks.class
+        );
+
+        assertThat(extractedQualityChecks)
+                .usingRecursiveComparison()
+                .ignoringCollectionOrder()
+                .ignoringFields("physicalFields.physicalEntity.physicalFields")
+                .ignoringFields("physicalEntities.physicalFields")
+                .isEqualTo(expectedQualityChecks.getQualityChecks());
+    }
+
+    @Test
+    void testDatastoreApiV1QualityExtractorOdcs31WithCustomPropertiesButNoThresholds() throws IOException {
+        StandardDefinition portStandardDefinition = new StandardDefinition();
+        portStandardDefinition.setSpecification("datastoreapi");
+        portStandardDefinition.setSpecificationVersion("1.0.0");
+        portStandardDefinition.setDefinition(objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("testDataStoreApiV1QualityExtractor_odcs31_custom_no_thresholds_rawPortStandardDefinition.json")),
+                ComponentBase.class
+        ));
+        assertThat(portStandardDefinitionAnalyzer.supports(portStandardDefinition)).isTrue();
+
+        List<QualityCheck> extractedQualityChecks = portStandardDefinitionAnalyzer.extractQualityChecks(portStandardDefinition);
+
+        ExpectedQualityChecks expectedQualityChecks = objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("testDataStoreApiV1QualityExtractor_odcs31_custom_no_thresholds_expected_quality_checks.json")),
+                ExpectedQualityChecks.class
+        );
+
+        assertThat(extractedQualityChecks)
+                .usingRecursiveComparison()
+                .ignoringCollectionOrder()
+                .ignoringFields("physicalFields.physicalEntity.physicalFields")
+                .ignoringFields("physicalEntities.physicalFields")
+                .isEqualTo(expectedQualityChecks.getQualityChecks());
+    }
+
+    @Test
+    void testDatastoreApiV1QualityExtractorMixedLegacyAndOdcs31() throws IOException {
+        StandardDefinition portStandardDefinition = new StandardDefinition();
+        portStandardDefinition.setSpecification("datastoreapi");
+        portStandardDefinition.setSpecificationVersion("1.0.0");
+        portStandardDefinition.setDefinition(objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("testDataStoreApiV1QualityExtractor_mixed_rawPortStandardDefinition.json")),
+                ComponentBase.class
+        ));
+        assertThat(portStandardDefinitionAnalyzer.supports(portStandardDefinition)).isTrue();
+
+        List<QualityCheck> extractedQualityChecks = portStandardDefinitionAnalyzer.extractQualityChecks(portStandardDefinition);
+
+        ExpectedQualityChecks expectedQualityChecks = objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("testDataStoreApiV1QualityExtractor_mixed_expected_quality_checks.json")),
+                ExpectedQualityChecks.class
+        );
+
+        assertThat(extractedQualityChecks)
+                .usingRecursiveComparison()
+                .ignoringCollectionOrder()
+                .ignoringFields("physicalFields.physicalEntity.physicalFields")
+                .ignoringFields("physicalEntities.physicalFields")
+                .isEqualTo(expectedQualityChecks.getQualityChecks());
+    }
+
+    @Test
+    void testDatastoreApiV1QualityExtractorOdcs31LibraryNullValues() throws IOException {
+        assertOdcs31FixtureMatches("testDataStoreApiV1QualityExtractor_odcs31_library_nullValues_rawPortStandardDefinition.json",
+                "testDataStoreApiV1QualityExtractor_odcs31_library_nullValues_expected_quality_checks.json");
+    }
+
+    @Test
+    void testDatastoreApiV1QualityExtractorOdcs31LibraryMissingValuesWithArguments() throws IOException {
+        assertOdcs31FixtureMatches("testDataStoreApiV1QualityExtractor_odcs31_library_missingValues_withArgs_rawPortStandardDefinition.json",
+                "testDataStoreApiV1QualityExtractor_odcs31_library_missingValues_withArgs_expected_quality_checks.json");
+    }
+
+    @Test
+    void testDatastoreApiV1QualityExtractorOdcs31LibraryInvalidValuesWithPatternArgument() throws IOException {
+        assertOdcs31FixtureMatches("testDataStoreApiV1QualityExtractor_odcs31_library_invalidValues_withPattern_rawPortStandardDefinition.json",
+                "testDataStoreApiV1QualityExtractor_odcs31_library_invalidValues_withPattern_expected_quality_checks.json");
+    }
+
+    @Test
+    void testDatastoreApiV1QualityExtractorOdcs31LibraryRowCountSchemaLevel() throws IOException {
+        assertOdcs31FixtureMatches("testDataStoreApiV1QualityExtractor_odcs31_library_rowCount_rawPortStandardDefinition.json",
+                "testDataStoreApiV1QualityExtractor_odcs31_library_rowCount_expected_quality_checks.json");
+    }
+
+    @Test
+    void testDatastoreApiV1QualityExtractorOdcs31LibraryDuplicateValuesWithPropertiesArgument() throws IOException {
+        assertOdcs31FixtureMatches("testDataStoreApiV1QualityExtractor_odcs31_library_duplicateValues_withProperties_rawPortStandardDefinition.json",
+                "testDataStoreApiV1QualityExtractor_odcs31_library_duplicateValues_withProperties_expected_quality_checks.json");
+    }
+
+    @Test
+    void testDatastoreApiV1QualityExtractorOdcs31SqlRule() throws IOException {
+        assertOdcs31FixtureMatches("testDataStoreApiV1QualityExtractor_odcs31_sql_rawPortStandardDefinition.json",
+                "testDataStoreApiV1QualityExtractor_odcs31_sql_expected_quality_checks.json");
+    }
+
+    @Test
+    void testDatastoreApiV1QualityExtractorOdcs31TextRule() throws IOException {
+        assertOdcs31FixtureMatches("testDataStoreApiV1QualityExtractor_odcs31_text_rawPortStandardDefinition.json",
+                "testDataStoreApiV1QualityExtractor_odcs31_text_expected_quality_checks.json");
+    }
+
+    @Test
+    void testDatastoreApiV1QualityExtractorOdcs31OperatorMustBeGreaterOrEqualAndLessOrEqualCombined() throws IOException {
+        assertOdcs31FixtureMatches("testDataStoreApiV1QualityExtractor_odcs31_operator_betweenCombined_rawPortStandardDefinition.json",
+                "testDataStoreApiV1QualityExtractor_odcs31_operator_betweenCombined_expected_quality_checks.json");
+    }
+
+    @Test
+    void testDatastoreApiV1QualityExtractorOdcs31OperatorMustNotBeBetween() throws IOException {
+        assertOdcs31FixtureMatches("testDataStoreApiV1QualityExtractor_odcs31_operator_mustNotBeBetween_rawPortStandardDefinition.json",
+                "testDataStoreApiV1QualityExtractor_odcs31_operator_mustNotBeBetween_expected_quality_checks.json");
+    }
+
+    @Test
+    void testDatastoreApiV1QualityExtractorOdcs31FieldLevelLibraryNullValues() throws IOException {
+        assertOdcs31FixtureMatches("testDataStoreApiV1QualityExtractor_odcs31_fieldLevel_library_nullValues_rawPortStandardDefinition.json",
+                "testDataStoreApiV1QualityExtractor_odcs31_fieldLevel_library_nullValues_expected_quality_checks.json");
+    }
+
+    private void assertOdcs31FixtureMatches(String rawFixtureResource, String expectedFixtureResource) throws IOException {
+        StandardDefinition portStandardDefinition = new StandardDefinition();
+        portStandardDefinition.setSpecification("datastoreapi");
+        portStandardDefinition.setSpecificationVersion("1.0.0");
+        portStandardDefinition.setDefinition(objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource(rawFixtureResource)),
+                ComponentBase.class
+        ));
+        assertThat(portStandardDefinitionAnalyzer.supports(portStandardDefinition)).isTrue();
+
+        List<QualityCheck> extractedQualityChecks = portStandardDefinitionAnalyzer.extractQualityChecks(portStandardDefinition);
+
+        ExpectedQualityChecks expectedQualityChecks = objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource(expectedFixtureResource)),
+                ExpectedQualityChecks.class
+        );
+
+        assertThat(extractedQualityChecks)
+                .usingRecursiveComparison()
+                .ignoringCollectionOrder()
+                .ignoringExpectedNullFields()
+                .ignoringFields("physicalFields.physicalEntity.physicalFields")
+                .ignoringFields("physicalEntities.physicalFields")
+                .isEqualTo(expectedQualityChecks.getQualityChecks());
+    }
+
+    @Test
     void testDatastoreApiV1QualityExtractorIssue90() throws IOException {
         // Backup the original logger
         UseCaseLogger originalLogger = UseCaseLoggerContext.getUseCaseLogger();
