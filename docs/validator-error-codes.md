@@ -119,6 +119,9 @@ When the Blindata policy validator evaluates a data product, it logs warning mes
 | `[#42]` | %s Quality Check: %s is a reference and does not have a main declaration. |
 | `[#43]` | %s Missing info fields on data product. |
 | `[#44]` | %s Missing interface components on data product: %s. |
+| `[#121]` | %s Quality Check name/code conflict: incoming code='%s' name='%s' conflicts with existing Blindata code='%s' name='%s' in the same suite. Update customProperties.displayName (or the mapped display name) to match the renamed quality, or use a stable quality.id so the code no longer tracks quality.name. |
+
+`[#121]` is emitted when the observer is about to upload a Quality Check whose Blindata **display name** already exists in the same Quality Suite under a **different code**. This typically happens after renaming `quality.name` without updating `customProperties.displayName` (and without a stable `quality.id`). Blindata upserts by code and enforces unique names per suite, so the create would otherwise fail with an opaque conflict. The validator collects this warning and fails policy evaluation when Blindata validation is active.
 
 ### Quality check validation (thresholds and strategies)
 

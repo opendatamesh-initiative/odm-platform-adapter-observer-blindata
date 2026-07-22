@@ -7,9 +7,11 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.excepti
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityCheckRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityStrategyRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualitySuiteRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.QualityCheckSearchOptions;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.quality.QualityCheck;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
@@ -19,6 +21,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -63,6 +66,7 @@ class QualityUpload implements UseCase {
             updateIssuePoliciesOnQualityChecks(qualityChecks, issueCampaign, dataProductVersion);
 
             addQualitySuiteCodeToQualityChecksCode(qualitySuite, qualityChecks);
+            detectAndWarnNameCodeConflicts(qualitySuite, qualityChecks);
 
             BDQualityUploadResultsRes uploadResult = blindataOutboundPort.uploadQuality(qualitySuite, qualityChecks);
 
@@ -77,6 +81,41 @@ class QualityUpload implements UseCase {
         qualityChecks.forEach(qualityCheck -> qualityCheck.setCode(
                 String.format("%s - %s", qualitySuite.getCode(), qualityCheck.getCode())
         ));
+    }
+
+    private void detectAndWarnNameCodeConflicts(BDQualitySuiteRes qualitySuite, List<QualityCheck> qualityChecks) {
+        if (CollectionUtils.isEmpty(qualityChecks) || qualitySuite == null || !StringUtils.hasText(qualitySuite.getCode())) {
+            return;
+        }
+        Optional<BDQualitySuiteRes> existingSuite = blindataOutboundPort.findQualitySuiteByCode(qualitySuite.getCode());
+        if (existingSuite.isEmpty()) {
+            return;
+        }
+        QualityCheckSearchOptions searchOptions = new QualityCheckSearchOptions();
+        searchOptions.setSuiteUuid(Collections.singletonList(existingSuite.get().getUuid()));
+        List<BDQualityCheckRes> existingChecks = blindataOutboundPort.findQualityChecks(searchOptions);
+        if (CollectionUtils.isEmpty(existingChecks)) {
+            return;
+        }
+        for (QualityCheck incoming : qualityChecks) {
+            if (!StringUtils.hasText(incoming.getName()) || !StringUtils.hasText(incoming.getCode())) {
+                continue;
+            }
+            for (BDQualityCheckRes existing : existingChecks) {
+                if (Objects.equals(incoming.getName(), existing.getName())
+                        && !Objects.equals(incoming.getCode(), existing.getCode())) {
+                    getUseCaseLogger().warn(String.format(
+                            "[#121] %s Quality Check name/code conflict: incoming code='%s' name='%s' conflicts with existing Blindata code='%s' name='%s' in the same suite. " +
+                                    "Update customProperties.displayName (or the mapped display name) to match the renamed quality, or use a stable quality.id so the code no longer tracks quality.name.",
+                            USE_CASE_PREFIX,
+                            incoming.getCode(),
+                            incoming.getName(),
+                            existing.getCode(),
+                            existing.getName()
+                    ));
+                }
+            }
+        }
     }
 
     private void updateIssuePoliciesOnQualityChecks(List<QualityCheck> qualityChecks, BDIssueCampaignRes issueCampaign, DataProductVersion dataProductVersion) {

@@ -18,8 +18,12 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.mark
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDSystemRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDSystemSearchOptions;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.*;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityCheckRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualitySuiteRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.QualityCheckSearchOptions;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.QualitySuitesSearchOptions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -413,6 +417,40 @@ public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, B
                     null,
                     qualityUpload,
                     BDQualityUploadResultsRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Page<BDQualitySuiteRes> getQualitySuites(Pageable pageable, QualitySuitesSearchOptions filters) {
+        try {
+            return restUtils.getPage(
+                    String.format("%s/api/v1/data-quality/suites", credentials.getBlindataUrl()),
+                    null,
+                    pageable,
+                    filters,
+                    BDQualitySuiteRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Page<BDQualityCheckRes> getQualityChecks(Pageable pageable, QualityCheckSearchOptions filters) {
+        try {
+            return restUtils.getPage(
+                    String.format("%s/api/v1/data-quality/checks", credentials.getBlindataUrl()),
+                    null,
+                    pageable,
+                    filters,
+                    BDQualityCheckRes.class
             );
         } catch (ClientException e) {
             throw new BlindataClientException(e.getCode(), e.getResponseBody());
