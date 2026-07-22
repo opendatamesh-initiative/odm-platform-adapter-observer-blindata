@@ -89,6 +89,7 @@ The validation system performs comprehensive checks across multiple areas of the
 - **Missing Quality Check Code**: Ensures quality checks have a code defined
 - **Invalid Quality Object**: Validates quality object structure and properties
 - **Reference Quality Checks**: Handles quality checks that are references to other definitions
+- **Quality Check Name/Code Conflict (`[#121]`)**: Detects when an incoming Quality Check would collide with an existing Blindata check in the same suite that has the same display name but a different code (typical after renaming `quality.name` without aligning `customProperties.displayName` or using a stable `quality.id`). See [Validator Error Codes](./validator-error-codes.md).
 - **Missing Issue Policy Information**: Validates issue policies have required fields:
   - Policy name
   - Policy type
