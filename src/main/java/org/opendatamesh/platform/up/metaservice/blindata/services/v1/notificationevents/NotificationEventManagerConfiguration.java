@@ -8,6 +8,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.marke
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_align.PoliciesAlignFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.policies_upload.PoliciesUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload.QualityUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.probes_upload.ProbesUploadFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.stages_upload.StagesUploadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,8 @@ public class NotificationEventManagerConfiguration {
     private DataProductPortsAndAssetsUploadFactory dataProductPortsAndAssetsUploadFactory;
     @Autowired
     private QualityUploadFactory qualityUploadFactory;
+    @Autowired
+    private ProbesUploadFactory probesUploadFactory;
     @Autowired
     private PoliciesAlignFactory policiesAlignFactory;
     @Autowired
@@ -61,6 +64,7 @@ public class NotificationEventManagerConfiguration {
                     eventHandler.getActiveUseCases().contains("DATA_PRODUCT_UPLOAD") ? dataProductUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("DATA_PRODUCT_VERSION_UPLOAD") ? dataProductPortsAndAssetsUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("QUALITY_UPLOAD") ? qualityUploadFactory : null,
+                    eventHandler.getActiveUseCases().contains("PROBES_UPLOAD") ? probesUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("STAGES_UPLOAD") ? stagesUploadFactory : null,
                     eventHandler.getActiveUseCases().contains("POLICIES_ALIGN") ? policiesAlignFactory : null,
                     eventHandler.getActiveUseCases().contains("POLICIES_UPLOAD") ? policiesUploadFactory : null,

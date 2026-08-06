@@ -1,0 +1,100 @@
+{
+  "policyEvaluationId": 12,
+  "objectToEvaluate": {
+    "afterState": {
+      "dataProductVersion": {
+        "dataProductDescriptor": "1.0.0",
+        "info": {
+          "fullyQualifiedName": "urn:dpds:qualityDemo:dataproducts:test1:1",
+          "entityType": "dataproduct",
+          "domain": "test",
+          "name": "test1",
+          "version": "1.0.0",
+          "displayName": "test1",
+          "description": "",
+          "owner": {
+            "id": "owner@default.blindata.io",
+            "name": "owner@default.blindata.io"
+          },
+          "contactPoints": []
+        },
+        "interfaceComponents": {
+          "inputPorts": [],
+          "outputPorts": [
+            {
+              "fullyQualifiedName": "urn:dpds:qualityDemo:dataproducts:test1:1:1.0.0:outputPorts:customers",
+              "entityType": "outputport",
+              "name": "customers",
+              "version": "1.0.0",
+              "displayName": "Customers",
+              "description": "Customer output port declaring probe candidates",
+              "x-blindataConnectionName": "UnknownConnection",
+              "promises": {
+                "platform": "postgresql:TestSystem",
+                "servicesType": "datastore-services",
+                "api": {
+                  "specification": "datastoreapi",
+                  "specificationVersion": "1.0.0",
+                  "definition": {
+                    "datastoreapi": "1.0.0",
+                    "info": {
+                      "title": "customers",
+                      "summary": "Customers datastore API",
+                      "description": "Schema declaring library quality rules",
+                      "version": "1.0.0",
+                      "datastoreName": "demo_ds"
+                    },
+                    "schema": {
+                      "databaseName": "demo_db",
+                      "databaseSchemaName": "public",
+                      "tables": [
+                        {
+                          "name": "customers",
+                          "version": "1.0.0",
+                          "description": "Customers table",
+                          "specification": "json-schema",
+                          "specificationVersion": "1",
+                          "definition": {
+                            "name": "customers",
+                            "version": "1.0.0",
+                            "displayName": "Customers",
+                            "description": "Customers physical table",
+                            "physicalType": "BASE_TABLE",
+                            "type": "object",
+                            "quality": [
+                              {
+                                "id": "customers_row_count_positive",
+                                "name": "customers_row_count_positive",
+                                "description": "Table must contain at least one row",
+                                "type": "library",
+                                "metric": "rowCount",
+                                "unit": "rows",
+                                "mustBeGreaterThan": 0
+                              }
+                            ],
+                            "properties": {
+                              "customer_id": {
+                                "type": "string",
+                                "name": "customer_id",
+                                "displayName": "Customer ID",
+                                "physicalType": "VARCHAR",
+                                "ordinalPosition": 0
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "controlPorts": [],
+          "discoveryPorts": [],
+          "observabilityPorts": []
+        }
+      }
+    }
+  }
+}

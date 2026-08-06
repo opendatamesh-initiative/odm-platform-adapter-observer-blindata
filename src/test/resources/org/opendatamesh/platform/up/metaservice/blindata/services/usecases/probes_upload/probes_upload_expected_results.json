@@ -1,0 +1,113 @@
+{
+  "probeProject": {
+    "uuid": "project-uuid",
+    "name": "demo - probeSim",
+    "description": "Probe project for data product urn:dpds:demo:dataproducts:probeSim:1"
+  },
+  "probeDefinitions": [
+    {
+      "rootUuid": null,
+      "name": "demo - probeSim - customer_id_no_nulls",
+      "type": "CONTRACT_RULE",
+      "checkCode": "demo - probeSim - customer_id_no_nulls",
+      "checkName": "customer_id_no_nulls",
+      "project": {
+        "uuid": "project-uuid",
+        "name": "demo - probeSim",
+        "description": null
+      },
+      "queries": [
+        {
+          "connectionName": "Postgres",
+          "connectionType": "JDBC",
+          "queryBody": {
+            "schema": "blindata.qualityProbe.contractRule.v1",
+            "rule": {
+              "type": "library",
+              "metric": "nullValues",
+              "unit": "rows",
+              "mustBe": "0.0"
+            },
+            "physicalBinding": {
+              "schema": "public",
+              "object": "customers",
+              "property": "customer_id"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "rootUuid": null,
+      "name": "demo - probeSim - customers_row_count_positive",
+      "type": "CONTRACT_RULE",
+      "checkCode": "demo - probeSim - customers_row_count_positive",
+      "checkName": "customers_row_count_positive",
+      "project": {
+        "uuid": "project-uuid",
+        "name": "demo - probeSim",
+        "description": null
+      },
+      "queries": [
+        {
+          "connectionName": "Postgres",
+          "connectionType": "JDBC",
+          "queryBody": {
+            "schema": "blindata.qualityProbe.contractRule.v1",
+            "rule": {
+              "type": "library",
+              "metric": "rowCount",
+              "unit": "rows",
+              "mustBeGreaterThan": "0.0"
+            },
+            "physicalBinding": {
+              "schema": "public",
+              "object": "customers"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "rootUuid": null,
+      "name": "demo - probeSim - customers_active_count_sql",
+      "type": "CONTRACT_RULE",
+      "checkCode": "demo - probeSim - customers_active_count_sql",
+      "checkName": "customers_active_count_sql",
+      "project": {
+        "uuid": "project-uuid",
+        "name": "demo - probeSim",
+        "description": null
+      },
+      "queries": [
+        {
+          "connectionName": "Postgres",
+          "connectionType": "JDBC",
+          "queryBody": {
+            "schema": "blindata.qualityProbe.contractRule.v1",
+            "rule": {
+              "type": "sql",
+              "query": "SELECT COUNT(*) AS metric FROM {object} WHERE status = 'ACTIVE'",
+              "unit": "rows",
+              "mustBeGreaterOrEqualTo": "0.0"
+            },
+            "physicalBinding": {
+              "schema": "public",
+              "object": "customers"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "tag": {
+    "uuid": null,
+    "name": "1.0.2",
+    "description": "Snapshot for data product version 1.0.2",
+    "project": {
+      "uuid": "project-uuid",
+      "name": "demo - probeSim",
+      "description": null
+    }
+  }
+}

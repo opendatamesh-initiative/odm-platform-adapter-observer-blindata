@@ -18,6 +18,8 @@ blindata:
   issueManagement:
     policies:
       active: true
+  probesUpload:
+    connectionNamePropertyKey: x-blindataConnectionName
   validator:
     active: false
     policyEngine:
@@ -36,6 +38,7 @@ blindata:
         - DATA_PRODUCT_UPLOAD
         - DATA_PRODUCT_VERSION_UPLOAD
         - QUALITY_UPLOAD
+        - PROBES_UPLOAD
         - STAGES_UPLOAD
         - POLICIES_UPLOAD
     - eventType: DATA_PRODUCT_ACTIVITY_COMPLETED

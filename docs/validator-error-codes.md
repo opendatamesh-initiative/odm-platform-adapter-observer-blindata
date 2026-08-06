@@ -123,6 +123,22 @@ When the Blindata policy validator evaluates a data product, it logs warning mes
 
 `[#121]` is emitted when the observer is about to upload a Quality Check whose Blindata **display name** already exists in the same Quality Suite under a **different code**. This typically happens after renaming `quality.name` without updating `customProperties.displayName` (and without a stable `quality.id`). Blindata upserts by code and enforces unique names per suite, so the create would otherwise fail with an opaque conflict. The validator collects this warning and fails policy evaluation when Blindata validation is active.
 
+### Quality probes upload
+
+These tags are emitted only when `PROBES_UPLOAD` is listed in the active use cases of at least one event handler
+(default shipped configuration includes it for `DATA_PRODUCT_VERSION_CREATED`).
+
+| Tag | Description |
+|-----|-------------|
+| `[#200]` | %s Missing Blindata connection name on port '%s' for probe '%s' (check '%s'). |
+| `[#201]` | %s Probe upload skipped: one or more candidates have invalid or missing connections. |
+| `[#202]` | %s Missing data product version; skipping probe tag creation. |
+| `[#203]` | Blindata returned an internal server error during probe upload (dynamic message). |
+| `[#204]` | %s Unknown Blindata probe connection '%s' for port '%s' and probe '%s'. |
+| `[#205]` | %s Blindata probe connection '%s' has no type, required to run probe '%s' on port '%s'. |
+
+`[#200]`, `[#204]` and `[#205]` make the probe upload fail closed: no project, probe definition or tag is written when any candidate has an invalid connection, and `[#201]` reports the skipped run.
+
 ### Quality check validation (thresholds and strategies)
 
 | Tag | Description |

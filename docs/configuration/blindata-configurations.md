@@ -152,6 +152,26 @@ that are uploaded to Blindata are set to disabled.
 - Control policy activation based on environment
 - Manage policy lifecycle
 
+## Quality Probes Upload
+
+Configure how the `PROBES_UPLOAD` use case resolves Blindata Agent connection names from data product ports:
+
+```yaml
+blindata:
+  probesUpload:
+    connectionNamePropertyKey: x-blindataConnectionName  # Default
+```
+
+**Purpose**: When `PROBES_UPLOAD` is active on an event handler (included by default for `DATA_PRODUCT_VERSION_CREATED`, same pattern as `QUALITY_UPLOAD`), library/sql ODCS quality rules are materialized as Blindata CONTRACT_RULE probes. Each port must declare which Blindata probe connection to use via this property (read from the port's `additionalProperties`). Agent connection setup and scheduling remain manual in Blindata. Remove `PROBES_UPLOAD` from `activeUseCases` to disable upload and the related validator checks.
+
+**Notes**:
+
+- Only `library` and `sql` contract rules become probes; legacy `scoreStrategy` rules are skipped.
+- Missing connection names, connections unknown to Blindata and connections without a type fail validation (validator dry-run) and block publish; no partial probe writes occur.
+- The validator enforces these connection requirements only when `PROBES_UPLOAD` is listed in the active use cases of at least one event handler.
+- Probe project name is stable and follows the Quality Suite code convention (`{domain} - {name}`); mutable
+  `displayName` is not used.
+
 ## Configuration Parameters Reference
 
 | Parameter                                | Type    | Default                 | Required | Description                        |
@@ -164,6 +184,7 @@ that are uploaded to Blindata are set to disabled.
 | `dataProducts.assetsCleanup`             | Boolean | `true`                  | No       | Enable assets cleanup              |
 | `dataProducts.additionalPropertiesRegex` | String  | `\\bx-([\\S]+)`         | No       | Regex for additional properties    |
 | `issueManagement.policies.active`        | Boolean | `true`                  | No       | Enable issue policies              |
+| `probesUpload.connectionNamePropertyKey` | String  | `x-blindataConnectionName` | No    | Port property key for probe connection name |
 
 ## Complete Configuration Example
 

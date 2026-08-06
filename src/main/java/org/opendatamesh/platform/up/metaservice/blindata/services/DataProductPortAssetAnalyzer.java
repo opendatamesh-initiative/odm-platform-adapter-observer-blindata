@@ -48,7 +48,30 @@ public class DataProductPortAssetAnalyzer {
     @Autowired
     private List<PortStandardDefinitionQualityExtractor> qualityChecksExtractors;
 
+    /**
+     * Quality checks extracted from port schemas and then merged by code for {@code refName} references.
+     * <p>
+     * Unlike {@link #extractDeclaredQualityChecksFromPorts}, which returns each check as declared on its
+     * physical entity/field (including reference stubs as separate entries), this method collapses checks
+     * that share the same code into one: the main definition is kept and physical entities/fields from
+     * {@code refName} stubs are unioned onto it. That way a check defined once and referenced elsewhere
+     * is linked to all the assets it applies to.
+     */
     public List<QualityCheck> extractQualityChecksFromPorts(List<Port> ports) {
+        List<QualityCheck> qualityChecks = extractDeclaredQualityChecksFromPorts(ports);
+        try {
+            return mergeQualityChecksWithSameCode(sortQualityChecksForDeterministicMerge(qualityChecks));
+        } catch (Exception e) {
+            getUseCaseLogger().warn("[#2] " + e.getMessage(), e);
+        }
+        return qualityChecks;
+    }
+
+    /**
+     * Quality checks as declared in the port schemas, without the {@code refName} merge: every check keeps only the
+     * physical entity or field it was declared on, and reference stubs are returned as they are.
+     */
+    public List<QualityCheck> extractDeclaredQualityChecksFromPorts(List<Port> ports) {
         List<QualityCheck> qualityChecks = new ArrayList<>();
         try {
             for (Port port : ports) {
@@ -75,8 +98,6 @@ public class DataProductPortAssetAnalyzer {
                 addSystemToLinkedPhysicalEntitiesAndFields(port, extractedQualityChecks);
                 qualityChecks.addAll(extractedQualityChecks);
             }
-
-            return mergeQualityChecksWithSameCode(sortQualityChecksForDeterministicMerge(qualityChecks));
         } catch (Exception e) {
             getUseCaseLogger().warn("[#2] " + e.getMessage(), e);
         }

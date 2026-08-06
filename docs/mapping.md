@@ -21,6 +21,7 @@ seamless integration between descriptor structures and the Blindata environment.
             * [From JSONSchema to Blindata Quality Checks](#from-jsonschema-to-blindata-quality-checks)
                 * [Quality Suites](#quality-suites)
                 * [Quality Checks](#quality-checks)
+                * [Quality Probes](#quality-probes)
                 * [Issue Policies](#issue-policies)
                 * [Issue Campaigns](#issue-campaigns)
         * [AsyncApi](#asyncapi)
@@ -349,7 +350,9 @@ The Datastore API quality extractor supports two mapping paths:
 
 Reference-only rules that declare `customProperties.refName` are handled before this routing. They attach the current
 entity or field to another quality check identified by `refName` and are merged with that main check; they are not routed
-to odcs31 only because the stub has no `scoreStrategy`.
+to odcs31 only because the stub has no `scoreStrategy`. The merge only widens the catalog association: a probe generated
+for the main rule always executes on the table or column the rule itself was declared on, never on an object attached by
+a stub.
 
 **Placement of Quality Annotations**
 
@@ -410,6 +413,89 @@ odcs31 mapping (`customProperties.scoreStrategy` absent on a full rule):
 When both `mustBeGreaterOrEqualTo` and `mustBeLessOrEqualTo` are present in odcs31, the observer stores
 `_contract.operator = mustBeBetween` and `_contract.bounds` as the two-value JSON array. Built-in score interval fields
 (`scoreLeftValue`, `scoreRightValue`, `scoreExpectedValue`) are not populated by odcs31 rules.
+
+##### Quality Probes
+
+When `PROBES_UPLOAD` is active on an event handler (enabled by default for `DATA_PRODUCT_VERSION_CREATED`, alongside
+`QUALITY_UPLOAD`), odcs31 quality annotations of type `library` or `sql` are also materialized as executable Blindata
+**Quality Probes**. Probes are distinct from Quality Checks (KQIs): checks remain the catalog scoring entities uploaded
+by `QUALITY_UPLOAD`; probes are agent-executable definitions linked to those checks by `checkCode`. Agent connection
+setup and scheduling stay manual in Blindata.
+
+For configuration details, see
+[Quality Probes Upload](configuration/blindata-configurations.md#quality-probes-upload) and
+[Event Handling](configuration/event-handling.md).
+
+**Supported annotations**
+
+| Annotation kind | Becomes a probe? | Notes |
+|-----------------|------------------|-------|
+| odcs31 `type: library` | ✔️ | Mapped as `CONTRACT_RULE` |
+| odcs31 `type: sql` | ✔️ | Mapped as `CONTRACT_RULE` |
+| odcs31 `type: text` / `custom` | | Skipped (info log) |
+| Legacy rule (`customProperties.scoreStrategy` present, no `_contract.ruleType`) | | Skipped |
+| Reference stub (`customProperties.refName`) | | Skipped; physical binding is taken from the declared rule only (no `refName` merge) |
+
+**Probe Project**
+
+A Blindata Probe Project is ensured per data product. Its name uses the data product's stable technical `info.name`,
+not the mutable `info.displayName`:
+
+| Blindata field | Value | Notes |
+|----------------|-------|-------|
+| `project.name` | `<data product domain> - <data product name>` | Uses `info.domain` and `info.name`; `info.displayName` is deliberately ignored to keep project identity stable |
+| `project.description` | `Probe project for data product <fullyQualifiedName>` | Set on create only |
+
+Existing projects are resolved by exact name match. This convention matches the Quality Suite `code`
+(`<domain> - <name>`) rather than its mutable display name. Changing `info.displayName` therefore does not create a new
+Probe Project.
+
+**Probe naming and Quality Check link**
+
+Each probe is named with the suite-prefixed Quality Check code so it stays aligned with the KQI uploaded by
+`QUALITY_UPLOAD`:
+
+| Blindata field | Value | Notes |
+|----------------|-------|-------|
+| `definition.name` | `<domain> - <data product name> - <quality check code>` | Stable identity within the project; used to find existing probes for overwrite |
+| `definition.checkCode` | same as `definition.name` | Links the probe to the Quality Check |
+| `definition.checkName` | Quality Check `name` | Display name from the quality annotation |
+
+`<quality check code>` is the short segment from the quality object (`id` if present, otherwise `name`), before the suite
+prefix is applied — the same segment used when building the Quality Check code.
+
+If the same check code is declared more than once on a port, the first declaration is kept and later ones are ignored
+(info log).
+
+**Probe type**
+
+| Blindata field | Value | Notes |
+|----------------|-------|-------|
+| `definition.type` | `CONTRACT_RULE` | Blindata representation for ODCS library/sql rules. The query body uses the `blindata.qualityProbe.contractRule.v1` envelope (`rule` + `physicalBinding`), not classic `SINGLE_METRIC` SQL probes. |
+
+**Physical binding and connection**
+
+- Binding (`schema` / `object` / optional `property`) comes from the table or column where the rule was **declared**.
+  Table-level rules omit `property`; column-level rules set `property` to the field name.
+- Each port must declare the Blindata probe connection name via the configured property (default
+  `x-blindataConnectionName`, also accepted without the `x-` prefix). Connection **type** is resolved by looking up that
+  named connection in Blindata.
+- If any probe candidate has a missing or unknown connection, validation fails (blocks publish) and the upload run does
+  not write any probes.
+
+**Probe Tag**
+
+After probes are created or overwritten, a Probe Tag snapshots the project's current last-version definitions:
+
+| Blindata field | Value | Notes |
+|----------------|-------|-------|
+| `tag.name` | `info.version` | Data product version string |
+| `tag.description` | `Snapshot for data product version <version>` | |
+| `tag.project` | Probe Project reference | Tag is scoped to the product's probe project |
+
+If a tag with the same version name already exists on the project, it is **deleted and recreated** so the tag always
+points at the latest probe versions for that data product version. If `info.version` is missing, tag creation is skipped
+(warn).
 
 ##### Issue Policies
 

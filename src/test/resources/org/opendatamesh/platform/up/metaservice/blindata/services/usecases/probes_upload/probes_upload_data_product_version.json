@@ -1,0 +1,146 @@
+{
+  "dataProductDescriptor": "1.0.0",
+  "info": {
+    "fullyQualifiedName": "urn:dpds:demo:dataproducts:probeSim:1",
+    "entityType": "dataproduct",
+    "domain": "demo",
+    "name": "probeSim",
+    "version": "1.0.2",
+    "displayName": "Probe Upload Simulation",
+    "description": "Local simulation descriptor for DATA_PRODUCT_UPLOAD + QUALITY_UPLOAD + PROBES_UPLOAD",
+    "owner": {
+      "id": "owner@default.blindata.io",
+      "name": "owner@default.blindata.io"
+    },
+    "contactPoints": []
+  },
+  "interfaceComponents": {
+    "outputPorts": [
+      {
+        "fullyQualifiedName": "urn:dpds:demo:dataproducts:probeSim:1:outputPorts:customers",
+        "entityType": "outputport",
+        "name": "customers",
+        "version": "1.0.0",
+        "displayName": "Customers",
+        "description": "Customer output port used to simulate quality + probe upload",
+        "x-blindataConnectionName": "Postgres",
+        "promises": {
+          "platform": "postgresql:TestProbe",
+          "servicesType": "datastore-services",
+          "api": {
+            "specification": "datastoreapi",
+            "specificationVersion": "1.0.0",
+            "definition": {
+              "datastoreapi": "1.0.0",
+              "info": {
+                "title": "customers",
+                "summary": "Customers datastore API",
+                "description": "Simulation schema for probe upload",
+                "version": "1.0.0",
+                "datastoreName": "demo_ds"
+              },
+              "schema": {
+                "databaseName": "demo_db",
+                "databaseSchemaName": "public",
+                "tables": [
+                  {
+                    "name": "customers",
+                    "version": "1.0.0",
+                    "description": "Customers table",
+                    "specification": "json-schema",
+                    "specificationVersion": "1",
+                    "definition": {
+                      "name": "customers",
+                      "version": "1.0.0",
+                      "displayName": "Customers",
+                      "description": "Customers physical table",
+                      "physicalType": "BASE_TABLE",
+                      "type": "object",
+                      "quality": [
+                        {
+                          "id": "customers_row_count_positive",
+                          "name": "customers_row_count_positive",
+                          "description": "Table must contain at least one row",
+                          "type": "library",
+                          "metric": "rowCount",
+                          "unit": "rows",
+                          "mustBeGreaterThan": 0
+                        },
+                        {
+                          "id": "customers_active_count_sql",
+                          "name": "customers_active_count_sql",
+                          "description": "SQL probe: count of active customers",
+                          "type": "sql",
+                          "unit": "rows",
+                          "query": "SELECT COUNT(*) AS metric FROM {object} WHERE status = 'ACTIVE'",
+                          "mustBeGreaterOrEqualTo": 0
+                        }
+                      ],
+                      "properties": {
+                        "customer_id": {
+                          "type": "string",
+                          "name": "customer_id",
+                          "displayName": "Customer ID",
+                          "physicalType": "VARCHAR",
+                          "ordinalPosition": 0,
+                          "quality": [
+                            {
+                              "id": "customer_id_no_nulls",
+                              "name": "customer_id_no_nulls",
+                              "description": "customer_id must not contain nulls",
+                              "type": "library",
+                              "metric": "nullValues",
+                              "unit": "rows",
+                              "mustBe": 0
+                            },
+                            {
+                              "customProperties": {
+                                "refName": "customers_row_count_positive"
+                              }
+                            }
+                          ]
+                        },
+                        "email": {
+                          "type": "string",
+                          "name": "email",
+                          "displayName": "Email",
+                          "physicalType": "VARCHAR",
+                          "ordinalPosition": 1
+                        },
+                        "status": {
+                          "type": "string",
+                          "name": "status",
+                          "displayName": "Status",
+                          "physicalType": "VARCHAR",
+                          "ordinalPosition": 2
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "internalComponents": {
+    "applicationComponents": [],
+    "infrastructuralComponents": [],
+    "lifecycleInfo": {
+      "tasksInfo": [
+        {
+          "name": "dev:task:1",
+          "stageName": "dev",
+          "order": 1
+        },
+        {
+          "name": "prod:task:1",
+          "stageName": "prod",
+          "order": 2
+        }
+      ]
+    }
+  }
+}

@@ -18,12 +18,17 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.excep
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.ValidatorUseCaseLogger;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.quality_upload.QualityUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.probes_upload.ProbesUploadFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.services.v1.notificationevents.BlindataProperties;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.OdmValidatorPolicyEvaluationRequestRes;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.OdmValidatorPolicyEvaluationResultRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.Objects;
 
 import static org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType.DATA_PRODUCT_VERSION_CREATED;
 
@@ -31,21 +36,30 @@ import static org.opendatamesh.platform.up.metaservice.blindata.adapter.events.E
 public class BlindataValidatorService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private static final String PROBES_UPLOAD_USE_CASE = "PROBES_UPLOAD";
+
     private final DataProductUploadFactory dataProductUploadFactory;
     private final DataProductPortsAndAssetsUploadFactory dataProductPortsAndAssetsUploadFactory;
     private final QualityUploadFactory qualityUploadFactory;
+    private final ProbesUploadFactory probesUploadFactory;
     private final EventAdapter eventAdapter;
+    private final BlindataProperties blindataProperties;
 
     @Autowired
     public BlindataValidatorService(
             DataProductUploadFactory dataProductUploadFactory,
-            DataProductPortsAndAssetsUploadFactory dataProductPortsAndAssetsUploadFactory, QualityUploadFactory qualityUploadFactory,
-            EventAdapter eventAdapter
+            DataProductPortsAndAssetsUploadFactory dataProductPortsAndAssetsUploadFactory,
+            QualityUploadFactory qualityUploadFactory,
+            ProbesUploadFactory probesUploadFactory,
+            EventAdapter eventAdapter,
+            BlindataProperties blindataProperties
     ) {
         this.dataProductUploadFactory = dataProductUploadFactory;
         this.dataProductPortsAndAssetsUploadFactory = dataProductPortsAndAssetsUploadFactory;
         this.qualityUploadFactory = qualityUploadFactory;
+        this.probesUploadFactory = probesUploadFactory;
         this.eventAdapter = eventAdapter;
+        this.blindataProperties = blindataProperties;
     }
 
     private ObjectMapper objectMapper = new ObjectMapper()
@@ -73,6 +87,9 @@ public class BlindataValidatorService {
                 if (!interfaceComponentsNode.isMissingNode()) {
                     dataProductPortsAndAssetsUploadFactory.getUseCaseDryRun(eventNotification).execute();
                     qualityUploadFactory.getUseCaseDryRun(eventNotification).execute();
+                    if (isUseCaseActive(PROBES_UPLOAD_USE_CASE)) {
+                        probesUploadFactory.getUseCaseDryRun(eventNotification).execute();
+                    }
                 }
             } catch (UseCaseExecutionException e) {
                 evaluationResult.getOutputObject().setMessage(String.format("Use case failed due an internal use case error: %s", e.getMessage()));
@@ -98,6 +115,20 @@ public class BlindataValidatorService {
         }
 
         return evaluationResult;
+    }
+
+    /**
+     * Optional use cases must be validated only when an event handler activates them, otherwise the validator would
+     * block the publish of data products for requirements the deployment never opted into.
+     */
+    private boolean isUseCaseActive(String useCase) {
+        if (CollectionUtils.isEmpty(blindataProperties.getEventHandlers())) {
+            return false;
+        }
+        return blindataProperties.getEventHandlers().stream()
+                .map(BlindataProperties.EventHandler::getActiveUseCases)
+                .filter(Objects::nonNull)
+                .anyMatch(activeUseCases -> activeUseCases.contains(useCase));
     }
 
     private @NotNull OdmValidatorPolicyEvaluationResultRes initEvaluationResult(OdmValidatorPolicyEvaluationRequestRes evaluationRequest) {
