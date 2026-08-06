@@ -978,6 +978,51 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
                 .contains("[#201]");
     }
 
+    /**
+     * Declaring library/sql quality without a Blindata connection name opts the port out of probe upload.
+     * Validation must succeed (no [#204]/[#201]) because missing connection is no longer a blocking misconfiguration.
+     */
+    @Test
+    public void testValidateDataProductVersionWithoutProbeConnectionOptOut() throws IOException {
+        OdmValidatorPolicyEvaluationRequestRes request = mapper.readValue(
+                Resources.toByteArray(getClass().getResource("valid_data_product_version_with_probes.json")),
+                OdmValidatorPolicyEvaluationRequestRes.class
+        );
+        removeProbeConnectionName(request);
+
+        mockBlindataLookupsForProbesDataProduct();
+
+        ResponseEntity<OdmValidatorPolicyEvaluationResultRes> response = rest.postForEntity(
+                "http://localhost:" + port + "/api/v1/up/validator/evaluate-policy",
+                request,
+                OdmValidatorPolicyEvaluationResultRes.class
+        );
+
+        verify(bdProbesClient, never()).getConnections(any(), any());
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getBody()).isNotNull();
+        Assertions.assertThat(response.getBody().getEvaluationResult()).isTrue();
+    }
+
+    private void removeProbeConnectionName(OdmValidatorPolicyEvaluationRequestRes request) {
+        JsonNode objectToEvaluate = request.getObjectToEvaluate();
+        if (objectToEvaluate == null || objectToEvaluate.isMissingNode()) {
+            return;
+        }
+        com.fasterxml.jackson.databind.node.ObjectNode mutableRoot =
+                (com.fasterxml.jackson.databind.node.ObjectNode) objectToEvaluate.deepCopy();
+        JsonNode ports = mutableRoot.at("/afterState/dataProductVersion/interfaceComponents/outputPorts");
+        if (ports.isArray()) {
+            for (JsonNode portNode : ports) {
+                if (portNode instanceof com.fasterxml.jackson.databind.node.ObjectNode) {
+                    ((com.fasterxml.jackson.databind.node.ObjectNode) portNode).remove("x-blindataConnectionName");
+                }
+            }
+        }
+        request.setObjectToEvaluate(mutableRoot);
+    }
+
     void mockBlindataLookupsForProbesDataProduct() {
         BDShortUserRes owner = new BDShortUserRes();
         owner.setUsername("owner@default.blindata.io");

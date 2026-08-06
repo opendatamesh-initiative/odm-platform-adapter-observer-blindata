@@ -21,10 +21,13 @@ import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.excep
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -125,6 +128,27 @@ class ProbesUploadOdmOutboundPortImplTest {
 
         verify(dataProductPortAssetAnalyzer).extractDeclaredQualityChecksFromPorts(any());
         verify(dataProductPortAssetAnalyzer, never()).extractQualityChecksFromPorts(any());
+    }
+
+    @Test
+    void libraryOrSqlRuleWithoutConnection_isNotAProbeCandidate() throws IOException {
+        BDPhysicalEntityRes entity = physicalEntity();
+        QualityCheck rowCount = libraryCheck("customers_row_count_positive");
+        rowCount.setPhysicalEntities(Lists.newArrayList(entity));
+
+        DataProductVersion dataProductVersion = objectMapper.readValue(DATA_PRODUCT_VERSION, DataProductVersion.class);
+        dataProductVersion.getInterfaceComponents().getOutputPorts()
+                .forEach(port -> port.getAdditionalProperties().remove("x-blindataConnectionName"));
+
+        when(dataProductPortAssetAnalyzer.extractDeclaredQualityChecksFromPorts(any()))
+                .thenReturn(Collections.singletonList(rowCount));
+
+        List<ProbeCandidate> candidates = new ProbesUploadOdmOutboundPortImpl(
+                dataProductPortAssetAnalyzer, dataProductVersion, config
+        ).extractProbeCandidates();
+
+        assertThat(candidates).isEmpty();
+        verify(mockLogger, atLeastOnce()).info(contains("no Blindata connection name declared"));
     }
 
     private List<ProbeCandidate> extractCandidates(QualityCheck... qualityChecks) throws IOException {

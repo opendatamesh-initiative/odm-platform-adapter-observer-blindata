@@ -130,14 +130,13 @@ These tags are emitted only when `PROBES_UPLOAD` is listed in the active use cas
 
 | Tag | Description |
 |-----|-------------|
-| `[#200]` | %s Missing Blindata connection name on port '%s' for probe '%s' (check '%s'). |
-| `[#201]` | %s Probe upload skipped: one or more candidates have invalid or missing connections. |
+| `[#201]` | %s Probe upload skipped: one or more candidates have invalid connections. |
 | `[#202]` | %s Missing data product version; skipping probe tag creation. |
 | `[#203]` | Blindata returned an internal server error during probe upload (dynamic message). |
 | `[#204]` | %s Unknown Blindata probe connection '%s' for port '%s' and probe '%s'. |
 | `[#205]` | %s Blindata probe connection '%s' has no type, required to run probe '%s' on port '%s'. |
 
-`[#200]`, `[#204]` and `[#205]` make the probe upload fail closed: no project, probe definition or tag is written when any candidate has an invalid connection, and `[#201]` reports the skipped run.
+`[#204]` and `[#205]` make the probe upload fail closed: no project, probe definition or tag is written when any opted-in candidate has an invalid connection, and `[#201]` reports the skipped run. Missing connection names are not errors: a port without the configured connection property opts out of probe upload (info log; no probe candidate).
 
 ### Quality check validation (thresholds and strategies)
 

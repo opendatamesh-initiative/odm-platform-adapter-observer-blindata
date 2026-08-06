@@ -58,7 +58,7 @@ class ProbesUpload implements UseCase {
 
             if (!validateConnections(candidates)) {
                 getUseCaseLogger().warn(String.format(
-                        "[#201] %s Probe upload skipped: one or more candidates have invalid or missing connections.",
+                        "[#201] %s Probe upload skipped: one or more candidates have invalid connections.",
                         USE_CASE_PREFIX
                 ));
                 return;
@@ -75,18 +75,7 @@ class ProbesUpload implements UseCase {
         Map<String, String> resolvedConnectionTypes = new HashMap<>();
 
         for (ProbeCandidate candidate : candidates) {
-            if (!StringUtils.hasText(candidate.getConnectionName())) {
-                getUseCaseLogger().warn(String.format(
-                        "[#200] %s Missing Blindata connection name on port '%s' for probe '%s' (check '%s').",
-                        USE_CASE_PREFIX,
-                        candidate.getPortFullyQualifiedName(),
-                        candidate.getProbeName(),
-                        candidate.getCheckName()
-                ));
-                allValid = false;
-                continue;
-            }
-
+            //Candidates without a connection name are filtered out during extraction (connection presence = opt-in).
             String cachedType = resolvedConnectionTypes.get(candidate.getConnectionName());
             if (cachedType != null) {
                 candidate.setConnectionType(cachedType);

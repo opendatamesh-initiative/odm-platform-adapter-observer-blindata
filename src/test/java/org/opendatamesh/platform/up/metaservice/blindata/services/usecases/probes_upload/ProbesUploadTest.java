@@ -113,7 +113,6 @@ public class ProbesUploadTest {
         verify(blindataOutboundPort, times(3)).createProbeDefinition(definitionCaptor.capture());
         verify(blindataOutboundPort, never()).overwriteProbeDefinition(anyString(), any());
         verify(blindataOutboundPort, times(1)).createTag(tagCaptor.capture());
-        verify(mockLogger, never()).warn(contains("[#200]"));
         verify(mockLogger, never()).warn(contains("[#201]"));
         verify(mockLogger, never()).warn(contains("[#204]"));
         verify(mockLogger, never()).warn(contains("[#205]"));
@@ -178,7 +177,7 @@ public class ProbesUploadTest {
     }
 
     @Test
-    void testMissingConnection_warnsAndSkipsBlindataWrites() throws IOException, UseCaseExecutionException {
+    void testMissingConnection_skipsCandidatesAndBlindataWrites() throws IOException, UseCaseExecutionException {
         DataProductVersion dataProductVersion = loadDataProductVersion();
         dataProductVersion.getInterfaceComponents().getOutputPorts()
                 .forEach(port -> port.getAdditionalProperties().remove("x-blindataConnectionName"));
@@ -186,8 +185,11 @@ public class ProbesUploadTest {
 
         new ProbesUpload(blindataOutboundPort, odmOutboundPort).execute();
 
-        verify(mockLogger, atLeastOnce()).warn(contains("[#200]"));
-        verify(mockLogger, atLeastOnce()).warn(contains("[#201]"));
+        verify(mockLogger, atLeastOnce()).info(contains("no Blindata connection name declared"));
+        verify(mockLogger, never()).warn(contains("[#201]"));
+        verify(mockLogger, never()).warn(contains("[#204]"));
+        verify(mockLogger, never()).warn(contains("[#205]"));
+        verify(blindataOutboundPort, never()).findProbeConnectionByName(anyString());
         verify(blindataOutboundPort, never()).createProbeProject(any());
         verify(blindataOutboundPort, never()).createProbeDefinition(any());
         verify(blindataOutboundPort, never()).createTag(any());

@@ -430,8 +430,8 @@ For configuration details, see
 
 | Annotation kind | Becomes a probe? | Notes |
 |-----------------|------------------|-------|
-| odcs31 `type: library` | ✔️ | Mapped as `CONTRACT_RULE` |
-| odcs31 `type: sql` | ✔️ | Mapped as `CONTRACT_RULE` |
+| odcs31 `type: library` | ✔️ when port has connection name | Mapped as `CONTRACT_RULE`; skipped (info) if port omits connection property |
+| odcs31 `type: sql` | ✔️ when port has connection name | Mapped as `CONTRACT_RULE`; skipped (info) if port omits connection property |
 | odcs31 `type: text` / `custom` | | Skipped (info log) |
 | Legacy rule (`customProperties.scoreStrategy` present, no `_contract.ruleType`) | | Skipped |
 | Reference stub (`customProperties.refName`) | | Skipped; physical binding is taken from the declared rule only (no `refName` merge) |
@@ -477,11 +477,13 @@ If the same check code is declared more than once on a port, the first declarati
 
 - Binding (`schema` / `object` / optional `property`) comes from the table or column where the rule was **declared**.
   Table-level rules omit `property`; column-level rules set `property` to the field name.
-- Each port must declare the Blindata probe connection name via the configured property (default
+- Probe upload is **opt-in per port** via the configured Blindata connection name property (default
   `x-blindataConnectionName`, also accepted without the `x-` prefix). Connection **type** is resolved by looking up that
   named connection in Blindata.
-- If any probe candidate has a missing or unknown connection, validation fails (blocks publish) and the upload run does
-  not write any probes.
+- Ports without a connection name skip library/sql probe materialization (info log); `QUALITY_UPLOAD` KQIs are unchanged.
+  Blank values are treated as absent.
+- If any opted-in probe candidate has an unknown connection or a connection without a type, validation fails (blocks
+  publish) and the upload run does not write any probes.
 
 **Probe Tag**
 

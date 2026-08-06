@@ -2,7 +2,7 @@
 
 ## Original Business Requirement
 
-i need to introduce support for creating quality probes inside a probe project in blindata. This use case should be optionally enabled with configuration. To look at how data quality annotation are written into blindata api please look at blindata-ui. pay attention that they might be different about how probes are sent to agent for execution. the probe project should follow the same convention as the related quality suite. use also blindata-site-docs for help center and discovering how data quality works in blindata. Assume the connection name is a custom property on the port object if there is no connection name but there are quality annotation just throw error if the probe upload is enabled. be aware that at the moment only library and sql quality annotation are supported. once probe are uploaded this observer should also create a tag.  Assumption: blindata connection name is configured in blindata agent manually, scheduling is activated manually, custom properties about blindata connection name for the datasource is edited in the builder.
+i need to introduce support for creating quality probes inside a probe project in blindata. This use case should be optionally enabled with configuration. To look at how data quality annotation are written into blindata api please look at blindata-ui. pay attention that they might be different about how probes are sent to agent for execution. the probe project should follow the same convention as the related quality suite. use also blindata-site-docs for help center and discovering how data quality works in blindata. Assume the connection name is a custom property on the port object; presence of the connection name opts the port into probe upload, absence skips probe materialization for that port (even when library/sql quality annotations exist). be aware that at the moment only library and sql quality annotation are supported. once probe are uploaded this observer should also create a tag.  Assumption: blindata connection name is configured in blindata agent manually, scheduling is activated manually, custom properties about blindata connection name for the datasource is edited in the builder.
 
 ## Domain Concept Identification
 
@@ -39,7 +39,7 @@ i need to introduce support for creating quality probes inside a probe project i
 
 - **Opt-in only**: Probe upload runs only when explicitly enabled via configuration; default must not change existing deployments that only run `QUALITY_UPLOAD`.
 - **Stable Probe Project naming**: Probe Project name must follow the related Quality Suite **code** convention (`{domain} - {dataProduct.name}`). It must not use `displayName`, because changing a display label must not change project identity.
-- **Connection name required when enabled**: If probe upload is enabled and the use case **must create a probe** for a port (odcs31 library/sql main definition; `refName` stubs do not create probes) but that port has no `x-blindataConnectionName`, it must **fail** — surface a **validator warn that blocks publish**, and the upload path must not silently skip those probes. Ports with only legacy/unsupported annotations and no probe to create do not require the connection property.
+- **Connection name as per-port opt-in**: Presence of `x-blindataConnectionName` (or the configured key) on a port opts that port into probe upload for its library/sql rules. Absence or blank value means **skip** those rules as probe candidates (info log); do **not** fail validation or block publish. This lets a product keep ODCS library/sql annotations for KQIs while executing quality outside Blindata probes.
 - **Library and SQL only; no legacy**: Probe materialization supports odcs31 `library`/`sql` only. Legacy rules are skipped. Non-library/sql types are not materialised as probes.
 - **`refName` stubs**: Skipped for probes (not standalone definitions). Physical binding comes from the declared check only — **do not** reuse `QUALITY_UPLOAD` merge semantics, because a probe runs on a single table/column.
 - **KQIs and probes are different Blindata resources**: Annotations already become Quality Checks (with `_contract.*` for odcs31). Probes are separate executable definitions associated by `checkCode` to those checks. Do not confuse catalog additional properties with probe `queryBody`.
@@ -59,7 +59,7 @@ i need to introduce support for creating quality probes inside a probe project i
 
 Introduce an **optional, configuration-gated probes upload use case** in the Blindata Observer that, on the same data-product version events used by quality upload, extracts library/sql quality annotations from ports (as declared, without `refName` merge), ensures a Blindata **Probe Project** exists using the stable **Quality Suite code convention**, upserts **CONTRACT_RULE** probe definitions (ODCS rule + declared physical binding + port connection name), and then **creates a Probe Tag** snapshot. Keep KQI upload (`QUALITY_UPLOAD`) as the source of Quality Checks; probes associate via suite-prefixed `checkCode`. Do not configure agent connections or schedules.
 
-High-level data flow: descriptor ports → extract declared quality annotations (+ physical context + port connection property) → validate connection presence when enabled → ensure Probe Project (stable suite-code-aligned name) → upsert CONTRACT_RULE probes linked to Quality Check codes → create Probe Tag → stop (manual scheduling/ops).
+High-level data flow: descriptor ports → extract declared quality annotations (+ physical context + port connection property) → skip library/sql without connection (opt-out) → validate declared connections → ensure Probe Project (stable suite-code-aligned name) → upsert CONTRACT_RULE probes linked to Quality Check codes → create Probe Tag → stop (manual scheduling/ops).
 
 Leverage existing observer patterns: use-case package with ODM/Blindata outbound ports, factory registered in notification event manager / V2 counterpart, dry-run/validator-compatible outbound stubs where appropriate, and Blindata REST clients alongside `BdQualityClient`.
 
@@ -69,17 +69,17 @@ Leverage existing observer patterns: use-case package with ODM/Blindata outbound
 - **Probe type CONTRACT_RULE vs SINGLE_METRIC**: Builder and Blindata schema treat library/sql ODCS rules as `CONTRACT_RULE` with envelope `blindata.qualityProbe.contractRule.v1`. Classic `SINGLE_METRIC` expects JDBC `queryBody.text` scalars and does not carry ODCS library metrics. → **Decided CONTRACT_RULE**; do **not** flatten to agent job shape on write.
 - **Relationship to QUALITY_UPLOAD**: Probes need stable suite-prefixed check codes matching uploaded KQIs. → **Decided** run probes upload after quality upload when both are active; checkCode = `{domain} - {dataProduct.name} - {qualityCheck.code}`.
 - **Probe Project identity**: Project API has name only (no code). → **Decided** use the Quality Suite **code** convention (`{domain} - {dataProduct.name}`) as Probe Project `name`, deliberately ignoring mutable `displayName`, and resolve existing projects by exact name match after search.
-- **Connection name source**: Port custom property (Builder-edited). → **Decided: per port**; default key **`x-blindataConnectionName`** (optionally configurable). Missing connection when a probe **must be created** for that port → **fail** (validator warn that blocks publish; upload must not silently proceed without the probe).
+- **Connection name source**: Port custom property (Builder-edited). → **Decided: per-port opt-in**; default key **`x-blindataConnectionName`** (optionally configurable). Missing/blank connection → **skip** library/sql rules on that port as probe candidates (info log; no validator block). Declared connection that is unknown or typeless → **fail** (validator warn; fail closed).
 - **Connection type / technology**: Annotations are tech-independent; observer only requires **connection name**. → **Decided**: look up Blindata Probe Connection by name to obtain `connectionType` for the API payload; do not branch probe logic on JDBC/MONGO/SALESFORCE at annotation level. Fail/warn clearly if the named connection does not exist in Blindata.
 - **Unsupported / legacy annotation types**: → **Decided: no legacy support** (skip when `scoreStrategy` present and no `_contract.ruleType`). Only odcs31 `library`/`sql` become probes; skip other types (info log).
 - **`refName` / physical binding**: → **Decided: declared checks only**. Use `extractDeclaredQualityChecksFromPorts`; skip `isReference()` stubs; do **not** merge stub physical fields/entities onto the main probe (KQI upload continues to use merge). Rationale: a probe executes against one physical object; merge would attach wrong bindings.
 - **Probe upsert identity**: Blindata enforces unique probe **name** per project (last version); updates create new versions via PUT `rootUuid`. → **Decided**: stable `name` / `checkCode` = `{domain} - {dataProduct.name} - {qualityCheck.code}`; find existing by project + name, then create or overwrite.
 - **Tag naming on each upload**: → **Decided**: tag name = **data product version**. If a tag with that name already exists on the project, **delete and recreate** it after probes are uploaded. Missing version → warn and skip tag.
 - **Enablement configuration**: → **Decided** event-handler `activeUseCases` entry `PROBES_UPLOAD` as primary gate; `BdProbesUploadConfig` for connection-property key (default `x-blindataConnectionName`). Sample YAML may list `PROBES_UPLOAD` for local/demo; production remains per-handler opt-in.
-- **Failure / enforcement mode**: → **Decided**: use **validator warn that blocks publish** (same pattern as other quality/validator warns), not a hard `UseCaseExecutionException` for missing connection / validation issues. Fail closed: if any candidate has missing/unknown connection, skip all Blindata writes for the run (`[#201]`).
+- **Failure / enforcement mode**: → **Decided**: use **validator warn that blocks publish** for **invalid declared** connections (unknown `[#204]`, no type `[#205]`), not a hard `UseCaseExecutionException`. Fail closed: if any opted-in candidate is invalid, skip all Blindata writes for the run (`[#201]`). Missing connection is **not** a failure (`[#200]` removed); it is the opt-out path.
 - **Connection property fallback**: → **Decided**: prefer configured key; if it starts with `x-` and is absent, also try Builder-stripped name without `x-`.
 - **Envelope builder**: → **Decided**: dedicated `ContractRuleEnvelopeBuilder` utility for `rule` + `physicalBinding` + schema constant.
-- **Validator dry-run**: → **Decided**: `BlindataValidatorService` always runs probes dry-run after quality dry-run when interface components are present (factory always injected).
+- **Validator dry-run**: → **Decided**: `BlindataValidatorService` runs probes dry-run after quality dry-run when `PROBES_UPLOAD` is active and interface components are present; unknown/typeless declared connections warn and fail validation; missing connection does not.
 
 #### Alternatives Considered
 
@@ -99,7 +99,7 @@ Leverage existing observer patterns: use-case package with ODM/Blindata outbound
 - ~~**Tag name convention**~~ → **Decided: data product version**; on conflict **delete and recreate**.
 - ~~**Unsupported rule types / legacy**~~ → **Decided: no legacy**; only odcs31 `library`/`sql`; skip others (with warn as needed).
 - ~~**Multi-port connection**~~ → **Decided: per-port connection**.
-- ~~**Failure mode**~~ → **Decided: validator warn that blocks publish**.
+- ~~**Failure mode**~~ → **Decided: validator warn that blocks publish for invalid declared connections; missing connection = opt-out (skip)**.
 - ~~**Connection technology**~~ → **Decided: care about connection name only**; annotations are tech-independent; resolve Blindata connection type by name lookup for the API.
 - ~~**`refName` support**~~ → **Decided: skip stubs; declared physical binding only** (not merge onto main library/sql rules; not standalone probes).
 - **JIRA ticket id**: `BDMD-5372`.
@@ -110,7 +110,7 @@ Leverage existing observer patterns: use-case package with ODM/Blindata outbound
 
 #### Edge Cases
 
-- ~~**When missing connection fails**~~ → **Decided**: fail only when a probe **must be created** but the port has no connection name (validator blocks publish; upload fail-closed). Not required for ports that have quality annotations but no creatable library/sql probe.
+- ~~**When missing connection fails**~~ → **Revised**: missing/blank connection **never fails**; those library/sql rules are skipped as probe candidates (per-port opt-out). Fail only when a connection **is** declared but unknown in Blindata or has no type.
 - ~~**`refName` stubs**~~ → **Decided**: skip reference stubs; do not create a separate probe; do not merge stub physical context onto the main probe.
 - ~~**Table-level vs column-level binding**~~ → **Decided**: omit `property` for entity-level rules; set `property` from declared field name for column-level rules (UI accepts table-level without property).
 - **Re-upload with renamed quality rules**: Probe name/checkCode drift can orphan old probes or create duplicates; identity is `qualityCheck.code` under suite prefix.
@@ -126,7 +126,7 @@ Leverage existing observer patterns: use-case package with ODM/Blindata outbound
 - **No existing Blindata probe client in observer**: New REST client surface (`projects`, `definitions`, `tags`, optionally `connections` lookup) must follow `BdClientImpl` / RestUtils patterns; auth and paging same as quality client.
 - **Versioned probe updates**: Incorrect create-vs-overwrite handling causes `ResourceConflictException` (“Probe already exists in project”).
 - **Ordering with QUALITY_UPLOAD**: If both run async (`blindata.enableAsync`) or handler order is unstable, operators may briefly see probes without checks — mitigate with deterministic handler order or local code composition.
-- ~~**Validator dry-run**~~ → **Decided**: always run probes dry-run in `BlindataValidatorService` after quality dry-run when interface components are present; missing/unknown connection warns and fails validation.
+- ~~**Validator dry-run**~~ → **Decided**: run probes dry-run in `BlindataValidatorService` after quality dry-run when `PROBES_UPLOAD` is active and interface components are present; unknown/typeless **declared** connections warn and fail validation; missing connection does not.
 - ~~**Schema completeness for CONTRACT_RULE**~~ → **Decided**: `ContractRuleEnvelopeBuilder` maps executable `_contract.*` subset only (type/metric/query/unit/arguments/operator+bounds); does not dump full quality customProperties into `rule`.
 
 #### Acceptance Criteria Coverage
@@ -138,7 +138,7 @@ Leverage existing observer patterns: use-case package with ODM/Blindata outbound
 | 3 | Use Blindata UI patterns for how quality annotations map to Blindata API; distinguish agent execution payload | Yes | Persist CONTRACT_RULE API shape; do not write flattened agent job. |
 | 4 | Align with Blindata help-center DQ model (project → probes → tag → manual schedule) | Yes | Create project/probes/tag only; no schedule/connection provisioning. |
 | 5 | Connection name from port custom property | Yes | **Decided: per-port `x-blindataConnectionName`** (Builder: `blindataConnectionName`; optional config override). |
-| 6 | If probe upload enabled and quality annotations exist without connection name → error | Yes | **Decided: fail when a probe must be created but connection is missing** (validator warn blocks publish; upload fails too). Not for ports with only non-probe annotations. |
+| 6 | If probe upload enabled and quality annotations exist without connection name → error | Revised | **Revised: missing connection = per-port opt-out** (skip probe candidates, info log, no publish block). Error only when a declared connection is unknown or has no type. |
 | 7 | Only library and sql quality annotations supported | Yes | **Decided: no legacy**; skip `refName` stubs; declared physical binding; skip unsupported types. |
 | 8 | After probes uploaded, create a tag | Yes | **Decided: tag = data product version; delete & recreate** if present. |
 | 9 | Connection configured on agent manually; scheduling manual; Builder edits connection custom property | Yes | Out of observer scope — document as operational assumptions. |

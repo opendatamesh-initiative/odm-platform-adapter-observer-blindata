@@ -88,6 +88,15 @@ class ProbesUploadOdmOutboundPortImpl implements ProbesUploadOdmOutboundPort {
                     }
                     continue;
                 }
+                //Presence of a Blindata connection name opts the port into probe upload; absence is an intentional skip
+                //(e.g. quality executed outside Blindata probes) and must not block publish.
+                if (!StringUtils.hasText(connectionName)) {
+                    getUseCaseLogger().info(String.format(
+                            "%s Skipping quality rule '%s' on port '%s': no Blindata connection name declared; probe not uploaded.",
+                            USE_CASE_PREFIX, qualityCheck.getCode(), port.getFullyQualifiedName()
+                    ));
+                    continue;
+                }
 
                 String checkCode = String.format("%s - %s", suiteCode, qualityCheck.getCode());
                 if (candidatesByProbeName.containsKey(checkCode)) {
