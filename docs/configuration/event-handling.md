@@ -81,6 +81,7 @@ For every subscription, it is possible to specify a set of actions that the obse
 | `DATA_PRODUCT_UPLOAD`                     | Uploads the main information of the data product to Blindata and assigns ownership responsibilities to the designated user. When updating an existing data product, the version number is **not** updated and is preserved from the existing Blindata product. | `DATA_PRODUCT_CREATED`, `DATA_PRODUCT_VERSION_CREATED`            | `DATA_PRODUCT_INITIALIZED`, `DATA_PRODUCT_VERSION_PUBLISHED`       |
 | `DATA_PRODUCT_VERSION_UPLOAD`             | Uploads the data product's ports metadata along with the assets specified in the descriptor API definitions. Also updates the data product version number in Blindata from the ODM descriptor. | `DATA_PRODUCT_VERSION_CREATED`, `DATA_PRODUCT_ACTIVITY_COMPLETED` | `DATA_PRODUCT_VERSION_PUBLISHED`                                   |
 | `QUALITY_UPLOAD`                          | Uploads the quality checks specified in the data product's ports metadata.                                                  | `DATA_PRODUCT_VERSION_CREATED`, `DATA_PRODUCT_ACTIVITY_COMPLETED` | `DATA_PRODUCT_VERSION_PUBLISHED`                                   |
+| `PROBES_UPLOAD`                           | Uploads executable CONTRACT_RULE quality probes to a Blindata probe project aligned with the Quality Suite name. Per-port opt-in via connection name (default property `x-blindataConnectionName`); ports without it skip probe upload. Runs after `QUALITY_UPLOAD` when both are active. Included by default for `DATA_PRODUCT_VERSION_CREATED`; remove it from `activeUseCases` to disable. | `DATA_PRODUCT_VERSION_CREATED`, `DATA_PRODUCT_ACTIVITY_COMPLETED` | `DATA_PRODUCT_VERSION_PUBLISHED`                                   |
 | `STAGES_UPLOAD`                           | Uploads the data product's stages which are defined inside the lifecycleInfo of the descriptor.                             | `DATA_PRODUCT_VERSION_CREATED`, `DATA_PRODUCT_ACTIVITY_COMPLETED` | `DATA_PRODUCT_VERSION_PUBLISHED`                                   |
 | `DATA_PRODUCT_REMOVAL`                    | Removes the **entire** data product from Blindata using the `dataProduct.fullyQualifiedName` from the event `beforeState`. | `DATA_PRODUCT_DELETED`                                            | `DATA_PRODUCT_DELETED`                                             |
 | `DATA_PRODUCT_VERSION_REMOVAL`            | Handles data product version deletion events as a **no-op** in Blindata: it logs that a version was deleted in ODM but does not create, update, or delete any Blindata data product. | `DATA_PRODUCT_VERSION_DELETED`                                    | `DATA_PRODUCT_VERSION_DELETED`                                    |
@@ -115,6 +116,7 @@ blindata:
           "DATA_PRODUCT_UPLOAD",     
           "DATA_PRODUCT_VERSION_UPLOAD",
           "QUALITY_UPLOAD",
+          "PROBES_UPLOAD",
           "STAGES_UPLOAD",
           "POLICIES_UPLOAD"
         ]
@@ -215,6 +217,7 @@ blindata:
           "DATA_PRODUCT_UPLOAD",
           "DATA_PRODUCT_VERSION_UPLOAD",
           "QUALITY_UPLOAD",
+          "PROBES_UPLOAD",
           "STAGES_UPLOAD",
           "POLICIES_UPLOAD"
         ]

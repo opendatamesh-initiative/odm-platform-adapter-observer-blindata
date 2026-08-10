@@ -24,6 +24,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.qual
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.QualityCheckSearchOptions;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.QualitySuitesSearchOptions;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.probes.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, BdUserClient, BdPolicyEvaluationResultClient, BdSemanticLinkingClient, BdQualityClient, BdIssueCampaignClient, BdGovernancePolicyClient, BdGovernancePolicySuiteClient, BdGovernancePolicyImplementationClient, BdMarketplaceAccessRequestsUploadResultClient, BdSystemClient {
+public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, BdUserClient, BdPolicyEvaluationResultClient, BdSemanticLinkingClient, BdQualityClient, BdProbesClient, BdIssueCampaignClient, BdGovernancePolicyClient, BdGovernancePolicySuiteClient, BdGovernancePolicyImplementationClient, BdMarketplaceAccessRequestsUploadResultClient, BdSystemClient {
 
     private final BdCredentials credentials;
     private final BdDataProductConfig dataProductClientConfig;
@@ -715,6 +716,154 @@ public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, B
                     searchOptions,
                     BDSystemRes.class
             ).stream().findFirst();
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Page<BDQualityProbesProjectRes> getProjects(Pageable pageable, QualityProbesProjectSearchOptions filters) {
+        try {
+            return restUtils.getPage(
+                    String.format("%s/api/v1/data-quality/probes/projects", credentials.getBlindataUrl()),
+                    null,
+                    pageable,
+                    filters,
+                    BDQualityProbesProjectRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public BDQualityProbesProjectRes createProject(BDQualityProbesProjectRes project) {
+        try {
+            return restUtils.create(
+                    String.format("%s/api/v1/data-quality/probes/projects", credentials.getBlindataUrl()),
+                    null,
+                    project,
+                    BDQualityProbesProjectRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Page<BDQualityProbesDefinitionRes> getDefinitions(Pageable pageable, QualityProbesDefinitionSearchOptions filters) {
+        try {
+            return restUtils.getPage(
+                    String.format("%s/api/v1/data-quality/probes/definitions", credentials.getBlindataUrl()),
+                    null,
+                    pageable,
+                    filters,
+                    BDQualityProbesDefinitionRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public BDQualityProbesDefinitionRes createDefinition(BDQualityProbesDefinitionRes definition) {
+        try {
+            return restUtils.create(
+                    String.format("%s/api/v1/data-quality/probes/definitions", credentials.getBlindataUrl()),
+                    null,
+                    definition,
+                    BDQualityProbesDefinitionRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public BDQualityProbesDefinitionRes overwriteDefinition(String rootUuid, BDQualityProbesDefinitionRes definition) {
+        try {
+            return restUtils.put(
+                    String.format("%s/api/v1/data-quality/probes/definitions/{id}", credentials.getBlindataUrl()),
+                    null,
+                    rootUuid,
+                    definition,
+                    BDQualityProbesDefinitionRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Page<BDQualityProbesConnectionRes> getConnections(Pageable pageable, QualityProbesConnectionSearchOptions filters) {
+        try {
+            return restUtils.getPage(
+                    String.format("%s/api/v1/data-quality/probes/connections", credentials.getBlindataUrl()),
+                    null,
+                    pageable,
+                    filters,
+                    BDQualityProbesConnectionRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Page<BDQualityProbesTagRes> getTags(Pageable pageable, QualityProbesTagSearchOptions filters) {
+        try {
+            return restUtils.getPage(
+                    String.format("%s/api/v1/data-quality/probes/tags", credentials.getBlindataUrl()),
+                    null,
+                    pageable,
+                    filters,
+                    BDQualityProbesTagRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public BDQualityProbesTagRes createTag(BDQualityProbesTagRes tag) {
+        try {
+            return restUtils.create(
+                    String.format("%s/api/v1/data-quality/probes/tags", credentials.getBlindataUrl()),
+                    null,
+                    tag,
+                    BDQualityProbesTagRes.class
+            );
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void deleteTag(String uuid) {
+        try {
+            restUtils.delete(
+                    String.format("%s/api/v1/data-quality/probes/tags/{id}", credentials.getBlindataUrl()),
+                    null,
+                    uuid
+            );
         } catch (ClientException e) {
             throw new BlindataClientException(e.getCode(), e.getResponseBody());
         } catch (ClientResourceMappingException e) {

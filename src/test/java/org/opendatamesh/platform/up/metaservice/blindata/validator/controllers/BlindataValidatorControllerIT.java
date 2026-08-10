@@ -8,11 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.opendatamesh.platform.up.metaservice.blindata.ObserverBlindataAppIT;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdProbesClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdQualityClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdSemanticLinkingClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdStewardshipClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdSystemClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdUserClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.odm.OdmRegistryClient;
+import org.opendatamesh.platform.up.metaservice.blindata.client.utils.jackson.PageUtility;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipRoleRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDDataCategoryRes;
@@ -26,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -50,6 +54,10 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
     private BdSystemClient bdSystemClient;
     @MockBean
     private OdmRegistryClient odmRegistryClient;
+    @MockBean
+    private BdProbesClient bdProbesClient;
+    @MockBean
+    private BdQualityClient bdQualityClient;
 
     @BeforeEach
     public void resetMocks() {
@@ -59,7 +67,9 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
                 bdUserClient,
                 bdSemanticLinkingClient,
                 bdSystemClient,
-                odmRegistryClient
+                odmRegistryClient,
+                bdProbesClient,
+                bdQualityClient
         );
         lenient().when(bdSemanticLinkingClient.getLogicalNamespaceByPrefix(any())).thenReturn(Optional.empty());
     }
@@ -935,6 +945,110 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
                 .contains("[#35]")
                 .contains("System: TestSystem not found in Blindata.");
+    }
+
+    /**
+     * The test profile activates PROBES_UPLOAD, so the probes dry run must run and block the publish of a data product
+     * declaring probes on a connection that does not exist in Blindata.
+     */
+    @Test
+    public void testValidateDataProductVersionWithProbesUploadActive() throws IOException {
+        OdmValidatorPolicyEvaluationRequestRes request = mapper.readValue(
+                Resources.toByteArray(getClass().getResource("valid_data_product_version_with_probes.json")),
+                OdmValidatorPolicyEvaluationRequestRes.class
+        );
+
+        mockBlindataLookupsForProbesDataProduct();
+        when(bdProbesClient.getConnections(any(), any())).thenReturn(new PageUtility<>(Collections.emptyList()));
+
+        ResponseEntity<OdmValidatorPolicyEvaluationResultRes> response = rest.postForEntity(
+                "http://localhost:" + port + "/api/v1/up/validator/evaluate-policy",
+                request,
+                OdmValidatorPolicyEvaluationResultRes.class
+        );
+
+        verify(bdProbesClient, atLeastOnce()).getConnections(any(), any());
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getBody()).isNotNull();
+        Assertions.assertThat(response.getBody().getEvaluationResult()).isFalse();
+        Assertions.assertThat(response.getBody().getOutputObject().getRawError().toString())
+                .contains("[#204]")
+                .contains("UnknownConnection")
+                .contains("[#201]");
+    }
+
+    /**
+     * Declaring library/sql quality without a Blindata connection name opts the port out of probe upload.
+     * Validation must succeed (no [#204]/[#201]) because missing connection is no longer a blocking misconfiguration.
+     */
+    @Test
+    public void testValidateDataProductVersionWithoutProbeConnectionOptOut() throws IOException {
+        OdmValidatorPolicyEvaluationRequestRes request = mapper.readValue(
+                Resources.toByteArray(getClass().getResource("valid_data_product_version_with_probes.json")),
+                OdmValidatorPolicyEvaluationRequestRes.class
+        );
+        removeProbeConnectionName(request);
+
+        mockBlindataLookupsForProbesDataProduct();
+
+        ResponseEntity<OdmValidatorPolicyEvaluationResultRes> response = rest.postForEntity(
+                "http://localhost:" + port + "/api/v1/up/validator/evaluate-policy",
+                request,
+                OdmValidatorPolicyEvaluationResultRes.class
+        );
+
+        verify(bdProbesClient, never()).getConnections(any(), any());
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getBody()).isNotNull();
+        Assertions.assertThat(response.getBody().getEvaluationResult()).isTrue();
+    }
+
+    private void removeProbeConnectionName(OdmValidatorPolicyEvaluationRequestRes request) {
+        JsonNode objectToEvaluate = request.getObjectToEvaluate();
+        if (objectToEvaluate == null || objectToEvaluate.isMissingNode()) {
+            return;
+        }
+        com.fasterxml.jackson.databind.node.ObjectNode mutableRoot =
+                (com.fasterxml.jackson.databind.node.ObjectNode) objectToEvaluate.deepCopy();
+        JsonNode ports = mutableRoot.at("/afterState/dataProductVersion/interfaceComponents/outputPorts");
+        if (ports.isArray()) {
+            for (JsonNode portNode : ports) {
+                if (portNode instanceof com.fasterxml.jackson.databind.node.ObjectNode) {
+                    ((com.fasterxml.jackson.databind.node.ObjectNode) portNode).remove("x-blindataConnectionName");
+                }
+            }
+        }
+        request.setObjectToEvaluate(mutableRoot);
+    }
+
+    void mockBlindataLookupsForProbesDataProduct() {
+        BDShortUserRes owner = new BDShortUserRes();
+        owner.setUsername("owner@default.blindata.io");
+        owner.setFullName("owner@default.blindata.io");
+        when(bdUserClient.getBlindataUser(any())).thenReturn(Optional.of(owner));
+
+        BDStewardshipRoleRes role = new BDStewardshipRoleRes();
+        role.setUuid("test-role-uuid");
+        role.setName("test-role-name");
+        when(bdStewardshipClient.getRole(any())).thenReturn(role);
+
+        BDDataProductRes existingDataProduct = new BDDataProductRes();
+        existingDataProduct.setUuid("dp-uuid");
+        existingDataProduct.setName("test1");
+        existingDataProduct.setIdentifier("urn:dpds:qualityDemo:dataproducts:test1:1");
+        existingDataProduct.setVersion("1.0.0");
+        existingDataProduct.setDomain("test");
+        when(bdDataProductClient.getDataProduct(any())).thenReturn(Optional.of(existingDataProduct));
+
+        BDSystemRes system = new BDSystemRes();
+        system.setName("TestSystem");
+        lenient().when(bdSystemClient.getSystem(any())).thenReturn(Optional.of(system));
+
+        //the quality dry run runs before the probes one and must find an empty Blindata quality suite
+        lenient().when(bdQualityClient.getQualitySuites(any(), any())).thenReturn(new PageUtility<>(Collections.emptyList()));
+        lenient().when(bdQualityClient.getQualityChecks(any(), any())).thenReturn(new PageUtility<>(Collections.emptyList()));
     }
 
     private JsonNode findObjectByFullyQualifiedName(JsonNode root, String identifier) {

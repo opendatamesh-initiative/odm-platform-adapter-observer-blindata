@@ -46,6 +46,11 @@ public class BdClientConfigs {
     }
 
     @Bean
+    public BdProbesClient bdProbesClient() {
+        return new BdClientImpl(bdCredentials, bdDataProductConfig, getRestTemplate());
+    }
+
+    @Bean
     public BdIssueCampaignClient bdIssueCampaignClient() {
         return new BdClientImpl(bdCredentials, bdDataProductConfig, getRestTemplate());
     }
