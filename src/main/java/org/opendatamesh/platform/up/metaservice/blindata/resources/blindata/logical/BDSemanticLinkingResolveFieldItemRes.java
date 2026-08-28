@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical;
 
-public class BDSemanticLinkingResolveFieldOptions {
+public class BDSemanticLinkingResolveFieldItemRes {
 
     private String pathString;
     private String defaultNamespaceIdentifier;

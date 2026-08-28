@@ -321,19 +321,14 @@ public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, B
 
 
     @Override
-    //This method giving a semantic path and a namespace
-    //returns a semantic link object, which contains full Blindata elements (Logical Field/Data Category)
-    public BDLogicalFieldSemanticLinkRes getSemanticLinkElements(String pathString, String defaultNamespaceIdentifier) throws BlindataClientException {
+    public BDSemanticLinkingResolveFieldsResultRes resolveSemanticFields(BDSemanticLinkingResolveFieldsRequestRes request) throws BlindataClientException {
         try {
-            BDSemanticLinkingResolveFieldOptions options = new BDSemanticLinkingResolveFieldOptions();
-            options.setPathString(pathString);
-            options.setDefaultNamespaceIdentifier(defaultNamespaceIdentifier);
-
-            return restUtils.genericGet(
-                    credentials.getBlindataUrl() + "/api/v1/logical/semanticlinking/*/resolvefield",
+            RestUtils rest = credentials.getEnableAsync() ? asyncRestUtils : restUtils;
+            return rest.genericPost(
+                    credentials.getBlindataUrl() + "/api/v1/logical/semanticlinking/*/resolvefields?batchSize=" + BdSemanticLinkingClient.MAX_RESOLVE_FIELDS_BATCH_SIZE,
                     null,
-                    options,
-                    BDLogicalFieldSemanticLinkRes.class
+                    request,
+                    BDSemanticLinkingResolveFieldsResultRes.class
             );
         } catch (ClientException e) {
             throw new BlindataClientException(e.getCode(), e.getResponseBody());
