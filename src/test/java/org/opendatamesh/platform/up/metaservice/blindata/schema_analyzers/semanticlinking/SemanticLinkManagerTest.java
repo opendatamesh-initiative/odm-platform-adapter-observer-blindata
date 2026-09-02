@@ -10,13 +10,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdClientImpl;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdSemanticLinkingClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDDataCategoryRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalFieldSemanticLinkRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalNamespaceRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldItemRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldItemResultRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldPathRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldPathResultRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldsRequestRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldsResultRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
@@ -417,7 +418,7 @@ class SemanticLinkManagerTest {
     // Given a physical entity with two fields that share the same semantic path and default namespace
     // And a resolvable default namespace and data category
     // When enrichWithSemanticContext runs
-    // Then the bulk request contains exactly one item for that path and namespace
+    // Then the bulk request contains exactly one path for that path and namespace
     // And both physical fields receive the same resolved logical field
     @Test
     void testBulkResolve_duplicatePathAndNamespace_resolvedOnce() {
@@ -436,9 +437,9 @@ class SemanticLinkManagerTest {
         ArgumentCaptor<BDSemanticLinkingResolveFieldsRequestRes> captor =
                 ArgumentCaptor.forClass(BDSemanticLinkingResolveFieldsRequestRes.class);
         verify(mockSemanticLinkingClient, times(1)).resolveSemanticFields(captor.capture());
-        assertThat(captor.getValue().getItems()).hasSize(1);
-        assertThat(captor.getValue().getItems().get(0).getPathString()).isEqualTo("[Stock].stockQuantity");
-        assertThat(captor.getValue().getItems().get(0).getDefaultNamespaceIdentifier()).isEqualTo(STOCK_NAMESPACE);
+        assertThat(captor.getValue().getPaths()).hasSize(1);
+        assertThat(captor.getValue().getPaths().get(0).getPathString()).isEqualTo("[Stock].stockQuantity");
+        assertThat(captor.getValue().getPaths().get(0).getDefaultNamespaceIdentifier()).isEqualTo(STOCK_NAMESPACE);
         assertThat(fieldNamed(physicalEntity, "qty_a").getLogicalFields()).containsExactly(stockQuantity);
         assertThat(fieldNamed(physicalEntity, "qty_b").getLogicalFields()).containsExactly(stockQuantity);
     }
@@ -448,9 +449,9 @@ class SemanticLinkManagerTest {
     // And a resolvable default namespace and data category
     // When enrichWithSemanticContext runs
     // Then resolveSemanticFields is invoked twice
-    // And the first call has 500 items
-    // And the second call has 1 item
-    // And no call has more than 500 items
+    // And the first call has 500 paths
+    // And the second call has 1 path
+    // And no call has more than 500 paths
     // And all 501 fields receive a resolved logical field
     @Test
     void testBulkResolve_moreThan500UniqueFields_chunkedWithoutDropping() {
@@ -475,10 +476,10 @@ class SemanticLinkManagerTest {
                 ArgumentCaptor.forClass(BDSemanticLinkingResolveFieldsRequestRes.class);
         verify(mockSemanticLinkingClient, times(2)).resolveSemanticFields(captor.capture());
         List<Integer> chunkSizes = captor.getAllValues().stream()
-                .map(request -> request.getItems().size())
+                .map(request -> request.getPaths().size())
                 .collect(Collectors.toList());
         assertThat(chunkSizes).containsExactly(500, 1);
-        assertThat(chunkSizes).allMatch(size -> size <= BdSemanticLinkingClient.MAX_RESOLVE_FIELDS_BATCH_SIZE);
+        assertThat(chunkSizes).allMatch(size -> size <= BdClientImpl.MAX_RESOLVE_FIELDS_BATCH_SIZE);
         assertThat(physicalEntity.getPhysicalFields())
                 .allMatch(field -> field.getLogicalFields() != null && field.getLogicalFields().size() == 1);
     }
@@ -555,7 +556,7 @@ class SemanticLinkManagerTest {
     // Scenario: All paths unresolvable still completes enrichment
     // Given a physical entity with two linked fields
     // And a resolvable default namespace and data category
-    // And the bulk result marks every item as failed
+    // And the bulk result marks every path as failed
     // When enrichWithSemanticContext runs
     // Then both fields are left unmodified
     // And data categories are still set on the entity
@@ -716,22 +717,22 @@ class SemanticLinkManagerTest {
                 .thenAnswer(invocation -> {
                     BDSemanticLinkingResolveFieldsRequestRes request = invocation.getArgument(0);
                     BDSemanticLinkingResolveFieldsResultRes result = new BDSemanticLinkingResolveFieldsResultRes();
-                    List<BDSemanticLinkingResolveFieldItemResultRes> items = new ArrayList<>();
-                    if (request != null && request.getItems() != null) {
-                        for (BDSemanticLinkingResolveFieldItemRes item : request.getItems()) {
-                            BDSemanticLinkingResolveFieldItemResultRes itemResult = new BDSemanticLinkingResolveFieldItemResultRes();
-                            itemResult.setPathString(item.getPathString());
-                            itemResult.setDefaultNamespaceIdentifier(item.getDefaultNamespaceIdentifier());
-                            BDLogicalFieldSemanticLinkRes resolved = semanticLinkElementsByPath.get(item.getPathString());
+                    List<BDSemanticLinkingResolveFieldPathResultRes> paths = new ArrayList<>();
+                    if (request != null && request.getPaths() != null) {
+                        for (BDSemanticLinkingResolveFieldPathRes path : request.getPaths()) {
+                            BDSemanticLinkingResolveFieldPathResultRes pathResult = new BDSemanticLinkingResolveFieldPathResultRes();
+                            pathResult.setPathString(path.getPathString());
+                            pathResult.setDefaultNamespaceIdentifier(path.getDefaultNamespaceIdentifier());
+                            BDLogicalFieldSemanticLinkRes resolved = semanticLinkElementsByPath.get(path.getPathString());
                             if (resolved != null) {
-                                itemResult.setLogicalField(resolved);
+                                pathResult.setLogicalField(resolved);
                             } else {
-                                itemResult.setErrorMessage("Unable to resolve " + item.getPathString());
+                                pathResult.setErrorMessage("Unable to resolve " + path.getPathString());
                             }
-                            items.add(itemResult);
+                            paths.add(pathResult);
                         }
                     }
-                    result.setItems(items);
+                    result.setPaths(paths);
                     return result;
                 });
     }
@@ -741,17 +742,17 @@ class SemanticLinkManagerTest {
                 .thenAnswer(invocation -> {
                     BDSemanticLinkingResolveFieldsRequestRes request = invocation.getArgument(0);
                     BDSemanticLinkingResolveFieldsResultRes result = new BDSemanticLinkingResolveFieldsResultRes();
-                    List<BDSemanticLinkingResolveFieldItemResultRes> items = new ArrayList<>();
-                    if (request != null && request.getItems() != null) {
-                        for (BDSemanticLinkingResolveFieldItemRes item : request.getItems()) {
-                            BDSemanticLinkingResolveFieldItemResultRes itemResult = new BDSemanticLinkingResolveFieldItemResultRes();
-                            itemResult.setPathString(item.getPathString());
-                            itemResult.setDefaultNamespaceIdentifier(item.getDefaultNamespaceIdentifier());
-                            itemResult.setLogicalField(resolvedLink);
-                            items.add(itemResult);
+                    List<BDSemanticLinkingResolveFieldPathResultRes> paths = new ArrayList<>();
+                    if (request != null && request.getPaths() != null) {
+                        for (BDSemanticLinkingResolveFieldPathRes path : request.getPaths()) {
+                            BDSemanticLinkingResolveFieldPathResultRes pathResult = new BDSemanticLinkingResolveFieldPathResultRes();
+                            pathResult.setPathString(path.getPathString());
+                            pathResult.setDefaultNamespaceIdentifier(path.getDefaultNamespaceIdentifier());
+                            pathResult.setLogicalField(resolvedLink);
+                            paths.add(pathResult);
                         }
                     }
-                    result.setItems(items);
+                    result.setPaths(paths);
                     return result;
                 });
     }
@@ -767,14 +768,14 @@ class SemanticLinkManagerTest {
         ArgumentCaptor<BDSemanticLinkingResolveFieldsRequestRes> captor =
                 ArgumentCaptor.forClass(BDSemanticLinkingResolveFieldsRequestRes.class);
         verify(mockSemanticLinkingClient, times(1)).resolveSemanticFields(captor.capture());
-        return captor.getValue().getItems().stream()
-                .map(BDSemanticLinkingResolveFieldItemRes::getDefaultNamespaceIdentifier)
+        return captor.getValue().getPaths().stream()
+                .map(BDSemanticLinkingResolveFieldPathRes::getDefaultNamespaceIdentifier)
                 .collect(Collectors.toList());
     }
 
     private List<String> pathStringsOf(BDSemanticLinkingResolveFieldsRequestRes request) {
-        return request.getItems().stream()
-                .map(BDSemanticLinkingResolveFieldItemRes::getPathString)
+        return request.getPaths().stream()
+                .map(BDSemanticLinkingResolveFieldPathRes::getPathString)
                 .collect(Collectors.toList());
     }
 

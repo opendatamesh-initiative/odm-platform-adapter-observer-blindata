@@ -20,8 +20,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.coll
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipRoleRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDDataCategoryRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalNamespaceRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldItemRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldItemResultRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldPathRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldPathResultRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldsRequestRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldsResultRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDSystemRes;
@@ -381,7 +381,7 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
     // Scenario: Validator dry-run uses bulk resolve
     // Given a data product descriptor with semantic linking
     // And namespace and data category lookups succeed
-    // And bulk resolve returns a failed item for the field path
+    // And bulk resolve returns a failed path for the field path
     // When the validator evaluate-policy endpoint is called
     // Then resolveSemanticFields is invoked at least once
     // And the evaluation fails with unable to resolve semantic elements for the field path
@@ -436,7 +436,7 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
                     return Optional.of(category);
                 });
 
-        // Make bulk resolve return a failed item for each requested path
+        // Make bulk resolve return a failed path for each requested path
         when(bdSemanticLinkingClient.resolveSemanticFields(any()))
                 .thenAnswer(invocation -> failedBulkResolve(invocation.getArgument(0)));
 
@@ -456,7 +456,7 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         // Verify getDataCategoryByNameAndNamespaceUuid was called and returned a category
         verify(bdSemanticLinkingClient, atLeastOnce()).getDataCategoryByNameAndNamespaceUuid(any(), any());
 
-        // Verify resolveSemanticFields was called and returned failed items
+        // Verify resolveSemanticFields was called and returned failed paths
         verify(bdSemanticLinkingClient, atLeastOnce()).resolveSemanticFields(any());
 
         // Verify the response
@@ -1094,17 +1094,17 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
 
     private BDSemanticLinkingResolveFieldsResultRes failedBulkResolve(BDSemanticLinkingResolveFieldsRequestRes request) {
         BDSemanticLinkingResolveFieldsResultRes result = new BDSemanticLinkingResolveFieldsResultRes();
-        List<BDSemanticLinkingResolveFieldItemResultRes> items = new ArrayList<>();
-        if (request != null && request.getItems() != null) {
-            for (BDSemanticLinkingResolveFieldItemRes item : request.getItems()) {
-                BDSemanticLinkingResolveFieldItemResultRes itemResult = new BDSemanticLinkingResolveFieldItemResultRes();
-                itemResult.setPathString(item.getPathString());
-                itemResult.setDefaultNamespaceIdentifier(item.getDefaultNamespaceIdentifier());
-                itemResult.setErrorMessage("Unable to resolve " + item.getPathString());
-                items.add(itemResult);
+        List<BDSemanticLinkingResolveFieldPathResultRes> paths = new ArrayList<>();
+        if (request != null && request.getPaths() != null) {
+            for (BDSemanticLinkingResolveFieldPathRes path : request.getPaths()) {
+                BDSemanticLinkingResolveFieldPathResultRes pathResult = new BDSemanticLinkingResolveFieldPathResultRes();
+                pathResult.setPathString(path.getPathString());
+                pathResult.setDefaultNamespaceIdentifier(path.getDefaultNamespaceIdentifier());
+                pathResult.setErrorMessage("Unable to resolve " + path.getPathString());
+                paths.add(pathResult);
             }
         }
-        result.setItems(items);
+        result.setPaths(paths);
         return result;
     }
 } 

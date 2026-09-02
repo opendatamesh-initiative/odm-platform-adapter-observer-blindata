@@ -37,6 +37,8 @@ import java.util.Optional;
 
 public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, BdUserClient, BdPolicyEvaluationResultClient, BdSemanticLinkingClient, BdQualityClient, BdProbesClient, BdIssueCampaignClient, BdGovernancePolicyClient, BdGovernancePolicySuiteClient, BdGovernancePolicyImplementationClient, BdMarketplaceAccessRequestsUploadResultClient, BdSystemClient {
 
+    public static final int MAX_RESOLVE_FIELDS_BATCH_SIZE = 500;
+
     private final BdCredentials credentials;
     private final BdDataProductConfig dataProductClientConfig;
     private final RestUtils restUtils;
@@ -325,7 +327,7 @@ public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, B
         try {
             RestUtils rest = credentials.getEnableAsync() ? asyncRestUtils : restUtils;
             return rest.genericPost(
-                    credentials.getBlindataUrl() + "/api/v1/logical/semanticlinking/*/resolvefields?batchSize=" + BdSemanticLinkingClient.MAX_RESOLVE_FIELDS_BATCH_SIZE,
+                    credentials.getBlindataUrl() + "/api/v1/logical/semanticlinking/*/resolvefields?batchSize=" + MAX_RESOLVE_FIELDS_BATCH_SIZE,
                     null,
                     request,
                     BDSemanticLinkingResolveFieldsResultRes.class

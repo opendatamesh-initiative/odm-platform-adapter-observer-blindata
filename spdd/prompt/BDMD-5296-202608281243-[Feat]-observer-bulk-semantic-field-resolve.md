@@ -8,7 +8,7 @@ Change the observer so that semantic-path resolution for one physical entity is 
 - Keep enrichment scoped to the physical entity currently being visited (same as `enrichWithSemanticContext` today). Do not coalesce tables, ports, or product versions into one call.
 - Chunk, do not truncate: if one entity has more than 500 unique (path, namespace) pairs, issue further bulk calls until every linked field on that entity is attempted.
 - Honor `blindata.enableAsync` the same way as quality import-objects / port-assets: wrap the synchronous bulk POST with existing async request/poll. Do not invent a dedicated job API.
-- Per-item glossary failures stay non-blocking (`[#90]`); transport 5xx still aborts enrichment.
+- Per-path glossary failures stay non-blocking (`[#90]`); transport 5xx still aborts enrichment.
 - This prompt covers **the observer only**. The Blindata bulk API already exists (`POST /api/v1/logical/semanticlinking/*/resolvefields`). Do not change `blindata-api` here.
 
 ## Scenarios
@@ -32,7 +32,7 @@ Feature: Observer bulk semantic field resolve
     Given a physical entity with two fields that share the same semantic path and default namespace
     And a resolvable default namespace and data category
     When enrichWithSemanticContext runs
-    Then the bulk request contains exactly one item for that path and namespace
+    Then the bulk request contains exactly one path for that path and namespace
     And both physical fields receive the same resolved logical field
 
   Scenario: More than 500 unique linked fields are chunked and none are dropped
@@ -40,9 +40,9 @@ Feature: Observer bulk semantic field resolve
     And a resolvable default namespace and data category
     When enrichWithSemanticContext runs
     Then resolveSemanticFields is invoked twice
-    And the first call has 500 items
-    And the second call has 1 item
-    And no call has more than 500 items
+    And the first call has 500 paths
+    And the second call has 1 path
+    And no call has more than 500 paths
     And all 501 fields receive a resolved logical field
 
   Scenario: Fields without semantic links are omitted from the bulk request
@@ -70,7 +70,7 @@ Feature: Observer bulk semantic field resolve
   Scenario: All paths unresolvable still completes enrichment
     Given a physical entity with two linked fields
     And a resolvable default namespace and data category
-    And the bulk result marks every item as failed
+    And the bulk result marks every path as failed
     When enrichWithSemanticContext runs
     Then both fields are left unmodified
     And data categories are still set on the entity
@@ -86,7 +86,7 @@ Feature: Observer bulk semantic field resolve
   Scenario: Validator dry-run uses bulk resolve
     Given a data product descriptor with semantic linking
     And namespace and data category lookups succeed
-    And bulk resolve returns a failed item for the field path
+    And bulk resolve returns a failed path for the field path
     When the validator evaluate-policy endpoint is called
     Then resolveSemanticFields is invoked at least once
     And the evaluation fails with unable to resolve semantic elements for the field path
@@ -149,19 +149,19 @@ class BdClientImpl {
 }
 
 class BDSemanticLinkingResolveFieldsRequestRes {
-    +List~BDSemanticLinkingResolveFieldItemRes~ items
+    +List~BDSemanticLinkingResolveFieldPathRes~ paths
 }
 
-class BDSemanticLinkingResolveFieldItemRes {
+class BDSemanticLinkingResolveFieldPathRes {
     +String pathString
     +String defaultNamespaceIdentifier
 }
 
 class BDSemanticLinkingResolveFieldsResultRes {
-    +List~BDSemanticLinkingResolveFieldItemResultRes~ items
+    +List~BDSemanticLinkingResolveFieldPathResultRes~ paths
 }
 
-class BDSemanticLinkingResolveFieldItemResultRes {
+class BDSemanticLinkingResolveFieldPathResultRes {
     +String pathString
     +String defaultNamespaceIdentifier
     +BDLogicalFieldSemanticLinkRes logicalField
@@ -194,9 +194,9 @@ DataStoreApiStandardDefinitionVisitorImpl --> SemanticLinkManager : enrich per t
 SemanticLinkManagerImpl --> BDPhysicalEntityRes : enriches in place
 BdClientImpl --> BDSemanticLinkingResolveFieldsRequestRes : POSTs
 BdClientImpl --> BDSemanticLinkingResolveFieldsResultRes : deserializes
-BDSemanticLinkingResolveFieldsRequestRes "1" *-- "0..500" BDSemanticLinkingResolveFieldItemRes : items
-BDSemanticLinkingResolveFieldsResultRes "1" *-- "0..N" BDSemanticLinkingResolveFieldItemResultRes : items
-BDSemanticLinkingResolveFieldItemResultRes --> BDLogicalFieldSemanticLinkRes : logicalField when successful
+BDSemanticLinkingResolveFieldsRequestRes "1" *-- "0..500" BDSemanticLinkingResolveFieldPathRes : paths
+BDSemanticLinkingResolveFieldsResultRes "1" *-- "0..N" BDSemanticLinkingResolveFieldPathResultRes : paths
+BDSemanticLinkingResolveFieldPathResultRes --> BDLogicalFieldSemanticLinkRes : logicalField when successful
 BDPhysicalEntityRes "1" *-- "0..N" BDPhysicalFieldRes : physicalFields
 SemanticLinkManagerImpl --> BDSemanticLink : parsed per field from s-context
 ```
@@ -208,20 +208,20 @@ SemanticLinkManagerImpl --> BDSemanticLink : parsed per field from s-context
    - Observer enrichment **always** uses bulk (including a batch of one). Do not keep a parallel GET client path.
    - `BdClientImpl.resolveSemanticFields` POSTs to `{blindataUrl}/api/v1/logical/semanticlinking/*/resolvefields?batchSize=500`.
    - Select `asyncRestUtils` vs `restUtils` with `credentials.getEnableAsync()`, identical to `uploadQuality` / `createDataProductAssets` / `createPolicyEvaluationRecords` / `patchDataProduct`. No new poll loop.
-   - Request/response Java types mirror the API wrapper resources (class wrapping `items`, never a raw list) so the contract can grow. Jackson in `BaseRestUtils` already uses `FAIL_ON_UNKNOWN_PROPERTIES=false`.
+   - Request/response Java types mirror the API wrapper resources (class wrapping `paths`, never a raw list) so the contract can grow. Jackson in `BaseRestUtils` already uses `FAIL_ON_UNKNOWN_PROPERTIES=false`.
    - Delete unused `BDSemanticLinkingResolveFieldOptions` once GET is removed.
 
 2. **Manager design**:
    - Keep `parseSemanticContext`, namespace lookup, data-category lookup, `s-type` / prefix handling, and `withErrorHandling` unchanged.
    - Replace the per-field loop in `enrichPhysicalFieldsWithSemanticLinks` with: collect fields that have a `BDSemanticLink` → unique (pathString, defaultNamespaceIdentifier) in encounter order → `Lists.partition(..., 500)` → one `resolveSemanticFields` per chunk → map outcomes back onto **every** physical field that used that pair.
-   - Do not call Blindata when the unique-item list is empty.
-   - Successful item (`logicalField != null` and `errorMessage == null`): attach `List.of(logicalField)` as today.
-   - Failed or missing item: log `[#90] Unable to resolve semantic elements for semantic link path: {path}` (same text as today so validator still matches) and leave the field unmodified.
-   - Do not catch glossary errors in the manager; the API already isolates them per item. HTTP/transport failures still surface as `BlindataClientException` and go through existing `withErrorHandling` (5xx rethrow, other statuses `[#91]`).
+   - Do not call Blindata when the unique-path list is empty.
+   - Successful path (`logicalField != null` and `errorMessage == null`): attach `List.of(logicalField)` as today.
+   - Failed or missing path: log `[#90] Unable to resolve semantic elements for semantic link path: {path}` (same text as today so validator still matches) and leave the field unmodified.
+   - Do not catch glossary errors in the manager; the API already isolates them per path. HTTP/transport failures still surface as `BlindataClientException` and go through existing `withErrorHandling` (5xx rethrow, other statuses `[#91]`).
 
 3. **Business logic**:
    - Batching unit = one `enrichWithSemanticContext` invocation = one physical entity.
-   - Max items per HTTP call = 500 (code constant, not `application.yml`).
+   - Max paths per HTTP call = 500 (code constant, not `application.yml`).
    - Dedupe only within the current entity; two columns with the same path share one resolution.
    - Path strings passed to Blindata remain the composed strings already produced by `handleSimpleSemanticPath` (including `[Stock].…` prefixing and `lux:` segments).
    - Validator dry-run and live upload keep sharing `SemanticLinkManagerImpl`; there is no second implementation.
@@ -250,9 +250,9 @@ SemanticLinkManagerImpl --> BDSemanticLink : parsed per field from s-context
 
 ## Operations
 
-### Create Resource - BDSemanticLinkingResolveFieldItemRes
+### Create Resource - BDSemanticLinkingResolveFieldPathRes
 
-1. Responsibility: One path to resolve (matches API `SemanticLinkingResolveFieldItemRes` JSON).
+1. Responsibility: One path to resolve (matches API `SemanticLinkingResolveFieldPathRes` JSON).
 2. Attributes:
    - `pathString`: String
    - `defaultNamespaceIdentifier`: String
@@ -261,14 +261,14 @@ SemanticLinkManagerImpl --> BDSemanticLink : parsed per field from s-context
 
 ### Create Resource - BDSemanticLinkingResolveFieldsRequestRes
 
-1. Responsibility: Extensible bulk request body (`items` list). Never a raw Java `List` as the POST body type.
+1. Responsibility: Extensible bulk request body (`paths` list). Never a raw Java `List` as the POST body type.
 2. Attributes:
-   - `items`: `List<BDSemanticLinkingResolveFieldItemRes>`
+   - `paths`: `List<BDSemanticLinkingResolveFieldPathRes>`
 3. Methods: getters/setters.
 
-### Create Resource - BDSemanticLinkingResolveFieldItemResultRes
+### Create Resource - BDSemanticLinkingResolveFieldPathResultRes
 
-1. Responsibility: Per-item outcome (matches API `SemanticLinkingResolveFieldItemResultRes`).
+1. Responsibility: Per-path outcome (matches API `SemanticLinkingResolveFieldPathResultRes`).
 2. Attributes:
    - `pathString`: String — echo
    - `defaultNamespaceIdentifier`: String — echo
@@ -280,8 +280,8 @@ SemanticLinkManagerImpl --> BDSemanticLink : parsed per field from s-context
 
 1. Responsibility: Extensible bulk response wrapper. Do not add required counters in this change.
 2. Attributes:
-   - `items`: `List<BDSemanticLinkingResolveFieldItemResultRes>`
-3. Methods: getters/setters. Treat null `items` as empty when mapping.
+   - `paths`: `List<BDSemanticLinkingResolveFieldPathResultRes>`
+3. Methods: getters/setters. Treat null `paths` as empty when mapping.
 
 ### Update Interface - BdSemanticLinkingClient
 
@@ -315,10 +315,10 @@ BDSemanticLinkingResolveFieldsResultRes resolveSemanticFields(
 2. Logic:
    - If `fields` is null/empty, return as today.
    - Build a list of `{field, BDSemanticLink}` for fields whose name is present in `semanticLinks`.
-   - Build unique items: `LinkedHashMap` keyed by `pathString + '\0' + defaultNamespaceIdentifier` (or an equivalent pair key). First occurrence wins for the request item; all fields keep a reference to that key.
-   - If unique items is empty, return fields unchanged (no client call).
-   - Partition unique items with `Lists.partition(list, BdSemanticLinkingClient.MAX_RESOLVE_FIELDS_BATCH_SIZE)` (Guava already on the classpath).
-   - For each partition: wrap in `BDSemanticLinkingResolveFieldsRequestRes`, call `client.resolveSemanticFields(request)`, accumulate item results into a map keyed by the same pair.
+   - Build unique paths: `LinkedHashMap` keyed by `pathString + '\0' + defaultNamespaceIdentifier` (or an equivalent pair key). First occurrence wins for the request path; all fields keep a reference to that key.
+   - If unique paths is empty, return fields unchanged (no client call).
+   - Partition unique paths with `Lists.partition(list, BdSemanticLinkingClient.MAX_RESOLVE_FIELDS_BATCH_SIZE)` (Guava already on the classpath).
+   - For each partition: wrap in `BDSemanticLinkingResolveFieldsRequestRes`, call `client.resolveSemanticFields(request)`, accumulate path results into a map keyed by the same pair.
    - Map each original field:
      - No semantic link → return field unchanged.
      - Success in map → new `BDPhysicalFieldRes` copy with `logicalFields = List.of(resolved)` (same constructor as today).
@@ -331,14 +331,14 @@ BDSemanticLinkingResolveFieldsResultRes resolveSemanticFields(
 ### Update agentspec - prefixed_concept_resolution/spec.md
 
 1. In **Feature: Blindata path passthrough**, change the When step from `getSemanticLinkElements` to `resolveSemanticFields`.
-2. Then: the `pathString` on the bulk request item(s) MUST match the composed path expected by Blindata (same strings as today).
+2. Then: the `pathString` on the bulk request path(s) MUST match the composed path expected by Blindata (same strings as today).
 3. Do not rewrite other agentspec scenarios; existing `SemanticLinkManagerTest` methods keep tracing them.
 
 ### Update tests - SemanticLinkManagerTest (existing agentspec methods)
 
 1. Replace every `when(…).getSemanticLinkElements` / `verify(…).getSemanticLinkElements` with `resolveSemanticFields`.
-2. Helper (recommended): stub `resolveSemanticFields` with `thenAnswer` that, for each requested item, looks up a path→`BDLogicalFieldSemanticLinkRes` map and returns a successful item, or a failed item if absent.
-3. Stock / film-rental / prefixed tests must still assert the **composed path strings** (now inside `request.getItems()`), default namespace identifier, and attached logical fields.
+2. Helper (recommended): stub `resolveSemanticFields` with `thenAnswer` that, for each requested path, looks up a path→`BDLogicalFieldSemanticLinkRes` map and returns a successful path, or a failed path if absent.
+3. Stock / film-rental / prefixed tests must still assert the **composed path strings** (now inside `request.getPaths()`), default namespace identifier, and attached logical fields.
 4. Keep the existing javadoc comments that point at `agentspecs/specs/semantic_linking/prefixed_concept_resolution/spec.md`.
 
 ### Create tests - SemanticLinkManagerTest (Gherkin scenarios 1–8, 11–12)
@@ -346,7 +346,7 @@ BDSemanticLinkingResolveFieldsResultRes resolveSemanticFields(
 1. Add one `@Test` per scenario listed under **Scenarios** except the two validator scenarios.
 2. **Mandatory comment convention**: immediately before each new `@Test` method, `//` comments containing that scenario’s Gherkin copied verbatim (from `Scenario:` through its last `And`/`Then`).
 3. Use a mock `UseCaseLogger` via `UseCaseLoggerContext` for `[#90]` / `[#91]` assertions (same pattern as `ProbesUploadTest` / `QualityUploadNameCodeConflictTest`). Restore the original logger in `finally`.
-4. For 501 fields: build fields in a loop; do not create 501 glossary concepts. Stub bulk to succeed for every requested item. Use `ArgumentCaptor` (or `thenAnswer` counting invocations) to assert chunk sizes.
+4. For 501 fields: build fields in a loop; do not create 501 glossary concepts. Stub bulk to succeed for every requested path. Use `ArgumentCaptor` (or `thenAnswer` counting invocations) to assert chunk sizes.
 5. For 5xx / 4xx: `when(client.resolveSemanticFields(any())).thenThrow(new BlindataClientException(500|400, "…"))`. 5xx → `assertThrows`; 4xx → no throw + `[#91]`.
 6. Method names should reflect the scenario (`testBulkResolve_multipleLinkedFields_singleCall`, etc.).
 
@@ -367,7 +367,7 @@ Example of the required comment placement:
 ### Update tests - BlindataValidatorControllerIT (Gherkin scenarios 9–10)
 
 1. Replace `getSemanticLinkElements` mocks/verifies with `resolveSemanticFields`.
-2. **Missing semantic link element** test: stub bulk to return HTTP-success wrapper with a failed item (`errorMessage` set, `logicalField` null) for the descriptor path (today `[Customer]`). Keep asserting evaluation failure containing `Unable to resolve semantic elements for semantic link path:`.
+2. **Missing semantic link element** test: stub bulk to return HTTP-success wrapper with a failed path (`errorMessage` set, `logicalField` null) for the descriptor path (today `[Customer]`). Keep asserting evaluation failure containing `Unable to resolve semantic elements for semantic link path:`.
 3. **Missing data category** / **missing namespace** / **data product not found**: `verify(bdSemanticLinkingClient, never()).resolveSemanticFields(any())`.
 4. Put the verbatim Gherkin `//` comments immediately above the two tests that correspond to the validator scenarios (adapt the existing methods rather than adding duplicates). Other validator tests in this class are not new Gherkin scenarios; only switch the client method name.
 5. `BlindataValidatorProbesUploadDisabledIT` does not call resolve today; no change unless it fails to compile after the interface change.
@@ -376,9 +376,9 @@ Example of the required comment placement:
 
 1. Annotation Standards: no new Spring stereotypes; manager stays package-private; resources stay unannotated POJOs like neighboring `BD*Res`.
 2. Dependency Injection: keep `SemanticLinkingManagerFactory` field `@Autowired` + `@Qualifier("bdSemanticLinkingClient")`.
-3. Exception Handling: no new types. Per-item glossary failures = payload `errorMessage` + `[#90]`. Transport = existing `withErrorHandling` (`[#91]` vs rethrow 500).
-4. Data Validation: observer never sends more than 500 items. `batchSize` query value is always 500. Do not add a yml property.
-5. Logging: `[#90]` once per failed path (not once per duplicate field sharing that path, unless a field-level miss still needs a warn — prefer one warn per unique failed path). Do not INFO-log every path in a 500-item batch. Keep `[#85]`–`[#89]`, `[#120]`, `[#91]` as they are.
+3. Exception Handling: no new types. Per-path glossary failures = payload `errorMessage` + `[#90]`. Transport = existing `withErrorHandling` (`[#91]` vs rethrow 500).
+4. Data Validation: observer never sends more than 500 paths. `batchSize` query value is always 500. Do not add a yml property.
+5. Logging: `[#90]` once per failed path (not once per duplicate field sharing that path, unless a field-level miss still needs a warn — prefer one warn per unique failed path). Do not INFO-log every path in a 500-path batch. Keep `[#85]`–`[#89]`, `[#120]`, `[#91]` as they are.
 6. Documentation Standards: update the agentspec passthrough scenario only as specified. Do not add README.
 7. Test documentation: every new (or validator-mapped) Gherkin test **must** have the verbatim Gherkin `//` comments immediately above the signature. Reviewers check Scenarios ↔ tests by matching those comments.
 
@@ -386,13 +386,13 @@ Example of the required comment placement:
 
 1. Functional Constraints:
    - `enrichWithSemanticContext` public contract unchanged.
-   - Path composition (relative vs `[Concept]…`, nested `s-type`, `prefix:Name`) unchanged; bulk items use those same strings.
+   - Path composition (relative vs `[Concept]…`, nested `s-type`, `prefix:Name`) unchanged; bulk paths use those same strings.
    - One entity with N unique linked paths and N ≤ 500 produces **one** Blindata resolve HTTP call (via the client method once).
    - One entity with 501 unique linked paths produces **two** calls (500 + 1); field 501 is resolved.
    - Two entities produce at least two resolve calls; paths are not merged across entities.
    - Duplicate (path, namespace) on one entity is sent once and applied to every matching field.
    - Empty / no linked fields: zero resolve calls.
-   - Well-formed bulk with failed items does not abort sibling fields; `[#90]` is logged; failed fields keep previous `logicalFields`.
+   - Well-formed bulk with failed paths does not abort sibling fields; `[#90]` is logged; failed fields keep previous `logicalFields`.
    - Behavioral change vs today: a 4xx/null from **single-path GET** used to abort the remaining stream inside `withErrorHandling`. After this change, glossary misses inside a 200 wrapper no longer abort siblings. That is intended; the Gherkin partial-success scenario locks it in.
    - GET `*/resolvefield` on Blindata is not called by the observer anymore. The API GET itself is out of scope and must remain for other clients.
    - Exactly the 12 scenarios above are implemented as tests with verbatim Gherkin comments; existing agentspec tests remain in addition to those 12.
@@ -437,6 +437,6 @@ Example of the required comment placement:
    - Method: POST
    - Path: `/api/v1/logical/semanticlinking/*/resolvefields`
    - Query: `batchSize=500`
-   - Body: `{ "items": [ { "pathString", "defaultNamespaceIdentifier" } ] }`
-   - Response 200: `{ "items": [ { "pathString", "defaultNamespaceIdentifier", "logicalField?", "errorMessage?" } ] }`
+   - Body: `{ "paths": [ { "pathString", "defaultNamespaceIdentifier" } ] }`
+   - Response 200: `{ "paths": [ { "pathString", "defaultNamespaceIdentifier", "logicalField?", "errorMessage?" } ] }`
    - Response 4xx/5xx: existing `BlindataClientException` mapping

@@ -50,7 +50,7 @@ Canonical spec for this feature. Trace tests via comments on `SemanticLinkManage
 
 **Given** a field path as authored in the descriptor (including `prefix:` inside brackets and on attributes where applicable)  
 **When** `resolveSemanticFields` is invoked  
-**Then** the `pathString` on the bulk request item(s) MUST match the composed path expected by Blindata for that descriptor (same as today unless Blindata requires a transformation documented in the proposal)
+**Then** the `pathString` on the bulk request path(s) MUST match the composed path expected by Blindata for that descriptor (same as today unless Blindata requires a transformation documented in the proposal)
 
 ## Non-regression
 

@@ -1,12 +1,14 @@
 package org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.semanticlinking;
 
 import com.google.common.collect.Lists;
+import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdClientImpl;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdSemanticLinkingClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDDataCategoryRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalFieldSemanticLinkRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalNamespaceRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldItemRes;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldItemResultRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldPathRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldPathResultRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldsRequestRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldsResultRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
@@ -203,77 +205,109 @@ class SemanticLinkManagerImpl implements SemanticLinkManager {
             return fields;
         }
 
-        LinkedHashMap<String, BDSemanticLinkingResolveFieldItemRes> uniqueItems = new LinkedHashMap<>();
+        List<BDSemanticLinkingResolveFieldPathRes> uniquePaths = collectUniqueResolvePaths(fields, semanticLinks);
+        if (uniquePaths.isEmpty()) {
+            return fields;
+        }
+
+        Map<String, BDSemanticLinkingResolveFieldPathResultRes> resultsByKey = resolveSemanticFieldsInChunks(uniquePaths);
+        return applyResolveResults(fields, semanticLinks, resultsByKey);
+    }
+
+    private List<BDSemanticLinkingResolveFieldPathRes> collectUniqueResolvePaths(
+            Set<BDPhysicalFieldRes> fields,
+            Map<String, BDSemanticLink> semanticLinks
+    ) {
+        LinkedHashMap<String, BDSemanticLinkingResolveFieldPathRes> uniquePaths = new LinkedHashMap<>();
         for (BDPhysicalFieldRes field : fields) {
             BDSemanticLink semanticLink = semanticLinks.get(field.getName());
             if (semanticLink == null) {
                 continue;
             }
-            uniqueItems.computeIfAbsent(
+            uniquePaths.computeIfAbsent(
                     resolveKey(semanticLink.getSemanticLinkString(), semanticLink.getDefaultNamespaceIdentifier()),
-                    key -> toResolveItem(semanticLink)
+                    key -> toResolvePath(semanticLink)
             );
         }
+        return new ArrayList<>(uniquePaths.values());
+    }
 
-        if (uniqueItems.isEmpty()) {
-            return fields;
-        }
-
-        Map<String, BDSemanticLinkingResolveFieldItemResultRes> resultsByKey = new HashMap<>();
-        for (List<BDSemanticLinkingResolveFieldItemRes> chunk : Lists.partition(
-                new ArrayList<>(uniqueItems.values()),
-                BdSemanticLinkingClient.MAX_RESOLVE_FIELDS_BATCH_SIZE
+    private Map<String, BDSemanticLinkingResolveFieldPathResultRes> resolveSemanticFieldsInChunks(
+            List<BDSemanticLinkingResolveFieldPathRes> uniquePaths
+    ) {
+        Map<String, BDSemanticLinkingResolveFieldPathResultRes> resultsByKey = new HashMap<>();
+        for (List<BDSemanticLinkingResolveFieldPathRes> chunk : Lists.partition(
+                uniquePaths,
+                BdClientImpl.MAX_RESOLVE_FIELDS_BATCH_SIZE
         )) {
             BDSemanticLinkingResolveFieldsRequestRes request = new BDSemanticLinkingResolveFieldsRequestRes();
-            request.setItems(chunk);
+            request.setPaths(chunk);
             BDSemanticLinkingResolveFieldsResultRes result = client.resolveSemanticFields(request);
-            List<BDSemanticLinkingResolveFieldItemResultRes> itemResults =
-                    result != null && result.getItems() != null ? result.getItems() : List.of();
-            for (BDSemanticLinkingResolveFieldItemResultRes itemResult : itemResults) {
+            List<BDSemanticLinkingResolveFieldPathResultRes> pathResults =
+                    result != null && result.getPaths() != null ? result.getPaths() : List.of();
+            for (BDSemanticLinkingResolveFieldPathResultRes pathResult : pathResults) {
                 resultsByKey.put(
-                        resolveKey(itemResult.getPathString(), itemResult.getDefaultNamespaceIdentifier()),
-                        itemResult
+                        resolveKey(pathResult.getPathString(), pathResult.getDefaultNamespaceIdentifier()),
+                        pathResult
                 );
             }
         }
+        return resultsByKey;
+    }
 
+    private Set<BDPhysicalFieldRes> applyResolveResults(
+            Set<BDPhysicalFieldRes> fields,
+            Map<String, BDSemanticLink> semanticLinks,
+            Map<String, BDSemanticLinkingResolveFieldPathResultRes> resultsByKey
+    ) {
         Set<String> warnedKeys = new HashSet<>();
         return fields.stream()
-                .map(field -> {
-                    BDSemanticLink semanticLink = semanticLinks.get(field.getName());
-                    if (semanticLink == null) {
-                        return field;
-                    }
-
-                    String key = resolveKey(semanticLink.getSemanticLinkString(), semanticLink.getDefaultNamespaceIdentifier());
-                    BDSemanticLinkingResolveFieldItemResultRes itemResult = resultsByKey.get(key);
-                    if (itemResult != null && itemResult.isSuccessful()) {
-                        return new BDPhysicalFieldRes(
-                                field.getUuid(),
-                                field.getName(),
-                                field.getType(),
-                                field.getOrdinalPosition(),
-                                field.getDescription(),
-                                field.getCreationDate(),
-                                field.getModificationDate(),
-                                field.getAdditionalProperties(),
-                                List.of(itemResult.getLogicalField())
-                        );
-                    }
-
-                    if (warnedKeys.add(key)) {
-                        getUseCaseLogger().warn("[#90] Unable to resolve semantic elements for semantic link path: " + semanticLink.getSemanticLinkString());
-                    }
-                    return field;
-                })
+                .map(field -> applyResolveResult(field, semanticLinks, resultsByKey, warnedKeys))
                 .collect(Collectors.toSet());
     }
 
-    private BDSemanticLinkingResolveFieldItemRes toResolveItem(BDSemanticLink semanticLink) {
-        BDSemanticLinkingResolveFieldItemRes item = new BDSemanticLinkingResolveFieldItemRes();
-        item.setPathString(semanticLink.getSemanticLinkString());
-        item.setDefaultNamespaceIdentifier(semanticLink.getDefaultNamespaceIdentifier());
-        return item;
+    private BDPhysicalFieldRes applyResolveResult(
+            BDPhysicalFieldRes field,
+            Map<String, BDSemanticLink> semanticLinks,
+            Map<String, BDSemanticLinkingResolveFieldPathResultRes> resultsByKey,
+            Set<String> warnedKeys
+    ) {
+        BDSemanticLink semanticLink = semanticLinks.get(field.getName());
+        if (semanticLink == null) {
+            return field;
+        }
+
+        String key = resolveKey(semanticLink.getSemanticLinkString(), semanticLink.getDefaultNamespaceIdentifier());
+        BDSemanticLinkingResolveFieldPathResultRes pathResult = resultsByKey.get(key);
+        if (pathResult != null && pathResult.isSuccessful()) {
+            return withLogicalField(field, pathResult.getLogicalField());
+        }
+
+        if (warnedKeys.add(key)) {
+            getUseCaseLogger().warn("[#90] Unable to resolve semantic elements for semantic link path: " + semanticLink.getSemanticLinkString());
+        }
+        return field;
+    }
+
+    private BDPhysicalFieldRes withLogicalField(BDPhysicalFieldRes field, BDLogicalFieldSemanticLinkRes logicalField) {
+        return new BDPhysicalFieldRes(
+                field.getUuid(),
+                field.getName(),
+                field.getType(),
+                field.getOrdinalPosition(),
+                field.getDescription(),
+                field.getCreationDate(),
+                field.getModificationDate(),
+                field.getAdditionalProperties(),
+                List.of(logicalField)
+        );
+    }
+
+    private BDSemanticLinkingResolveFieldPathRes toResolvePath(BDSemanticLink semanticLink) {
+        BDSemanticLinkingResolveFieldPathRes path = new BDSemanticLinkingResolveFieldPathRes();
+        path.setPathString(semanticLink.getSemanticLinkString());
+        path.setDefaultNamespaceIdentifier(semanticLink.getDefaultNamespaceIdentifier());
+        return path;
     }
 
     private String resolveKey(String pathString, String defaultNamespaceIdentifier) {

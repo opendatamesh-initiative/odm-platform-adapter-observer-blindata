@@ -5,13 +5,13 @@ import java.util.List;
 
 public class BDSemanticLinkingResolveFieldsResultRes {
 
-    private List<BDSemanticLinkingResolveFieldItemResultRes> items = new ArrayList<>();
+    private List<BDSemanticLinkingResolveFieldPathResultRes> paths = new ArrayList<>();
 
-    public List<BDSemanticLinkingResolveFieldItemResultRes> getItems() {
-        return items;
+    public List<BDSemanticLinkingResolveFieldPathResultRes> getPaths() {
+        return paths;
     }
 
-    public void setItems(List<BDSemanticLinkingResolveFieldItemResultRes> items) {
-        this.items = items;
+    public void setPaths(List<BDSemanticLinkingResolveFieldPathResultRes> paths) {
+        this.paths = paths;
     }
 }

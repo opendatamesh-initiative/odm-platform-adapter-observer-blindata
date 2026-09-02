@@ -9,8 +9,6 @@ import java.util.Optional;
 
 public interface BdSemanticLinkingClient {
 
-    int MAX_RESOLVE_FIELDS_BATCH_SIZE = 500;
-
     BDSemanticLinkingResolveFieldsResultRes resolveSemanticFields(BDSemanticLinkingResolveFieldsRequestRes request);
 
     Optional<BDDataCategoryRes> getDataCategoryByNameAndNamespaceUuid(String dataCategoryName, String namespaceUuid);

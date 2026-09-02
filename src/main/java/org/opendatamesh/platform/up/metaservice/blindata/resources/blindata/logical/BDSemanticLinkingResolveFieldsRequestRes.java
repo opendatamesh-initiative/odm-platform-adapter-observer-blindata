@@ -4,13 +4,13 @@ import java.util.List;
 
 public class BDSemanticLinkingResolveFieldsRequestRes {
 
-    private List<BDSemanticLinkingResolveFieldItemRes> items;
+    private List<BDSemanticLinkingResolveFieldPathRes> paths;
 
-    public List<BDSemanticLinkingResolveFieldItemRes> getItems() {
-        return items;
+    public List<BDSemanticLinkingResolveFieldPathRes> getPaths() {
+        return paths;
     }
 
-    public void setItems(List<BDSemanticLinkingResolveFieldItemRes> items) {
-        this.items = items;
+    public void setPaths(List<BDSemanticLinkingResolveFieldPathRes> paths) {
+        this.paths = paths;
     }
 }
