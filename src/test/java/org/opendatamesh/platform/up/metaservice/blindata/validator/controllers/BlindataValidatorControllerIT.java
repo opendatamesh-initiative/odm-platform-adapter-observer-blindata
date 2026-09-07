@@ -20,6 +20,10 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.coll
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipRoleRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDDataCategoryRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDLogicalNamespaceRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldPathRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldPathResultRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldsRequestRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDSemanticLinkingResolveFieldsResultRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDSystemRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.OdmValidatorPolicyEvaluationRequestRes;
@@ -29,8 +33,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -280,7 +286,7 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
 
         // Verify other semantic linking calls were never made
         verify(bdSemanticLinkingClient, never()).getDataCategoryByNameAndNamespaceUuid(any(), any());
-        verify(bdSemanticLinkingClient, never()).getSemanticLinkElements(any(), any());
+        verify(bdSemanticLinkingClient, never()).resolveSemanticFields(any());
 
         // Verify the response
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -292,6 +298,11 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
                 .contains("Namespace not found for identifier: https://demo.blindata.io/logical/namespaces/name/filmRentalInc#");
     }
 
+    // Scenario: Validator does not bulk-resolve when data category is missing
+    // Given a data product descriptor with semantic linking
+    // And the data category lookup returns empty
+    // When the validator evaluate-policy endpoint is called
+    // Then resolveSemanticFields is never invoked
     @Test
     public void testValidateDataProductWithMissingBlindataConceptsOnSemanticLinking() throws IOException {
         OdmValidatorPolicyEvaluationRequestRes request = mapper.readValue(
@@ -354,8 +365,8 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         // Verify getDataCategoryByNameAndNamespaceUuid was called and returned empty
         verify(bdSemanticLinkingClient, atLeastOnce()).getDataCategoryByNameAndNamespaceUuid(any(), any());
 
-        // Verify getSemanticLinkElements was never called since data category was not found
-        verify(bdSemanticLinkingClient, never()).getSemanticLinkElements(any(), any());
+        // Verify resolveSemanticFields was never called since data category was not found
+        verify(bdSemanticLinkingClient, never()).resolveSemanticFields(any());
 
         // Verify the response
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -367,6 +378,13 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
                 .contains("Data category: Customer not found in namespace https://demo.blindata.io/logical/namespaces/name/filmRentalInc#");
     }
 
+    // Scenario: Validator dry-run uses bulk resolve
+    // Given a data product descriptor with semantic linking
+    // And namespace and data category lookups succeed
+    // And bulk resolve returns a failed path for the field path
+    // When the validator evaluate-policy endpoint is called
+    // Then resolveSemanticFields is invoked at least once
+    // And the evaluation fails with unable to resolve semantic elements for the field path
     @Test
     public void testValidateDataProductWithMissingBlindataSemanticLinkElement() throws IOException {
         OdmValidatorPolicyEvaluationRequestRes request = mapper.readValue(
@@ -418,9 +436,9 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
                     return Optional.of(category);
                 });
 
-        // Make getSemanticLinkElements return null (not found)
-        when(bdSemanticLinkingClient.getSemanticLinkElements(any(), any()))
-                .thenReturn(null);
+        // Make bulk resolve return a failed path for each requested path
+        when(bdSemanticLinkingClient.resolveSemanticFields(any()))
+                .thenAnswer(invocation -> failedBulkResolve(invocation.getArgument(0)));
 
         // Call the validator endpoint
         ResponseEntity<OdmValidatorPolicyEvaluationResultRes> response = rest.postForEntity(
@@ -438,8 +456,8 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         // Verify getDataCategoryByNameAndNamespaceUuid was called and returned a category
         verify(bdSemanticLinkingClient, atLeastOnce()).getDataCategoryByNameAndNamespaceUuid(any(), any());
 
-        // Verify getSemanticLinkElements was called and returned null
-        verify(bdSemanticLinkingClient, atLeastOnce()).getSemanticLinkElements(any(), any());
+        // Verify resolveSemanticFields was called and returned failed paths
+        verify(bdSemanticLinkingClient, atLeastOnce()).resolveSemanticFields(any());
 
         // Verify the response
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -491,7 +509,7 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         // Verify semantic linking calls were never made since data product was not found
         verify(bdSemanticLinkingClient, atLeastOnce()).getLogicalNamespaceByIdentifier(any());
         verify(bdSemanticLinkingClient, never()).getDataCategoryByNameAndNamespaceUuid(any(), any());
-        verify(bdSemanticLinkingClient, never()).getSemanticLinkElements(any(), any());
+        verify(bdSemanticLinkingClient, never()).resolveSemanticFields(any());
 
         // Verify the response
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -1072,5 +1090,21 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
         }
 
         return null;
+    }
+
+    private BDSemanticLinkingResolveFieldsResultRes failedBulkResolve(BDSemanticLinkingResolveFieldsRequestRes request) {
+        BDSemanticLinkingResolveFieldsResultRes result = new BDSemanticLinkingResolveFieldsResultRes();
+        List<BDSemanticLinkingResolveFieldPathResultRes> paths = new ArrayList<>();
+        if (request != null && request.getPaths() != null) {
+            for (BDSemanticLinkingResolveFieldPathRes path : request.getPaths()) {
+                BDSemanticLinkingResolveFieldPathResultRes pathResult = new BDSemanticLinkingResolveFieldPathResultRes();
+                pathResult.setPathString(path.getPathString());
+                pathResult.setDefaultNamespaceIdentifier(path.getDefaultNamespaceIdentifier());
+                pathResult.setErrorMessage("Unable to resolve " + path.getPathString());
+                paths.add(pathResult);
+            }
+        }
+        result.setPaths(paths);
+        return result;
     }
 } 
