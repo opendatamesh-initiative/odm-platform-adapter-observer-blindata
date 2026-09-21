@@ -29,35 +29,47 @@ capabilities.
 
 ### System Name and Technology Extraction
 
-Configure regex patterns to extract system information from data product descriptors:
+`blindata.systemNameRegex` and `blindata.systemTechnologyRegex` both run on each port's `promises.platform` string.
+They do not read the API schema. Each property contributes its entire match; a capturing group is not used. See
+[Promises.Platform](../mapping.md#promisesplatform) for the mapping table.
+
+Recommended `promises.platform` shape is a single `Technology:SystemName` value, for example `Snowflake:SALES_DW`.
+The defaults in `application.yml` are `systemNameRegex: ".*"` and `systemTechnologyRegex: "[^:]*"`. With those
+defaults the same value becomes technology `Snowflake` and name `Snowflake:SALES_DW` (the whole string). To store the
+suffix as the system name, override the name regex so its entire match is that suffix:
 
 ```yaml
 blindata:
-  systemNameRegex: "system:(.+)"           # Extract system name from schema
-  systemTechnologyRegex: "tech:(.+)"       # Extract technology from schema
+  systemNameRegex: "(?<=:).*"    # Full match on promises.platform → system.name (SALES_DW)
+  systemTechnologyRegex: "[^:]*" # Default. Full match on promises.platform → system.technology (Snowflake)
 ```
 
-**Purpose**: These patterns allow the observer to automatically identify and extract system names and technologies from
-data product descriptor API schemas, enabling proper system mapping in Blindata.
+**Purpose**: Identify the Blindata system name and technology for the physical assets of a port.
 
-**Examples**:
+**Examples** for `promises.platform` = `Snowflake:SALES_DW`:
 
-- `system:(.+)` - Extracts system name after "system:" prefix
-- `tech:(.+)` - Extracts technology information after "tech:" prefix
+- Default `[^:]*` → `system.technology` = `Snowflake`
+- Default `.*` → `system.name` = `Snowflake:SALES_DW`
+- `(?<=:).*` → `system.name` = `SALES_DW`
+
+Do not use a pattern such as `system:(.+)` expecting only the capture group. The observer keeps the whole match
+(`system:SALES_DW`). `dependsOnSystemNameRegex` is a different key and is not applied here.
 
 ### Port System Dependency Mapping
 
-Configure how port system dependencies are resolved:
+Configure how an input port's `dependsOn` or `x-dependsOn` value is resolved. This key is not applied to
+`promises.platform`.
 
 ```yaml
 blindata:
-  dependsOnSystemNameRegex: "blindata:systems:(.+)"  # Default regex for system dependencies
+  dependsOnSystemNameRegex: "blindata:systems:(.+)"  # dependsOn / x-dependsOn only; first capture group
 ```
 
-**Purpose**: This regex pattern helps identify and extract data product port system dependencies from the data product
-descriptors, enabling proper dependency mapping in Blindata.
+**Purpose**: When the dependency string matches, the first capturing group (or the entire match if there is no group)
+is the Blindata system name for `port.dependsOnSystem`. A value that does not match is stored as
+`port.dependsOnIdentifier` instead.
 
-**Example**: `blindata:systems:(.+)` - Extracts system dependencies from Blindata-specific annotations
+**Example**: `blindata:systems:SALES_DW` with the default `blindata:systems:(.+)` → system name `SALES_DW`.
 
 ### Additional Properties Extraction
 
@@ -178,9 +190,9 @@ blindata:
 | Parameter                                | Type    | Default                 | Required | Description                        |
 |------------------------------------------|---------|-------------------------|----------|------------------------------------|
 | `roleUuid`                               | String  | -                       | No       | Role identifier for stewardship    |
-| `systemNameRegex`                        | String  | `.*`                    | No       | Regex to extract system name       |
-| `systemTechnologyRegex`                  | String  | `[^:]*`                 | No       | Regex to extract system technology |
-| `dependsOnSystemNameRegex`               | String  | `blindata:systems:(.+)` | No       | Regex for system dependencies      |
+| `systemNameRegex`                        | String  | `.*`                    | No       | Full match on `promises.platform` for `system.name` |
+| `systemTechnologyRegex`                  | String  | `[^:]*`                 | No       | Full match on `promises.platform` for `system.technology` |
+| `dependsOnSystemNameRegex`               | String  | `blindata:systems:(.+)` | No       | `dependsOn` / `x-dependsOn` only; first capture group |
 | `enableAsync`                            | Boolean | `false`                 | No       | Enable async processing            |
 | `dataProducts.assetsCleanup`             | Boolean | `true`                  | No       | Enable assets cleanup              |
 | `dataProducts.additionalPropertiesRegex` | String  | `\\bx-([\\S]+)`         | No       | Regex for additional properties    |
@@ -192,10 +204,10 @@ blindata:
 ```yaml
 blindata:
 
-  # Metadata Extraction
-  systemNameRegex: "system:(.+)"
-  systemTechnologyRegex: "tech:(.+)"
-  dependsOnSystemNameRegex: "blindata:systems:(.+)"
+  # promises.platform → system name / technology (entire match; not the API schema)
+  systemNameRegex: "(?<=:).*"             # Snowflake:SALES_DW → system.name SALES_DW
+  systemTechnologyRegex: "[^:]*"          # default; Snowflake:SALES_DW → system.technology Snowflake
+  dependsOnSystemNameRegex: "blindata:systems:(.+)"  # dependsOn / x-dependsOn only; uses the capture group
 
   # Performance
   enableAsync: false
@@ -213,6 +225,7 @@ blindata:
 
 **Notes**:
 
-- Regex patterns are optional but recommended for proper metadata extraction
+- `systemNameRegex` and `systemTechnologyRegex` default to `.*` and `[^:]*` and both apply to `promises.platform`. The example above overrides only the name regex so `Snowflake:SALES_DW` becomes name `SALES_DW` and technology `Snowflake`.
+- `dependsOnSystemNameRegex` applies to `dependsOn` / `x-dependsOn`, not to `promises.platform`.
 - Performance settings should be adjusted based on your data product size and complexity
 - Issue management settings control policy behavior across the platform 
