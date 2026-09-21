@@ -11,6 +11,9 @@ seamless integration between descriptor structures and the Blindata environment.
     * [Ports](#ports)
         * [Input port dependency](#input-port-dependency)
     * [Promises.Platform](#promisesplatform)
+        * [Defaults and extraction rules](#defaults-and-extraction-rules)
+        * [Worked example](#worked-example)
+        * [Difference from input-port dependsOn](#difference-from-input-port-dependson)
     * [General Schema Annotations](#general-schema-annotations)
         * [Entities](#entities)
         * [Fields](#fields)
@@ -136,25 +139,119 @@ comprising a prefix and the Blindata system name.
 This format helps distinguish system dependencies from input port dependencies.
 The application extracts the system name from the combined string using the regex specified in the
 `blindata.dependsOnSystemNameRegex` property.
-The default is `blindata:systems:(.+)`.
+The default is `blindata:systems:(.+)`. When that pattern has a capturing group, the first group is the system name;
+otherwise the entire match is used. This property is not applied to `promises.platform`. Platform system name and
+technology are mapped separately; see [Promises.Platform](#promisesplatform).
 
 ## Promises.Platform
 
-The 'platform' field within the 'promises' field of the port in the descriptor is used to extract the name and system
-technology of the system to be created in Blindata.
+`ports[].promises.platform` is the only descriptor field used to fill the Blindata system that physical assets of that
+port are attached to. Both regexes below are applied to that string. They are not applied to the API schema.
 
-| Data product descriptor field | Blindata Field | Mandatory |
-|-------------------------------|----------------|-----------|
-| `promises.platform`           | `system.name`  | -         |
+| Data product descriptor field | Blindata field       | Mandatory | Notes                                                                                                                                                          |
+|-------------------------------|----------------------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `promises.platform`           | `system.name`        | -         | Entire match of `blindata.systemNameRegex`. If that regex is blank or does not match, the whole `promises.platform` value is used.                            |
+| `promises.platform`           | `system.technology`  | -         | Entire match of `blindata.systemTechnologyRegex`. If that regex is blank or does not match, `technology` is left unset.                                       |
 
-To extract the name and technology for association, two regular expressions must be defined within the Blindata
-configurations, as shown below.
+Only `name` and `technology` are set from `promises.platform`. If the port has no `promises.platform` value, both stay
+unset and the observer logs warning `[#8]`.
+
+### Defaults and extraction rules
+
+Defaults from `src/main/resources/application.yml`:
+
+| Property                             | Default                   | Source field                         | Blindata field              |
+|--------------------------------------|---------------------------|--------------------------------------|-----------------------------|
+| `blindata.systemNameRegex`           | `.*`                      | `promises.platform`                  | `system.name`               |
+| `blindata.systemTechnologyRegex`     | `[^:]*`                   | `promises.platform`                  | `system.technology`         |
+| `blindata.dependsOnSystemNameRegex`  | `blindata:systems:(.+)`   | `dependsOn` or `x-dependsOn` only    | `port.dependsOnSystem.name` |
+
+`dependsOnSystemNameRegex` is a third, separate key. It does not participate in platform mapping. See
+[Difference from input-port dependsOn](#difference-from-input-port-dependson).
+
+`systemNameRegex` and `systemTechnologyRegex` each run independently on the same `promises.platform` value
+(`DataProductPortAssetAnalyzer`). The stored text is the entire match (`Matcher.group(0)`). Capturing groups are
+ignored. A pattern such as `system:(.+)` therefore keeps the prefix: on `system:SALES_DW` the name is `system:SALES_DW`,
+not `SALES_DW`.
+
+With the defaults, `[^:]*` is the text before the first `:`, and `.*` is the whole platform string. A value with no
+colon yields the same string for both fields. A value that starts with `:` yields an empty technology.
+
+### Worked example
+
+Descriptor fragment:
+
+```json
+{
+  "name": "sales",
+  "fullyQualifiedName": "urn:dpds:com.example:dataproducts:sales:1.0.0:outputports:sales",
+  "promises": {
+    "platform": "Snowflake:SALES_DW"
+  }
+}
+```
+
+Shipped defaults (`systemNameRegex: ".*"`, `systemTechnologyRegex: "[^:]*"`) produce:
+
+| Blindata field       | Value                 | Why                                                                 |
+|----------------------|-----------------------|---------------------------------------------------------------------|
+| `system.technology`  | `Snowflake`           | Default `[^:]*` matches the text before the first `:`.             |
+| `system.name`        | `Snowflake:SALES_DW`  | Default `.*` matches the entire `promises.platform` string.        |
+
+Expected Blindata system with those defaults:
+
+```json
+{
+  "name": "Snowflake:SALES_DW",
+  "technology": "Snowflake"
+}
+```
+
+The default technology regex does not also set the system name to the suffix. `SALES_DW` is not the default
+`system.name`.
+
+To keep technology `Snowflake` from the default technology regex and store only `SALES_DW` as the name, override
+`systemNameRegex` with a pattern whose entire match is the name. For a single `Technology:Name` colon:
 
 ```yaml
 blindata:
-  systemNameRegex: optional regex to extract system name from schema (value optional)
-  systemTechnologyRegex: optional regex to extract system technology from schema (value optional)
+  systemTechnologyRegex: "[^:]*"   # default; full match is the technology
+  systemNameRegex: "(?<=:).*"      # full match is the text after the first ':'
 ```
+
+Expected Blindata system fields for `promises.platform` = `Snowflake:SALES_DW` with that override:
+
+```json
+{
+  "name": "SALES_DW",
+  "technology": "Snowflake"
+}
+```
+
+`(?<=:).*` includes everything after the first colon, so `westeurope.azure::postgres` becomes technology
+`westeurope.azure` and name `:postgres`. Use `(?<=:)[^:]*$` when the name must be only the last colon-separated
+segment. If the name regex does not match (for example `(?<=:).*` on a platform with no colon), the observer falls
+back to the whole `promises.platform` string for `system.name`.
+
+Configuration keys and further examples:
+[System Name and Technology Extraction](configuration/blindata-configurations.md#system-name-and-technology-extraction).
+
+### Difference from input-port dependsOn
+
+`promises.platform` creates the system that the port's physical assets belong to. Input-port `dependsOn` /
+`x-dependsOn` is a different field and does not change that system.
+
+|                        | Platform system                                      | Input-port dependency                                      |
+|------------------------|------------------------------------------------------|------------------------------------------------------------|
+| Descriptor field       | `promises.platform`                                  | `dependsOn`, or `x-dependsOn` on descriptor 1.0.0          |
+| Config key             | `systemNameRegex` and `systemTechnologyRegex`        | `dependsOnSystemNameRegex` only                            |
+| Default                | `.*` and `[^:]*`                                     | `blindata:systems:(.+)`                                    |
+| What is kept           | Entire match of each regex                           | First capturing group when one exists, else the entire match |
+| Blindata result        | `system.name` and `system.technology` on port assets | `port.dependsOnSystem`, or `port.dependsOnIdentifier` if the regex does not match |
+
+Example: `dependsOn: "blindata:systems:SALES_DW"` resolves system name `SALES_DW` through the capturing group. A port
+fully qualified name that does not match `dependsOnSystemNameRegex` is stored as `dependsOnIdentifier` instead. Neither
+path reads `promises.platform`. See [Input port dependency](#input-port-dependency).
 
 ## General Schema Annotations
 
