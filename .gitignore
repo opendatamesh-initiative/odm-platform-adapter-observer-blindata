@@ -1,0 +1,8 @@
+target/
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+scripts/__pycache__/
