@@ -6,10 +6,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableAsync
-public class ObserverBlindataApp {
-
-	public static void main(String[] args) {
-		SpringApplication.run(ObserverBlindataApp.class, args);
-	}
-
+public class ObserverBlindataApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ObserverBlindataApplication.class, args);
+    }
 }

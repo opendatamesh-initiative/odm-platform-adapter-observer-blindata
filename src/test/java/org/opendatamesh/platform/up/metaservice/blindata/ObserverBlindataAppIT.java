@@ -14,7 +14,7 @@ import javax.annotation.PostConstruct;
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        classes = {ObserverBlindataApp.class, TestConfig.class}
+        classes = {ObserverBlindataApplication.class, TestConfig.class}
 )
 @ActiveProfiles("test")
 public abstract class ObserverBlindataAppIT {

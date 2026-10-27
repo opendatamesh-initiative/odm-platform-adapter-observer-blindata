@@ -53,3 +53,9 @@ Thumbs.db
 
 /.agent/
 /.cursor/
+
+# From backend service template
+.classpath
+.project
+.settings/
+scripts/__pycache__/
