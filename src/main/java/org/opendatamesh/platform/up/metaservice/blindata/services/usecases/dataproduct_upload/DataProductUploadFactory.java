@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.function.Function;
 
 import static org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventType.*;
 import static org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventTypeV2.DATA_PRODUCT_INITIALIZED;
@@ -112,23 +111,45 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
             throw new UseCaseInitException("AfterState is null for event type: " + event.getEventType());
         }
         switch (event.getEventType()) {
-            case DATA_PRODUCT_CREATED:
-                return createOutboundPort(afterState, DataProductEventState.class, state -> new DataProductUploadOdmOutboundPortImpl(state.getDataProduct()));
-            case DATA_PRODUCT_VERSION_CREATED:
-                return createOutboundPort(afterState, DataProductVersionEventState.class, state -> new DataProductUploadOdmOutboundPortImpl(state.getDataProductVersion().getInfo()));
-            case DATA_PRODUCT_ACTIVITY_COMPLETED:
-                return createOutboundPort(afterState, ActivityEventState.class, state -> new DataProductUploadOdmOutboundPortImpl(state.getDataProductVersion().getInfo()));
+            case DATA_PRODUCT_CREATED: {
+                DataProductEventState state = castAfterState(afterState, DataProductEventState.class);
+                if (state.getDataProduct() == null) {
+                    throw new UseCaseInitException("dataProduct is null in afterState for event type: " + event.getEventType());
+                }
+                return new DataProductUploadOdmOutboundPortImpl(state.getDataProduct());
+            }
+            case DATA_PRODUCT_VERSION_CREATED: {
+                DataProductVersionEventState state = castAfterState(afterState, DataProductVersionEventState.class);
+                return createOutboundPortFromDataProductVersion(state.getDataProductVersion(), event.getEventType());
+            }
+            case DATA_PRODUCT_ACTIVITY_COMPLETED: {
+                ActivityEventState state = castAfterState(afterState, ActivityEventState.class);
+                return createOutboundPortFromDataProductVersion(state.getDataProductVersion(), event.getEventType());
+            }
             default:
                 throw new UseCaseInitException("Unsupported event type: " + event.getEventType());
         }
     }
 
-    private <T> DataProductUploadOdmOutboundPort createOutboundPort(Object afterState, Class<T> expectedClass, Function<T, DataProductUploadOdmOutboundPort> converter) throws UseCaseInitException {
+    private DataProductUploadOdmOutboundPort createOutboundPortFromDataProductVersion(
+            DataProductVersion dataProductVersion,
+            EventType eventType
+    ) throws UseCaseInitException {
+        if (dataProductVersion == null) {
+            throw new UseCaseInitException("dataProductVersion is null in afterState for event type: " + eventType);
+        }
+        if (dataProductVersion.getInfo() == null) {
+            throw new UseCaseInitException("dataProductVersion.info is null in afterState for event type: " + eventType);
+        }
+        return new DataProductUploadOdmOutboundPortImpl(dataProductVersion.getInfo());
+    }
+
+    private <T> T castAfterState(Object afterState, Class<T> expectedClass) throws UseCaseInitException {
         if (!expectedClass.isInstance(afterState)) {
             throw new UseCaseInitException("Invalid afterState type for " + expectedClass.getSimpleName() + " event: " +
                     afterState.getClass().getTypeName());
         }
-        return converter.apply(expectedClass.cast(afterState));
+        return expectedClass.cast(afterState);
     }
 
     private DataProductUploadOdmOutboundPort initOdmOutboundPortV2(EventV2 event) throws UseCaseInitException {
