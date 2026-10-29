@@ -15,7 +15,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdStewa
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdSystemClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdUserClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.odm.OdmRegistryClient;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.jackson.PageUtility;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.client.jackson.PageUtility;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipRoleRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.logical.BDDataCategoryRes;
@@ -28,7 +28,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.phys
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.OdmValidatorPolicyEvaluationRequestRes;
 import org.opendatamesh.platform.up.metaservice.blindata.validator.resources.OdmValidatorPolicyEvaluationResultRes;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -48,21 +48,21 @@ import static org.mockito.Mockito.*;
 
 class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
 
-    @MockBean
+    @Autowired
     private BdDataProductClient bdDataProductClient;
-    @MockBean
+    @Autowired
     private BdStewardshipClient bdStewardshipClient;
-    @MockBean
+    @Autowired
     private BdUserClient bdUserClient;
-    @MockBean
+    @Autowired
     private BdSemanticLinkingClient bdSemanticLinkingClient;
-    @MockBean
+    @Autowired
     private BdSystemClient bdSystemClient;
-    @MockBean
+    @Autowired
     private OdmRegistryClient odmRegistryClient;
-    @MockBean
+    @Autowired
     private BdProbesClient bdProbesClient;
-    @MockBean
+    @Autowired
     private BdQualityClient bdQualityClient;
 
     @BeforeEach

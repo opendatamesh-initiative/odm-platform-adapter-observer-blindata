@@ -17,7 +17,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notificat
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.eventcontents.DataProductVersionPublishedEventContentResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventTypeV2;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventV2;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseDryRunFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;

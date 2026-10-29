@@ -1,0 +1,16 @@
+spec: backend-service-template-state
+specVersion: "1.0.0"
+templateName: blindata-backend-service-template-spring
+templateVersion: "1.1.1"
+modules:
+  - http-service
+  - usecases
+  - rest-client
+parameters:
+  groupId: org.opendatamesh
+  artifactId: odm-platform-adapter-observer-blindata
+  serviceName: Blindata Observer Adapter
+  serviceClassPrefix: ObserverBlindata
+  basePackage: org.opendatamesh.platform.up.metaservice.blindata
+  basePackagePath: org/opendatamesh/platform/up/metaservice/blindata
+  description: Blindata Observer Adapter of the Open Data Mesh Platform

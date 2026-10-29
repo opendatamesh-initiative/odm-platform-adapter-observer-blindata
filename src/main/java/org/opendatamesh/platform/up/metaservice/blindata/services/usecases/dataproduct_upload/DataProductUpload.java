@@ -9,8 +9,10 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAd
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipResponsibilityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipRoleRes;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.DomainTeamInheritanceMode;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductDomainRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
@@ -53,6 +55,7 @@ class DataProductUpload implements UseCase {
 
     private void createDataProduct() {
         BDDataProductRes blindataDataProduct = odmToBlindataDataProduct(odmOutboundPort.getDataProductInfo());
+        applyDomainTeam(blindataDataProduct);
         blindataDataProduct = blindataOutboundPort.createDataProduct(blindataDataProduct);
         getUseCaseLogger().info(String.format("%s Data product: %s created with uuid: %s on Blindata", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), blindataDataProduct.getUuid()));
         assignResponsibilityToDataProduct(blindataDataProduct);
@@ -184,6 +187,8 @@ class DataProductUpload implements UseCase {
         newBdDataProduct.setVersion(oldBdDataProduct.getVersion());
 
         newBdDataProduct.addOldAdditionalProperties(oldBdDataProduct);
+        newBdDataProduct.setTeamCode(oldBdDataProduct.getTeamCode());
+        applyDomainTeam(newBdDataProduct);
         newBdDataProduct = blindataOutboundPort.updateDataProduct(newBdDataProduct);
         getUseCaseLogger().info(String.format("%s Data product: %s with uuid: %s updated on Blindata", USE_CASE_PREFIX, odmOutboundPort.getDataProductInfo().getFullyQualifiedName(), newBdDataProduct.getUuid()));
         assignResponsibilityToDataProduct(newBdDataProduct);
@@ -210,6 +215,43 @@ class DataProductUpload implements UseCase {
         if (!StringUtils.hasText(odmDataProductInfo.getDomain())) {
             getUseCaseLogger().warn(String.format("[#83] %s Missing odm data product info domain.", USE_CASE_PREFIX));
         }
+    }
+
+    private void applyDomainTeam(BDDataProductRes dataProduct) {
+        DomainTeamInheritanceMode mode = blindataOutboundPort.getDomainTeamInheritanceMode();
+        if (mode == DomainTeamInheritanceMode.OFF) {
+            return;
+        }
+        if (mode == DomainTeamInheritanceMode.IF_MISSING && StringUtils.hasText(dataProduct.getTeamCode())) {
+            getUseCaseLogger().info(String.format("%s Data product: %s already has team: %s, domain team not applied.", USE_CASE_PREFIX, dataProduct.getIdentifier(), dataProduct.getTeamCode()));
+            return;
+        }
+        if (!StringUtils.hasText(dataProduct.getDomain())) {
+            return;
+        }
+        findDomainTeamCode(dataProduct.getDomain()).ifPresent(teamCode -> {
+            dataProduct.setTeamCode(teamCode);
+            getUseCaseLogger().info(String.format("%s Data product: %s team set to: %s from domain: %s.", USE_CASE_PREFIX, dataProduct.getIdentifier(), teamCode, dataProduct.getDomain()));
+        });
+    }
+
+    private Optional<String> findDomainTeamCode(String domainName) {
+        Optional<BDDataProductDomainRes> domain = blindataOutboundPort.findDataProductDomain(domainName);
+        String fqn = odmOutboundPort.getDataProductInfo().getFullyQualifiedName();
+        if (domain.isEmpty()) {
+            String message = String.format("%s Data product domain: %s not found on Blindata or not readable by the observer user; domain team not applied to data product: %s.", USE_CASE_PREFIX, domainName, fqn);
+            if (blindataOutboundPort.isMissingDomainBlocksPublication()) {
+                getUseCaseLogger().warn("[#206] " + message);
+            } else {
+                getUseCaseLogger().info(message);
+            }
+            return Optional.empty();
+        }
+        if (!StringUtils.hasText(domain.get().getTeamCode())) {
+            getUseCaseLogger().info(String.format("%s Data product domain: %s has no team, data product team unchanged.", USE_CASE_PREFIX, domainName));
+            return Optional.empty();
+        }
+        return Optional.of(domain.get().getTeamCode());
     }
 
     private void withErrorHandling(Runnable runnable) throws UseCaseExecutionException {

@@ -3,12 +3,12 @@ package org.opendatamesh.platform.up.metaservice.blindata.client.blindata;
 import com.google.common.collect.Lists;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.exceptions.BlindataClientResourceMappingException;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtils;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtilsFactory;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientException;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientResourceMappingException;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpHeader;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.Oauth2;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.client.RestUtils;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.client.RestUtilsFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.exceptions.client.ClientException;
+import org.opendatamesh.platform.up.metaservice.blindata.exceptions.client.ClientResourceMappingException;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.client.http.HttpHeader;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.client.http.Oauth2;
 import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataProductConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.*;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.issuemngt.BDIssueCampaignRes;
@@ -173,6 +173,24 @@ public class BdClientImpl implements BdDataProductClient, BdStewardshipClient, B
         }
     }
 
+    @Override
+    public Optional<BDDataProductDomainRes> getDataProductDomain(String name) throws BlindataClientException, BlindataClientResourceMappingException {
+        try {
+            BDDataProductDomainSearchOptions filters = new BDDataProductDomainSearchOptions();
+            filters.setName(name);
+            return restUtils.getPage(
+                    String.format("%s/api/v1/dataproductsdomains", credentials.getBlindataUrl()),
+                    null,
+                    PageRequest.ofSize(1),
+                    filters,
+                    BDDataProductDomainRes.class
+            ).stream().filter(domain -> name.equals(domain.getName())).findFirst();
+        } catch (ClientException e) {
+            throw new BlindataClientException(e.getCode(), e.getResponseBody());
+        } catch (ClientResourceMappingException e) {
+            throw new BlindataClientResourceMappingException(e.getMessage(), e);
+        }
+    }
 
     @Override
     public void deleteDataProduct(String dataProductUuid) throws BlindataClientException, BlindataClientResourceMappingException {

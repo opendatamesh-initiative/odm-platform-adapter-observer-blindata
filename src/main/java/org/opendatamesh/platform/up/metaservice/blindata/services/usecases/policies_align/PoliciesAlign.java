@@ -9,7 +9,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.prod
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDPolicyRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDPolicySuiteRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyResource;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;

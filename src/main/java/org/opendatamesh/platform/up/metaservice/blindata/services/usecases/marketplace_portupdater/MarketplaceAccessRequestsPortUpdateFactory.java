@@ -4,7 +4,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventTyp
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.MarketplaceAccessRequestEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdMarketplaceAccessRequestsUploadResultClient;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,0 +1,25 @@
+{
+  "_comment": "Existing data product without team. IF_MISSING; domain has team dom-team.",
+  "dataProductInfo": {
+    "fullyQualifiedName": "FQN",
+    "entityType": "source-aligned",
+    "name": "test-dp",
+    "version": "1.0.0",
+    "displayName": "Test Dp",
+    "description": "Description",
+    "domain": "Test Domain"
+  },
+  "existentDataProduct": {
+    "uuid": "dataProductUuid"
+  },
+  "user": null,
+  "defaultRoleUuid": null,
+  "dataProductRole": null,
+  "dataProductResponsibility": null,
+  "dataProductDomain": {
+    "uuid": "domainUuid",
+    "name": "Test Domain",
+    "teamCode": "dom-team"
+  },
+  "domainTeamInheritanceMode": "IF_MISSING"
+}

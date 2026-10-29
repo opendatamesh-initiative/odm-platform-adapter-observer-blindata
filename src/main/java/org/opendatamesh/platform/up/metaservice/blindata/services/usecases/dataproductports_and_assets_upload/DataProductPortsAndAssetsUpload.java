@@ -11,7 +11,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.phys
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalFieldRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDSystemRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.*;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;

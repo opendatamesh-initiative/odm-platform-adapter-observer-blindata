@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions;
 
-public class UseCaseExecutionException extends UseCaseException {
+public class UseCaseExecutionException extends RuntimeException {
     public UseCaseExecutionException(String message) {
         super(message);
     }

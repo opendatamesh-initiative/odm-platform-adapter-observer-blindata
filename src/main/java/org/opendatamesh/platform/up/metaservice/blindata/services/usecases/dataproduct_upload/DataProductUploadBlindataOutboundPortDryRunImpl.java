@@ -1,5 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload;
 
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductDomainRes;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.DomainTeamInheritanceMode;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipResponsibilityRes;
@@ -58,5 +60,20 @@ class DataProductUploadBlindataOutboundPortDryRunImpl implements DataProductUplo
     @Override
     public String getDataProductAdditionalPropertiesRegex() {
         return outboundPort.getDataProductAdditionalPropertiesRegex();
+    }
+
+    @Override
+    public Optional<BDDataProductDomainRes> findDataProductDomain(String domainName) {
+        return outboundPort.findDataProductDomain(domainName);
+    }
+
+    @Override
+    public DomainTeamInheritanceMode getDomainTeamInheritanceMode() {
+        return outboundPort.getDomainTeamInheritanceMode();
+    }
+
+    @Override
+    public boolean isMissingDomainBlocksPublication() {
+        return outboundPort.isMissingDomainBlocksPublication();
     }
 }

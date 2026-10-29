@@ -4,7 +4,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.excepti
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.marketplace.BDMarketplaceAccessRequestsUploadRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDMarketplaceAccessRequestPortStatusUploadResultsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.marketplace.OdmExecutorResultReceivedEventExecutorResponse;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;

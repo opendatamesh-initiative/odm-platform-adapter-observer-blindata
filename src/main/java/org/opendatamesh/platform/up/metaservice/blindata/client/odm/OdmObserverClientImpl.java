@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtils;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.client.RestUtils;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmObserverResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.OdmObserverSubscribeResponseResourceV2;
 

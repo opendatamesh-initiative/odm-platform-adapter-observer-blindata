@@ -13,7 +13,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.qual
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.BDQualityUploadResultsRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.quality.QualityCheckSearchOptions;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.internal.quality.QualityCheck;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;

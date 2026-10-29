@@ -1,5 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload;
 
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductDomainRes;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.DomainTeamInheritanceMode;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipResponsibilityRes;
@@ -26,4 +28,10 @@ interface DataProductUploadBlindataOutboundPort {
     void createDataProductResponsibility(BDStewardshipRoleRes role, BDShortUserRes user, BDDataProductRes dataProduct);
 
     String getDataProductAdditionalPropertiesRegex();
+
+    Optional<BDDataProductDomainRes> findDataProductDomain(String domainName);
+
+    DomainTeamInheritanceMode getDomainTeamInheritanceMode();
+
+    boolean isMissingDomainBlocksPublication();
 }

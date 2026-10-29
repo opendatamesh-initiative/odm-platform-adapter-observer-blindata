@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventAdapter;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.exceptions.OdmPlatformBadRequestException;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.exceptions.OdmPlatformInternalServerException;
+import org.opendatamesh.platform.up.metaservice.blindata.exceptions.BadRequestException;
+import org.opendatamesh.platform.up.metaservice.blindata.exceptions.InternalException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmEventNotificationResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmEventResource;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload.DataProductUploadFactory;
@@ -73,7 +73,7 @@ public class BlindataValidatorService {
         OdmEventNotificationResource odmEventNotification = buildFakeNotificationEvent(policyEvaluationInputObject);
         //Parse odm event to internal event
         Event eventNotification = eventAdapter.odmToInternalEvent(odmEventNotification)
-                .orElseThrow(() -> new OdmPlatformBadRequestException("Impossible to convert Odm Event to Internal Event."));
+                .orElseThrow(() -> new BadRequestException("Impossible to convert Odm Event to Internal Event."));
 
         OdmValidatorPolicyEvaluationResultRes evaluationResult = initEvaluationResult(evaluationRequest);
         ValidatorUseCaseLogger validatorUseCaseLogger = new ValidatorUseCaseLogger();
@@ -103,7 +103,7 @@ public class BlindataValidatorService {
                                 " Received event: {}",
                         e.getMessage(), toJsonString(evaluationRequest), e
                 );
-                throw new OdmPlatformInternalServerException(e);
+                throw new InternalException(e.toString(), e);
             }
         }).run();
 
@@ -152,10 +152,10 @@ public class BlindataValidatorService {
 
     private void validateEvaluationRequest(OdmValidatorPolicyEvaluationRequestRes evaluationRequest) {
         if (evaluationRequest.getObjectToEvaluate() == null) {
-            throw new OdmPlatformBadRequestException("Empty Policy Evaluation Object");
+            throw new BadRequestException("Empty Policy Evaluation Object");
         }
         if (!evaluationRequest.getObjectToEvaluate().isObject()) {
-            throw new OdmPlatformBadRequestException("Malformed Policy Evaluation Object");
+            throw new BadRequestException("Malformed Policy Evaluation Object");
         }
     }
 
@@ -163,11 +163,11 @@ public class BlindataValidatorService {
         try {
             PolicyEvaluationInputObject policyEvaluationInputObject = objectMapper.treeToValue(evaluationRequest.getObjectToEvaluate(), PolicyEvaluationInputObject.class);
             if (policyEvaluationInputObject.getAfterState() == null && policyEvaluationInputObject.getCurrentState() == null) {
-                throw new OdmPlatformBadRequestException("Malformed Policy Evaluation Object");
+                throw new BadRequestException("Malformed Policy Evaluation Object");
             }
             return policyEvaluationInputObject;
         } catch (JsonProcessingException e) {
-            throw new OdmPlatformBadRequestException(e.getMessage());
+            throw new BadRequestException(e.getMessage());
         }
     }
 

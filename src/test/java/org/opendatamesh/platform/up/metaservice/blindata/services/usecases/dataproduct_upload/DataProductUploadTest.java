@@ -4,11 +4,15 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import org.assertj.core.util.Lists;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.BDAdditionalPropertiesRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLogger;
+import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,6 +24,50 @@ import static org.mockito.Mockito.*;
 public class DataProductUploadTest {
     private ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+    private UseCaseLogger originalLogger;
+    private UseCaseLogger mockLogger;
+
+    @BeforeEach
+    void setUpLogger() {
+        originalLogger = UseCaseLoggerContext.getUseCaseLogger();
+        mockLogger = mock(UseCaseLogger.class);
+        UseCaseLoggerContext.setUseCaseLogger(mockLogger);
+    }
+
+    @AfterEach
+    void restoreLogger() {
+        UseCaseLoggerContext.setUseCaseLogger(originalLogger);
+    }
+
+    private DataProductUploadInitialState load(String fixture) throws IOException {
+        return objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource(fixture)),
+                DataProductUploadInitialState.class
+        );
+    }
+
+    private DataProductUploadBlindataOutboundPort newPort(DataProductUploadInitialState initialState) {
+        return spy(new DataProductUploadBlindataOutboundPortMock(initialState));
+    }
+
+    private void run(DataProductUploadInitialState initialState, DataProductUploadBlindataOutboundPort port) throws UseCaseExecutionException {
+        new DataProductUpload(new DataProductUploadOdmOutboundPortMock(initialState), port).execute();
+    }
+
+    private BDDataProductRes captureCreated(DataProductUploadBlindataOutboundPort port) {
+        ArgumentCaptor<BDDataProductRes> captor = ArgumentCaptor.forClass(BDDataProductRes.class);
+        verify(port, times(1)).createDataProduct(captor.capture());
+        verify(port, never()).updateDataProduct(any());
+        return captor.getValue();
+    }
+
+    private BDDataProductRes captureUpdated(DataProductUploadBlindataOutboundPort port) {
+        ArgumentCaptor<BDDataProductRes> captor = ArgumentCaptor.forClass(BDDataProductRes.class);
+        verify(port, times(1)).updateDataProduct(captor.capture());
+        verify(port, never()).createDataProduct(any());
+        return captor.getValue();
+    }
 
     @Test
     public void testDataProductCreation() throws UseCaseExecutionException, IOException {
@@ -277,4 +325,104 @@ public class DataProductUploadTest {
                 .isNotEqualTo(odmVersion);
     }
 
+
+    @Test
+    public void testUpdatePreservesStoredTeamWhenModeOff() throws Exception {
+        DataProductUploadInitialState state = load("initial_state_7.json");
+        DataProductUploadBlindataOutboundPort port = newPort(state);
+        run(state, port);
+        assertThat(captureUpdated(port).getTeamCode()).isEqualTo("team-a");
+        verify(port, never()).findDataProductDomain(any());
+    }
+
+    @Test
+    public void testCreateWithoutTeamWhenModeOff() throws Exception {
+        DataProductUploadInitialState state = load("initial_state_8.json");
+        DataProductUploadBlindataOutboundPort port = newPort(state);
+        run(state, port);
+        assertThat(captureCreated(port).getTeamCode()).isNull();
+        verify(port, never()).findDataProductDomain(any());
+    }
+
+    @Test
+    public void testCreateAppliesDomainTeamWhenIfMissing() throws Exception {
+        DataProductUploadInitialState state = load("initial_state_9.json");
+        DataProductUploadBlindataOutboundPort port = newPort(state);
+        run(state, port);
+        assertThat(captureCreated(port).getTeamCode()).isEqualTo("dom-team");
+    }
+
+    @Test
+    public void testUpdateAppliesDomainTeamWhenIfMissingAndStoredTeamEmpty() throws Exception {
+        DataProductUploadInitialState state = load("initial_state_10.json");
+        DataProductUploadBlindataOutboundPort port = newPort(state);
+        run(state, port);
+        assertThat(captureUpdated(port).getTeamCode()).isEqualTo("dom-team");
+    }
+
+    @Test
+    public void testUpdateKeepsStoredTeamWhenIfMissing() throws Exception {
+        DataProductUploadInitialState state = load("initial_state_11.json");
+        DataProductUploadBlindataOutboundPort port = newPort(state);
+        run(state, port);
+        assertThat(captureUpdated(port).getTeamCode()).isEqualTo("team-a");
+        verify(port, never()).findDataProductDomain(any());
+    }
+
+    @Test
+    public void testUpdateReplacesStoredTeamWhenAlways() throws Exception {
+        DataProductUploadInitialState state = load("initial_state_12.json");
+        DataProductUploadBlindataOutboundPort port = newPort(state);
+        run(state, port);
+        assertThat(captureUpdated(port).getTeamCode()).isEqualTo("dom-team");
+    }
+
+    @Test
+    public void testDomainNotFoundWarnsWhenBlocking() throws Exception {
+        DataProductUploadInitialState state = load("initial_state_13.json");
+        DataProductUploadBlindataOutboundPort port = newPort(state);
+        run(state, port);
+        assertThat(captureUpdated(port).getTeamCode()).isEqualTo("team-a");
+        ArgumentCaptor<String> warn = ArgumentCaptor.forClass(String.class);
+        verify(mockLogger, times(1)).warn(warn.capture());
+        assertThat(warn.getValue()).contains("[#206]");
+    }
+
+    @Test
+    public void testDomainNotFoundLogsInfoWhenNotBlocking() throws Exception {
+        DataProductUploadInitialState state = load("initial_state_14.json");
+        DataProductUploadBlindataOutboundPort port = newPort(state);
+        run(state, port);
+        assertThat(captureUpdated(port).getTeamCode()).isEqualTo("team-a");
+        verify(mockLogger, never()).warn(anyString());
+        ArgumentCaptor<String> info = ArgumentCaptor.forClass(String.class);
+        verify(mockLogger, atLeastOnce()).info(info.capture());
+        assertThat(info.getAllValues()).filteredOn(m -> m.contains("not found on Blindata")).hasSize(1)
+                .allSatisfy(m -> assertThat(m).doesNotContain("[#206]"));
+    }
+
+    @Test
+    public void testDomainWithoutTeamKeepsTeamWithoutWarning() throws Exception {
+        DataProductUploadInitialState state = load("initial_state_15.json");
+        DataProductUploadBlindataOutboundPort port = newPort(state);
+        run(state, port);
+        assertThat(captureUpdated(port).getTeamCode()).isEqualTo("team-a");
+        verify(mockLogger, never()).warn(anyString());
+
+        DataProductUploadInitialState createState = load("initial_state_16.json");
+        DataProductUploadBlindataOutboundPort createPort = newPort(createState);
+        run(createState, createPort);
+        assertThat(captureCreated(createPort).getTeamCode()).isNull();
+        verify(mockLogger, never()).warn(anyString());
+    }
+
+    @Test
+    public void testDryRunLooksUpDomainWithoutWriting() throws Exception {
+        DataProductUploadInitialState state = load("initial_state_9.json");
+        DataProductUploadBlindataOutboundPort port = newPort(state);
+        run(state, new DataProductUploadBlindataOutboundPortDryRunImpl(port));
+        verify(port, times(1)).findDataProductDomain("Test Domain");
+        verify(port, never()).createDataProduct(any());
+        verify(port, never()).updateDataProduct(any());
+    }
 }

@@ -1,7 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_version_removal;
 
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.Event;
-import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCase;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseExecutionException;
 
 import static org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseLoggerContext.getUseCaseLogger;
