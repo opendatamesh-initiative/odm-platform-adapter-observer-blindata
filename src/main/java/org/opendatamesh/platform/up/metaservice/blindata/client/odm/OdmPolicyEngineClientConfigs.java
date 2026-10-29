@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtilsFactory;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.client.RestUtilsFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyEngineResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyEngineSearchOptions;
 import org.slf4j.Logger;

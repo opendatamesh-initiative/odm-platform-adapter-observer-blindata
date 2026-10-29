@@ -108,6 +108,42 @@ descriptor will also be automatically disabled.
 - Maintains data quality consistency
 - Reduces clutter in the Blindata interface
 
+### Domain Team Inheritance
+
+Configure whether a data product inherits the team of its Blindata data product domain:
+
+```yaml
+blindata:
+  dataProducts:
+    domainTeamInheritance: "OFF"             # OFF (default), IF_MISSING or ALWAYS
+    missingDomainBlocksPublication: false    # Default: false
+```
+
+**Purpose**: Lets the observer set the team of a data product from the team of the Blindata data product domain named
+in `info.domain`. Keep the value quoted: unquoted `OFF` is read by YAML as a boolean.
+
+**Modes**:
+
+| Mode         | On create                                  | On update                                                                 |
+|--------------|--------------------------------------------|---------------------------------------------------------------------------|
+| `OFF`        | No team is set                             | The stored team is preserved                                              |
+| `IF_MISSING` | The domain team is applied, if the domain has one | The domain team is applied only when the data product has no team; otherwise the stored team is preserved |
+| `ALWAYS`     | The domain team is applied, if the domain has one | The domain team replaces the stored team, if the domain has one            |
+
+**Notes**:
+
+- The observer never clears a team: a domain without a team leaves the data product team untouched.
+- The observer preserves the stored team in every mode. Previously, updates cleared it.
+- The domain is looked up by exact name on `info.domain` with `GET /api/v1/dataproductsdomains?name=`.
+- `missingDomainBlocksPublication` applies only when `domainTeamInheritance` is not `OFF`. With `true`, a domain that
+  cannot be found produces the `[#206]` warning, which fails the Blindata validator policy and blocks publication. With
+  `false` (default), it is only an info log.
+- When `domainTeamInheritance` is not `OFF`, the technical user needs READ and WRITE permissions on domain teams. With
+  `ALWAYS`, it also needs WRITE on the team being replaced. A missing WRITE permission makes Blindata refuse the
+  create or update (403, reported as `[#84]`).
+- Environment variables: `BLINDATA_DATAPRODUCTS_DOMAINTEAMINHERITANCE` and
+  `BLINDATA_DATAPRODUCTS_MISSINGDOMAINBLOCKSPUBLICATION`.
+
 ### Stewardship Responsibilities
 
 Configure role-based stewardship assignment:
@@ -196,6 +232,8 @@ blindata:
 | `enableAsync`                            | Boolean | `false`                 | No       | Enable async processing            |
 | `dataProducts.assetsCleanup`             | Boolean | `true`                  | No       | Enable assets cleanup              |
 | `dataProducts.additionalPropertiesRegex` | String  | `\\bx-([\\S]+)`         | No       | Regex for additional properties    |
+| `dataProducts.domainTeamInheritance`     | String  | `OFF`                   | No       | Domain team inheritance mode: `OFF`, `IF_MISSING`, `ALWAYS` |
+| `dataProducts.missingDomainBlocksPublication` | Boolean | `false`            | No       | When `domainTeamInheritance` is not `OFF`, a domain that cannot be found fails validation |
 | `issueManagement.policies.active`        | Boolean | `true`                  | No       | Enable issue policies              |
 | `probesUpload.connectionNamePropertyKey` | String  | `x-blindataConnectionName` | No    | Port property key for probe connection name |
 
@@ -216,6 +254,8 @@ blindata:
   dataProducts:
     assetsCleanup: true
     additionalPropertiesRegex: "\\bx-([\\S]+)"
+    domainTeamInheritance: "OFF"
+    missingDomainBlocksPublication: false
 
   # Issue Management
   issueManagement:

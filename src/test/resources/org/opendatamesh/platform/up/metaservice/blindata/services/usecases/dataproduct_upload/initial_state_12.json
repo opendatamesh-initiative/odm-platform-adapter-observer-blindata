@@ -1,0 +1,26 @@
+{
+  "_comment": "Existing data product with team team-a. ALWAYS; domain has team dom-team.",
+  "dataProductInfo": {
+    "fullyQualifiedName": "FQN",
+    "entityType": "source-aligned",
+    "name": "test-dp",
+    "version": "1.0.0",
+    "displayName": "Test Dp",
+    "description": "Description",
+    "domain": "Test Domain"
+  },
+  "existentDataProduct": {
+    "uuid": "dataProductUuid",
+    "teamCode": "team-a"
+  },
+  "user": null,
+  "defaultRoleUuid": null,
+  "dataProductRole": null,
+  "dataProductResponsibility": null,
+  "dataProductDomain": {
+    "uuid": "domainUuid",
+    "name": "Test Domain",
+    "teamCode": "dom-team"
+  },
+  "domainTeamInheritanceMode": "ALWAYS"
+}

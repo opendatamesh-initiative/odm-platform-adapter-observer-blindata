@@ -6,7 +6,7 @@
 
 **Observer adapter for [blindata.io](https://blindata.io/)**
 
-[![Java](https://img.shields.io/badge/Java-11+-orange?style=flat-square&logo=java)](https://openjdk.java.net/)
+[![Java](https://img.shields.io/badge/Java-21+-orange?style=flat-square&logo=java)](https://openjdk.java.net/)
 [![Maven](https://img.shields.io/badge/Maven-3.8.6+-red?style=flat-square&logo=apache-maven)](https://maven.apache.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green?style=flat-square)](LICENSE)
 [![Documentation](https://img.shields.io/badge/Documentation-Complete-blue?style=flat-square&logo=read-the-docs)](docs/README.md)

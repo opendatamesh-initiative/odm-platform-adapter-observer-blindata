@@ -1,6 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.dataproduct_upload;
 
 import org.opendatamesh.dpds.model.info.Info;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductDomainRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipResponsibilityRes;
@@ -13,6 +14,9 @@ public class DataProductUploadInitialState {
     private String defaultRoleUuid;
     private BDStewardshipRoleRes dataProductRole;
     private BDStewardshipResponsibilityRes dataProductResponsibility;
+    private BDDataProductDomainRes dataProductDomain;
+    private String domainTeamInheritanceMode;
+    private boolean missingDomainBlocksPublication;
 
     public DataProductUploadInitialState() {
     }
@@ -63,6 +67,30 @@ public class DataProductUploadInitialState {
 
     public void setDataProductResponsibility(BDStewardshipResponsibilityRes dataProductResponsibility) {
         this.dataProductResponsibility = dataProductResponsibility;
+    }
+
+    public BDDataProductDomainRes getDataProductDomain() {
+        return dataProductDomain;
+    }
+
+    public void setDataProductDomain(BDDataProductDomainRes dataProductDomain) {
+        this.dataProductDomain = dataProductDomain;
+    }
+
+    public String getDomainTeamInheritanceMode() {
+        return domainTeamInheritanceMode;
+    }
+
+    public void setDomainTeamInheritanceMode(String domainTeamInheritanceMode) {
+        this.domainTeamInheritanceMode = domainTeamInheritanceMode;
+    }
+
+    public boolean isMissingDomainBlocksPublication() {
+        return missingDomainBlocksPublication;
+    }
+
+    public void setMissingDomainBlocksPublication(boolean missingDomainBlocksPublication) {
+        this.missingDomainBlocksPublication = missingDomainBlocksPublication;
     }
 
     public boolean equals(final Object o) {

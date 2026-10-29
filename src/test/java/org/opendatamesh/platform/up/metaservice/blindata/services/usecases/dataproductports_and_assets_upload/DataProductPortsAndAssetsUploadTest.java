@@ -184,4 +184,24 @@ public class DataProductPortsAndAssetsUploadTest {
                 .isNotEqualTo(initialVersionInBlindata);
     }
 
+
+    @Test
+    public void testDataProductVersionUploadPreservesTeam() throws IOException, UseCaseExecutionException {
+        DataProductVersionUploadInitialState initialState = objectMapper.readValue(
+                Resources.toByteArray(getClass().getResource("initial_state_4.json")),
+                DataProductVersionUploadInitialState.class
+        );
+
+        DataProductPortsAndAssetsUploadOdmOutboundPort odmOutboundPort = new DataProductPortsAndAssetsUploadOdmOutboundPortMock(initialState);
+        DataProductPortsAndAssetsUploadBlindataOutboundPort blindataOutboundPort = spy(new DataProductPortsAndAssetsUploadBlindataOutboundPortMock(initialState));
+
+        new DataProductPortsAndAssetsUpload(blindataOutboundPort, odmOutboundPort).execute();
+
+        ArgumentCaptor<BDDataProductRes> portsCaptor = ArgumentCaptor.forClass(BDDataProductRes.class);
+        ArgumentCaptor<BDDataProductRes> versionCaptor = ArgumentCaptor.forClass(BDDataProductRes.class);
+        verify(blindataOutboundPort, times(1)).updateDataProductPorts(portsCaptor.capture());
+        verify(blindataOutboundPort, times(1)).updateDataProduct(versionCaptor.capture());
+        assertThat(portsCaptor.getValue().getTeamCode()).isEqualTo("team-a");
+        assertThat(versionCaptor.getValue().getTeamCode()).isEqualTo("team-a");
+    }
 }

@@ -36,6 +36,9 @@ When the Blindata policy validator evaluates a data product, it logs warning mes
 | `[#81]` | %s Missing odm data product info. |
 | `[#82]` | %s Missing odm data product info fully qualified name. |
 | `[#83]` | %s Missing odm data product info domain. |
+| `[#206]` | %s Data product domain: %s not found on Blindata or not readable by the observer user; domain team not applied to data product: %s. |
+
+`[#206]` is emitted only when `domainTeamInheritance` is not `OFF` and `missingDomainBlocksPublication` is `true`.
 
 ### Port and standard definition
 

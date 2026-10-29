@@ -1,7 +1,7 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtils;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.client.RestUtils;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyEngineResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyEngineSearchOptions;
 import org.springframework.data.domain.Page;

@@ -1,14 +1,14 @@
-package org.opendatamesh.platform.up.metaservice.blindata.client.utils;
+package org.opendatamesh.platform.up.metaservice.blindata.utils.client;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientException;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpEntity;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpHeader;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpMethod;
+import org.opendatamesh.platform.up.metaservice.blindata.exceptions.client.ClientException;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.client.http.HttpEntity;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.client.http.HttpHeader;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.client.http.HttpMethod;
 
 import java.io.File;
 import java.util.ArrayList;

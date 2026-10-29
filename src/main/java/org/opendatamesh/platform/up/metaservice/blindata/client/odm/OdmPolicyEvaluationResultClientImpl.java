@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.RestUtils;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.client.RestUtils;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyEvaluationResultResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.policy.OdmPolicyEvaluationResultSearchOptions;
 import org.springframework.data.domain.Page;

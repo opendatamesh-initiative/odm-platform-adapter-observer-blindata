@@ -1,4 +1,4 @@
-package org.opendatamesh.platform.up.metaservice.blindata.client.utils;
+package org.opendatamesh.platform.up.metaservice.blindata.utils.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.exceptions.ClientException;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpHeader;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.http.HttpMethod;
-import org.opendatamesh.platform.up.metaservice.blindata.client.utils.jackson.PageUtility;
+import org.opendatamesh.platform.up.metaservice.blindata.exceptions.client.ClientException;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.client.http.HttpHeader;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.client.http.HttpMethod;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.client.jackson.PageUtility;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

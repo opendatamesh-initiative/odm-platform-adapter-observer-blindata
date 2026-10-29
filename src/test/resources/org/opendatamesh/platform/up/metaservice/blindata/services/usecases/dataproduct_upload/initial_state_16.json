@@ -1,0 +1,22 @@
+{
+  "_comment": "No data product on Blindata. ALWAYS; domain without team.",
+  "dataProductInfo": {
+    "fullyQualifiedName": "FQN",
+    "entityType": "source-aligned",
+    "name": "test-dp",
+    "version": "1.0.0",
+    "displayName": "Test Dp",
+    "description": "Description",
+    "domain": "Test Domain"
+  },
+  "existentDataProduct": null,
+  "user": null,
+  "defaultRoleUuid": null,
+  "dataProductRole": null,
+  "dataProductResponsibility": null,
+  "dataProductDomain": {
+    "uuid": "domainUuid",
+    "name": "Test Domain"
+  },
+  "domainTeamInheritanceMode": "ALWAYS"
+}

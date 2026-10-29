@@ -1,6 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions;
 
-public class UseCaseInitException extends UseCaseException {
+public class UseCaseInitException extends RuntimeException {
 
     /**
      * Creates an exception with a message that includes the cause's detail, or the cause's class name when the cause

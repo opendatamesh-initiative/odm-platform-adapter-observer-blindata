@@ -7,6 +7,8 @@ import org.opendatamesh.platform.up.metaservice.blindata.configurations.BdDataPr
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipResponsibilityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipRoleRes;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductDomainRes;
+import org.opendatamesh.platform.up.metaservice.blindata.configurations.DomainTeamInheritanceMode;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 
 import java.util.Date;
@@ -76,5 +78,20 @@ class DataProductUploadBlindataOutboundPortImpl implements DataProductUploadBlin
     @Override
     public String getDataProductAdditionalPropertiesRegex() {
         return dataProductConfig.getAdditionalPropertiesRegex();
+    }
+
+    @Override
+    public Optional<BDDataProductDomainRes> findDataProductDomain(String domainName) {
+        return bdDataProductClient.getDataProductDomain(domainName);
+    }
+
+    @Override
+    public DomainTeamInheritanceMode getDomainTeamInheritanceMode() {
+        return dataProductConfig.getDomainTeamInheritanceMode();
+    }
+
+    @Override
+    public boolean isMissingDomainBlocksPublication() {
+        return dataProductConfig.isMissingDomainBlocksPublication();
     }
 }

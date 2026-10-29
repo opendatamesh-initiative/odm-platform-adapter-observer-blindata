@@ -1,15 +1,16 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client;
 
-import org.apache.http.HeaderElement;
-import org.apache.http.HeaderElementIterator;
-import org.apache.http.HeaderIterator;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.conn.ConnectionKeepAliveStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.message.BasicHeaderElementIterator;
-import org.apache.http.protocol.HTTP;
+import org.apache.hc.client5.http.ConnectionKeepAliveStrategy;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.http.HeaderElement;
+import org.apache.hc.core5.http.HeaderElements;
+import org.apache.hc.core5.http.message.MessageSupport;
+import org.apache.hc.core5.util.TimeValue;
+import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -18,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 /*
@@ -33,6 +35,10 @@ public class RestTemplateConfiguration {
         poolingConnectionManager.setMaxTotal(5);
         // set a maximum amount of connections for each HTTP route in pool
         poolingConnectionManager.setDefaultMaxPerRoute(2);
+        poolingConnectionManager.setDefaultConnectionConfig(ConnectionConfig.custom()
+                .setConnectTimeout(Timeout.ofSeconds(60)) // time to open a server connection
+                .setSocketTimeout(Timeout.ofSeconds(60)) //  time between data packets
+                .build());
         return poolingConnectionManager;
     }
 
@@ -49,19 +55,18 @@ public class RestTemplateConfiguration {
     @Bean
     public ConnectionKeepAliveStrategy connectionKeepAliveStrategy() {
         return (httpResponse, httpContext) -> {
-            HeaderIterator headerIterator = httpResponse.headerIterator(HTTP.CONN_KEEP_ALIVE);
-            HeaderElementIterator elementIterator = new BasicHeaderElementIterator(headerIterator);
+            Iterator<HeaderElement> elementIterator = MessageSupport.iterate(httpResponse, HeaderElements.KEEP_ALIVE);
 
             while (elementIterator.hasNext()) {
-                HeaderElement element = elementIterator.nextElement();
+                HeaderElement element = elementIterator.next();
                 String param = element.getName();
                 String value = element.getValue();
                 if (value != null && param.equalsIgnoreCase("timeout")) {
-                    return Long.parseLong(value) * 1000; // convert to ms
+                    return TimeValue.ofSeconds(Long.parseLong(value));
                 }
             }
 
-            return TimeUnit.SECONDS.toMillis(20);
+            return TimeValue.ofSeconds(20);
         };
     }
 
@@ -79,8 +84,8 @@ public class RestTemplateConfiguration {
                 // only if connection pool is initialised
                 if (pool != null) {
                     logger.debug("Cleaning expired and idle connections");
-                    pool.closeExpiredConnections();
-                    pool.closeIdleConnections(20, TimeUnit.SECONDS);
+                    pool.closeExpired();
+                    pool.closeIdle(TimeValue.of(20, TimeUnit.SECONDS));
                 }
             }
         };
@@ -88,11 +93,8 @@ public class RestTemplateConfiguration {
 
     @Bean
     public RestTemplateBuilder restTemplateBuilder() {
-        // Configure Apache HttpClient with no connection pooling
         RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(60_000) // time to open a server connection
-                .setConnectionRequestTimeout(60_000) // time to request connection from the pool
-                .setSocketTimeout(60_000)//  time between data packets
+                .setConnectionRequestTimeout(Timeout.ofSeconds(60)) // time to request connection from the pool
                 .build();
 
         CloseableHttpClient httpClient = HttpClients.custom()

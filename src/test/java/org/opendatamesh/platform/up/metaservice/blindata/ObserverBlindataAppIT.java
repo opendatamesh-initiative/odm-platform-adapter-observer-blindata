@@ -6,11 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
+
+import java.time.Duration;
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -27,10 +30,10 @@ public abstract class ObserverBlindataAppIT {
     @PostConstruct
     public final void init() {
         rest = new TestRestTemplate();
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(30000);
-        requestFactory.setReadTimeout(30000);
-        rest.getRestTemplate().setRequestFactory(requestFactory);
+        rest.getRestTemplate().setRequestFactory(ClientHttpRequestFactoryBuilder.httpComponents()
+                .build(ClientHttpRequestFactorySettings.defaults()
+                        .withConnectTimeout(Duration.ofSeconds(30))
+                        .withReadTimeout(Duration.ofSeconds(30))));
         // add uri template handler because '+' of iso date would not be encoded
         DefaultUriBuilderFactory defaultUriBuilderFactory = new DefaultUriBuilderFactory();
         defaultUriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.TEMPLATE_AND_VALUES);

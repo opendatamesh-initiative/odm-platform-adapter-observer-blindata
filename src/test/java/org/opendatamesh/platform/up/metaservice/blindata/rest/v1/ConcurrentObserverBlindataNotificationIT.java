@@ -2,24 +2,27 @@ package org.opendatamesh.platform.up.metaservice.blindata.rest.v1;
 
 import com.google.common.io.Resources;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.opendatamesh.platform.up.metaservice.blindata.AsyncTestConfig;
 import org.opendatamesh.platform.up.metaservice.blindata.ObserverBlindataAppIT;
+import org.opendatamesh.platform.up.metaservice.blindata.TestAsyncExecutor;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdStewardshipClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdUserClient;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmEventNotificationResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v1.OdmEventNotificationStatus;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.services.programmatic.AsyncExecutorConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,30 +31,36 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 /*
- * This test uses the AsyncTestConfig configuration, which enables a multithread environment during testing.
- * This behaviour is disabled by default, so you should use the annotation below to enable it.
+ * This test runs @Async methods on the application's virtual-thread executor, so notifications are processed
+ * concurrently. TestConfig keeps @Async synchronous for the other ITs; this test switches it and switches it back.
  */
-@SpringBootTest(
-        classes = {AsyncTestConfig.class},
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
-@TestPropertySource(properties = {
-        "blindata.enableAsync=true"
-})
 public class ConcurrentObserverBlindataNotificationIT extends ObserverBlindataAppIT {
 
-    @MockBean
+    @Autowired
     private BdDataProductClient bdDataProductClient;
 
-    @MockBean
+    @Autowired
     private BdUserClient bdUserClient;
 
-    @MockBean
+    @Autowired
     private BdStewardshipClient bdStewardshipClient;
+
+    @Autowired
+    private TestAsyncExecutor testAsyncExecutor;
+
+    @Autowired
+    @Qualifier(AsyncExecutorConfig.VIRTUAL_THREAD_EXECUTOR)
+    private TaskExecutor applicationTaskExecutor;
 
     @BeforeEach
     public void resetMocks() {
         Mockito.reset(bdDataProductClient, bdUserClient, bdStewardshipClient);
+        testAsyncExecutor.runOn(applicationTaskExecutor);
+    }
+
+    @AfterEach
+    public void restoreSynchronousAsync() throws InterruptedException, TimeoutException {
+        testAsyncExecutor.reset(Duration.ofSeconds(30));
     }
 
     @Test

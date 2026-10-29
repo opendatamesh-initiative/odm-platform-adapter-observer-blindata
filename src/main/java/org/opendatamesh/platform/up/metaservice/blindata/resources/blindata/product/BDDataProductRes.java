@@ -28,6 +28,8 @@ public class BDDataProductRes {
 
     private String productType;
 
+    private String teamCode;
+
     public String getUuid() {
         return uuid;
     }
@@ -114,6 +116,14 @@ public class BDDataProductRes {
 
     public void setProductType(String productType) {
         this.productType = productType;
+    }
+
+    public String getTeamCode() {
+        return teamCode;
+    }
+
+    public void setTeamCode(String teamCode) {
+        this.teamCode = teamCode;
     }
 
     public void addOldAdditionalProperties(BDDataProductRes oldDataProduct) {

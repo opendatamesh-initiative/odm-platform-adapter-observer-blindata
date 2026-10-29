@@ -72,6 +72,7 @@ The `info` section of the data product descriptor is mapped into Blindata Data P
 | `info.version`                                     | `dataProduct.version`              | ️         | Defaults to `"0.0.0"` `productStatus="DRAFT"` if missing                                                            |
 | `info.description`                                 | `dataProduct.description`          |           |                                                                                                                     |
 | `info.x-productType`                               | `dataProduct.productType`          |           | Only textual values; others are logged and skipped                                                                  |
+| Blindata domain team (looked up by `info.domain`)   | `dataProduct.teamCode`             |           | Applied according to `blindata.dataProducts.domainTeamInheritance`; never cleared; stored team preserved on update |
 | `info.contactPoints`                               | `dataProduct.additionalProperties` |           | Serialized as JSON and stored under the fixed key `contactPoints` in `additionalProperties`.                        |
 | `info._model extension properties matching regex_` | `dataProduct.additionalProperties` |           | Keys matching the configured regex on the application properties `blindata.dataProducts.additionalPropertiesRegex`. |
 

@@ -1,5 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.blindata;
 
+import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductDomainRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductSearchOptions;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.product.BDDataProductStagesUploadRes;
@@ -13,6 +14,8 @@ import java.util.Optional;
 
 public interface BdDataProductClient {
     Optional<BDDataProductRes> getDataProduct(String identifier);
+
+    Optional<BDDataProductDomainRes> getDataProductDomain(String name) throws BlindataClientException, BlindataClientResourceMappingException;
 
     BDDataProductRes createDataProduct(BDDataProductRes dataProduct) throws BlindataClientException, BlindataClientResourceMappingException;
 

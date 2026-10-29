@@ -5,13 +5,12 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
+import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -20,11 +19,21 @@ import java.util.concurrent.Executor;
 @TestConfiguration
 public class TestConfig {
 
-    //Makes all @Async methods synchronous
+    //Makes all @Async methods synchronous, without replacing the template's executor beans.
+    //Tests that need real concurrency switch it with TestAsyncExecutor.runOn(...) and reset it afterwards.
     @Bean
-    @Primary
-    public Executor taskExecutor() {
-        return new SyncTaskExecutor();
+    public TestAsyncExecutor testAsyncExecutor() {
+        return new TestAsyncExecutor();
+    }
+
+    @Bean
+    public AsyncConfigurer testAsyncConfigurer(TestAsyncExecutor testAsyncExecutor) {
+        return new AsyncConfigurer() {
+            @Override
+            public Executor getAsyncExecutor() {
+                return testAsyncExecutor;
+            }
+        };
     }
 
     /**

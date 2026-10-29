@@ -1,4 +1,4 @@
-FROM amazoncorretto:11-alpine-jdk
+FROM amazoncorretto:21-alpine-jdk
 
 COPY target/odm-platform-adapter-observer-blindata-*.jar ./application.jar
 ENV JAVA_OPTS=""
