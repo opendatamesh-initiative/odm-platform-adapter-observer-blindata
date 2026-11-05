@@ -3,6 +3,7 @@ package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.v1.OdmExternalComponentResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.v2.OdmDataProductVersionResourceV2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class OdmRegistryClientConfigs {
     @Value("${odm.productPlane.registryService.active}")
     private boolean active;
 
+    @Value("${odm.productPlane.registryService.apiVersion:v1}")
+    private String apiVersion;
+
     @Autowired
     private RestTemplateBuilder restTemplateBuilder;
 
@@ -35,10 +39,12 @@ public class OdmRegistryClientConfigs {
 
     @Bean
     public OdmRegistryClient odmRegistryClient() {
+        String validatedApiVersion = validatedApiVersion();
         if (active) {
             return new OdmRegistryClientImpl(
                     getRestTemplate(),
-                    address
+                    address,
+                    validatedApiVersion
             );
         } else {
             log.warn("ODM Registry Client is not enabled in the configuration.");
@@ -60,7 +66,21 @@ public class OdmRegistryClientConfigs {
                     log.warn("getDataProductVersion called but registry client is disabled. No data product version found for id {} version {}.", dataProductId, versionNumber);
                     return null;
                 }
+
+                @Override
+                public Optional<OdmDataProductVersionResourceV2> getDataProductVersionV2(String dataProductVersionUuid) {
+                    log.warn("getDataProductVersionV2 called but registry client is disabled. Cannot read data product version {}.", dataProductVersionUuid);
+                    throw new IllegalStateException("ODM Registry client is disabled (odm.productPlane.registryService.active=false): cannot read data product version " + dataProductVersionUuid);
+                }
             };
         }
+    }
+
+    private String validatedApiVersion() {
+        String normalized = apiVersion == null ? null : apiVersion.toUpperCase();
+        if (!"V1".equals(normalized) && !"V2".equals(normalized)) {
+            throw new IllegalStateException("Unsupported odm.productPlane.registryService.apiVersion: '" + apiVersion + "'. Allowed values: v1, v2.");
+        }
+        return normalized;
     }
 }

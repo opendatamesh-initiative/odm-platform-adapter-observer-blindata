@@ -46,6 +46,30 @@ blindata:
       filter: ""
       activeUseCases:
         - DATA_PRODUCT_VERSION_UPLOAD
+    # DevOps 2.0 activity outcomes (BDMD-5558)
+    - eventType: ACTIVITY_SUCCEEDED
+      filter: ""
+      activeUseCases:
+        - STAGES_UPLOAD
+        - POLICIES_UPLOAD
+    - eventType: ACTIVITY_SUCCEEDED
+      filter: "#root['eventContent']['activity']['name'] == 'prod'"
+      activeUseCases:
+        - DATA_PRODUCT_UPLOAD
+        - DATA_PRODUCT_VERSION_UPLOAD
+        - QUALITY_UPLOAD
+        - PROBES_UPLOAD
+    - eventType: ACTIVITY_FAILED
+      filter: ""
+      activeUseCases:
+        - POLICIES_UPLOAD
+    - eventType: ACTIVITY_FAILED
+      filter: "#root['eventContent']['activity']['name'] == 'prod'"
+      activeUseCases:
+        - DATA_PRODUCT_UPLOAD
+        - DATA_PRODUCT_VERSION_UPLOAD
+        - QUALITY_UPLOAD
+        - PROBES_UPLOAD
 
 odm:
   productPlane:
