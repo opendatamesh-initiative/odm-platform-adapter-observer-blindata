@@ -20,6 +20,7 @@ odm:
     registryService:
       active: true
       address: The address of ODM Registry Service
+      apiVersion: v1 OR v2  # default v1; v2 is required for DevOps 2.0 events (temporary)
 ```
 
 ## Notification Service
@@ -42,6 +43,7 @@ odm:
 |                      | `address`           | string  | -       | Policy service endpoint URL                                                  |
 | Registry Service     | `active`            | boolean | false   | Enable/disable registry service connection                                   |
 |                      | `address`           | string  | -       | Registry service endpoint URL                                                |
+|                      | `apiVersion`        | string  | v1      | `v1` or `v2` (case-insensitive; any other value fails startup). The V1 reads keep their routes for both values. It must be `v2` (with `active: true`) for DevOps 2.0 events (`ACTIVITY_SUCCEEDED`, `ACTIVITY_FAILED`), which are enriched with a read from Registry V2. **Temporary:** this requirement goes away once the events are enriched upstream; see [Event Handling Configuration](event-handling.md#devops-20-events). |
 | Notification Service | `active`            | boolean | false   | Enable/disable notification service connection                               |
 |                      | `address`           | string  | -       | Notification service endpoint URL                                            |
 |                      | `subscribeWithName` | string  | -       | The name used by the observer when it subscribes to the notification service |

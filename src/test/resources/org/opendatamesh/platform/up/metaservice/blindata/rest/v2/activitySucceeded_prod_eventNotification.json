@@ -1,0 +1,51 @@
+{
+  "sequenceId": 1,
+  "status": "PROCESSING",
+  "event": {
+    "sequenceId": 1,
+    "resourceType": "ACTIVITY",
+    "resourceIdentifier": "act-uuid-prod",
+    "type": "ACTIVITY_SUCCEEDED",
+    "eventTypeVersion": "V2.0.0",
+    "eventContent": {
+      "activity": {
+        "uuid": "act-uuid-prod",
+        "dataProductVersionUuid": "dpv-uuid-1",
+        "dataProductFqn": "urn:org.opendatamesh:dataproducts:tripExecution",
+        "dataProductVersionNumber": "1.0.0",
+        "name": "prod",
+        "sortOrder": 1,
+        "status": "SUCCEEDED",
+        "startedAt": "2026-11-04T10:00:00.000+00:00",
+        "finishedAt": "2026-11-04T10:05:00.000+00:00",
+        "tasks": [
+          {
+            "uuid": "task-uuid-1",
+            "name": "task-1",
+            "executionMode": "FULL_CONTROL",
+            "status": "SUCCEEDED",
+            "sortOrder": 1
+          },
+          {
+            "uuid": "task-uuid-2",
+            "name": "task-2",
+            "executionMode": "INSTRUMENTED",
+            "status": "SUCCEEDED",
+            "sortOrder": 2
+          }
+        ],
+        "someFutureDevOpsField": {
+          "nested": true
+        }
+      }
+    },
+    "time": 1730714400000
+  },
+  "subscription": {
+    "uuid": "sub-1",
+    "name": "BLINDATA-V2",
+    "displayName": "Blindata V2",
+    "observerBaseUrl": "http://localhost:9002",
+    "observerApiVersion": "V2"
+  }
+}

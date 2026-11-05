@@ -12,6 +12,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.utils.client.RestUtilsF
 import org.opendatamesh.platform.up.metaservice.blindata.exceptions.client.ClientException;
 import org.opendatamesh.platform.up.metaservice.blindata.exceptions.client.ClientResourceMappingException;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.v1.OdmExternalComponentResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.v2.OdmDataProductVersionResourceV2;
 import org.opendatamesh.platform.up.metaservice.blindata.schema_analyzers.utils.InternalRefResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +29,14 @@ class OdmRegistryClientImpl implements OdmRegistryClient {
     private final String baseUrl;
     private final RestUtils restUtils;
     private final RestTemplate restTemplate;
+    private final String apiVersion;
     private static final Logger logger = LoggerFactory.getLogger(OdmRegistryClientImpl.class);
 
-    OdmRegistryClientImpl(RestTemplate restTemplate, String baseUrl) {
+    OdmRegistryClientImpl(RestTemplate restTemplate, String baseUrl, String apiVersion) {
         this.restUtils = RestUtilsFactory.getRestUtils(restTemplate);
         this.baseUrl = baseUrl;
         this.restTemplate = restTemplate;
+        this.apiVersion = apiVersion;
     }
 
     @Override
@@ -95,5 +98,37 @@ class OdmRegistryClientImpl implements OdmRegistryClient {
                 .toUriString();
 
         return restUtils.get(url, null, null, JsonNode.class);
+    }
+
+    /**
+     * TEMPORARY (BDMD-5558): see {@link OdmRegistryClient#getDataProductVersionV2(String)}.
+     */
+    @Override
+    public Optional<OdmDataProductVersionResourceV2> getDataProductVersionV2(String dataProductVersionUuid) {
+        requireV2(dataProductVersionUuid);
+        try {
+            OdmDataProductVersionResourceV2 version = restUtils.get(
+                    baseUrl + "/api/v2/pp/registry/products-versions/{id}",
+                    null,
+                    dataProductVersionUuid,
+                    OdmDataProductVersionResourceV2.class
+            );
+            return Optional.ofNullable(version);
+        } catch (ClientException e) {
+            if (isNotFound(e)) {
+                return Optional.empty();
+            }
+            throw e;
+        }
+    }
+
+    private void requireV2(String dataProductVersionUuid) {
+        if (!"V2".equalsIgnoreCase(apiVersion)) {
+            throw new IllegalStateException("ODM Registry V2 is not configured: set odm.productPlane.registryService.apiVersion to v2 to read data product version " + dataProductVersionUuid);
+        }
+    }
+
+    private boolean isNotFound(ClientException e) {
+        return e.getCode() == 404;
     }
 }

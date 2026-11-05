@@ -124,7 +124,7 @@ configurations.
 
 - [Authentication Setup](docs/configuration/authentication.md) - Configure secure access to Blindata
 - [Blindata Configurations](docs/configuration/blindata-configurations.md) - Platform-specific settings
-- [Event Handling](docs/configuration/event-handling.md) - Configure event processing
+- [Event Handling](docs/configuration/event-handling.md) - Configure event processing, including DevOps 2.0 activity events
 - [ODM Platform Configurations](docs/configuration/odm-platform-configurations.md) - Open Data Mesh settings
 - [Validator Configuration](docs/configuration/validator.md) - Data validation setup
 

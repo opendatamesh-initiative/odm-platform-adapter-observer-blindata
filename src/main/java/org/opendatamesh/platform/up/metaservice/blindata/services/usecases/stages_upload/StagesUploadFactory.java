@@ -8,12 +8,17 @@ import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.EventTyp
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.ActivityEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.adapter.events.states.DataProductVersionEventState;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdDataProductClient;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.devops.OdmActivityResource;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.devops.OdmActivityStatus;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.devops.v2.OdmActivityResourceV2;
+import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.devops.v2.OdmActivityStatusV2;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.eventcontents.DataProductVersionPublishedEventContentResource;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventTypeV2;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.notification.v2.internal.EventV2;
 import org.opendatamesh.platform.up.metaservice.blindata.utils.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
+import org.opendatamesh.platform.up.metaservice.blindata.services.v2.devopsevents.DevOpsActivityEventResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,13 +33,17 @@ public class StagesUploadFactory implements UseCaseFactory {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private DevOpsActivityEventResolver devOpsActivityEventResolver;
+
     private final Set<EventType> supportedEventTypes = Set.of(
             EventType.DATA_PRODUCT_VERSION_CREATED,
             EventType.DATA_PRODUCT_ACTIVITY_COMPLETED
     );
 
     private final Set<EventTypeV2> supportedEventTypesV2 = Set.of(
-            EventTypeV2.DATA_PRODUCT_VERSION_PUBLISHED
+            EventTypeV2.DATA_PRODUCT_VERSION_PUBLISHED,
+            EventTypeV2.ACTIVITY_SUCCEEDED
     );
 
     @Override
@@ -92,6 +101,11 @@ public class StagesUploadFactory implements UseCaseFactory {
                     DataProductVersion dataProductVersion = objectMapper.readValue(dataProductVersionPublishedEventContentResource.getDataProductVersion().getContent().toString(), DataProductVersion.class);
                     return new StagesUploadOdmOutboundPortImpl(dataProductVersion, null);
                 }
+                case ACTIVITY_SUCCEEDED:
+                    return new StagesUploadOdmOutboundPortImpl(
+                            devOpsActivityEventResolver.dataProductVersionOf(event),
+                            toStageActivity(devOpsActivityEventResolver.activityOf(event))
+                    );
                 default:
                     throw new UseCaseInitException("Unsupported event type: " + event.getEventType());
             }
@@ -109,6 +123,13 @@ public class StagesUploadFactory implements UseCaseFactory {
                     expectedClass.getSimpleName() + " as " + stateName + ", but got: " + state.getClass().getTypeName());
         }
         return expectedClass.cast(state);
+    }
+
+    private OdmActivityResource toStageActivity(OdmActivityResourceV2 activity) {
+        OdmActivityResource stageActivity = new OdmActivityResource();
+        stageActivity.setStage(activity.getName());
+        stageActivity.setStatus(OdmActivityStatusV2.SUCCEEDED.equals(activity.getStatus()) ? OdmActivityStatus.PROCESSED : OdmActivityStatus.FAILED);
+        return stageActivity;
     }
 
 }

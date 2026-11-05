@@ -61,7 +61,10 @@ public class OdmObserverClientConfigs {
             EventTypeV2.DATA_PRODUCT_INITIALIZED,
             EventTypeV2.DATA_PRODUCT_DELETED,
             EventTypeV2.DATA_PRODUCT_VERSION_PUBLISHED,
-            EventTypeV2.DATA_PRODUCT_VERSION_DELETED
+            EventTypeV2.DATA_PRODUCT_VERSION_DELETED,
+            // DevOps 2.0 activity outcomes; ACTIVITY_CANCELED and request/approval events are intentionally not subscribed (BDMD-5558)
+            EventTypeV2.ACTIVITY_SUCCEEDED,
+            EventTypeV2.ACTIVITY_FAILED
     );
 
     @Autowired

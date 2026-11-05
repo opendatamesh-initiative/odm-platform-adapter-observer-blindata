@@ -73,6 +73,10 @@ public class NotificationEventConsumerServiceV2 {
 
     private void processNotification(OdmEventNotificationResourceV2 odmEventNotificationResource) {
         try {
+            if (isUnrecognised(odmEventNotificationResource)) {
+                ignore(odmEventNotificationResource);
+                return;
+            }
             EventV2 resolvedEvent = notificationEventManagerV2.notify(odmToInternalEvent(odmEventNotificationResource.getEvent()));
             odmEventNotificationResource.setStatus(OdmEventNotificationStatusV2.valueOf(resolvedEvent.getEventStatus().name()));
             if (resolvedEvent.getErrorMessage() != null) {
@@ -81,6 +85,21 @@ public class NotificationEventConsumerServiceV2 {
         } finally {
             updateEventNotificationOnNotificationService(odmEventNotificationResource);
         }
+    }
+
+    private boolean isUnrecognised(OdmEventNotificationResourceV2 odmEventNotificationResource) {
+        OdmEventResourceV2 event = odmEventNotificationResource.getEvent();
+        return event == null || !EventTypeV2.isKnown(event.getType());
+    }
+
+    private void ignore(OdmEventNotificationResourceV2 odmEventNotificationResource) {
+        OdmEventResourceV2 event = odmEventNotificationResource.getEvent();
+        log.warn("Ignoring V2 notification {} of unrecognised event type '{}' (resource {} {}).",
+                odmEventNotificationResource.getSequenceId(),
+                event == null ? null : event.getType(),
+                event == null ? null : event.getResourceType(),
+                event == null ? null : event.getResourceIdentifier());
+        odmEventNotificationResource.setStatus(OdmEventNotificationStatusV2.PROCESSED);
     }
 
     private EventV2 odmToInternalEvent(OdmEventResourceV2 odmEventResource) {

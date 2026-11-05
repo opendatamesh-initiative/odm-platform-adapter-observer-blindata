@@ -1,0 +1,99 @@
+{
+  "uuid": "dpv-uuid-1",
+  "name": "tripExecution",
+  "description": "Trip execution",
+  "tag": "v1.0.0-release",
+  "validationState": "VALIDATED",
+  "spec": "dpds",
+  "specVersion": "1.0.0",
+  "versionNumber": "1.0.0",
+  "content": {
+    "dataProductDescriptor": "1.0.0",
+    "info": {
+      "id": "2f9b1c3e-0000-4000-8000-000000000001",
+      "fullyQualifiedName": "urn:org.opendatamesh:dataproducts:tripExecution",
+      "name": "tripExecution",
+      "version": "1.0.0",
+      "displayName": "Trip Execution",
+      "domain": "sampleDomain",
+      "description": "Trip execution data product"
+    },
+    "interfaceComponents": {
+      "outputPorts": [
+        {
+          "fullyQualifiedName": "urn:org.opendatamesh:dataproducts:tripExecution:outputPorts:trips",
+          "entityType": "outputport",
+          "name": "trips",
+          "version": "1.0.0",
+          "displayName": "Trips",
+          "description": "Trips output port",
+          "x-blindataConnectionName": "TripsConnection",
+          "promises": {
+            "platform": "postgresql:TripsSystem",
+            "servicesType": "datastore-services",
+            "api": {
+              "specification": "datastoreapi",
+              "specificationVersion": "1.0.0",
+              "definition": {
+                "datastoreapi": "1.0.0",
+                "info": {
+                  "title": "trips",
+                  "summary": "Trips datastore API",
+                  "version": "1.0.0",
+                  "datastoreName": "trips_ds"
+                },
+                "schema": {
+                  "databaseName": "trips_db",
+                  "databaseSchemaName": "public",
+                  "tables": [
+                    {
+                      "name": "trips",
+                      "version": "1.0.0",
+                      "description": "Trips table",
+                      "specification": "json-schema",
+                      "specificationVersion": "1",
+                      "definition": {
+                        "name": "trips",
+                        "version": "1.0.0",
+                        "displayName": "Trips",
+                        "description": "Trips physical table",
+                        "physicalType": "BASE_TABLE",
+                        "type": "object",
+                        "quality": [
+                          {
+                            "id": "trips_row_count_positive",
+                            "name": "trips_row_count_positive",
+                            "description": "Table must contain at least one row",
+                            "type": "library",
+                            "metric": "rowCount",
+                            "unit": "rows",
+                            "mustBeGreaterThan": 0
+                          }
+                        ],
+                        "properties": {
+                          "trip_id": {
+                            "type": "string",
+                            "name": "trip_id",
+                            "displayName": "Trip ID",
+                            "physicalType": "VARCHAR",
+                            "ordinalPosition": 0
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "internalComponents": {
+      "lifecycleInfo": {
+        "dev": [],
+        "prod": []
+      }
+    }
+  }
+}
