@@ -60,30 +60,30 @@ class DevOpsActivityEventResolverTest {
      */
     @Test
     void whenSameEventResolvedTwiceThenRegistryCalledOnce() throws IOException {
-        when(odmRegistryClient.getDataProductVersionV2(UUID)).thenReturn(Optional.of(registryVersion("1.0.0", "v1.0.0-release")));
+        when(odmRegistryClient.getDataProductVersion(UUID)).thenReturn(Optional.of(registryVersion("1.0.0", "v1.0.0-release")));
         EventV2 event = event("{\"activity\":{\"dataProductVersionUuid\":\"" + UUID + "\",\"name\":\"dev\"}}");
 
         DataProductVersion first = resolver.dataProductVersionOf(event);
         DataProductVersion second = resolver.dataProductVersionOf(event);
 
         assertThat(second).isSameAs(first);
-        verify(odmRegistryClient, times(1)).getDataProductVersionV2(UUID);
+        verify(odmRegistryClient, times(1)).getDataProductVersion(UUID);
     }
 
     @Test
     void whenTwoEventInstancesThenRegistryCalledTwice() throws IOException {
-        when(odmRegistryClient.getDataProductVersionV2(UUID)).thenReturn(Optional.of(registryVersion("1.0.0", "v1.0.0-release")));
+        when(odmRegistryClient.getDataProductVersion(UUID)).thenReturn(Optional.of(registryVersion("1.0.0", "v1.0.0-release")));
         String content = "{\"activity\":{\"dataProductVersionUuid\":\"" + UUID + "\"}}";
 
         resolver.dataProductVersionOf(event(content));
         resolver.dataProductVersionOf(event(content));
 
-        verify(odmRegistryClient, times(2)).getDataProductVersionV2(UUID);
+        verify(odmRegistryClient, times(2)).getDataProductVersion(UUID);
     }
 
     @Test
     void whenVersionNotFoundThenUseCaseInitExceptionNamesRegistryAndUuid() throws IOException {
-        when(odmRegistryClient.getDataProductVersionV2(UUID)).thenReturn(Optional.empty());
+        when(odmRegistryClient.getDataProductVersion(UUID)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> resolver.dataProductVersionOf(event(activityContent())))
                 .isInstanceOf(UseCaseInitException.class)
@@ -94,7 +94,7 @@ class DevOpsActivityEventResolverTest {
     @Test
     void whenClientFailsThenUseCaseInitExceptionKeepsCause() throws IOException {
         RuntimeException failure = new IllegalStateException("ODM Registry V2 is not configured");
-        when(odmRegistryClient.getDataProductVersionV2(UUID)).thenThrow(failure);
+        when(odmRegistryClient.getDataProductVersion(UUID)).thenThrow(failure);
 
         assertThatThrownBy(() -> resolver.dataProductVersionOf(event(activityContent())))
                 .isInstanceOf(UseCaseInitException.class)
@@ -109,7 +109,7 @@ class DevOpsActivityEventResolverTest {
      */
     @Test
     void whenRegistryAnswersHttpErrorThenMessageHasStatusButNotResponseBody() throws IOException {
-        when(odmRegistryClient.getDataProductVersionV2(UUID)).thenThrow(new ClientException(500, "secret body"));
+        when(odmRegistryClient.getDataProductVersion(UUID)).thenThrow(new ClientException(500, "secret body"));
 
         assertThatThrownBy(() -> resolver.dataProductVersionOf(event(activityContent())))
                 .isInstanceOf(UseCaseInitException.class)
@@ -122,7 +122,7 @@ class DevOpsActivityEventResolverTest {
     void whenRegistryReturnsNoContentThenUseCaseInitException() throws IOException {
         OdmDataProductVersionResourceV2 version = registryVersion("1.0.0", "v1.0.0-release");
         version.setContent(null);
-        when(odmRegistryClient.getDataProductVersionV2(UUID)).thenReturn(Optional.of(version));
+        when(odmRegistryClient.getDataProductVersion(UUID)).thenReturn(Optional.of(version));
 
         assertThatThrownBy(() -> resolver.dataProductVersionOf(event(activityContent())))
                 .isInstanceOf(UseCaseInitException.class)
@@ -134,7 +134,7 @@ class DevOpsActivityEventResolverTest {
     void whenDescriptorIsMalformedThenUseCaseInitException() throws IOException {
         OdmDataProductVersionResourceV2 version = registryVersion("1.0.0", "v1.0.0-release");
         version.setContent(objectMapper.readTree("{\"info\":\"not-an-object\"}"));
-        when(odmRegistryClient.getDataProductVersionV2(UUID)).thenReturn(Optional.of(version));
+        when(odmRegistryClient.getDataProductVersion(UUID)).thenReturn(Optional.of(version));
 
         assertThatThrownBy(() -> resolver.dataProductVersionOf(event(activityContent())))
                 .isInstanceOf(UseCaseInitException.class)
@@ -149,7 +149,7 @@ class DevOpsActivityEventResolverTest {
         assertThatThrownBy(() -> resolver.activityOf(event))
                 .isInstanceOf(UseCaseInitException.class)
                 .hasMessageContaining("Event content is null");
-        verify(odmRegistryClient, never()).getDataProductVersionV2(anyString());
+        verify(odmRegistryClient, never()).getDataProductVersion(anyString());
     }
 
     @Test
@@ -159,7 +159,7 @@ class DevOpsActivityEventResolverTest {
         assertThatThrownBy(() -> resolver.dataProductVersionOf(event))
                 .isInstanceOf(UseCaseInitException.class)
                 .hasMessageContaining("Missing activity.dataProductVersionUuid");
-        verify(odmRegistryClient, never()).getDataProductVersionV2(anyString());
+        verify(odmRegistryClient, never()).getDataProductVersion(anyString());
     }
 
     @Test
@@ -169,7 +169,7 @@ class DevOpsActivityEventResolverTest {
         assertThatThrownBy(() -> resolver.dataProductVersionOf(event))
                 .isInstanceOf(UseCaseInitException.class)
                 .hasMessageContaining("Missing activity.dataProductVersionUuid");
-        verify(odmRegistryClient, never()).getDataProductVersionV2(anyString());
+        verify(odmRegistryClient, never()).getDataProductVersion(anyString());
     }
 
     @Test
@@ -197,7 +197,7 @@ class DevOpsActivityEventResolverTest {
 
     @Test
     void whenTagDiffersFromVersionNumberThenDescriptorInfoVersionIsTheVersionNumber() throws IOException {
-        when(odmRegistryClient.getDataProductVersionV2(UUID)).thenReturn(Optional.of(registryVersion("1.0.0", "v1.0.0-release")));
+        when(odmRegistryClient.getDataProductVersion(UUID)).thenReturn(Optional.of(registryVersion("1.0.0", "v1.0.0-release")));
 
         DataProductVersion descriptor = resolver.dataProductVersionOf(event(activityContent()));
 
@@ -207,7 +207,7 @@ class DevOpsActivityEventResolverTest {
 
     @Test
     void whenReadFailsThenTheFailureIsNotCached() throws IOException {
-        when(odmRegistryClient.getDataProductVersionV2(UUID))
+        when(odmRegistryClient.getDataProductVersion(UUID))
                 .thenReturn(Optional.empty())
                 .thenReturn(Optional.of(registryVersion("1.0.0", "v1.0.0-release")));
         EventV2 event = event(activityContent());
@@ -216,7 +216,7 @@ class DevOpsActivityEventResolverTest {
         DataProductVersion descriptor = resolver.dataProductVersionOf(event);
 
         assertThat(descriptor.getInfo().getVersion()).isEqualTo("1.0.0");
-        verify(odmRegistryClient, times(2)).getDataProductVersionV2(UUID);
+        verify(odmRegistryClient, times(2)).getDataProductVersion(UUID);
     }
 
     private String activityContent() {

@@ -1,9 +1,6 @@
 package org.opendatamesh.platform.up.metaservice.blindata.client.odm;
 
-
-import com.fasterxml.jackson.databind.JsonNode;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.v1.OdmExternalComponentResource;
-import org.opendatamesh.platform.up.metaservice.blindata.resources.odm.registry.v2.OdmDataProductVersionResourceV2;
+import org.opendatamesh.platform.up.metaservice.blindata.utils.client.RestUtilsFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +8,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.Optional;
-
+/**
+ * Builds the Registry V2 client. It is real only with {@code odm.productPlane.registryService.active: true} and
+ * {@code apiVersion: v2}; otherwise every read fails with a message saying Registry V2 is not configured, so the
+ * DevOps 2.0 event that needed it is closed as failed (BDMD-5558).
+ */
 @Configuration
 public class OdmRegistryClientConfigs {
 
@@ -33,47 +31,16 @@ public class OdmRegistryClientConfigs {
     @Autowired
     private RestTemplateBuilder restTemplateBuilder;
 
-    private RestTemplate getRestTemplate() {
-        return restTemplateBuilder.build();
-    }
-
     @Bean
     public OdmRegistryClient odmRegistryClient() {
         String validatedApiVersion = validatedApiVersion();
-        if (active) {
-            return new OdmRegistryClientImpl(
-                    getRestTemplate(),
-                    address,
-                    validatedApiVersion
-            );
-        } else {
-            log.warn("ODM Registry Client is not enabled in the configuration.");
-            return new OdmRegistryClient() {
-                @Override
-                public List<OdmExternalComponentResource> getApis(String apiName, String apiVersion) {
-                    log.warn("getApis called but registry client is disabled. Returning empty list for API {} version {}.", apiName, apiVersion);
-                    return List.of();
-                }
-
-                @Override
-                public Optional<JsonNode> getApi(String identifier) {
-                    log.warn("getApi called but registry client is disabled. Returning optional.empty() for API with id: {}.", identifier);
-                    return Optional.empty();
-                }
-
-                @Override
-                public JsonNode getDataProductVersion(String dataProductId, String versionNumber) {
-                    log.warn("getDataProductVersion called but registry client is disabled. No data product version found for id {} version {}.", dataProductId, versionNumber);
-                    return null;
-                }
-
-                @Override
-                public Optional<OdmDataProductVersionResourceV2> getDataProductVersionV2(String dataProductVersionUuid) {
-                    log.warn("getDataProductVersionV2 called but registry client is disabled. Cannot read data product version {}.", dataProductVersionUuid);
-                    throw new IllegalStateException("ODM Registry client is disabled (odm.productPlane.registryService.active=false): cannot read data product version " + dataProductVersionUuid);
-                }
-            };
+        if (active && "V2".equals(validatedApiVersion)) {
+            return new OdmRegistryClientImpl(RestUtilsFactory.getRestUtils(restTemplateBuilder.build()), address);
         }
+        log.warn("ODM Registry V2 Client is not enabled in the configuration (active={}, apiVersion={}).", active, apiVersion);
+        return dataProductVersionUuid -> {
+            throw new IllegalStateException("ODM Registry V2 is not configured: set odm.productPlane.registryService.active to true and odm.productPlane.registryService.apiVersion to v2 to read data product version " + dataProductVersionUuid);
+        };
     }
 
     private String validatedApiVersion() {

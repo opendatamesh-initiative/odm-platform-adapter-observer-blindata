@@ -103,7 +103,7 @@ public class DevOpsActivityEventsV2IT extends ObserverBlindataAppIT {
         OdmDataProductVersionResourceV2 registryVersion = mapper.readValue(
                 Resources.toByteArray(getClass().getResource("registry_dataProductVersion_dpv-uuid-1.json")),
                 OdmDataProductVersionResourceV2.class);
-        when(odmRegistryClient.getDataProductVersionV2(DPV_UUID)).thenReturn(Optional.of(registryVersion));
+        when(odmRegistryClient.getDataProductVersion(DPV_UUID)).thenReturn(Optional.of(registryVersion));
 
         when(odmPolicyEvaluationResultClient.getPolicyEvaluationResults(any(), any())).thenReturn(new PageImpl<>(List.of()));
         when(bdPolicyEvaluationResultClient.createPolicyEvaluationRecords(any())).thenReturn(new BDPolicyResultsUploadResultsRes());
@@ -199,7 +199,7 @@ public class DevOpsActivityEventsV2IT extends ObserverBlindataAppIT {
         assertThat(stages.getValue().getStages().get(0).getName()).isEqualTo("prod");
         assertThat(stages.getValue().getStages().get(0).getVersion()).isEqualTo("1.0.0");
         verify(bdPolicyEvaluationResultClient, times(1)).createPolicyEvaluationRecords(any());
-        verify(odmRegistryClient, times(1)).getDataProductVersionV2(DPV_UUID);
+        verify(odmRegistryClient, times(1)).getDataProductVersion(DPV_UUID);
         assertFinalStatus(OdmEventNotificationStatusV2.PROCESSED);
     }
 
@@ -261,7 +261,7 @@ public class DevOpsActivityEventsV2IT extends ObserverBlindataAppIT {
         assertPortsQualityAndProbesUploaded();
         verify(bdPolicyEvaluationResultClient, times(1)).createPolicyEvaluationRecords(any());
         verify(bdDataProductClient, never()).uploadStages(any());
-        verify(odmRegistryClient, times(1)).getDataProductVersionV2(DPV_UUID);
+        verify(odmRegistryClient, times(1)).getDataProductVersion(DPV_UUID);
         assertFinalStatus(OdmEventNotificationStatusV2.PROCESSED);
     }
 
@@ -276,7 +276,7 @@ public class DevOpsActivityEventsV2IT extends ObserverBlindataAppIT {
      */
     @Test
     public void whenVersionMissingInRegistryThenFailedToProcess() throws IOException {
-        when(odmRegistryClient.getDataProductVersionV2(DPV_UUID)).thenReturn(Optional.empty());
+        when(odmRegistryClient.getDataProductVersion(DPV_UUID)).thenReturn(Optional.empty());
 
         postAndExpectProcessing("activitySucceeded_dev_eventNotification.json");
 
@@ -304,7 +304,7 @@ public class DevOpsActivityEventsV2IT extends ObserverBlindataAppIT {
 
         verifyNothingUploadedToBlindata();
         // the event was dispatched: the version was resolved and the use cases looked the product up on Blindata
-        verify(odmRegistryClient, times(1)).getDataProductVersionV2(DPV_UUID);
+        verify(odmRegistryClient, times(1)).getDataProductVersion(DPV_UUID);
         verify(bdDataProductClient, atLeastOnce()).getDataProduct(FQN);
         assertFinalStatus(OdmEventNotificationStatusV2.PROCESSED);
     }
@@ -358,7 +358,7 @@ public class DevOpsActivityEventsV2IT extends ObserverBlindataAppIT {
         postAndExpectProcessing("dataProductVersionPublished_eventNotification.json");
 
         verify(bdDataProductClient, Mockito.atLeastOnce()).patchDataProduct(any());
-        verify(odmRegistryClient, never()).getDataProductVersionV2(any());
+        verify(odmRegistryClient, never()).getDataProductVersion(any());
         assertFinalStatus(OdmEventNotificationStatusV2.PROCESSED);
     }
 

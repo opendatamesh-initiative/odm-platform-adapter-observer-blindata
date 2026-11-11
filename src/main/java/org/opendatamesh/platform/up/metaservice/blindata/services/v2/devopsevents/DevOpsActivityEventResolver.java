@@ -27,7 +27,7 @@ import java.util.WeakHashMap;
  * <b>TEMPORARY BRIDGE (BDMD-5558):</b> DevOps 2.0 events carry only the identity of the data product version, not its
  * descriptor, so the descriptor is read from Registry V2 by {@code dataProductVersionUuid}. When the events are
  * enriched upstream (likely by Notification), {@link #dataProductVersionOf(EventV2)} reads the descriptor from the
- * event and the Registry read is deleted, together with {@link OdmRegistryClient#getDataProductVersionV2(String)}.
+ * event and the Registry read is deleted, together with {@link OdmRegistryClient#getDataProductVersion(String)}.
  * <p>
  * Factories and use cases must not depend on the Registry client: this class is the only place that reads Registry V2
  * for DevOps events.
@@ -92,7 +92,7 @@ public class DevOpsActivityEventResolver {
         String uuid = activity.getDataProductVersionUuid();
         Optional<OdmDataProductVersionResourceV2> version;
         try {
-            version = odmRegistryClient.getDataProductVersionV2(uuid);
+            version = odmRegistryClient.getDataProductVersion(uuid);
         } catch (ClientException e) {
             throw registryCallFailed(uuid, e);
         } catch (RuntimeException e) {

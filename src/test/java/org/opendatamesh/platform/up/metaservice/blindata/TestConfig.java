@@ -14,6 +14,9 @@ import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 @TestConfiguration
@@ -37,7 +40,8 @@ public class TestConfig {
     }
 
     /**
-     * Scans for all interfaces under the client packages and
+     * Scans for all interfaces under the client packages, and for the client interfaces of the temporary
+     * {@code old} package (e.g. {@code OdmRegistryClientV1}), and
      * registers a Mockito.mock(clazz) as a singleton bean for each.
      * Excludes OdmEventNotificationClient since it's already configured in OdmEventNotificationClientConfigs.
      */
@@ -49,10 +53,12 @@ public class TestConfig {
             PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
             MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory(resolver);
 
-            String pattern = "classpath*:org/opendatamesh/platform/up/metaservice/blindata/client/**/*.class";
+            String clientsPattern = "classpath*:org/opendatamesh/platform/up/metaservice/blindata/client/**/*.class";
+            String oldClientsPattern = "classpath*:org/opendatamesh/platform/up/metaservice/blindata/old/**/*Client*.class";
 
             try {
-                Resource[] resources = resolver.getResources(pattern);
+                List<Resource> resources = new ArrayList<>(Arrays.asList(resolver.getResources(clientsPattern)));
+                resources.addAll(Arrays.asList(resolver.getResources(oldClientsPattern)));
                 for (Resource resource : resources) {
                     MetadataReader reader = readerFactory.getMetadataReader(resource);
                     String className = reader.getClassMetadata().getClassName();
