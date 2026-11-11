@@ -21,6 +21,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.utils.usecases.UseCase;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseDryRunFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.UseCaseFactory;
 import org.opendatamesh.platform.up.metaservice.blindata.services.usecases.exceptions.UseCaseInitException;
+import org.opendatamesh.platform.up.metaservice.blindata.services.v2.devopsevents.DevOpsActivityEventResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -46,6 +47,9 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private DevOpsActivityEventResolver devOpsActivityEventResolver;
+
     @Value("${blindata.roleUuid}")
     private String roleUuid;
 
@@ -57,7 +61,9 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
 
     private final Set<EventTypeV2> supportedEventTypesV2 = Set.of(
             DATA_PRODUCT_INITIALIZED,
-            DATA_PRODUCT_VERSION_PUBLISHED
+            DATA_PRODUCT_VERSION_PUBLISHED,
+            EventTypeV2.ACTIVITY_SUCCEEDED,
+            EventTypeV2.ACTIVITY_FAILED
     );
 
 
@@ -166,6 +172,14 @@ public class DataProductUploadFactory implements UseCaseFactory, UseCaseDryRunFa
                 case DATA_PRODUCT_VERSION_PUBLISHED: {
                     DataProductVersionPublishedEventContentResource dataProductVersionPublishedEventContentResource = objectMapper.readValue(eventContent.toString(), DataProductVersionPublishedEventContentResource.class);
                     DataProductVersion dataProductVersion = ParserFactory.getParser().deserialize(dataProductVersionPublishedEventContentResource.getDataProductVersion().getContent());
+                    return new DataProductUploadOdmOutboundPortImpl(dataProductVersion.getInfo());
+                }
+                case ACTIVITY_SUCCEEDED:
+                case ACTIVITY_FAILED: {
+                    DataProductVersion dataProductVersion = devOpsActivityEventResolver.dataProductVersionOf(event);
+                    if (dataProductVersion.getInfo() == null) {
+                        throw new UseCaseInitException("dataProductVersion.info is null in Registry V2 content for event type: " + event.getEventType());
+                    }
                     return new DataProductUploadOdmOutboundPortImpl(dataProductVersion.getInfo());
                 }
                 default:

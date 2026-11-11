@@ -14,7 +14,7 @@ import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdSeman
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdStewardshipClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdSystemClient;
 import org.opendatamesh.platform.up.metaservice.blindata.client.blindata.BdUserClient;
-import org.opendatamesh.platform.up.metaservice.blindata.client.odm.OdmRegistryClient;
+import org.opendatamesh.platform.up.metaservice.blindata.old.v1.registryservice.OdmRegistryClientV1;
 import org.opendatamesh.platform.up.metaservice.blindata.utils.client.jackson.PageUtility;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDShortUserRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.collaboration.BDStewardshipRoleRes;
@@ -59,7 +59,7 @@ class BlindataValidatorControllerIT extends ObserverBlindataAppIT {
     @Autowired
     private BdSystemClient bdSystemClient;
     @Autowired
-    private OdmRegistryClient odmRegistryClient;
+    private OdmRegistryClientV1 odmRegistryClient;
     @Autowired
     private BdProbesClient bdProbesClient;
     @Autowired

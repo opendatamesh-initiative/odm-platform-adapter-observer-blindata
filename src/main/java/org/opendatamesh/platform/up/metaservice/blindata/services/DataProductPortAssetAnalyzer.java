@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.opendatamesh.dpds.model.core.StandardDefinition;
 import org.opendatamesh.dpds.model.interfaces.Port;
-import org.opendatamesh.platform.up.metaservice.blindata.client.odm.OdmRegistryClient;
+import org.opendatamesh.platform.up.metaservice.blindata.old.v1.registryservice.OdmRegistryClientV1;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalEntityRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDPhysicalFieldRes;
 import org.opendatamesh.platform.up.metaservice.blindata.resources.blindata.physical.BDSystemRes;
@@ -35,7 +35,7 @@ public class DataProductPortAssetAnalyzer {
     ObjectMapper objectMapper;
 
     @Autowired
-    private OdmRegistryClient registryClient;
+    private OdmRegistryClientV1 registryClient;
 
     @Value("${blindata.systemNameRegex}")
     private String systemNameRegex;
