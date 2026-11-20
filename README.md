@@ -107,6 +107,8 @@ docker-compose up -d
 variable `SPRING_APPLICATION_JSON` with the complete json containing all the
 configurations.
 
+The Docker Hub overview of this image is [`DOCKERHUB.md`](DOCKERHUB.md). It is published on every release, so keep it up to date.
+
 
 ---
 
