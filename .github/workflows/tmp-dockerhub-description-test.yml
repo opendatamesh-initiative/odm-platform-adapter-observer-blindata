@@ -1,0 +1,24 @@
+# TEMPORARY (BDMD-5108): tests the Docker Hub description update without a release.
+# Delete this file before merging.
+name: TMP Docker Hub description test
+
+on:
+  push:
+    branches: [BDMD-5108-dockerhub-readme]
+
+jobs:
+  update-dockerhub-description:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Update the Docker Hub description
+        uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa # v5.0.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: opendatamesh/odm-platform-adapter-observer-blindata
+          short-description: "ODM Platform observer adapter for Blindata"
+          readme-filepath: ./DOCKERHUB.md
